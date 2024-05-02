@@ -1,0 +1,8 @@
+plugins {
+    id 'brapi.schema-tools.java-conventions'
+}
+
+dependencies {
+    implementation 'com.networknt:json-schema-validator:1.0.72'
+    api 'com.graphql-java:graphql-java:22.0'
+}

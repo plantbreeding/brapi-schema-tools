@@ -1,0 +1,6 @@
+rootProject.name = 'schematools'
+
+include 'core'
+include 'cli'
+include 'application'
+
