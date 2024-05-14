@@ -34,7 +34,7 @@ public class GraphQLGenerator {
   public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGenerator.Options options) {
 
     try {
-      return new Generator(options, schemaReader.read(schemaDirectory)).generate();
+      return new Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
     } catch (BrAPISchemaReaderException e) {
       return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
     }

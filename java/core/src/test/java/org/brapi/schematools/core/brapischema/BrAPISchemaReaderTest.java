@@ -1,10 +1,12 @@
 package org.brapi.schematools.core.brapischema;
 
-import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class BrAPISchemaReaderTest {
 
   @Test
-  void read()  {
+  void readDirectories()  {
 
     try {
       Map<String, BrAPIObjectType> schemas =
-              new BrAPISchemaReader().read(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
+              new BrAPISchemaReader().readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
 
       assertNotNull(schemas) ;
       assertEquals(37, schemas.size()) ;
@@ -43,6 +45,39 @@ class BrAPISchemaReaderTest {
       assertEquals("Trait", traitSchema.getName()) ;
       assertEquals("BrAPI-Phenotyping", traitSchema.getModule()) ;
 
+    } catch (Exception e) {
+      fail(e.getMessage()) ;
+    }
+  }
+
+  @Test
+  void readSchemaPath()  {
+    try {
+      BrAPIObjectType trialSchema =
+              new BrAPISchemaReader().readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/Trial.json").toURI()), "BrAPI-Core") ;
+
+      assertNotNull(trialSchema) ;
+
+      assertNotNull(trialSchema) ;
+      assertEquals("Trial", trialSchema.getName()) ;
+      assertEquals("BrAPI-Core", trialSchema.getModule()) ;
+    } catch (Exception e) {
+      fail(e.getMessage()) ;
+    }
+  }
+
+  @Test
+  void readSchemaString()  {
+    try {
+      BrAPIObjectType trialSchema =
+              new BrAPISchemaReader().readSchema(String.join("\n", Files.readAllLines(
+                      Paths.get(this.getClass().getResource("/BrAPI-Schema/BrAPI-Core/Trial.json").toURI()), Charset.defaultCharset())), "BrAPI-Core") ;
+
+      assertNotNull(trialSchema) ;
+
+      assertNotNull(trialSchema) ;
+      assertEquals("Trial", trialSchema.getName()) ;
+      assertEquals("BrAPI-Core", trialSchema.getModule()) ;
     } catch (Exception e) {
       fail(e.getMessage()) ;
     }

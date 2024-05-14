@@ -1,6 +1,8 @@
 package org.brapi.schematools.core.brapischema;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.networknt.schema.JsonSchema;
@@ -34,28 +36,78 @@ public class BrAPISchemaReader {
   private static final Pattern REF_PATTERN = Pattern.compile("^(\\w+).json#\\/\\$defs\\/(\\w+)$");
 
   private final JsonSchemaFactory factory ;
+  private final ObjectMapper objectMapper ;
 
   public BrAPISchemaReader() {
     factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
+    objectMapper = new ObjectMapper() ;
   }
 
-  public List<BrAPIObjectType> read(Path schemaDirectory) throws BrAPISchemaReaderException {
+  /**
+   * Reads the schema module directories within a parent directory.
+   * Each directory in the parent directory is a module and the JSON schemas in the directories are object types
+   *
+   * @param schemaDirectory the parent directory that holds all the module directories
+   * @return a list of BrAPIObjectType with one type per JSON Schema
+   * @throws BrAPISchemaReaderException if there is a problem reading the directories or JSON schemas
+   */
+  public List<BrAPIObjectType> readDirectories(Path schemaDirectory) throws BrAPISchemaReaderException {
     try {
       return find(schemaDirectory, 2, this::schemaPathMatcher).flatMap(this::createBrAPISchemas).collect(Response.toList()).
               getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
+      throw new BrAPISchemaReaderException(e);
+    }
+  }
+
+  /**
+   * Reads a single object type from an JSON schema. If the JSON schema
+   * contain more than one type definition only the first is returned
+   * @param schemaPath a JSON schema file
+   * @param module the module in which the object resides
+   * @return BrAPIObjectType with one type per JSON Schema
+   * @throws BrAPISchemaReaderException if there is a problem reading the JSON schema
+   */
+  public BrAPIObjectType readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
+    try {
+      return createBrAPISchemas(schemaPath, module).collect(Response.toList()).mapResult(list -> list.get(0)).
+              getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
+    } catch (RuntimeException e) {
+      throw new BrAPISchemaReaderException(e);
+    }
+  }
+
+  /**
+   * Reads a single object type from an JSON schema string. If the JSON schema
+   * contain more than one type definition only the first is returned
+   * @param schema a JSON schema string
+   * @param module the module in which the object resides
+   * @return BrAPIObjectType with one type per JSON Schema
+   * @throws BrAPISchemaReaderException if there is a problem reading the JSON schema
+   */
+  public BrAPIObjectType readSchema(String schema, String module) throws BrAPISchemaReaderException {
+    try {
+      return createBrAPISchemas(objectMapper.readTree(schema), module).collect(Response.toList()).mapResult(list -> list.get(0)).
+              getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
+    } catch (RuntimeException | JsonProcessingException e) {
       throw new BrAPISchemaReaderException(e);
     }
   }
 
   private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path) {
+    return createBrAPISchemas(path, path.getParent().getFileName().toString()) ;
+  }
+
+  private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path, String module) {
     JsonSchema schema = factory.getSchema(path.toUri());
 
     JsonNode json = schema.getSchemaNode() ;
 
-    JsonNode defs = json.get("$defs");
+    return createBrAPISchemas(json, module) ;
+  }
 
-    String module = path.getParent().getFileName().toString() ;
+  private Stream<Response<BrAPIObjectType>> createBrAPISchemas(JsonNode json, String module) {
+    JsonNode defs = json.get("$defs");
 
     if (defs != null) {
       json = defs ;
