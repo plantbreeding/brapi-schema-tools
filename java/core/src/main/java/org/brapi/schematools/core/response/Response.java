@@ -1,4 +1,4 @@
-package org.brapi.schematools.core;
+package org.brapi.schematools.core.response;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;

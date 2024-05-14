@@ -1,13 +1,16 @@
 package org.brapi.schematools.core.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
+
 @Builder(toBuilder = true)
 @Value
-public class BrAPISchema {
+public class BrAPIObjectType implements BrAPIType {
+
   String name ;
+  String description ;
   String module ;
-  JsonNode schema ;
+  List<BrAPIObjectProperty> properties ;
 }

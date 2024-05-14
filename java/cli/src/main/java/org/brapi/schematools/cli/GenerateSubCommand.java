@@ -1,17 +1,15 @@
 package org.brapi.schematools.cli;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
-import org.brapi.schematools.core.GraphQLGenerator;
-import org.brapi.schematools.core.Response;
+import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;

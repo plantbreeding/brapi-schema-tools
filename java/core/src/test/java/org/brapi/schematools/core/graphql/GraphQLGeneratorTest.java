@@ -1,13 +1,12 @@
-package org.brapi.schematools.core;
+package org.brapi.schematools.core.graphql;
 
 import graphql.schema.GraphQLSchema;
-import org.brapi.schematools.core.model.BrAPISchema;
+import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 

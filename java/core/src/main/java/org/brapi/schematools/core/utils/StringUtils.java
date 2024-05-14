@@ -1,4 +1,4 @@
-package org.brapi.schematools.core;
+package org.brapi.schematools.core.utils;
 
 import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
