@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
 }
 
-group = 'org.brapi.schematools'
+group = 'org.brapi'
 version = '1.0-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17

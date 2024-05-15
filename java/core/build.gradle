@@ -11,13 +11,20 @@ dependencies {
 
 publishing {
     publications {
-        library(MavenPublication) {
+        maven(MavenPublication) {
+            artifactId = 'brapi-schema-tools-core'
+
             from components.java
         }
     }
     repositories {
         maven {
-            url = layout.buildDirectory.dir("publishing-repository")
+            name = "OSSRH"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
         }
     }
 }

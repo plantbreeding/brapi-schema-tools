@@ -1,4 +1,4 @@
-rootProject.name = 'schematools'
+rootProject.name = 'brapi-schema-tools'
 
 include 'core'
 include 'cli'
