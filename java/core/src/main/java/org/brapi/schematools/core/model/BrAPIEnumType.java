@@ -7,11 +7,11 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 @Value
-public class BrAPIObjectType implements BrAPIType {
+public class BrAPIEnumType implements BrAPIType {
 
   String name ;
+  String type ;
   String description ;
   String module ;
-  boolean primaryModel ;
-  List<BrAPIObjectProperty> properties ;
+  List<BrAPIEnumValue> values ;
 }

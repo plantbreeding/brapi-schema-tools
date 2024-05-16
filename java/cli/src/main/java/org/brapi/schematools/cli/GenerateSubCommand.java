@@ -7,6 +7,7 @@ import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
@@ -37,19 +38,20 @@ public class GenerateSubCommand implements Runnable {
         switch (outputFormat) {
 
             case OPEN_API -> {
-                System.out.println("No yet supported!");
+                System.out.println("Not yet supported!");
             }
             case GRAPHQL -> {
-                generateGraphQLSchema() ;
+                GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load() ;
+                generateGraphQLSchema(options) ;
             }
         }
 
     }
 
-    private void generateGraphQLSchema() {
+    private void generateGraphQLSchema(GraphQLGeneratorOptions options) {
         GraphQLGenerator graphQLGenerator = new GraphQLGenerator() ;
 
-        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, GraphQLGenerator.Options.builder().build()) ;
+        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, options) ;
 
         response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printErrors) ;
     }

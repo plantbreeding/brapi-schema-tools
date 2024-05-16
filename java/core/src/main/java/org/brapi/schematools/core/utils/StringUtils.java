@@ -94,6 +94,31 @@ public class StringUtils {
     }
 
     /**
+     * Creates a valid name for use in GraphQL
+     * @param string a string which might contain invalid characters for a valid GraphQL name
+     * @return a valid GraphQL name based on the input string
+     */
+    public static String makeValidName(String name) {
+
+        if (name == null) {
+            return "null";
+        }
+
+        if (name.isBlank()) {
+            return "blank";
+        }
+
+        if (name.matches("^\\d.*$")) {
+            name = "N" + name;
+        }
+
+        return name.
+                replace("-", "_").
+                replace("/", "_").
+                replace(".", "_"); // TODO other replacements
+    }
+
+    /**
      * Makes the first letter in the string upper case
      * @param value the string to be converted
      * @return the converted string

@@ -29,21 +29,25 @@ class BrAPISchemaReaderTest {
       assertNotNull(trialSchema) ;
       assertEquals("Trial", trialSchema.getName()) ;
       assertEquals("BrAPI-Core", trialSchema.getModule()) ;
+      assertTrue(trialSchema.isPrimaryModel()) ;
 
       BrAPIObjectType sampleSchema = schemas.get("Sample") ;
       assertNotNull(sampleSchema) ;
       assertEquals("Sample", sampleSchema.getName()) ;
       assertEquals("BrAPI-Genotyping", sampleSchema.getModule()) ;
+      assertFalse(sampleSchema.isPrimaryModel()); ;
 
       BrAPIObjectType germplasmSchema = schemas.get("Germplasm") ;
       assertNotNull(germplasmSchema) ;
       assertEquals("Germplasm", germplasmSchema.getName()) ;
       assertEquals("BrAPI-Germplasm", germplasmSchema.getModule()) ;
+      assertFalse(germplasmSchema.isPrimaryModel()); ;
 
       BrAPIObjectType traitSchema = schemas.get("Trait") ;
       assertNotNull(traitSchema) ;
       assertEquals("Trait", traitSchema.getName()) ;
       assertEquals("BrAPI-Phenotyping", traitSchema.getModule()) ;
+      assertFalse(traitSchema.isPrimaryModel()); ;
 
     } catch (Exception e) {
       fail(e.getMessage()) ;
@@ -61,6 +65,7 @@ class BrAPISchemaReaderTest {
       assertNotNull(trialSchema) ;
       assertEquals("Trial", trialSchema.getName()) ;
       assertEquals("BrAPI-Core", trialSchema.getModule()) ;
+      assertTrue(trialSchema.isPrimaryModel()) ;
     } catch (Exception e) {
       fail(e.getMessage()) ;
     }
@@ -78,6 +83,7 @@ class BrAPISchemaReaderTest {
       assertNotNull(trialSchema) ;
       assertEquals("Trial", trialSchema.getName()) ;
       assertEquals("BrAPI-Core", trialSchema.getModule()) ;
+      assertTrue(trialSchema.isPrimaryModel()) ;
     } catch (Exception e) {
       fail(e.getMessage()) ;
     }

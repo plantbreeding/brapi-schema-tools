@@ -283,7 +283,10 @@
                 "trialDbId"
             ],
             "title": "Trial",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": true
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Core/Trial.json",

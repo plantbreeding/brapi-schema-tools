@@ -11,5 +11,6 @@ public class BrAPIOneOfType implements BrAPIType {
 
   String name ;
   String description ;
+  String module ;
   List<BrAPIType> possibleTypes ;
 }

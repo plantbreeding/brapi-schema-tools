@@ -3,9 +3,8 @@ package org.brapi.schematools.core.graphql;
 import graphql.TypeResolutionEnvironment;
 import graphql.schema.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Value;
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
@@ -17,6 +16,7 @@ import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.StringUtils.makeValidName;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public class GraphQLGenerator {
     this.schemaReader = new BrAPISchemaReader();
   }
 
-  public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGenerator.Options options) {
+  public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorOptions options) {
 
     try {
       return new Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
@@ -42,19 +42,21 @@ public class GraphQLGenerator {
 
   @Getter
   public class Generator {
-    private final GraphQLGenerator.Options options ;
+    private final GraphQLGeneratorOptions options ;
     private final List<BrAPIObjectType> brAPISchemas ;
 
     private final Map<String, GraphQLOutputType> objectTypes;
     private final Map<String, GraphQLUnionType> unionTypes;
+    private final Map<String, GraphQLEnumType> enumTypes;
 
     private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
 
-    public Generator(Options options, List<BrAPIObjectType> brAPISchemas) {
+    public Generator(GraphQLGeneratorOptions options, List<BrAPIObjectType> brAPISchemas) {
       this.options = options;
       this.brAPISchemas = brAPISchemas;
       objectTypes = new HashMap<>() ;
       unionTypes = new HashMap<>() ;
+      enumTypes = new HashMap<>() ;
     }
 
     public Response<GraphQLSchema> generate() {
@@ -68,7 +70,7 @@ public class GraphQLGenerator {
       GraphQLSchema.Builder builder = GraphQLSchema.newSchema() ;
 
       if (options.isGeneratingQueryType()) {
-        GraphQLObjectType.Builder query = newObject().name(options.getQueryTypeName());
+        GraphQLObjectType.Builder query = newObject().name(options.getQueryType().getName());
 
         types.stream().map(type -> generateSingleGraphQLQuery((GraphQLObjectType)type)).forEach(query::field);
 
@@ -76,7 +78,7 @@ public class GraphQLGenerator {
       }
 
       if (options.isGeneratingMutationType()) {
-        GraphQLObjectType.Builder mutation = newObject().name(options.getQueryTypeName());
+        GraphQLObjectType.Builder mutation = newObject().name(options.getMutationType().getName());
 
         types.stream().map(type -> generateSingleGraphQLMutation((GraphQLObjectType)type)).forEach(mutation::field);
 
@@ -104,6 +106,8 @@ public class GraphQLGenerator {
         return createListType((BrAPIArrayType) type);
       } else if (type instanceof BrAPIReferenceType) {
         return createReferenceType((BrAPIReferenceType) type);
+      } else if (type instanceof BrAPIEnumType) {
+        return createEnumType((BrAPIEnumType) type);
       } else if (type instanceof BrAPIPrimitiveType primitiveType) {
 
         return switch (primitiveType.getName()) {
@@ -182,6 +186,31 @@ public class GraphQLGenerator {
       }
     }
 
+    private Response<GraphQLOutputType> createEnumType(BrAPIEnumType type) {
+
+      GraphQLOutputType existingType = enumTypes.
+              get(type.getName());
+
+      if (existingType != null) {
+        return success(existingType) ;
+      }
+
+      return addEnumType(GraphQLEnumType.
+              newEnum().
+              name(type.getName()).
+              description(type.getDescription()).
+              values(type.getValues().stream().map(this::createEnumValue).toList()).
+              build()) ;
+    }
+
+    private GraphQLEnumValueDefinition createEnumValue(BrAPIEnumValue brAPIEnumValue) {
+      return GraphQLEnumValueDefinition.
+              newEnumValueDefinition().
+              name(makeValidName(brAPIEnumValue.getName())).
+              value(brAPIEnumValue.getValue()).
+              build() ;
+    }
+
     private Response<GraphQLOutputType> addObjectType(GraphQLObjectType type) {
       objectTypes.put(type.getName(), type) ;
 
@@ -190,6 +219,12 @@ public class GraphQLGenerator {
 
     private Response<GraphQLOutputType> addUnionType(GraphQLUnionType type) {
       unionTypes.put(type.getName(), type) ;
+
+      return success(type);
+    }
+
+    private Response<GraphQLOutputType> addEnumType(GraphQLEnumType type) {
+      enumTypes.put(type.getName(), type) ;
 
       return success(type);
     }
@@ -204,7 +239,7 @@ public class GraphQLGenerator {
     }
 
     private String createSingleQueryDescription(GraphQLObjectType type) {
-      return String.format(options.getSingleQueryDescriptionFormat(), type.getName()) ;
+      return String.format(options.getQueryType().getSingleQuery().getDescriptionFormat(), type.getName()) ;
     }
 
     private GraphQLFieldDefinition.Builder generateSingleGraphQLMutation(GraphQLObjectType type) {
@@ -214,25 +249,10 @@ public class GraphQLGenerator {
 
     private List<GraphQLArgument> createSingleQueryArguments(GraphQLObjectType type) {
       return Collections.singletonList(GraphQLArgument.newArgument().
-              name(String.format(options.getIdFormat(), StringUtils.toParameterCase(type.getName()))).
-              type(options.isUsingIDType() ? GraphQLID : GraphQLString).
+              name(String.format(options.getIds().getNameFormat(), StringUtils.toParameterCase(type.getName()))).
+              type(options.getIds().isUsingIDType() ? GraphQLID : GraphQLString).
               build());
     }
-  }
-
-  @Builder(toBuilder = true)
-  @Value
-  public static class Options {
-    boolean generatingQueryType = true;
-    String queryTypeName = "Query";
-
-    boolean generatingMutationType = false;
-    String mutationTypeName = "Mutation";
-
-    boolean usingIDType = true;
-    String singleQueryDescriptionFormat = "Returns a %s object by id" ;
-
-    String idFormat = "%sDbId" ;
   }
 
   @AllArgsConstructor
