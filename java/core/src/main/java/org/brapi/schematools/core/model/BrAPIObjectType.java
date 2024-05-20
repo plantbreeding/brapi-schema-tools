@@ -9,9 +9,9 @@ import java.util.List;
 @Value
 public class BrAPIObjectType implements BrAPIType {
 
-  String name ;
-  String description ;
-  String module ;
-  boolean primaryModel ;
-  List<BrAPIObjectProperty> properties ;
+    String name;
+    String description;
+    String module;
+    boolean primaryModel;
+    List<BrAPIObjectProperty> properties;
 }

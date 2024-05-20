@@ -6,8 +6,8 @@ import lombok.Value;
 @Builder(toBuilder = true)
 @Value
 public class BrAPIObjectProperty {
-  String name ;
-  String description ;
-  BrAPIType type ;
-  boolean required ;
+    String name;
+    String description;
+    BrAPIType type;
+    boolean required;
 }

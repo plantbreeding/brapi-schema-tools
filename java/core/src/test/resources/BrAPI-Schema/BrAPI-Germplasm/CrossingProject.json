@@ -3,14 +3,8 @@
         "CrossingProject": {
             "properties": {
                 "additionalInfo": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "type": [
-                        "null",
-                        "object"
-                    ]
+                    "$ref": "../Components/Common/AdditionalInfo.json#/$defs/AdditionalInfo"
                 },
                 "commonCropName": {
                     "description": "the common name of a crop (for multi-crop systems)",
@@ -37,23 +31,7 @@
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                     "items": {
-                        "properties": {
-                            "referenceId": {
-                                "description": "The external reference ID. Could be a simple string or a URI.",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            },
-                            "referenceSource": {
-                                "description": "An identifier for the source system or database of this reference",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "../Components/Common/ExternalReference.json#/$defs/ExternalReference"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -116,7 +94,7 @@
                     ]
                 },
                 "program": {
-                    "$ref": "Program.json#/$defs/Program",
+                    "$ref": "../BrAPI-Core/Program.json#/$defs/Program",
                     "description": "the unique identifier for a program",
                     "referencedAttribute": "crossingProjects",
                     "relationshipType": "many-to-one"

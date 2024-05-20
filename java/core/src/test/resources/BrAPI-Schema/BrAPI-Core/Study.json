@@ -10,14 +10,8 @@
                     ]
                 },
                 "additionalInfo": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "type": [
-                        "null",
-                        "object"
-                    ]
+                    "$ref": "../Components/Common/AdditionalInfo.json#/$defs/AdditionalInfo"
                 },
                 "commonCropName": {
                     "description": "Common name for the crop associated with this study",
@@ -257,23 +251,7 @@
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                     "items": {
-                        "properties": {
-                            "referenceId": {
-                                "description": "The external reference ID. Could be a simple string or a URI.",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            },
-                            "referenceSource": {
-                                "description": "An identifier for the source system or database of this reference",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "../Components/Common/ExternalReference.json#/$defs/ExternalReference"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -377,7 +355,7 @@
                 "observationVariables": {
                     "description": "The list of Observation Variables being used in this study. \n\nThis list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ",
                     "items": {
-                        "$ref": "ObservationVariable.json#/$defs/ObservationVariable"
+                        "$ref": "../BrAPI-Phenotyping/ObservationVariable.json#/$defs/ObservationVariable"
                     },
                     "referencedAttribute": "studies",
                     "relationshipType": "many-to-many",
@@ -449,7 +427,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "CallSet.json#/$defs/CallSet",
+                        "$ref": "../BrAPI-Genotyping/CallSet.json#/$defs/CallSet",
                         "description": "CallSet"
                     },
                     "type": [
@@ -463,7 +441,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "Plate.json#/$defs/Plate",
+                        "$ref": "../BrAPI-Genotyping/Plate.json#/$defs/Plate",
                         "description": "Plate"
                     },
                     "type": [
@@ -477,7 +455,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "Sample.json#/$defs/Sample",
+                        "$ref": "../BrAPI-Genotyping/Sample.json#/$defs/Sample",
                         "description": "Sample"
                     },
                     "type": [
@@ -491,7 +469,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "VariantSet.json#/$defs/VariantSet",
+                        "$ref": "../BrAPI-Genotyping/VariantSet.json#/$defs/VariantSet",
                         "description": "VariantSet"
                     },
                     "type": [
@@ -505,7 +483,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "many-to-many",
                     "items": {
-                        "$ref": "Event.json#/$defs/Event",
+                        "$ref": "../BrAPI-Phenotyping/Event.json#/$defs/Event",
                         "description": "Event"
                     },
                     "type": [
@@ -519,7 +497,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "Observation.json#/$defs/Observation",
+                        "$ref": "../BrAPI-Phenotyping/Observation.json#/$defs/Observation",
                         "description": "Observation"
                     },
                     "type": [
@@ -533,7 +511,7 @@
                     "referencedAttribute": "study",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "ObservationUnit.json#/$defs/ObservationUnit",
+                        "$ref": "../BrAPI-Phenotyping/ObservationUnit.json#/$defs/ObservationUnit",
                         "description": "ObservationUnit"
                     },
                     "type": [

@@ -3,7 +3,8 @@ package org.brapi.schematools.core.utils;
 import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,6 +58,7 @@ public class StringUtils {
 
     /**
      * Converts the noun from its plural form to its singular form
+     *
      * @param value a noun to be converted
      * @return singular form of a plural noun
      */
@@ -76,6 +78,7 @@ public class StringUtils {
 
     /**
      * Converts the noun from its singular form to its plural form
+     *
      * @param value a noun to be converted
      * @return plural form of a singular noun
      */
@@ -95,31 +98,33 @@ public class StringUtils {
 
     /**
      * Creates a valid name for use in GraphQL
+     *
      * @param string a string which might contain invalid characters for a valid GraphQL name
      * @return a valid GraphQL name based on the input string
      */
-    public static String makeValidName(String name) {
+    public static String makeValidName(String string) {
 
-        if (name == null) {
+        if (string == null) {
             return "null";
         }
 
-        if (name.isBlank()) {
+        if (string.isBlank()) {
             return "blank";
         }
 
-        if (name.matches("^\\d.*$")) {
-            name = "N" + name;
+        if (string.matches("^\\d.*$")) {
+            string = "N" + string;
         }
 
-        return name.
-                replace("-", "_").
-                replace("/", "_").
-                replace(".", "_"); // TODO other replacements
+        return string.
+            replace("-", "_").
+            replace("/", "_").
+            replace(".", "_"); // TODO other replacements
     }
 
     /**
      * Makes the first letter in the string upper case
+     *
      * @param value the string to be converted
      * @return the converted string
      */
@@ -130,6 +135,7 @@ public class StringUtils {
 
     /**
      * Makes the first letter in the string lower case
+     *
      * @param value the string to be converted
      * @return the converted string
      */
@@ -138,9 +144,10 @@ public class StringUtils {
     }
 
     /**
-     * Determines if the string starts with an lower case character
+     * Determines if the string starts with a lower case character
+     *
      * @param value the string to be tested
-     * @return <code>true</code> if the string starts with an lower case character, <code>false</code> otherwise
+     * @return <code>true</code> if the string starts with a lower case character, <code>false</code> otherwise
      */
     public static boolean startsWithLowerCase(String value) {
         return value.matches("^[a-z].*$");
@@ -148,6 +155,7 @@ public class StringUtils {
 
     /**
      * Determines if the string starts with an upper case character
+     *
      * @param value the string to be tested
      * @return <code>true</code> if the string starts with an upper case character, <code>false</code> otherwise
      */
@@ -156,8 +164,8 @@ public class StringUtils {
     }
 
     static class Replacer {
-        Pattern pattern;
-        String replacement;
+        final Pattern pattern;
+        final String replacement;
         Matcher m;
 
         static class Builder {

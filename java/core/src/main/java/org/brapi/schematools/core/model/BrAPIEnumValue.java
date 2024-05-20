@@ -6,6 +6,6 @@ import lombok.Value;
 @Builder(toBuilder = true)
 @Value
 public class BrAPIEnumValue {
-  String name ;
-  Object value ;
+  String name;
+  Object value;
 }

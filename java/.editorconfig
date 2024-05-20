@@ -1,0 +1,14 @@
+[*]
+indent_style = space
+indent_size = 4
+
+# Java
+ij_java_class_count_to_use_import_on_demand = 6
+ij_java_names_count_to_use_import_on_demand = 6
+ij_java_indent_size = 4
+ij_java_tab_width = 4
+# Kotlin
+ij_kotlin_name_count_to_use_star_import = 6
+ij_kotlin_name_count_to_use_star_import_for_members = 6
+ij_kotlin_indent_size = 4
+ij_kotlin_tab_width = 4

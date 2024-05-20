@@ -1,12 +1,18 @@
 package org.brapi.schematools.core.graphql.options;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryTypeOptions {
-  boolean generate ;
-  String name ;
-  SingleQueryOptions singleQuery ;
+  @JsonProperty("generate")
+  boolean generating;
+  String name;
+  SingleQueryOptions singleQuery;
+  ListQueryOptions listQuery;
+  SearchQueryOptions searchQuery;
 }

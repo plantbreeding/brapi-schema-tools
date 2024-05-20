@@ -7,6 +7,6 @@ import lombok.Value;
 @Value
 public class BrAPIArrayType implements BrAPIType {
 
-  String name ;
-  BrAPIType items ;
+    String name;
+    BrAPIType items;
 }

@@ -14,7 +14,7 @@ In windows
 ./gradlew cli:installDist \path\to\installation\directory
 ```
 
-In Linux or MacOS
+In Linux or macOS
 
 ```shell
 ./gradle cli:installDist /path/to/installation/directory
@@ -28,7 +28,7 @@ In windows
 ./gradlew cli:distZip
 ```
 
-In Linux or MacOS
+In Linux or macOS
 
 ```shell
 ./gradle cli:distTar
@@ -46,7 +46,7 @@ In windows
 ./gradlew cli:jar
 ```
 
-In Linux or MacOS
+In Linux or macOS
 
 ```shell
 ./gradle cli:jar
@@ -58,7 +58,7 @@ This will create the executable JAR in the cli/build/libs directory
 
 You can create a Docker version of the application, which might help you overcome some dependency issues.
 
-You will need [https://www.docker.com/](docker) installed for this to work
+You will need [Docker](rhttps://www.docker.com/) installed for this to work
 
 ```shell
 cd cli
@@ -77,7 +77,7 @@ In windows
 ./gradlew cli:run  --args="-h"
 ```
 
-In Linux or MacOS
+In Linux or macOS
 
 ```shell
 ./gradle cli:run  --args="-h"

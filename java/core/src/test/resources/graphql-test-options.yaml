@@ -9,7 +9,6 @@ queryType:
         descriptionFormat: Returns %s objects
         inputName: input
         inputNameFormat: "%sInput"
-        inputTypeNameFormat: "%sInput"
         responseTypeNameFormat: "%sListResponse"
         dataFieldName: data
         pagedDefault: true

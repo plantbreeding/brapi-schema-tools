@@ -9,9 +9,9 @@ import java.util.List;
 @Value
 public class BrAPIEnumType implements BrAPIType {
 
-  String name ;
-  String type ;
-  String description ;
-  String module ;
-  List<BrAPIEnumValue> values ;
+    String name;
+    String type;
+    String description;
+    String module;
+    List<BrAPIEnumValue> values;
 }

@@ -8,8 +8,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class IdOptions {
-    @JsonProperty("useIDType")
-    boolean usingIDType;
+public class SearchQueryOptions {
+    @JsonProperty("generate")
+    boolean generating;
     String nameFormat;
+    String descriptionFormat;
 }

@@ -3,14 +3,8 @@
         "Cross": {
             "properties": {
                 "additionalInfo": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "type": [
-                        "null",
-                        "object"
-                    ]
+                    "$ref": "../Components/Common/AdditionalInfo.json#/$defs/AdditionalInfo"
                 },
                 "crossAttributes": {
                     "description": "Set of custom attributes associated with a cross",
@@ -76,23 +70,7 @@
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                     "items": {
-                        "properties": {
-                            "referenceId": {
-                                "description": "The external reference ID. Could be a simple string or a URI.",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            },
-                            "referenceSource": {
-                                "description": "An identifier for the source system or database of this reference",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "../Components/Common/ExternalReference.json#/$defs/ExternalReference"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -203,7 +181,7 @@
                 "plannedCross": {
                     "$ref": "PlannedCross.json#/$defs/PlannedCross",
                     "description": "the unique identifier for a planned cross",
-                    "referencedAttribute": "crosss",
+                    "referencedAttribute": "crosses",
                     "relationshipType": "many-to-one"
                 },
                 "pollinationEvents": {
@@ -246,7 +224,7 @@
                     "referencedAttribute": "cross",
                     "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "ObservationUnit.json#/$defs/ObservationUnit",
+                        "$ref": "../BrAPI-Phenotyping/ObservationUnit.json#/$defs/ObservationUnit",
                         "description": "ObservationUnit"
                     },
                     "type": [

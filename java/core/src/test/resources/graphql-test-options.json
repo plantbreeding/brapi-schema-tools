@@ -1,0 +1,17 @@
+{
+    "queryType": {
+        "generate": true,
+        "name": "Query",
+        "singleQuery": {
+            "descriptionFormat": "Returns a %s object by id"
+        }
+    },
+    "mutationType": {
+        "generate": false,
+        "name": "Mutation"
+    },
+    "ids": {
+        "useIDType": true,
+        "nameFormat": "%sDbId"
+    }
+}
