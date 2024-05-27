@@ -1,0 +1,31 @@
+plugins {
+    id 'brapi.schema-tools.java-conventions'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation 'com.networknt:json-schema-validator:1.0.72'
+    implementation 'org.yaml:snakeyaml:2.2'
+    api 'com.graphql-java:graphql-java:22.0'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'brapi-schema-tools-core'
+
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}

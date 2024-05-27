@@ -1,0 +1,9 @@
+plugins {
+    id 'brapi.schema-tools.java-conventions'
+    id 'io.spring.dependency-management'
+    id 'org.springframework.boot'
+}
+
+dependencies {
+
+}

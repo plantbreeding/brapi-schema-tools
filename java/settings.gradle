@@ -1,0 +1,6 @@
+rootProject.name = 'brapi-schema-tools'
+
+include 'core'
+include 'cli'
+include 'application'
+
