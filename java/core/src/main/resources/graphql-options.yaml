@@ -1,6 +1,7 @@
 queryType:
     generate: true
     name: Query
+    partitionedByCrop: true
     singleQuery:
         generate: true
         descriptionFormat: Returns a %s object by id
@@ -15,6 +16,9 @@ queryType:
         pagedDefault: true
         paged:
             BreedingMethod: false
+        input:
+            BreedingMethod: false
+            CrossingProject: true
         pagingInputName: paging
         pageInputTypeName: PageInput
         pageTypeName: PageInfo
@@ -22,6 +26,10 @@ queryType:
     searchQuery:
         generate: true
         descriptionFormat: Returns %s objects
+        generateFor:
+            BreedingMethod: false
+            Cross: false
+            CrossingProjects: false
 mutationType:
     generate: false
     name: Mutation

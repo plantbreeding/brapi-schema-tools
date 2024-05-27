@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.graphql.options;
+package org.brapi.schematools.core.openapi.options;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -11,10 +11,10 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SearchQueryOptions {
+public class PostOptions {
     @JsonProperty("generate")
     boolean generating;
-    String nameFormat;
+    String name;
     String descriptionFormat;
     @JsonProperty("generateFor")
     @Builder.Default

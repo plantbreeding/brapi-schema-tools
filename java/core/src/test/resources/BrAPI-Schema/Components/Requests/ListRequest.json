@@ -1,6 +1,6 @@
 {
     "$defs": {
-        "ListSearchRequest": {
+        "ListRequest": {
             "type": "object",
             "properties": {
                 "dateCreatedRangeStart": {
@@ -80,7 +80,7 @@
                     ]
                 },
                 "listType": {
-                    "$ref": "../Common/ListType.json#/$defs/ListTypes"
+                    "$ref": "../Common/ListType.json#/$defs/ListType"
                 }
             }
         }

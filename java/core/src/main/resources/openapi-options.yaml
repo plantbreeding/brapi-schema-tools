@@ -1,0 +1,35 @@
+partitionedByCrop: true
+singleGet:
+    generate: true
+    descriptionFormat: Returns a %s object by id
+listGet:
+    generate: true
+    descriptionFormat: Returns %s objects
+    inputName: input
+    inputNameFormat: "%sInput"
+    inputTypeNameFormat: "%sInput"
+    responseTypeNameFormat: "%sListResponse"
+    dataFieldName: data
+    pagedDefault: true
+    paged:
+        BreedingMethod: false
+    input:
+        BreedingMethod: false
+        CrossingProject: true
+    pagingInputName: paging
+    pageInputTypeName: PageInput
+    pageTypeName: PageInfo
+    pageFieldName: page
+searchPost:
+    generate: true
+    descriptionFormat: Returns %s objects
+    generateFor:
+        BreedingMethod: false
+        Cross: false
+        CrossingProjects: false
+put:
+    generate: false
+delete:
+    generate: false
+ids:
+    nameFormat: "%sDbId"

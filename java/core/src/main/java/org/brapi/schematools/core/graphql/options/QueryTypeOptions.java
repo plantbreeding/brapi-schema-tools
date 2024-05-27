@@ -12,6 +12,7 @@ public class QueryTypeOptions {
   @JsonProperty("generate")
   boolean generating;
   String name;
+  boolean partitionedByCrop;
   SingleQueryOptions singleQuery;
   ListQueryOptions listQuery;
   SearchQueryOptions searchQuery;

@@ -123,7 +123,7 @@ public class BrAPISchemaReader {
         Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
         return Stream.generate(() -> null)
             .takeWhile(x -> iterator.hasNext())
-            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module).
+            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module, true).
                 mapResult(result -> (BrAPIObjectType) result));
     }
 
@@ -149,7 +149,7 @@ public class BrAPISchemaReader {
                         if (jsonNode.has("oneOf")) {
                             return createOneOfType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                         } else {
-                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module, false);
                         }
                     }
 
@@ -241,10 +241,12 @@ public class BrAPISchemaReader {
             map(() -> success(builder.build()));
     }
 
-    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module) {
+    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module, boolean primaryModel) {
 
         BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder().
             name(name).
+            primaryModel(primaryModel).
+            request(name.endsWith("Request")).
             module(module);
 
         findString(jsonNode, "description", false).
@@ -254,9 +256,6 @@ public class BrAPISchemaReader {
 
         List<BrAPIObjectProperty> properties = new ArrayList<>();
         return Response.empty().
-            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", false).
-                mapResultToResponse(this::parseMetadata).
-                onSuccessDoWithResult(builder::primaryModel)).
             mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", false).
                 mapResultToResponse(additionalPropertiesNode -> createProperty(path, additionalPropertiesNode, "additionalProperties",
                     module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add))).

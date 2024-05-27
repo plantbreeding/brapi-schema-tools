@@ -18,7 +18,7 @@ public class GraphQLGeneratorOptions {
 
   QueryTypeOptions queryType;
   MutationTypeOptions mutationType;
-  IdOptions ids;
+  IdsOptions ids;
 
   public static GraphQLGeneratorOptions load(Path optionsFile) throws IOException {
     return load(Files.newInputStream(optionsFile));
@@ -48,19 +48,19 @@ public class GraphQLGeneratorOptions {
   }
 
   public boolean isGeneratingSingleQueries() {
-    return isGeneratingQueryType() && queryType.getSingleQuery().isGenerating();
+    return isGeneratingQueryType()  && (queryType.getSingleQuery().isGenerating() || queryType.getSingleQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
   }
 
   public boolean isGeneratingListQueries() {
-    return isGeneratingQueryType() && queryType.getListQuery().isGenerating();
+    return isGeneratingQueryType() && (queryType.getListQuery().isGenerating() || queryType.getListQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
   }
 
   public boolean isGeneratingSearchQueries() {
-    return isGeneratingQueryType() && queryType.getSearchQuery().isGenerating();
+    return isGeneratingQueryType() && (queryType.getSearchQuery().isGenerating() || queryType.getSearchQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
   }
 
   public boolean isGeneratingMutationType() {
-    return mutationType != null && mutationType.isGenerating();
+    return mutationType != null &&  (mutationType.isGenerating() || mutationType.getGeneratingFor().values().stream().anyMatch(value -> value));
   }
 
   public boolean isUsingIDType() {
