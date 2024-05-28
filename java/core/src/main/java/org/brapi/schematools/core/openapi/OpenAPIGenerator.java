@@ -1,18 +1,13 @@
 package org.brapi.schematools.core.openapi;
 
-import graphql.schema.*;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
-import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -34,10 +29,10 @@ public class OpenAPIGenerator {
         this.schemaReader = new BrAPISchemaReader();
     }
 
-    public Response<GraphQLSchema> generate(Path schemaDirectory, OpenAPIGeneratorOptions options) {
+    public Response<OpenAPI> generate(Path schemaDirectory, OpenAPIGeneratorOptions options) {
 
         try {
-            return new GraphQLGenerator.Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
+            return new OpenAPIGenerator.Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
         } catch (BrAPISchemaReaderException e) {
             return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
@@ -60,16 +55,16 @@ public class OpenAPIGenerator {
                 mergeOnCondition(options.isGeneratingEndpoint(),
                     () -> brAPISchemas.values().stream().
                         filter(type -> options.getSingleGet().getGeneratingFor().getOrDefault(type.getName(), false)).
-                        map(type -> generateSingleGet(type).onSuccessDoWithResult(
+                        map(type -> generateEndpoint(type).onSuccessDoWithResult(
                             pathItem -> {
-                                openAPI.path(createSingleGetName(type.getName()), pathItem);
+                                openAPI.path(createEndpointNameWithId(type.getName()), pathItem);
                             })).collect(Response.toList())).
                 mergeOnCondition(options.isGeneratingEndpointNameWithId(),
                     () -> brAPISchemas.values().stream().
                         filter(type -> options.getListGet().getGeneratingFor().getOrDefault(type.getName(), false)).
-                        map(type -> generateListGet(type).onSuccessDoWithResult(
+                        map(type -> generateSingleEndpointWithId(type).onSuccessDoWithResult(
                             pathItem -> {
-                                openAPI.path(createListGetName(type.getName()), , pathItem);
+                                openAPI.path(createEndpointName(type.getName()), pathItem);
                             })).collect(Response.toList())).
                 map(() -> success(openAPI));
 
@@ -79,21 +74,23 @@ public class OpenAPIGenerator {
             return String.format("/%s", toParameterCase(toPlural(entityName))) ;
         }
 
+        public Response<PathItem> generateEndpoint(BrAPIObjectType type) {
+            PathItem pathItem = new PathItem() ;
+
+            return success(pathItem) ;
+        }
+
         private String createEndpointNameWithId(String entityName) {
-            return String.format("/%s/{%s}", toParameterCase(toPlural(entityName)), String.format(options.getIds().getNameFormat(), toParameterCase(name))) ;
+            return String.format("/%s/{%s}", toParameterCase(toPlural(entityName)), String.format(options.getIds().getNameFormat(), toParameterCase(entityName))) ;
         }
 
-        public Response<PathItem> generateSingleEndpoint(BrAPIObjectType type) {
+        public Response<PathItem> generateSingleEndpointWithId(BrAPIObjectType type) {
             PathItem pathItem = new PathItem() ;
 
             return success(pathItem) ;
         }
 
-        public Response<PathItem> generateListEndpoint(BrAPIObjectType type) {
-            PathItem pathItem = new PathItem() ;
 
-            return success(pathItem) ;
-        }
     }
 
 }
