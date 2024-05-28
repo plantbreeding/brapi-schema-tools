@@ -98,21 +98,21 @@ public class StringUtils {
      * @param string a string which might contain invalid characters for a valid GraphQL name
      * @return a valid GraphQL name based on the input string
      */
-    public static String makeValidName(String name) {
+    public static String makeValidName(String string) {
 
-        if (name == null) {
+        if (string == null) {
             return "null";
         }
 
-        if (name.isBlank()) {
+        if (string.isBlank()) {
             return "blank";
         }
 
-        if (name.matches("^\\d.*$")) {
-            name = "N" + name;
+        if (string.matches("^\\d.*$")) {
+            string = "N" + string;
         }
 
-        return name.
+        return string.
                 replace("-", "_").
                 replace("/", "_").
                 replace(".", "_"); // TODO other replacements
