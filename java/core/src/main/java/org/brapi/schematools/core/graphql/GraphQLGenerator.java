@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.graphql;
 
+import graphql.AssertException;
 import graphql.TypeResolutionEnvironment;
 import graphql.schema.*;
 import lombok.AllArgsConstructor;
@@ -131,7 +132,11 @@ public class GraphQLGenerator {
 
             builder.codeRegistry(codeRegistry.build());
 
-            return success(builder.build());
+            try {
+                return success(builder.build());
+            } catch (AssertException e) {
+                return fail(Response.ErrorType.VALIDATION, e.getMessage());
+            }
         }
 
         private Response<GraphQLOutputType> createOutputType(BrAPIType type) {

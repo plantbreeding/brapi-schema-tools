@@ -6,8 +6,12 @@ import graphql.GraphQL;
 import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
+import io.swagger.v3.core.util.Json31;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
+import org.brapi.schematools.core.openapi.OpenAPIGenerator;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
@@ -27,7 +31,7 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI json schema")
     private Path schemaDirectory;
 
-    @CommandLine.Option(names = { "-o", "--output" }, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
+    @CommandLine.Option(names = { "-l", "--language" }, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
     private OutputFormat outputFormat;
 
     @CommandLine.Option(names = { "-f", "--file" }, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
@@ -38,7 +42,8 @@ public class GenerateSubCommand implements Runnable {
         switch (outputFormat) {
 
             case OPEN_API -> {
-                System.out.println("Not yet supported!");
+                OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load() ;
+                generateOpenAPISpecification(options) ;
             }
             case GRAPHQL -> {
                 GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load() ;
@@ -53,7 +58,7 @@ public class GenerateSubCommand implements Runnable {
 
         Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, options) ;
 
-        response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printErrors) ;
+        response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors) ;
     }
 
     private void outputIDLSchema(GraphQLSchema schema) {
@@ -95,11 +100,52 @@ public class GenerateSubCommand implements Runnable {
         }
     }
 
-    private void printErrors(Response<GraphQLSchema> response) {
+    private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
+        System.err.println("There were errors generating the GraphQL Schema:");
+        response.getAllErrors().forEach(this::printError);
+    }
+
+    private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
+        OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator() ;
+
+        Response<OpenAPI> response = openAPIGenerator.generate(schemaDirectory, options) ;
+
+        response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors) ;
+    }
+
+    private void outputOpenAPISpecification(OpenAPI specification) {
+        try {
+            if (outputPathFile != null) {
+                Files.createDirectories(outputPathFile.getParent()) ;
+            }
+
+            PrintWriter writer  = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+
+            writer.print(Json31.pretty(specification));
+
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void printOpenAPISpecificationErrors(Response<OpenAPI> response) {
+        System.err.println("There were errors generating the OpenAPI Specification:");
         response.getAllErrors().forEach(this::printError);
     }
 
     private void printError(Response.Error error) {
-        System.out.println(error.toString());
+        switch (error.getType()) {
+
+            case VALIDATION -> {
+                System.err.print("Validation Error :") ;
+            }
+            case PERMISSION, OTHER -> {
+                System.err.print("Error :") ;
+            }
+        }
+        System.err.print('\t') ;
+
+        System.err.println(error.getMessage());
     }
 }
