@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.List ;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,17 +18,41 @@ class OpenAPIGeneratorTest {
 
     @Test
     void generate() {
-        Response<OpenAPI> specification = null;
+        Response<List<OpenAPI>> specifications ;
         try {
-            specification = new OpenAPIGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), OpenAPIGeneratorOptions.load());
+            specifications = new OpenAPIGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), OpenAPIGeneratorOptions.builder().separatingByModule(false).build());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        assertNotNull(specification);
+        assertNotNull(specifications);
 
-        specification.getAllErrors().forEach(this::printError);
+        specifications.getAllErrors().forEach(this::printError);
+        assertFalse(specifications.hasErrors());
 
-        assertFalse(specification.hasErrors());
+        assertEquals(1, specifications.getResult().size());
+    }
+
+    @Test
+    void generateByModule() {
+        Response<List<OpenAPI>> specifications ;
+        try {
+            specifications = new OpenAPIGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), OpenAPIGeneratorOptions.load());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        assertNotNull(specifications);
+
+        specifications.getAllErrors().forEach(this::printError);
+        assertFalse(specifications.hasErrors());
+
+        assertEquals(4, specifications.getResult().size());
+
+        Map<String, OpenAPI> byTitle = specifications.getResult().stream().collect(Collectors.toMap(specification -> specification.getInfo().getTitle(), specification -> specification));
+
+        assertTrue(byTitle.containsKey("BrAPI-Core")) ;
+        assertTrue(byTitle.containsKey("BrAPI-Germplasm")) ;
+        assertTrue(byTitle.containsKey("BrAPI-Phenotyping")) ;
+        assertTrue(byTitle.containsKey("BrAPI-Genotyping")) ;
     }
 
     private void printError(Response.Error error) {

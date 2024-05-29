@@ -1,3 +1,4 @@
+separateByModule: true
 singleGet:
     generate: true
     descriptionFormat: Returns a %s object by id

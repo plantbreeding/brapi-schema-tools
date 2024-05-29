@@ -17,6 +17,14 @@ class OpenAPIGeneratorOptionsTest {
     }
 
     @Test
+    void defaultBuilder() {
+        OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.defaultBuilder().build();
+
+        checkOptions(options);
+    }
+
+
+    @Test
     void loadJson() {
         OpenAPIGeneratorOptions options = null;
         try {

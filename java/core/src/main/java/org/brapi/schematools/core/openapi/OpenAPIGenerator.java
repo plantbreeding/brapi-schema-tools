@@ -2,6 +2,7 @@ package org.brapi.schematools.core.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.info.Info;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
@@ -10,11 +11,12 @@ import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.function.UnaryOperator.identity;
+import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
@@ -29,7 +31,7 @@ public class OpenAPIGenerator {
         this.schemaReader = new BrAPISchemaReader();
     }
 
-    public Response<OpenAPI> generate(Path schemaDirectory, OpenAPIGeneratorOptions options) {
+    public Response<List<OpenAPI>> generate(Path schemaDirectory, OpenAPIGeneratorOptions options) {
 
         try {
             return new OpenAPIGenerator.Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
@@ -47,20 +49,38 @@ public class OpenAPIGenerator {
             this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
         }
 
-        public Response<OpenAPI> generate() {
+        public Response<List<OpenAPI>> generate() {
+            if (options.isSeparatingByModule()) {
+                return brAPISchemas.values().stream().
+                    filter(type -> Objects.nonNull(type.getModule())).
+                    collect(Collectors.groupingBy(BrAPIObjectType::getModule, toList())).
+                    entrySet().stream().map(entry -> generate(entry.getKey(), entry.getValue())).
+                    collect(Response.toList());
+            } else {
+                return generate("BrAPI", brAPISchemas.values()).mapResult(Collections::singletonList) ;
+            }
+        }
+
+        private Response<OpenAPI> generate(String title, Collection<BrAPIObjectType> types) {
 
             OpenAPI openAPI = new OpenAPI();
 
+            Info info = new Info() ;
+
+            info.setTitle(title);
+
+            openAPI.setInfo(info);
+
             return Response.empty().
                 mergeOnCondition(options.isGeneratingEndpoint(),
-                    () -> brAPISchemas.values().stream().
+                    () -> types.stream().
                         filter(type -> options.getSingleGet().getGeneratingFor().getOrDefault(type.getName(), false)).
                         map(type -> generateEndpoint(type).onSuccessDoWithResult(
                             pathItem -> {
                                 openAPI.path(createEndpointNameWithId(type.getName()), pathItem);
                             })).collect(Response.toList())).
                 mergeOnCondition(options.isGeneratingEndpointNameWithId(),
-                    () -> brAPISchemas.values().stream().
+                    () -> types.stream().
                         filter(type -> options.getListGet().getGeneratingFor().getOrDefault(type.getName(), false)).
                         map(type -> generateSingleEndpointWithId(type).onSuccessDoWithResult(
                             pathItem -> {
@@ -76,6 +96,8 @@ public class OpenAPIGenerator {
 
         public Response<PathItem> generateEndpoint(BrAPIObjectType type) {
             PathItem pathItem = new PathItem() ;
+
+
 
             return success(pathItem) ;
         }

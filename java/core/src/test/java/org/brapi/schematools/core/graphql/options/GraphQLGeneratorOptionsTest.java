@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.graphql.options;
 
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,6 +18,13 @@ class GraphQLGeneratorOptionsTest {
     @Test
     void load() {
         GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
+
+        checkOptions(options);
+    }
+
+    @Test
+    void defaultBuilder() {
+        GraphQLGeneratorOptions options = GraphQLGeneratorOptions.defaultBuilder().build();
 
         checkOptions(options);
     }

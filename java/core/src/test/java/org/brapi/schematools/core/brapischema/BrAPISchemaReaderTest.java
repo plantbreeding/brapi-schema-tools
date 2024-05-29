@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static graphql.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +29,7 @@ class BrAPISchemaReaderTest {
                 new BrAPISchemaReader().readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
 
             assertNotNull(schemas);
-            assertEquals(42, schemas.size());
+            assertEquals(45, schemas.size());
 
             BrAPIObjectType trialSchema = schemas.get("Trial");
             assertNotNull(trialSchema);
@@ -48,7 +49,7 @@ class BrAPISchemaReaderTest {
             assertNotNull(germplasmSchema);
             assertEquals("Germplasm", germplasmSchema.getName());
             assertEquals("BrAPI-Germplasm", germplasmSchema.getModule());
-            assertFalse(germplasmSchema.isPrimaryModel());
+            assertTrue(germplasmSchema.isPrimaryModel());
             assertFalse(germplasmSchema.isRequest());
 
             BrAPIObjectType traitSchema = schemas.get("Trait");
@@ -61,14 +62,14 @@ class BrAPISchemaReaderTest {
             BrAPIObjectType listType = schemas.get("ListType");
             assertNotNull(listType);
             assertEquals("ListType", listType.getName());
-            assertEquals("BrAPI-Phenotyping", listType.getModule());
+            assertNull(listType.getModule());
             assertFalse(listType.isPrimaryModel());
             assertFalse(listType.isRequest());
 
             BrAPIObjectType listRequest = schemas.get("ListRequest");
             assertNotNull(listRequest);
-            assertEquals("ListType", listRequest.getName());
-            assertEquals("BrAPI-Phenotyping", listRequest.getModule());
+            assertEquals("ListRequest", listRequest.getName());
+            assertNull(listRequest.getModule());
             assertFalse(listRequest.isPrimaryModel());
             assertTrue(listRequest.isRequest());
 

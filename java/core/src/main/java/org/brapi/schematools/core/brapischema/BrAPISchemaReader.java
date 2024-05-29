@@ -38,6 +38,7 @@ import static org.brapi.schematools.core.response.Response.success;
 @AllArgsConstructor
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)#\\/\\$defs\\/(\\w+)");
+    private static final List<String> COMMON_MODULES = List.of("Common");
 
     private final JsonSchemaFactory factory;
     private final ObjectMapper objectMapper;
@@ -102,7 +103,13 @@ public class BrAPISchemaReader {
     }
 
     private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path) {
-        return createBrAPISchemas(path, path.getParent().getFileName().toString());
+        return createBrAPISchemas(path, findModule(path));
+    }
+
+    private String findModule(Path path) {
+        String module = path.getParent().getFileName().toString();
+
+        return COMMON_MODULES.contains(module) ? null : module ;
     }
 
     private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path, String module) {

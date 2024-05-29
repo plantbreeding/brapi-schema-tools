@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @CommandLine.Command(
   name = "generate", mixinStandardHelpOptions = true
@@ -108,28 +109,45 @@ public class GenerateSubCommand implements Runnable {
     private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
         OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator() ;
 
-        Response<OpenAPI> response = openAPIGenerator.generate(schemaDirectory, options) ;
+        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, options) ;
 
         response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors) ;
     }
 
-    private void outputOpenAPISpecification(OpenAPI specification) {
+    private void outputOpenAPISpecification(List<OpenAPI> specifications) {
         try {
             if (outputPathFile != null) {
                 Files.createDirectories(outputPathFile.getParent()) ;
             }
 
+            if (specifications.size() == 1) {
+                outputOpenAPISpecification(specifications.get(0), outputPathFile) ;
+            } else {
+                if (outputPathFile != null) {
+                    Files.createDirectories(outputPathFile) ;
+                }
+
+                specifications.forEach(specification -> outputOpenAPISpecification(specification,
+                    outputPathFile != null ? outputPathFile.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null));
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void outputOpenAPISpecification(OpenAPI specification, Path outputPathFile) {
+        try {
             PrintWriter writer  = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
 
             writer.print(Json31.pretty(specification));
 
             writer.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 
-    private void printOpenAPISpecificationErrors(Response<OpenAPI> response) {
+    private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
         System.err.println("There were errors generating the OpenAPI Specification:");
         response.getAllErrors().forEach(this::printError);
     }
