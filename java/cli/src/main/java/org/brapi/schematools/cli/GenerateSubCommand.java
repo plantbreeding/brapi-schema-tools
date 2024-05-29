@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @CommandLine.Command(
-  name = "generate", mixinStandardHelpOptions = true
+    name = "generate", mixinStandardHelpOptions = true
 )
 public class GenerateSubCommand implements Runnable {
 
@@ -32,10 +32,10 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI json schema")
     private Path schemaDirectory;
 
-    @CommandLine.Option(names = { "-l", "--language" }, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
+    @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
     private OutputFormat outputFormat;
 
-    @CommandLine.Option(names = { "-f", "--file" }, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
     private Path outputPathFile;
 
     @Override
@@ -43,33 +43,33 @@ public class GenerateSubCommand implements Runnable {
         switch (outputFormat) {
 
             case OPEN_API -> {
-                OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load() ;
-                generateOpenAPISpecification(options) ;
+                OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
+                generateOpenAPISpecification(options);
             }
             case GRAPHQL -> {
-                GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load() ;
-                generateGraphQLSchema(options) ;
+                GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
+                generateGraphQLSchema(options);
             }
         }
 
     }
 
     private void generateGraphQLSchema(GraphQLGeneratorOptions options) {
-        GraphQLGenerator graphQLGenerator = new GraphQLGenerator() ;
+        GraphQLGenerator graphQLGenerator = new GraphQLGenerator();
 
-        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, options) ;
+        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, options);
 
-        response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors) ;
+        response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors);
     }
 
     private void outputIDLSchema(GraphQLSchema schema) {
 
         try {
             if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent()) ;
+                Files.createDirectories(outputPathFile.getParent());
             }
 
-            PrintWriter writer  = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
 
             writer.print(new SchemaPrinter().print(schema));
 
@@ -83,15 +83,15 @@ public class GenerateSubCommand implements Runnable {
 
         try {
             if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent()) ;
+                Files.createDirectories(outputPathFile.getParent());
             }
 
-            PrintWriter writer  = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
 
             GraphQL graphQL = GraphQL.newGraphQL(schema).build();
             ExecutionResult executionResult = graphQL.execute(IntrospectionQuery.INTROSPECTION_QUERY);
 
-            ObjectMapper mapper= new ObjectMapper() ;
+            ObjectMapper mapper = new ObjectMapper();
 
             writer.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
 
@@ -107,24 +107,24 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
-        OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator() ;
+        OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator();
 
-        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, options) ;
+        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, options);
 
-        response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors) ;
+        response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors);
     }
 
     private void outputOpenAPISpecification(List<OpenAPI> specifications) {
         try {
             if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent()) ;
+                Files.createDirectories(outputPathFile.getParent());
             }
 
             if (specifications.size() == 1) {
-                outputOpenAPISpecification(specifications.get(0), outputPathFile) ;
+                outputOpenAPISpecification(specifications.get(0), outputPathFile);
             } else {
                 if (outputPathFile != null) {
-                    Files.createDirectories(outputPathFile) ;
+                    Files.createDirectories(outputPathFile);
                 }
 
                 specifications.forEach(specification -> outputOpenAPISpecification(specification,
@@ -137,7 +137,7 @@ public class GenerateSubCommand implements Runnable {
 
     private void outputOpenAPISpecification(OpenAPI specification, Path outputPathFile) {
         try {
-            PrintWriter writer  = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
 
             writer.print(Json31.pretty(specification));
 
@@ -156,13 +156,13 @@ public class GenerateSubCommand implements Runnable {
         switch (error.getType()) {
 
             case VALIDATION -> {
-                System.err.print("Validation Error :") ;
+                System.err.print("Validation Error :");
             }
             case PERMISSION, OTHER -> {
-                System.err.print("Error :") ;
+                System.err.print("Error :");
             }
         }
-        System.err.print('\t') ;
+        System.err.print('\t');
 
         System.err.println(error.getMessage());
     }

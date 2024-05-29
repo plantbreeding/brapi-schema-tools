@@ -38,7 +38,7 @@ import static org.brapi.schematools.core.response.Response.success;
 @AllArgsConstructor
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)#\\/\\$defs\\/(\\w+)");
-    private static final List<String> COMMON_MODULES = List.of("Common");
+    private static final List<String> COMMON_MODULES = List.of("Common", "Parameters", "Requests");
 
     private final JsonSchemaFactory factory;
     private final ObjectMapper objectMapper;
@@ -87,7 +87,7 @@ public class BrAPISchemaReader {
      * Reads a single object type from an JSON schema string. If the JSON schema
      * contain more than one type definition only the first is returned
      *
-     * @param path the path of the schema is used to check references, if not supplied then validation is not performed
+     * @param path   the path of the schema is used to check references, if not supplied then validation is not performed
      * @param schema a JSON schema string
      * @param module the module in which the object resides
      * @return BrAPIObjectType with one type per JSON Schema
@@ -109,7 +109,7 @@ public class BrAPISchemaReader {
     private String findModule(Path path) {
         String module = path.getParent().getFileName().toString();
 
-        return COMMON_MODULES.contains(module) ? null : module ;
+        return COMMON_MODULES.contains(module) ? null : module;
     }
 
     private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path, String module) {
@@ -130,7 +130,7 @@ public class BrAPISchemaReader {
         Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
         return Stream.generate(() -> null)
             .takeWhile(x -> iterator.hasNext())
-            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module, true).
+            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module, module != null).
                 mapResult(result -> (BrAPIObjectType) result));
     }
 

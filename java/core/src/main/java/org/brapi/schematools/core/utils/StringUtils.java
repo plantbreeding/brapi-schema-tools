@@ -58,6 +58,7 @@ public class StringUtils {
 
     /**
      * Converts the noun from its plural form to its singular form
+     *
      * @param value a noun to be converted
      * @return singular form of a plural noun
      */
@@ -97,6 +98,7 @@ public class StringUtils {
 
     /**
      * Creates a valid name for use in GraphQL
+     *
      * @param string a string which might contain invalid characters for a valid GraphQL name
      * @return a valid GraphQL name based on the input string
      */
@@ -133,6 +135,7 @@ public class StringUtils {
 
     /**
      * Makes the first letter in the string lower case
+     *
      * @param value the string to be converted
      * @return the converted string
      */
@@ -142,6 +145,7 @@ public class StringUtils {
 
     /**
      * Determines if the string starts with an lower case character
+     *
      * @param value the string to be tested
      * @return <code>true</code> if the string starts with an lower case character, <code>false</code> otherwise
      */

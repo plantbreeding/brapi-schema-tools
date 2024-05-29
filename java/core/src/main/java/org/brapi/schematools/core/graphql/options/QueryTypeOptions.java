@@ -9,11 +9,11 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryTypeOptions {
-  @JsonProperty("generate")
-  boolean generating;
-  String name;
-  boolean partitionedByCrop;
-  SingleQueryOptions singleQuery;
-  ListQueryOptions listQuery;
-  SearchQueryOptions searchQuery;
+    @JsonProperty("generate")
+    boolean generating;
+    String name;
+    boolean partitionedByCrop;
+    SingleQueryOptions singleQuery;
+    ListQueryOptions listQuery;
+    SearchQueryOptions searchQuery;
 }

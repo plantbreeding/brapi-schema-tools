@@ -65,7 +65,6 @@ cd cli
 docker build .
 ```
 
-
 ## Using Gradle (nice for development)
 
 When you have access to the source code repository and while developing new features this is
@@ -83,4 +82,5 @@ In Linux or macOS
 ./gradle cli:run  --args="-h"
 ```
 
-Remember to replace the '-h' arguments with your required options. The '-h' option will give you a list of the available options.
+Remember to replace the '-h' arguments with your required options. The '-h' option will give you a list of the available
+options.

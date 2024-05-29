@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.openapi.options;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter

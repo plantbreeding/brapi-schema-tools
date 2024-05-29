@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.graphql.options.IdsOptions;
 
 import java.io.IOException;
@@ -23,12 +22,12 @@ import java.nio.file.Path;
 public class OpenAPIGeneratorOptions {
 
     @JsonProperty("separateByModule")
-    boolean separatingByModule ;
-    SingleGetOptions singleGet ;
-    ListGetOptions listGet ;
-    PostOptions post ;
-    PutOptions put ;
-    DeleteOptions delete ;
+    boolean separatingByModule;
+    SingleGetOptions singleGet;
+    ListGetOptions listGet;
+    PostOptions post;
+    PutOptions put;
+    DeleteOptions delete;
     IdsOptions ids;
 
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
@@ -53,7 +52,7 @@ public class OpenAPIGeneratorOptions {
             OpenAPIGeneratorOptions deepCopy = objectMapper
                 .readValue(objectMapper.writeValueAsString(load()), OpenAPIGeneratorOptions.class);
 
-            return deepCopy.toBuilder() ;
+            return deepCopy.toBuilder();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -61,37 +60,37 @@ public class OpenAPIGeneratorOptions {
 
     @JsonIgnore
     public boolean isGeneratingSingleGet() {
-        return singleGet != null && singleGet.isGenerating() ;
+        return singleGet != null && singleGet.isGenerating();
     }
 
     @JsonIgnore
     public boolean isGeneratingListGet() {
-        return listGet != null && listGet.isGenerating() ;
+        return listGet != null && listGet.isGenerating();
     }
 
     @JsonIgnore
     public boolean isGeneratingPost() {
-        return post != null && post.isGenerating() ;
+        return post != null && post.isGenerating();
     }
 
     @JsonIgnore
     public boolean isGeneratingPut() {
-        return put != null && put.isGenerating() ;
+        return put != null && put.isGenerating();
     }
 
     @JsonIgnore
     public boolean isGeneratingDelete() {
-        return delete != null && delete.isGenerating() ;
+        return delete != null && delete.isGenerating();
     }
 
     @JsonIgnore
     public boolean isGeneratingEndpoint() {
-        return isGeneratingListGet() || isGeneratingPost() ;
+        return isGeneratingListGet() || isGeneratingPost();
     }
 
     @JsonIgnore
-    public boolean isGeneratingEndpointNameWithId(){
-        return isGeneratingSingleGet() || isGeneratingPut() || isGeneratingDelete() ;
+    public boolean isGeneratingEndpointNameWithId() {
+        return isGeneratingSingleGet() || isGeneratingPut() || isGeneratingDelete();
     }
 
     private static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {

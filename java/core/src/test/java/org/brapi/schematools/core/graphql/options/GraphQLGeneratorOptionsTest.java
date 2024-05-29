@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.graphql.options;
 
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

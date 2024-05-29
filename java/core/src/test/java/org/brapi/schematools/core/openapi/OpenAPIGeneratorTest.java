@@ -8,17 +8,20 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.List ;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenAPIGeneratorTest {
 
     @Test
     void generate() {
-        Response<List<OpenAPI>> specifications ;
+        Response<List<OpenAPI>> specifications;
         try {
             specifications = new OpenAPIGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), OpenAPIGeneratorOptions.builder().separatingByModule(false).build());
         } catch (URISyntaxException e) {
@@ -34,7 +37,7 @@ class OpenAPIGeneratorTest {
 
     @Test
     void generateByModule() {
-        Response<List<OpenAPI>> specifications ;
+        Response<List<OpenAPI>> specifications;
         try {
             specifications = new OpenAPIGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), OpenAPIGeneratorOptions.load());
         } catch (URISyntaxException e) {
@@ -49,10 +52,10 @@ class OpenAPIGeneratorTest {
 
         Map<String, OpenAPI> byTitle = specifications.getResult().stream().collect(Collectors.toMap(specification -> specification.getInfo().getTitle(), specification -> specification));
 
-        assertTrue(byTitle.containsKey("BrAPI-Core")) ;
-        assertTrue(byTitle.containsKey("BrAPI-Germplasm")) ;
-        assertTrue(byTitle.containsKey("BrAPI-Phenotyping")) ;
-        assertTrue(byTitle.containsKey("BrAPI-Genotyping")) ;
+        assertTrue(byTitle.containsKey("BrAPI-Core"));
+        assertTrue(byTitle.containsKey("BrAPI-Germplasm"));
+        assertTrue(byTitle.containsKey("BrAPI-Phenotyping"));
+        assertTrue(byTitle.containsKey("BrAPI-Genotyping"));
     }
 
     private void printError(Response.Error error) {

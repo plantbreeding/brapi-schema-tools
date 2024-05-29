@@ -11,11 +11,14 @@ import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
@@ -57,7 +60,7 @@ public class OpenAPIGenerator {
                     entrySet().stream().map(entry -> generate(entry.getKey(), entry.getValue())).
                     collect(Response.toList());
             } else {
-                return generate("BrAPI", brAPISchemas.values()).mapResult(Collections::singletonList) ;
+                return generate("BrAPI", brAPISchemas.values()).mapResult(Collections::singletonList);
             }
         }
 
@@ -65,7 +68,7 @@ public class OpenAPIGenerator {
 
             OpenAPI openAPI = new OpenAPI();
 
-            Info info = new Info() ;
+            Info info = new Info();
 
             info.setTitle(title);
 
@@ -91,25 +94,24 @@ public class OpenAPIGenerator {
         }
 
         private String createEndpointName(String entityName) {
-            return String.format("/%s", toParameterCase(toPlural(entityName))) ;
+            return String.format("/%s", toParameterCase(toPlural(entityName)));
         }
 
         public Response<PathItem> generateEndpoint(BrAPIObjectType type) {
-            PathItem pathItem = new PathItem() ;
+            PathItem pathItem = new PathItem();
 
 
-
-            return success(pathItem) ;
+            return success(pathItem);
         }
 
         private String createEndpointNameWithId(String entityName) {
-            return String.format("/%s/{%s}", toParameterCase(toPlural(entityName)), String.format(options.getIds().getNameFormat(), toParameterCase(entityName))) ;
+            return String.format("/%s/{%s}", toParameterCase(toPlural(entityName)), String.format(options.getIds().getNameFormat(), toParameterCase(entityName)));
         }
 
         public Response<PathItem> generateSingleEndpointWithId(BrAPIObjectType type) {
-            PathItem pathItem = new PathItem() ;
+            PathItem pathItem = new PathItem();
 
-            return success(pathItem) ;
+            return success(pathItem);
         }
 
 

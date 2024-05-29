@@ -66,7 +66,7 @@ public class GraphQLGenerator {
 
         public Generator(GraphQLGeneratorOptions options, List<BrAPIObjectType> brAPISchemas) {
             this.options = options;
-            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity())) ;
+            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
             objectOutputTypes = new HashMap<>();
             unionTypes = new HashMap<>();
             enumTypes = new HashMap<>();
@@ -198,7 +198,7 @@ public class GraphQLGenerator {
 
             String queryName = toPlural(toParameterCase(type.getName().substring(0, type.getName().length() - 6)));
 
-            String name = String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName)) ;
+            String name = String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName));
 
             GraphQLInputObjectType existingType = inputObjectTypes.get(name);
 
@@ -349,16 +349,16 @@ public class GraphQLGenerator {
             arguments.add(GraphQLArgument.newArgument().
                 name(String.format(options.getIds().getNameFormat(), StringUtils.toParameterCase(type.getName()))).
                 type(options.isUsingIDType() ? GraphQLID : GraphQLString).
-                build()) ;
+                build());
 
             if (options.getQueryType().isPartitionedByCrop()) {
                 arguments.add(GraphQLArgument.newArgument().
                     name("commonCropName").
                     type(GraphQLString).
-                    build()) ;
+                    build());
             }
 
-            return arguments ;
+            return arguments;
         }
 
         private GraphQLFieldDefinition.Builder generateListGraphQLQuery(GraphQLObjectType type) {
@@ -445,7 +445,7 @@ public class GraphQLGenerator {
 
             String queryName = toPlural(toSentenceCase(type.getName()));
 
-            boolean paged = options.getQueryType().getListQuery().getPaged().getOrDefault(type.getName(), options.getQueryType().getListQuery().isPagedDefault()) ;
+            boolean paged = options.getQueryType().getListQuery().getPaged().getOrDefault(type.getName(), options.getQueryType().getListQuery().isPagedDefault());
 
             return GraphQLFieldDefinition.newFieldDefinition().
                 name(toParameterCase(queryName)).

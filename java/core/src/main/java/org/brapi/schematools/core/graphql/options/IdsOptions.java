@@ -11,5 +11,5 @@ import lombok.*;
 public class IdsOptions {
     String nameFormat;
     @JsonProperty("useIDType")
-    boolean usingIDType ;
+    boolean usingIDType;
 }

@@ -49,9 +49,10 @@ java {
 //
 // NOTE: If you are using the legacy publishing you need to sign using the info at https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signing_pom_files
 def hasSigningKey = project.hasProperty("signingKeyId") || project.hasProperty("signingKey")
-if(hasSigningKey) {
+if (hasSigningKey) {
     sign(project)
 }
+
 void sign(Project project) {
     project.signing {
         required { project.gradle.taskGraph.hasTask("publish") }

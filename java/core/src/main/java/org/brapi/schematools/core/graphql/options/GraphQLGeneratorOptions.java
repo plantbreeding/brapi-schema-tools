@@ -51,7 +51,7 @@ public class GraphQLGeneratorOptions {
             GraphQLGeneratorOptions deepCopy = objectMapper
                 .readValue(objectMapper.writeValueAsString(load()), GraphQLGeneratorOptions.class);
 
-            return deepCopy.toBuilder() ;
+            return deepCopy.toBuilder();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
