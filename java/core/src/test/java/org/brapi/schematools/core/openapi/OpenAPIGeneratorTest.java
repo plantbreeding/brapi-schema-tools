@@ -23,7 +23,8 @@ class OpenAPIGeneratorTest {
     void generate() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(false).build()).generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(false).build()).
+                generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +40,8 @@ class OpenAPIGeneratorTest {
     void generateByModule() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load()).generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(true).build()).
+                generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -48,7 +50,7 @@ class OpenAPIGeneratorTest {
         specifications.getAllErrors().forEach(this::printError);
         assertFalse(specifications.hasErrors());
 
-        assertEquals(4, specifications.getResult().size());
+        assertEquals(5, specifications.getResult().size());
 
         Map<String, OpenAPI> byTitle = specifications.getResult().stream().collect(Collectors.toMap(specification -> specification.getInfo().getTitle(), specification -> specification));
 
