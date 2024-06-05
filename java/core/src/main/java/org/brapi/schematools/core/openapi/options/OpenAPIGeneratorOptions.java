@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
 @Getter
@@ -199,5 +200,10 @@ public class OpenAPIGeneratorOptions {
     @JsonIgnore
     public String getPluralFor(String name) {
         return toPlural(name) ;
+    }
+
+    @JsonIgnore
+    public String getSingularForProperty(String name) {
+        return toSingular(name) ;
     }
 }

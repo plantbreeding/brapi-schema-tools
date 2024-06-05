@@ -29,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 @AllArgsConstructor
 public class OpenAPIGenerator {
@@ -99,7 +100,7 @@ public class OpenAPIGenerator {
             Info info = new Info();
 
             info.setTitle(title);
-            info.setVersion(metadata.getVersion());
+            info.setVersion(metadata.getVersion() != null ?metadata.getVersion() : "0.0.0");
 
             openAPI.setInfo(info);
 
@@ -181,7 +182,7 @@ public class OpenAPIGenerator {
                     new MediaType().schema(
                         new ObjectSchema().title(name).
                             addProperty("'@context'", new ObjectSchema().$ref(createSchemaRef("Context"))).
-                            addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("Metadata"))).
+                            addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata"))).
                             addProperty("result", new ObjectSchema().$ref(createSchemaRef(type.getName()))).
                             addRequiredItem("metadata").
                             addRequiredItem("result")
@@ -241,18 +242,35 @@ public class OpenAPIGenerator {
 
             List<Parameter> parameters = new ArrayList<>() ;
 
+            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID")) ;
+            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId")) ; // TODO depreciated, remove?
+            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource")) ;
+            parameters.add(new Parameter().$ref("#/components/parameters/page")) ;
+            parameters.add(new Parameter().$ref("#/components/parameters/pageSize")) ;
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader")) ;
+
             return requestSchema.getProperties().stream().map(this::createListGetParameter).collect(Response.toList()).
+                onSuccessDoWithResult(result -> parameters.addAll(0, result)).
                 map(() -> success(parameters)) ;
+
         }
 
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
             return createSchemaForType(property.getType()).mapResult(
                 schema -> new Parameter().
-                    name(property.getName()).
+                    name(options.getSingularForProperty(property.getName())).
                     in("query").
                     description(property.getDescription()).
                     required(property.isRequired()).
-                    schema(schema)) ;
+                    schema(upwrapSchema(schema))) ;
+        }
+
+        private Schema upwrapSchema(Schema schema) {
+            if (schema instanceof ArraySchema) {
+                return schema.getItems() ;
+            } else {
+                return schema ;
+            }
         }
 
         private Response<Operation> generatePostOperation(BrAPIObjectType type) {
