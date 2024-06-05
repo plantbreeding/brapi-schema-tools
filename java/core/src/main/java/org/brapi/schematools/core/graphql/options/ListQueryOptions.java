@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.graphql.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -33,7 +34,11 @@ public class ListQueryOptions {
 
     String pagingInputName;
     String pageInputTypeName;
-
     String pageTypeName;
     String pageFieldName;
+
+    @JsonIgnore
+    public boolean isGeneratingFor(String name) {
+        return generatingFor.getOrDefault(name, generating) ;
+    }
 }

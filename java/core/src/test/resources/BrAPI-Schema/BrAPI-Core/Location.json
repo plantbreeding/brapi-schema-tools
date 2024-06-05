@@ -11,7 +11,7 @@
                 },
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../Components/Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
                 },
                 "coordinateDescription": {
                     "description": "Describes the precision and landmarks of the coordinate values used for a Location. (ex. the site, the nearest town, a 10 kilometers radius circle, +/- 20 meters, etc)",
@@ -32,7 +32,7 @@
                     "properties": {
                         "geometry": {
                             "description": "A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.",
-                            "$ref": "../Components/Common/GeoJSONGeometry.json#/$defs/GeoJSONGeometry"
+                            "$ref": "../BrAPI-Common/GeoJSONGeometry.json#/$defs/GeoJSONGeometry"
                         },
                         "type": {
                             "default": "Feature",
@@ -88,7 +88,7 @@
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                     "items": {
-                        "$ref": "../Components/Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
                     },
                     "title": "ExternalReferences",
                     "type": [

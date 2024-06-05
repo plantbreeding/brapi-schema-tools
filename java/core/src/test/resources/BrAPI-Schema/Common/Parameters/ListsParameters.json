@@ -1,0 +1,27 @@
+{
+    "$defs": {
+        "ListsParameters": {
+            "type": "object",
+            "properties": {
+                "listType": {
+                    "description": "A flag to indicate the type of objects that are referenced in a List",
+                    "$ref": "../../BrAPI-Core/ListType.json#/$defs/ListType"
+                },
+                "listName": {
+                    "description": "The human readable name of a List",
+                    "type": "string"
+                },
+                "listDbId": {
+                    "description": "The unique identifier of a List",
+                    "type": "string"
+                },
+                "listSource": {
+                    "description": "A short tag to indicate the source of a list",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Components/Common/ExternalReference.json",
+    "$schema": "http://json-schema.org/draft/2020-12/schema"
+}

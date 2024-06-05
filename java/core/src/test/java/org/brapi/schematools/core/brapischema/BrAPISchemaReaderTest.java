@@ -29,48 +29,52 @@ class BrAPISchemaReaderTest {
                 new BrAPISchemaReader().readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
 
             assertNotNull(schemas);
-            assertEquals(45, schemas.size());
+            assertEquals(46, schemas.size());
 
             BrAPIObjectType trialSchema = schemas.get("Trial");
             assertNotNull(trialSchema);
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
-            assertTrue(trialSchema.isPrimaryModel());
+            assertNotNull(trialSchema.getMetadata());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
             assertFalse(trialSchema.isRequest());
 
             BrAPIObjectType sampleSchema = schemas.get("Sample");
             assertNotNull(sampleSchema);
             assertEquals("Sample", sampleSchema.getName());
             assertEquals("BrAPI-Genotyping", sampleSchema.getModule());
-            assertTrue(sampleSchema.isPrimaryModel());
+            assertNotNull(sampleSchema.getMetadata());
+            assertTrue(sampleSchema.getMetadata().isPrimaryModel());
             assertFalse(sampleSchema.isRequest());
 
             BrAPIObjectType germplasmSchema = schemas.get("Germplasm");
             assertNotNull(germplasmSchema);
             assertEquals("Germplasm", germplasmSchema.getName());
             assertEquals("BrAPI-Germplasm", germplasmSchema.getModule());
-            assertTrue(germplasmSchema.isPrimaryModel());
+            assertNotNull(germplasmSchema.getMetadata());
+            assertTrue(germplasmSchema.getMetadata().isPrimaryModel());
             assertFalse(germplasmSchema.isRequest());
 
             BrAPIObjectType traitSchema = schemas.get("Trait");
             assertNotNull(traitSchema);
             assertEquals("Trait", traitSchema.getName());
             assertEquals("BrAPI-Phenotyping", traitSchema.getModule());
-            assertTrue(traitSchema.isPrimaryModel());
+            assertNotNull(traitSchema.getMetadata());
+            assertTrue(traitSchema.getMetadata().isPrimaryModel());
             assertFalse(traitSchema.isRequest());
 
             BrAPIObjectType listType = schemas.get("ListType");
             assertNotNull(listType);
             assertEquals("ListType", listType.getName());
             assertNull(listType.getModule());
-            assertFalse(listType.isPrimaryModel());
+            assertNull(listType.getMetadata());
             assertFalse(listType.isRequest());
 
             BrAPIObjectType listRequest = schemas.get("ListRequest");
             assertNotNull(listRequest);
             assertEquals("ListRequest", listRequest.getName());
             assertNull(listRequest.getModule());
-            assertFalse(listRequest.isPrimaryModel());
+            assertNull(listRequest.getMetadata());
             assertTrue(listRequest.isRequest());
 
         } catch (Exception e) {
@@ -89,7 +93,8 @@ class BrAPISchemaReaderTest {
             assertNotNull(trialSchema);
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
-            assertTrue(trialSchema.isPrimaryModel());
+            assertNotNull(trialSchema.getMetadata());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -108,7 +113,8 @@ class BrAPISchemaReaderTest {
             assertNotNull(trialSchema);
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
-            assertTrue(trialSchema.isPrimaryModel());
+            assertNotNull(trialSchema.getMetadata());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
         } catch (Exception e) {
             fail(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.openapi.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -14,26 +15,14 @@ import java.util.Map;
 public class ListGetOptions {
     @JsonProperty("generate")
     boolean generating;
+    String summaryFormat;
     String descriptionFormat;
-    String inputName;
-    String inputNameFormat;
-    String inputTypeNameFormat;
-
-    String responseTypeNameFormat;
-    String dataFieldName;
-
-    boolean pagedDefault;
-    @Builder.Default
-    Map<String, Boolean> paged = new HashMap<>();
-    @Builder.Default
-    Map<String, Boolean> input = new HashMap<>();
     @JsonProperty("generateFor")
     @Builder.Default
     Map<String, Boolean> generatingFor = new HashMap<>();
 
-    String pagingInputName;
-    String pageInputTypeName;
-
-    String pageTypeName;
-    String pageFieldName;
+    @JsonIgnore
+    public boolean isGeneratingFor(String name) {
+        return generatingFor.getOrDefault(name, generating) ;
+    }
 }

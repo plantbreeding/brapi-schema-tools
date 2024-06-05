@@ -80,7 +80,7 @@
                     ]
                 },
                 "listType": {
-                    "$ref": "../Common/ListType.json#/$defs/ListType"
+                    "$ref": "../../BrAPI-Core/ListType.json#/$defs/ListType"
                 }
             }
         }

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
+import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
@@ -37,15 +38,24 @@ import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 public class GraphQLGenerator {
 
     private final BrAPISchemaReader schemaReader;
+    private final GraphQLGeneratorOptions options;
 
     public GraphQLGenerator() {
-        this.schemaReader = new BrAPISchemaReader();
+        this(new BrAPISchemaReader(), GraphQLGeneratorOptions.load()) ;
     }
 
-    public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorOptions options) {
+    public GraphQLGenerator(GraphQLGeneratorOptions options) {
+        this(new BrAPISchemaReader(), options) ;
+    }
+
+    public Response<GraphQLSchema> generate(Path schemaDirectory) {
+        return generate(schemaDirectory, new GraphQLGeneratorMetadata()) ;
+    }
+
+    public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorMetadata metadata) {
 
         try {
-            return new Generator(options, schemaReader.readDirectories(schemaDirectory)).generate();
+            return new Generator(options, metadata, schemaReader.readDirectories(schemaDirectory)).generate();
         } catch (BrAPISchemaReaderException e) {
             return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
@@ -54,6 +64,7 @@ public class GraphQLGenerator {
     @Getter
     public static class Generator {
         private final GraphQLGeneratorOptions options;
+        private final GraphQLGeneratorMetadata metadata;
         private final Map<String, BrAPIObjectType> brAPISchemas;
 
         private final Map<String, GraphQLObjectType> objectOutputTypes;
@@ -64,8 +75,9 @@ public class GraphQLGenerator {
         private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
 
 
-        public Generator(GraphQLGeneratorOptions options, List<BrAPIObjectType> brAPISchemas) {
+        public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIObjectType> brAPISchemas) {
             this.options = options;
+            this.metadata = metadata;
             this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
             objectOutputTypes = new HashMap<>();
             unionTypes = new HashMap<>();

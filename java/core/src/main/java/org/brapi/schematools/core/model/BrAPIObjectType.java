@@ -12,7 +12,7 @@ public class BrAPIObjectType implements BrAPIType {
     String name;
     String description;
     String module;
-    boolean primaryModel;
+    BrAPIMetadata metadata;
     boolean request;
     List<BrAPIObjectProperty> properties;
 }

@@ -6,12 +6,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
-import org.brapi.schematools.core.graphql.options.IdsOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
 
 @Getter
@@ -28,7 +31,17 @@ public class OpenAPIGeneratorOptions {
     PostOptions post;
     PutOptions put;
     DeleteOptions delete;
+    SearchOptions search;
     IdsOptions ids;
+    @JsonProperty("createNewRequest")
+    boolean creatingNewRequest;
+    @JsonProperty("createNewRequestFor")
+    @Builder.Default
+    Map<String, Boolean> creatingNewRequestFor = new HashMap<>();
+    String newRequestNameFormat;
+    String singleResponseNameFormat;
+    String listResponseNameFormat;
+    String searchRequestNameFormat;
 
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
         return load(Files.newInputStream(optionsFile));
@@ -58,29 +71,41 @@ public class OpenAPIGeneratorOptions {
         }
     }
 
+    private static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+        return mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
+    }
+
     @JsonIgnore
     public boolean isGeneratingSingleGet() {
-        return singleGet != null && singleGet.isGenerating();
+        return singleGet != null && (singleGet.isGenerating() || singleGet.getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     @JsonIgnore
     public boolean isGeneratingListGet() {
-        return listGet != null && listGet.isGenerating();
+        return listGet != null && (listGet.isGenerating() || listGet.getGeneratingFor().values().stream().anyMatch(value -> value));
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingSearch() {
+        return search != null && (search.isGenerating() || search.getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     @JsonIgnore
     public boolean isGeneratingPost() {
-        return post != null && post.isGenerating();
+        return post != null && (post.isGenerating() || post.getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     @JsonIgnore
     public boolean isGeneratingPut() {
-        return put != null && put.isGenerating();
+        return put != null && (put.isGenerating() || put.getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     @JsonIgnore
     public boolean isGeneratingDelete() {
-        return delete != null && delete.isGenerating();
+        return delete != null && (delete.isGenerating() || delete.getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     @JsonIgnore
@@ -89,14 +114,90 @@ public class OpenAPIGeneratorOptions {
     }
 
     @JsonIgnore
-    public boolean isGeneratingEndpointNameWithId() {
+    public boolean isGeneratingEndpointWithId() {
         return isGeneratingSingleGet() || isGeneratingPut() || isGeneratingDelete();
     }
 
-    private static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
+    @JsonIgnore
+    public boolean isGeneratingSearchEndpoint() {
+        return isGeneratingSingleGet() || isGeneratingPut() || isGeneratingDelete();
+    }
 
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    @JsonIgnore
+    public boolean isGeneratingSingleGetEndpointFor(String name) {
+        return singleGet != null && singleGet.generatingFor.getOrDefault(name, singleGet.isGenerating()) ;
+    }
 
-        return mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
+    @JsonIgnore
+    public boolean isGeneratingListGetEndpointFor(String name) {
+        return listGet != null && listGet.generatingFor.getOrDefault(name, listGet.isGenerating()) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingPostEndpointFor(String name) {
+        return post != null && post.generatingFor.getOrDefault(name, post.isGenerating()) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingPutEndpointFor(String name) {
+        return put != null && put.generatingFor.getOrDefault(name, put.isGenerating()) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingDeleteEndpointFor(String name) {
+        return delete != null && delete.generatingFor.getOrDefault(name, delete.isGenerating()) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingSearchEndpointFor(String name) {
+        return search != null && search.getGeneratingFor().getOrDefault(name, isGeneratingSearch()) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingEndpointFor(String name) {
+        return isGeneratingListGetEndpointFor(name ) || isGeneratingPostEndpointFor(name) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingEndpointNameWithIdFor(String name) {
+        return isGeneratingSingleGetEndpointFor(name ) || isGeneratingPutEndpointFor(name) || isGeneratingDeleteEndpointFor(name) ;
+    }
+
+    @JsonIgnore
+    public boolean isGeneratingNewRequestFor(String name) {
+        return creatingNewRequestFor.getOrDefault(name, creatingNewRequest) ;
+    }
+
+    @JsonIgnore
+    public String getNewRequestNameFor(String name) {
+        return String.format(newRequestNameFormat, name) ;
+    }
+
+    public boolean isGeneratingListResponseFor(String name) {
+        return listGet != null && listGet.isGeneratingFor(name) ;
+    }
+
+    @JsonIgnore
+    public String getSingleResponseNameFor(String name) {
+        return String.format(singleResponseNameFormat, name) ;
+    }
+
+    @JsonIgnore
+    public String getListResponseNameFor(String name) {
+        return String.format(listResponseNameFormat, name) ;
+    }
+
+    public boolean isGeneratingSearchRequestFor(String name) {
+        return search != null && search.isGeneratingFor(name) ;
+    }
+
+    @JsonIgnore
+    public String getSearchRequestNameFor(String name) {
+        return String.format(searchRequestNameFormat, name) ;
+    }
+
+    @JsonIgnore
+    public String getPluralFor(String name) {
+        return toPlural(name) ;
     }
 }

@@ -1,7 +1,6 @@
 package org.brapi.schematools.core.graphql;
 
 import graphql.schema.GraphQLSchema;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ class GraphQLGeneratorTest {
     void generate() {
         Response<GraphQLSchema> schema = null;
         try {
-            schema = new GraphQLGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), GraphQLGeneratorOptions.load());
+            schema = new GraphQLGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

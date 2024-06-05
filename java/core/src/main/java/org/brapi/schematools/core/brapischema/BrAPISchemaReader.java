@@ -38,7 +38,7 @@ import static org.brapi.schematools.core.response.Response.success;
 @AllArgsConstructor
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)#\\/\\$defs\\/(\\w+)");
-    private static final List<String> COMMON_MODULES = List.of("Common", "Parameters", "Requests");
+    private static final List<String> COMMON_MODULES = List.of("Schemas", "Parameters", "Requests");
 
     private final JsonSchemaFactory factory;
     private final ObjectMapper objectMapper;
@@ -130,7 +130,7 @@ public class BrAPISchemaReader {
         Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
         return Stream.generate(() -> null)
             .takeWhile(x -> iterator.hasNext())
-            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module, module != null).
+            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module).
                 mapResult(result -> (BrAPIObjectType) result));
     }
 
@@ -156,7 +156,7 @@ public class BrAPISchemaReader {
                         if (jsonNode.has("oneOf")) {
                             return createOneOfType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                         } else {
-                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module, false);
+                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                         }
                     }
 
@@ -248,11 +248,10 @@ public class BrAPISchemaReader {
             map(() -> success(builder.build()));
     }
 
-    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module, boolean primaryModel) {
+    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module) {
 
         BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder().
             name(name).
-            primaryModel(primaryModel).
             request(name.endsWith("Request")).
             module(module);
 
@@ -271,12 +270,12 @@ public class BrAPISchemaReader {
                 mapResultToResponse(fields -> createProperties(path, fields, module, required)).
                 onSuccessDoWithResult(properties::addAll)).
             onSuccessDo(() -> builder.properties(properties)).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", false).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
-    private Response<Boolean> parseMetadata(JsonNode metadata) {
-        return findBoolean(metadata, "primaryModel", false);
-    }
+
 
     private Response<List<BrAPIObjectProperty>> createProperties(Path path, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
         return Streams.stream(fields).map(field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey()))).collect(Response.toList());
@@ -293,6 +292,14 @@ public class BrAPISchemaReader {
 
         return createType(path, jsonNode, StringUtils.toSentenceCase(name), module).
             onSuccessDoWithResult(builder::type).
+            map(() -> success(builder.build()));
+    }
+
+    private Response<BrAPIMetadata> parseMetadata(JsonNode metadata) {
+        BrAPIMetadata.BrAPIMetadataBuilder builder = BrAPIMetadata.builder();
+
+        return findBoolean(metadata, "primaryModel", false).
+            onSuccessDoWithResult(builder::primaryModel).
             map(() -> success(builder.build()));
     }
 

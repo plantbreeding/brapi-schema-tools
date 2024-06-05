@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.openapi.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -14,9 +15,15 @@ import java.util.Map;
 public class SearchOptions {
     @JsonProperty("generate")
     boolean generating;
-    String name;
-    String descriptionFormat;
+    String summaryFormat;
+    String submitDescriptionFormat;
+    String retrieveDescriptionFormat;
     @JsonProperty("generateFor")
     @Builder.Default
     Map<String, Boolean> generatingFor = new HashMap<>();
+
+    @JsonIgnore
+    public boolean isGeneratingFor(String name) {
+        return generatingFor.getOrDefault(name, generating) ;
+    }
 }

@@ -38,6 +38,9 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
     private Path outputPathFile;
 
+    @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components")
+    private Path componentsDirectory;
+
     @Override
     public void run() {
         switch (outputFormat) {
@@ -55,9 +58,9 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void generateGraphQLSchema(GraphQLGeneratorOptions options) {
-        GraphQLGenerator graphQLGenerator = new GraphQLGenerator();
+        GraphQLGenerator graphQLGenerator = new GraphQLGenerator(options);
 
-        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, options);
+        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory);
 
         response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors);
     }
@@ -107,9 +110,9 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
-        OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator();
+        OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator(options);
 
-        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, options);
+        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, componentsDirectory);
 
         response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors);
     }
