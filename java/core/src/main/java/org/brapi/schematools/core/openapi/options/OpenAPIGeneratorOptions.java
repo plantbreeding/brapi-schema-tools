@@ -206,4 +206,6 @@ public class OpenAPIGeneratorOptions {
     public String getSingularForProperty(String name) {
         return toSingular(name) ;
     }
+
+    public static class OpenAPIGeneratorOptionsBuilder {}
 }

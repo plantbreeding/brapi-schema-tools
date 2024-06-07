@@ -86,4 +86,6 @@ public class GraphQLGeneratorOptions {
     public boolean isUsingIDType() {
         return ids != null && ids.isUsingIDType();
     }
+
+    public static class GraphQLGeneratorOptionsBuilder{}
 }
