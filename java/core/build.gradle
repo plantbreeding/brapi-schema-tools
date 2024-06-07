@@ -78,6 +78,10 @@ project.plugins.withType(MavenPublishPlugin).all {
             name = "${project.group}:${project.name}"
             description = name
             url = "https://github.com/plantbreeding/brapi-schema-tools"
+            autoReleaseAfterClose = true
+            properties = [
+                autoReleaseAfterClose: true
+            ]
             licenses {
                 license {
                     name = "MIT License"
