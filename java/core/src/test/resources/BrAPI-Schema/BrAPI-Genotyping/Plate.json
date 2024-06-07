@@ -91,7 +91,10 @@
                 "plateName"
             ],
             "title": "Plate",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Genotyping/Plate.json",

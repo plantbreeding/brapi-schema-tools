@@ -183,7 +183,10 @@
                 "seedLotName"
             ],
             "title": "SeedLot",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Germplasm/SeedLot.json",

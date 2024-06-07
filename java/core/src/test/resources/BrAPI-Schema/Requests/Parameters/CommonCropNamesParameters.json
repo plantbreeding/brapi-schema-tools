@@ -1,6 +1,6 @@
 {
     "$defs": {
-        "CropParameters": {
+        "CommonCropNamesParameters": {
             "type": "object",
             "properties": {
                 "commonCropNames": {
@@ -17,6 +17,6 @@
             }
         }
     },
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/Components/Common/ExternalReference.json",
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/Parameters/CommonCropNamesParameters.json",
     "$schema": "http://json-schema.org/draft/2020-12/schema"
 }

@@ -183,7 +183,10 @@
                 "plannedCrossDbId"
             ],
             "title": "PlannedCross",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Germplasm/PlannedCross.json",

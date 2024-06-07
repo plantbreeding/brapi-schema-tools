@@ -525,7 +525,10 @@
                 "studyDbId"
             ],
             "title": "Study",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Core/Study.json",

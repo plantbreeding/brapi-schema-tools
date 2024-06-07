@@ -7,8 +7,7 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 @Value
-public class BrAPIObjectType implements BrAPIType {
-
+public class BrAPIObjectType implements BrAPIClass {
     String name;
     String description;
     String module;

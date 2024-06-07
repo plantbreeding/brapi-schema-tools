@@ -174,7 +174,10 @@
                 "referenceSetName"
             ],
             "title": "ReferenceSet",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Genotyping/ReferenceSet.json",

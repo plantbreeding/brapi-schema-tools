@@ -25,8 +25,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -37,7 +39,7 @@ import static org.brapi.schematools.core.response.Response.success;
 
 @AllArgsConstructor
 public class BrAPISchemaReader {
-    private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)#\\/\\$defs\\/(\\w+)");
+    private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)?#\\/\\$defs\\/(\\w+)");
     private static final List<String> COMMON_MODULES = List.of("Schemas", "Parameters", "Requests");
 
     private final JsonSchemaFactory factory;
@@ -53,13 +55,13 @@ public class BrAPISchemaReader {
      * Each directory in the parent directory is a module and the JSON schemas in the directories are object types
      *
      * @param schemaDirectory the parent directory that holds all the module directories
-     * @return a list of BrAPIObjectType with one type per JSON Schema
+     * @return a list of BrAPIClass with one type per JSON Schema
      * @throws BrAPISchemaReaderException if there is a problem reading the directories or JSON schemas
      */
-    public List<BrAPIObjectType> readDirectories(Path schemaDirectory) throws BrAPISchemaReaderException {
+    public List<BrAPIClass> readDirectories(Path schemaDirectory) throws BrAPISchemaReaderException {
         try {
-            return find(schemaDirectory, 3, this::schemaPathMatcher).flatMap(this::createBrAPISchemas).collect(Response.toList()).
-                getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
+            return dereferenceAllOfType(find(schemaDirectory, 3, this::schemaPathMatcher).flatMap(this::createBrAPISchemas).collect(Response.toList()).
+                getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(","))));
         } catch (IOException | RuntimeException e) {
             throw new BrAPISchemaReaderException(e);
         }
@@ -71,10 +73,10 @@ public class BrAPISchemaReader {
      *
      * @param schemaPath a JSON schema file
      * @param module     the module in which the object resides
-     * @return BrAPIObjectType with one type per JSON Schema
+     * @return the BrAPIClass for this schema
      * @throws BrAPISchemaReaderException if there is a problem reading the JSON schema
      */
-    public BrAPIObjectType readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
+    public BrAPIClass readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
         try {
             return createBrAPISchemas(schemaPath, module).collect(Response.toList()).mapResult(list -> list.get(0)).
                 getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
@@ -90,10 +92,10 @@ public class BrAPISchemaReader {
      * @param path   the path of the schema is used to check references, if not supplied then validation is not performed
      * @param schema a JSON schema string
      * @param module the module in which the object resides
-     * @return BrAPIObjectType with one type per JSON Schema
+     * @return the BrAPIType for this schema
      * @throws BrAPISchemaReaderException if there is a problem reading the JSON schema
      */
-    public BrAPIObjectType readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
+    public BrAPIClass readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
         try {
             return createBrAPISchemas(path, objectMapper.readTree(schema), module).collect(Response.toList()).mapResult(list -> list.get(0)).
                 getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
@@ -102,7 +104,44 @@ public class BrAPISchemaReader {
         }
     }
 
-    private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path) {
+    private List<BrAPIClass> dereferenceAllOfType(List<BrAPIClass> types) {
+        Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
+
+        List<BrAPIClass> objectTypes = new ArrayList<>() ;
+
+        types.forEach(type -> {
+            if (type instanceof BrAPIAllOfType brAPIAllOfType) {
+                objectTypes.add(BrAPIObjectType.builder().
+                    name(brAPIAllOfType.getName()).
+                    description(brAPIAllOfType.getDescription()).
+                    module(brAPIAllOfType.getModule()).
+                    properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build()) ;
+            } else {
+                objectTypes.add(type) ;
+            }
+        });
+
+        return objectTypes ;
+    }
+
+    private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
+
+        if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
+            properties.addAll(brAPIObjectType.getProperties()) ;
+        } else {
+            if (brAPIType instanceof BrAPIAllOfType brAPIAllOfType) {
+                brAPIAllOfType.getAllTypes().forEach(type -> extractProperties(properties, type, typeMap)) ;
+            } else {
+                if (brAPIType instanceof BrAPIReferenceType brAPIReferenceType) {
+                    extractProperties(properties, typeMap.get(brAPIReferenceType.getName()), typeMap) ;
+                }
+            }
+        }
+
+        return properties ;
+    }
+
+    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path) {
         return createBrAPISchemas(path, findModule(path));
     }
 
@@ -112,7 +151,7 @@ public class BrAPISchemaReader {
         return COMMON_MODULES.contains(module) ? null : module;
     }
 
-    private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path, String module) {
+    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path, String module) {
         JsonSchema schema = factory.getSchema(path.toUri());
 
         JsonNode json = schema.getSchemaNode();
@@ -120,7 +159,7 @@ public class BrAPISchemaReader {
         return createBrAPISchemas(path, json, module);
     }
 
-    private Stream<Response<BrAPIObjectType>> createBrAPISchemas(Path path, JsonNode json, String module) {
+    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path, JsonNode json, String module) {
         JsonNode defs = json.get("$defs");
 
         if (defs != null) {
@@ -128,10 +167,18 @@ public class BrAPISchemaReader {
         }
 
         Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
+
         return Stream.generate(() -> null)
             .takeWhile(x -> iterator.hasNext())
-            .map(n -> iterator.next()).map(entry -> createObjectType(path, entry.getValue(), entry.getKey(), module).
-                mapResult(result -> (BrAPIObjectType) result));
+            .map(n -> iterator.next()).map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module));
+    }
+
+    private Response<BrAPIClass> createBrAPIClass(Path path, JsonNode jsonNode, String fallbackName, String module) {
+        try {
+            return createType(path, jsonNode, fallbackName, module).mapResult(type -> (BrAPIClass) type);
+        } catch (ClassCastException e) {
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not cast type '%s' to BrAPIClass!", fallbackName)) ;
+        }
     }
 
     private boolean schemaPathMatcher(Path path, BasicFileAttributes basicFileAttributes) {
@@ -139,6 +186,13 @@ public class BrAPISchemaReader {
     }
 
     private Response<BrAPIType> createType(Path path, JsonNode jsonNode, String fallbackName, String module) {
+        if (jsonNode.has("allOf")) {
+            return createAllOfType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+        }
+
+        if (jsonNode.has("oneOf")) {
+            return createOneOfType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+        }
 
         boolean isEnum = jsonNode.has("enum");
 
@@ -147,16 +201,11 @@ public class BrAPISchemaReader {
 
             () -> findStringList(jsonNode, "type", true).
                 mapResultToResponse(types -> {
-
                     if (types.contains("object")) {
                         if (isEnum) {
                             return fail(Response.ErrorType.VALIDATION, String.format("Object Type '%s' can not be an enum!", fallbackName));
-                        }
-
-                        if (jsonNode.has("oneOf")) {
-                            return createOneOfType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                         } else {
-                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module, isRequestPath(path));
                         }
                     }
 
@@ -206,6 +255,10 @@ public class BrAPISchemaReader {
 
     }
 
+    private boolean isRequestPath(Path path) {
+        return path.getParent().getFileName().endsWith("Requests") ;
+    }
+
     private Response<String> findNameFromTitle(JsonNode jsonNode) {
         return findString(jsonNode, "title", false).mapResult(name -> name != null ? name.replace(" ", "") : null);
     }
@@ -225,7 +278,7 @@ public class BrAPISchemaReader {
 
         if (matcher.matches()) {
 
-            if (path != null) {
+            if (path != null && matcher.group(1) != null) {
                 Path refPath = path.getParent().resolve(matcher.group(1));
 
                 if (!refPath.toFile().isFile()) {
@@ -248,11 +301,11 @@ public class BrAPISchemaReader {
             map(() -> success(builder.build()));
     }
 
-    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module) {
+    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module, boolean request) {
 
         BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder().
             name(name).
-            request(name.endsWith("Request")).
+            request(request).
             module(module);
 
         findString(jsonNode, "description", false).
@@ -301,6 +354,29 @@ public class BrAPISchemaReader {
         return findBoolean(metadata, "primaryModel", false).
             onSuccessDoWithResult(builder::primaryModel).
             map(() -> success(builder.build()));
+    }
+
+    private Response<BrAPIType> createAllOfType(Path path, JsonNode jsonNode, String name, String module) {
+
+        BrAPIAllOfType.BrAPIAllOfTypeBuilder builder = BrAPIAllOfType.builder().
+            name(name).
+            module(module);
+
+        findString(jsonNode, "description", false).
+            onSuccessDoWithResult(builder::description);
+
+        return findChildNode(jsonNode, "allOf", true).
+            mapResult(this::childNodes).
+            mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createAllTypes(path, nodes, name, module))).
+            onSuccessDoWithResult(builder::allTypes).
+            map(() -> success(builder.build()));
+    }
+
+    private Response<List<BrAPIType>> createAllTypes(Path path, List<JsonNode> jsonNodes, String fallbackNamePrefix, String module) {
+
+        AtomicInteger i = new AtomicInteger();
+
+        return jsonNodes.stream().map(jsonNode -> createType(path, jsonNode, String.format("%s%d", fallbackNamePrefix, i.incrementAndGet()), module)).collect(Response.toList());
     }
 
     private Response<BrAPIType> createOneOfType(Path path, JsonNode jsonNode, String name, String module) {

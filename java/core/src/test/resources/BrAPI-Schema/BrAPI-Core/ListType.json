@@ -17,6 +17,6 @@
             "type": "string"
         }
     },
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/Compoents/Common/ListType.json",
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Core/ListType.json",
     "$schema": "http://json-schema.org/draft/2020-12/schema"
 }

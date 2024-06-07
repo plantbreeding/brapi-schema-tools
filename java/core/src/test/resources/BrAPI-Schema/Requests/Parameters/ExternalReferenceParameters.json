@@ -40,6 +40,6 @@
             }
         }
     },
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/Components/Common/ExternalReference.json",
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/Parameters/ExternalReferenceParameters.json",
     "$schema": "http://json-schema.org/draft/2020-12/schema"
 }

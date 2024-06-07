@@ -80,9 +80,11 @@
                     ]
                 },
                 "listType": {
-                    "$ref": "../../BrAPI-Core/ListType.json#/$defs/ListType"
+                    "$ref": "../BrAPI-Core/ListType.json#/$defs/ListType"
                 }
             }
         }
-    }
+    },
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/Parameters/ListRequest.json",
+    "$schema": "http://json-schema.org/draft/2020-12/schema"
 }

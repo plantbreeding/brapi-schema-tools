@@ -7,10 +7,10 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 @Value
-public class BrAPIOneOfType implements BrAPIType {
-
+public class BrAPIOneOfType implements BrAPIClass {
     String name;
     String description;
     String module;
+    BrAPIMetadata metadata;
     List<BrAPIType> possibleTypes;
 }

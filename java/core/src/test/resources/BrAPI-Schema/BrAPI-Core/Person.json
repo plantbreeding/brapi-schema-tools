@@ -126,7 +126,10 @@
                 "personDbId"
             ],
             "title": "Person",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Core/Person.json",

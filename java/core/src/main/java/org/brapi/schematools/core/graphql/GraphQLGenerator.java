@@ -65,35 +65,56 @@ public class GraphQLGenerator {
     public static class Generator {
         private final GraphQLGeneratorOptions options;
         private final GraphQLGeneratorMetadata metadata;
-        private final Map<String, BrAPIObjectType> brAPISchemas;
+        private final Map<String, BrAPIClass> brAPISchemas;
 
         private final Map<String, GraphQLObjectType> objectOutputTypes;
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
         private final Map<String, GraphQLInputObjectType> inputObjectTypes;
+        private final Set<GraphQLType> additionalTypes;
 
         private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
 
 
-        public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIObjectType> brAPISchemas) {
+        public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas) {
             this.options = options;
             this.metadata = metadata;
-            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
+            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
             objectOutputTypes = new HashMap<>();
             unionTypes = new HashMap<>();
             enumTypes = new HashMap<>();
             inputObjectTypes = new HashMap<>();
+            additionalTypes = new HashSet<>();
         }
 
         public Response<GraphQLSchema> generate() {
             return brAPISchemas.values().stream().
-                filter(BrAPIObjectType::isRequest).
+                filter(this::isInputType).
                 map(this::createInputObjectType).collect(Response.toList()).
+                onSuccessDoWithResult(additionalTypes::addAll).
+                merge(() -> brAPISchemas.values().stream().
+                    filter(this::isNonPrimaryModel).
+                    map(this::createOutputType).
+                    collect(Response.toList()).
+                    onSuccessDoWithResult(additionalTypes::addAll)).
                 map(() -> brAPISchemas.values().stream().
-                    filter(type -> !type.isRequest()).
-                    map(this::createObjectType).
-                    collect(Response.toList())).
+                    filter(this::isPrimaryModel).
+                    map(type -> createObjectType((BrAPIObjectType) type)).
+                    collect(Response.toList()).
+                    onSuccessDoWithResult(additionalTypes::addAll)).
                 mapResultToResponse(this::createSchema);
+        }
+
+        private boolean isInputType(BrAPIClass type) {
+            return type instanceof BrAPIObjectType && ((BrAPIObjectType) type).isRequest() ;
+        }
+
+        private boolean isPrimaryModel(BrAPIClass type) {
+            return !isInputType(type) && type.getMetadata() != null && type.getMetadata().isPrimaryModel() ;
+        }
+
+        private boolean isNonPrimaryModel(BrAPIClass type) {
+            return !isInputType(type) && (type.getMetadata() == null || !type.getMetadata().isPrimaryModel()) ;
         }
 
         private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> types) {
@@ -129,8 +150,6 @@ public class GraphQLGenerator {
 
                 builder.mutation(mutation);
             }
-
-            Set<GraphQLType> additionalTypes = new HashSet<>(types);
 
             if (options.isGeneratingListQueries() &&
                 (options.getQueryType().getListQuery().isPagedDefault() || options.getQueryType().getListQuery().getPaged().values().stream().anyMatch(paged -> paged))) {
@@ -206,25 +225,30 @@ public class GraphQLGenerator {
                 map(() -> success(builder.build()));
         }
 
-        private Response<GraphQLInputObjectType> createInputObjectType(BrAPIObjectType type) {
+        private Response<GraphQLInputObjectType> createInputObjectType(BrAPIClass type) {
 
-            String queryName = toPlural(toParameterCase(type.getName().substring(0, type.getName().length() - 6)));
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
 
-            String name = String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName));
+                String queryName = toPlural(toParameterCase(brAPIObjectType.getName().substring(0, brAPIObjectType.getName().length() - 7)));
 
-            GraphQLInputObjectType existingType = inputObjectTypes.get(name);
+                String name = String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName));
 
-            if (existingType != null) {
-                return success(existingType);
+                GraphQLInputObjectType existingType = inputObjectTypes.get(name);
+
+                if (existingType != null) {
+                    return success(existingType);
+                }
+
+                GraphQLInputObjectType.Builder builder = newInputObject().
+                    name(name).
+                    description(brAPIObjectType.getDescription());
+
+                return brAPIObjectType.getProperties().stream().map(this::createInputObjectField).collect(Response.toList()).
+                    onSuccessDoWithResult(builder::fields).
+                    map(() -> addInputObjectType(builder.build()));
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
             }
-
-            GraphQLInputObjectType.Builder builder = newInputObject().
-                name(name).
-                description(type.getDescription());
-
-            return type.getProperties().stream().map(this::createInputObjectField).collect(Response.toList()).
-                onSuccessDoWithResult(builder::fields).
-                map(() -> addInputObjectType(builder.build()));
         }
 
         private Response<GraphQLInputType> createInputType(BrAPIType type) {

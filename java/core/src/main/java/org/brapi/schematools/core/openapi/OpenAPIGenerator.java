@@ -29,7 +29,6 @@ import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
-import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 @AllArgsConstructor
 public class OpenAPIGenerator {
@@ -63,17 +62,17 @@ public class OpenAPIGenerator {
         private final OpenAPIGeneratorOptions options;
 
         private final OpenAPIGeneratorMetadata metadata;
-        private final Map<String, BrAPIObjectType> brAPISchemas;
+        private final Map<String, BrAPIClass> brAPISchemas;
 
         private final Map<String, Parameter> parameters;
         private final Map<String, ApiResponse> responses;
         private final Map<String, Schema> schemas;
         private final Map<String, SecurityScheme> securitySchemes;
 
-        public Generator(OpenAPIGeneratorOptions options, OpenAPIGeneratorMetadata metadata, List<BrAPIObjectType> brAPISchemas, Components components) {
+        public Generator(OpenAPIGeneratorOptions options, OpenAPIGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas, Components components) {
             this.options = options;
             this.metadata = metadata ;
-            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIObjectType::getName, Function.identity()));
+            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
             this.parameters = new HashMap<>(components.getParameters());
             this.responses = new HashMap<>(components.getResponses());
             this.schemas = new HashMap<>(components.getSchemas());
@@ -84,7 +83,7 @@ public class OpenAPIGenerator {
             if (options.isSeparatingByModule()) {
                 return brAPISchemas.values().stream().
                     filter(type -> Objects.nonNull(type.getModule())).
-                    collect(Collectors.groupingBy(BrAPIObjectType::getModule, toList())).
+                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList())).
                     entrySet().stream().map(entry -> generate(entry.getKey(), entry.getValue())).
                     collect(Response.toList());
             } else {
@@ -93,7 +92,7 @@ public class OpenAPIGenerator {
             }
         }
 
-        private Response<OpenAPI> generate(String title, Collection<BrAPIObjectType> types) {
+        private Response<OpenAPI> generate(String title, Collection<BrAPIClass> types) {
 
             OpenAPI openAPI = new OpenAPI();
 
@@ -106,9 +105,13 @@ public class OpenAPIGenerator {
 
             // TODO merge in openAPIMetadata
 
-            List<BrAPIObjectType> nonPrimaryTypes = types.stream().filter(type -> Objects.isNull(type.getMetadata()) || !type.getMetadata().isPrimaryModel()).toList();
+            List<BrAPIClass> nonPrimaryTypes = types.stream().filter(type -> Objects.isNull(type.getMetadata()) || !type.getMetadata().isPrimaryModel()).toList();
 
-            List<BrAPIObjectType> primaryTypes = types.stream().filter(type -> Objects.nonNull(type.getMetadata()) && type.getMetadata().isPrimaryModel()).toList();
+            List<BrAPIObjectType> primaryTypes = types.stream().
+                filter(type -> type instanceof BrAPIObjectType).
+                filter(type -> Objects.nonNull(type.getMetadata()) && type.getMetadata().isPrimaryModel()).
+                map(type -> (BrAPIObjectType)type).
+                toList();
 
             return Response.empty().
                 mergeOnCondition(options.isGeneratingEndpoint(), // these are GET and POST endpoints with the pattern /<entity-plural> e.g. /locations
@@ -234,25 +237,28 @@ public class OpenAPIGenerator {
         }
 
         private Response<List<Parameter>> createListGetParametersFor(BrAPIObjectType type) {
-            BrAPIObjectType requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
 
             if (requestSchema == null) {
                 return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create parameters for list get endpoint for '%s'", type.getName(), createSearchPathItemName(type.getName()))) ;
             }
 
-            List<Parameter> parameters = new ArrayList<>() ;
+            if (requestSchema instanceof BrAPIObjectType brAPIObjectType) {
+                List<Parameter> parameters = new ArrayList<>();
 
-            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID")) ;
-            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId")) ; // TODO depreciated, remove?
-            parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource")) ;
-            parameters.add(new Parameter().$ref("#/components/parameters/page")) ;
-            parameters.add(new Parameter().$ref("#/components/parameters/pageSize")) ;
-            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader")) ;
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId")); // TODO depreciated, remove?
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
+                parameters.add(new Parameter().$ref("#/components/parameters/page"));
+                parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+                parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return requestSchema.getProperties().stream().map(this::createListGetParameter).collect(Response.toList()).
-                onSuccessDoWithResult(result -> parameters.addAll(0, result)).
-                map(() -> success(parameters)) ;
-
+                return brAPIObjectType.getProperties().stream().map(this::createListGetParameter).collect(Response.toList()).
+                    onSuccessDoWithResult(result -> parameters.addAll(0, result)).
+                    map(() -> success(parameters));
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+            }
         }
 
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
@@ -400,7 +406,7 @@ public class OpenAPIGenerator {
                 addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sListResponse", type.getName())))) ;
         }
 
-        private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIObjectType> nonPrimaryTypes) {
+        private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes) {
             Components components = new Components() ;
 
             return generateSchemas(primaryTypes, nonPrimaryTypes).
@@ -414,11 +420,11 @@ public class OpenAPIGenerator {
                 map(() -> success(components));
         }
 
-        private Response<Map<String, Schema>> generateSchemas(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIObjectType> nonPrimaryTypes) {
+        private Response<Map<String, Schema>> generateSchemas(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes) {
             Map<String, Schema> schemas = new HashMap<>() ;
 
             return primaryTypes.stream().map(type -> generateSchemasForType(type).onSuccessDoWithResult(schemas::putAll)).collect(Response.toList()).
-                merge(nonPrimaryTypes.stream().map(type -> createObjectSchema(type).onSuccessDoWithResult(schema -> schemas.put(type.getName(), schema))).collect(Response.toList())).
+                merge(nonPrimaryTypes.stream().map(type -> createSchemaForType(type).onSuccessDoWithResult(schema -> schemas.put(type.getName(), schema))).collect(Response.toList())).
                 onSuccessDo(() -> schemas.putAll(this.schemas)).
                 map(() -> success(schemas)) ;
         }
@@ -462,7 +468,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {
-            BrAPIObjectType requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
 
             String name = options.getSearchRequestNameFor(type.getName()) ;
 
@@ -470,8 +476,12 @@ public class OpenAPIGenerator {
                 return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' when creating '%s'", type.getName(), name)) ;
             }
 
-            return createProperties(requestSchema.getProperties().stream().toList()).mapResult(
-                schema -> new ObjectSchema().properties(schema).name(name).description(type.getDescription())) ;
+            if (requestSchema instanceof BrAPIObjectType brAPIObjectType) {
+                return createProperties(brAPIObjectType.getProperties().stream().toList()).mapResult(
+                    schema -> new ObjectSchema().properties(schema).name(name).description(type.getDescription()));
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+            }
         }
 
         private Response<Map<String, ApiResponse>> generateResponses() {

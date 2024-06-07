@@ -107,7 +107,10 @@
                 "type"
             ],
             "title": "GenomeMap",
-            "type": "object"
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Genotyping/GenomeMap.json",
