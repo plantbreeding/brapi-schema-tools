@@ -365,19 +365,19 @@ public class Response<T> {
     }
 
     public boolean isPresent() {
-        return !this.hasErrors() && result != null ;
+        return !this.hasErrors() && result != null;
     }
 
     public boolean isEmpty() {
-        return !this.hasErrors() && result == null ;
+        return !this.hasErrors() && result == null;
     }
 
     public T getResultIfPresentOrElseResult(Supplier<T> supplier) {
-        return this.isPresent() ? this.getResult() : supplier.get()  ;
+        return this.isPresent() ? this.getResult() : supplier.get();
     }
 
     public T getResultIfPresentOrElseResult(T result) {
-        return this.isPresent() ? this.getResult() : result ;
+        return this.isPresent() ? this.getResult() : result;
     }
 
     public <U> Response<U> ifPresentMapResultToResponseOr(Function<T, Response<U>> function, Supplier<Response<U>> supplier) {

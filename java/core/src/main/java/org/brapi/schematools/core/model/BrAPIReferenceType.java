@@ -7,5 +7,5 @@ import lombok.Value;
 @Value
 public class BrAPIReferenceType implements BrAPIType {
 
-  String name ;
+    String name;
 }

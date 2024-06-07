@@ -1,0 +1,29 @@
+queryType:
+    generate: true
+    name: Query
+    singleQuery:
+        generate: true
+        descriptionFormat: Returns a %s object by id
+    listQuery:
+        generate: true
+        descriptionFormat: Returns %s objects
+        inputName: input
+        inputNameFormat: "%sInput"
+        responseTypeNameFormat: "%sListResponse"
+        dataFieldName: data
+        pagedDefault: true
+        paged:
+            BreedingMethod: false
+        pagingInputName: paging
+        pageInputTypeName: PageInput
+        pageTypeName: PageInfo
+        pageFieldName: page
+    searchQuery:
+        generate: true
+        descriptionFormat: Returns %s objects
+mutationType:
+    generate: false
+    name: Mutation
+ids:
+    useIDType: true
+    nameFormat: "%sDbId"

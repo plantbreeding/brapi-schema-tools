@@ -1,11 +1,38 @@
 queryType:
-  generate: true
-  name: Query
-  singleQuery:
-    descriptionFormat: Returns a %s object by id";
+    generate: true
+    name: Query
+    partitionedByCrop: true
+    singleQuery:
+        generate: true
+        descriptionFormat: Returns a %s object by id
+    listQuery:
+        generate: true
+        descriptionFormat: Returns %s objects
+        inputName: input
+        inputNameFormat: "%sInput"
+        inputTypeNameFormat: "%sInput"
+        responseTypeNameFormat: "%sListResponse"
+        dataFieldName: data
+        pagedDefault: true
+        paged:
+            BreedingMethod: false
+        input:
+            BreedingMethod: false
+            CrossingProject: true
+        pagingInputName: paging
+        pageInputTypeName: PageInput
+        pageTypeName: PageInfo
+        pageFieldName: page
+    searchQuery:
+        generate: true
+        descriptionFormat: Returns %s objects
+        generateFor:
+            BreedingMethod: false
+            Cross: false
+            CrossingProjects: false
 mutationType:
-  generate: false
-  name: Mutation
+    generate: false
+    name: Mutation
 ids:
-  usingIDType: true
-  nameFormat: "%sDbId"
+    useIDType: true
+    nameFormat: "%sDbId"

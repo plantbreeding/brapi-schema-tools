@@ -7,8 +7,10 @@ plugins {
 
 dependencies {
     implementation 'com.networknt:json-schema-validator:1.0.72'
-    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1'
     api 'com.graphql-java:graphql-java:22.0'
+    api 'io.swagger.core.v3:swagger-core:2.2.22'
+    implementation 'io.swagger.parser.v3:swagger-parser:2.1.22'
 }
 
 publishing {
@@ -48,9 +50,10 @@ java {
 //
 // NOTE: If you are using the legacy publishing you need to sign using the info at https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signing_pom_files
 def hasSigningKey = project.hasProperty("signingKeyId") || project.hasProperty("signingKey")
-if(hasSigningKey) {
+if (hasSigningKey) {
     sign(project)
 }
+
 void sign(Project project) {
     project.signing {
         required { project.gradle.taskGraph.hasTask("publish") }
@@ -75,6 +78,10 @@ project.plugins.withType(MavenPublishPlugin).all {
             name = "${project.group}:${project.name}"
             description = name
             url = "https://github.com/plantbreeding/brapi-schema-tools"
+            autoReleaseAfterClose = true
+            properties = [
+                autoReleaseAfterClose: true
+            ]
             licenses {
                 license {
                     name = "MIT License"

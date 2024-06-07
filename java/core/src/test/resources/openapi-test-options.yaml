@@ -1,0 +1,12 @@
+singleGet:
+    generate: true
+    descriptionFormat: Returns a %s object by id
+listGet:
+    generate: true
+    descriptionFormat: Returns a %s object by id
+post:
+    generate: true
+put:
+    generate: true
+delete:
+    generate: false
