@@ -34,24 +34,55 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
+/**
+ * Generates a GraphQL schema from a BrAPI Json Schema.
+ */
 @AllArgsConstructor
 public class GraphQLGenerator {
 
     private final BrAPISchemaReader schemaReader;
     private final GraphQLGeneratorOptions options;
 
+    /**
+     * Creates a GraphQLGenerator using a default {@link BrAPISchemaReader} and
+     * the default {@link GraphQLGeneratorOptions}.
+     */
     public GraphQLGenerator() {
         this(new BrAPISchemaReader(), GraphQLGeneratorOptions.load()) ;
     }
 
+    /**
+     * Creates a GraphQLGenerator using a default {@link BrAPISchemaReader} and
+     * the provided {@link GraphQLGeneratorOptions}.
+     * @param options The options to be used in the generation.
+     */
     public GraphQLGenerator(GraphQLGeneratorOptions options) {
         this(new BrAPISchemaReader(), options) ;
     }
 
+    /**
+     * Generates the {@link GraphQLSchema} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @return the {@link GraphQLSchema} from the complete BrAPI Specification
+     */
     public Response<GraphQLSchema> generate(Path schemaDirectory) {
         return generate(schemaDirectory, new GraphQLGeneratorMetadata()) ;
     }
 
+    /**
+     * Generates the {@link GraphQLSchema} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param metadata additional metadata that is used in the generation
+     * @return the {@link GraphQLSchema} from the complete BrAPI Specification
+     */
     public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorMetadata metadata) {
 
         try {
@@ -62,7 +93,7 @@ public class GraphQLGenerator {
     }
 
     @Getter
-    public static class Generator {
+    private static class Generator {
         private final GraphQLGeneratorOptions options;
         private final GraphQLGeneratorMetadata metadata;
         private final Map<String, BrAPIClass> brAPISchemas;

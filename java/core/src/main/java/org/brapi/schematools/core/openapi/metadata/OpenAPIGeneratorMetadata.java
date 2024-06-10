@@ -3,6 +3,9 @@ package org.brapi.schematools.core.openapi.metadata;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Provides metadata for the OpenAPI generation
+ */
 @Getter
 @Setter
 public class OpenAPIGeneratorMetadata {

@@ -5,6 +5,9 @@ import lombok.Value;
 
 import java.util.List;
 
+/**
+ * A BrAPI Class that provides a list of possible {@link #values} of a specific {@link #type}.
+ */
 @Builder(toBuilder = true)
 @Value
 public class BrAPIEnumType implements BrAPIClass {

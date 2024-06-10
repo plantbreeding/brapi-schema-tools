@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for working with Strings
+ */
 public class StringUtils {
     private static final Set<String> unpluralisables = ImmutableSet.of(
         "equipment", "information", "rice", "money", "species", "series",

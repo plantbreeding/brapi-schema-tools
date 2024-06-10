@@ -37,6 +37,9 @@ import static java.util.Collections.singletonList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 
+/**
+ * Utility class for reading BrAPI JSON Schema.
+ */
 @AllArgsConstructor
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)?#\\/\\$defs\\/(\\w+)");
@@ -45,6 +48,9 @@ public class BrAPISchemaReader {
     private final JsonSchemaFactory factory;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Creates schema reader with a basic {@link ObjectMapper} and V202012 JSonSchema version
+     */
     public BrAPISchemaReader() {
         factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
         objectMapper = new ObjectMapper();

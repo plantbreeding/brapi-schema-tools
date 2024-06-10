@@ -6,6 +6,9 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides metadata for the List Get endpoints
+ */
 @Getter
 @Setter
 public class ListGetMetadata {
