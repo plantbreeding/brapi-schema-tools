@@ -82,6 +82,9 @@
                 "listType": {
                     "$ref": "../BrAPI-Core/ListType.json#/$defs/ListType"
                 }
+            },
+            "brapi-metadata": {
+                "request": true
             }
         }
     },

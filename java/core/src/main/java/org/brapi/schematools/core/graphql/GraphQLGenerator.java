@@ -137,7 +137,7 @@ public class GraphQLGenerator {
         }
 
         private boolean isInputType(BrAPIClass type) {
-            return type instanceof BrAPIObjectType && ((BrAPIObjectType) type).isRequest() ;
+            return type instanceof BrAPIObjectType && type.getMetadata() != null && type.getMetadata().isRequest() ;
         }
 
         private boolean isPrimaryModel(BrAPIClass type) {

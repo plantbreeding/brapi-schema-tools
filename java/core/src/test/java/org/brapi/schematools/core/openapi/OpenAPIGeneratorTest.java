@@ -26,6 +26,7 @@ class OpenAPIGeneratorTest {
             specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(false).build()).
                 generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         assertNotNull(specifications);
@@ -43,6 +44,7 @@ class OpenAPIGeneratorTest {
             specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(true).build()).
                 generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         assertNotNull(specifications);

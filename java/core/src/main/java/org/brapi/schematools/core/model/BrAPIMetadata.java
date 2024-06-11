@@ -10,4 +10,5 @@ import lombok.Value;
 @Value
 public class BrAPIMetadata {
     boolean primaryModel ;
+    boolean request ;
 }

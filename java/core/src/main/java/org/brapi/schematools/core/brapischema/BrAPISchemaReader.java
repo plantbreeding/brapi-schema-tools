@@ -104,9 +104,10 @@ public class BrAPISchemaReader {
     public BrAPIClass readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
         try {
             return createBrAPISchemas(path, objectMapper.readTree(schema), module).collect(Response.toList()).mapResult(list -> list.get(0)).
-                getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(",")));
+                getResultOrThrow(response -> new RuntimeException(
+                    String.format("Can not read schema at '%s' in module '%s' from '%s', due to '%s'", path, module, schema, response.getMessagesCombined(","))));
         } catch (RuntimeException | JsonProcessingException e) {
-            throw new BrAPISchemaReaderException(e);
+            throw new BrAPISchemaReaderException(String.format("Can not read schema at '%s' in module '%s' from '%s', due to '%s'", path, module, schema, e.getMessage()), e);
         }
     }
 
@@ -152,9 +153,9 @@ public class BrAPISchemaReader {
     }
 
     private String findModule(Path path) {
-        String module = path.getParent().getFileName().toString();
+        String module = path != null ? path.getParent().getFileName().toString() : null;
 
-        return COMMON_MODULES.contains(module) ? null : module;
+        return module != null && COMMON_MODULES.contains(module) ? null : module;
     }
 
     private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path, String module) {
@@ -211,7 +212,7 @@ public class BrAPISchemaReader {
                         if (isEnum) {
                             return fail(Response.ErrorType.VALIDATION, String.format("Object Type '%s' can not be an enum!", fallbackName));
                         } else {
-                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module, isRequestPath(path));
+                            return createObjectType(path, jsonNode, findNameFromTitle(jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                         }
                     }
 
@@ -261,10 +262,6 @@ public class BrAPISchemaReader {
 
     }
 
-    private boolean isRequestPath(Path path) {
-        return path.getParent().getFileName().endsWith("Requests") ;
-    }
-
     private Response<String> findNameFromTitle(JsonNode jsonNode) {
         return findString(jsonNode, "title", false).mapResult(name -> name != null ? name.replace(" ", "") : null);
     }
@@ -307,11 +304,10 @@ public class BrAPISchemaReader {
             map(() -> success(builder.build()));
     }
 
-    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module, boolean request) {
+    private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module) {
 
         BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder().
             name(name).
-            request(request).
             module(module);
 
         findString(jsonNode, "description", false).
@@ -357,8 +353,10 @@ public class BrAPISchemaReader {
     private Response<BrAPIMetadata> parseMetadata(JsonNode metadata) {
         BrAPIMetadata.BrAPIMetadataBuilder builder = BrAPIMetadata.builder();
 
-        return findBoolean(metadata, "primaryModel", false).
+        return findBoolean(metadata, "primaryModel", false, false).
             onSuccessDoWithResult(builder::primaryModel).
+            merge(findBoolean(metadata, "request", false, false)).
+            onSuccessDoWithResult(builder::request).
             map(() -> success(builder.build()));
     }
 
@@ -458,7 +456,7 @@ public class BrAPISchemaReader {
         });
     }
 
-    private Response<Boolean> findBoolean(JsonNode parentNode, String fieldName, boolean required) {
+    private Response<Boolean> findBoolean(JsonNode parentNode, String fieldName, boolean required, boolean defaultValue) {
         return findChildNode(parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
             if (jsonNode instanceof BooleanNode booleanNode) {
                 return success(booleanNode.asBoolean());
@@ -466,7 +464,7 @@ public class BrAPISchemaReader {
             return required ?
                 fail(Response.ErrorType.VALIDATION,
                     String.format("Child node type '%s' was not BooleanNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
-                Response.empty();
+                Response.success(defaultValue);
         });
     }
 

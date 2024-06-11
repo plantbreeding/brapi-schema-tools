@@ -70,9 +70,11 @@ class BrAPISchemaReaderTest {
             assertNotNull(listRequest);
             assertEquals("ListRequest", listRequest.getName());
             assertNull(listRequest.getModule());
-            assertNull(listRequest.getMetadata());
+            assertNotNull(listRequest.getMetadata());
+            assertTrue(listRequest.getMetadata().isRequest());
 
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
     }
@@ -100,7 +102,17 @@ class BrAPISchemaReaderTest {
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNull(listTypeSchema.getMetadata());
+
+            BrAPIClass listRequest =
+                new BrAPISchemaReader().readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/Requests/ListRequest.json").toURI()), null);
+
+            assertNotNull(listRequest);
+            assertEquals("ListRequest", listRequest.getName());
+            assertNull(listRequest.getModule());
+            assertNotNull(listRequest.getMetadata());
+            assertTrue(listRequest.getMetadata().isRequest());
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
     }
@@ -132,7 +144,19 @@ class BrAPISchemaReaderTest {
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNull(listTypeSchema.getMetadata());
+
+            path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/Requests/ListRequest.json")).toURI());
+
+            BrAPIClass listRequest =
+                new BrAPISchemaReader().readSchema(null, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), null);
+
+            assertNotNull(listRequest);
+            assertEquals("ListRequest", listRequest.getName());
+            assertNull(listRequest.getModule());
+            assertNotNull(listRequest.getMetadata());
+            assertTrue(listRequest.getMetadata().isRequest());
         } catch (Exception e) {
+            e.printStackTrace();
             fail(e.getMessage());
         }
     }
