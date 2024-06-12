@@ -89,7 +89,10 @@ public class OpenAPIGenerator {
     public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory, OpenAPIGeneratorMetadata metadata) {
 
         try {
-            return new OpenAPIGenerator.Generator(options, metadata, schemaReader.readDirectories(schemaDirectory), componentsReader.readComponents(componentsDirectory)).generate();
+            Components components = componentsReader.readComponents(componentsDirectory) ;
+
+            return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
+                brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate());
         } catch (BrAPISchemaReaderException | OpenAPIComponentsException e) {
             return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }

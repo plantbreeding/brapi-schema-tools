@@ -26,11 +26,13 @@ class BrAPISchemaReaderTest {
     void readDirectories() {
 
         try {
-            Map<String, BrAPIClass> schemas =
-                new BrAPISchemaReader().readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+            Map<String, BrAPIClass> schemas = new BrAPISchemaReader().
+                readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult().stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
             assertNotNull(schemas);
-            assertEquals(52, schemas.size());
+            assertEquals(54, schemas.size());
 
             BrAPIClass trialSchema = schemas.get("Trial");
             assertNotNull(trialSchema);
@@ -82,8 +84,10 @@ class BrAPISchemaReaderTest {
     @Test
     void readSchemaPath() {
         try {
-            BrAPIClass trialSchema =
-                new BrAPISchemaReader().readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/Trial.json").toURI()), "BrAPI-Core");
+            BrAPIClass trialSchema = new BrAPISchemaReader().
+                readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/Trial.json").toURI()), "BrAPI-Core").
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
 
             assertNotNull(trialSchema);
 
@@ -93,8 +97,11 @@ class BrAPISchemaReaderTest {
             assertNotNull(trialSchema.getMetadata());
             assertFalse(trialSchema.getMetadata().isPrimaryModel());
 
-            BrAPIClass listTypeSchema =
-                new BrAPISchemaReader().readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/ListType.json").toURI()), "BrAPI-Core");
+            BrAPIClass listTypeSchema = new BrAPISchemaReader().
+                readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/ListType.json").toURI()), "BrAPI-Core").
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
+
 
             assertNotNull(listTypeSchema);
 
@@ -103,8 +110,10 @@ class BrAPISchemaReaderTest {
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNull(listTypeSchema.getMetadata());
 
-            BrAPIClass listRequest =
-                new BrAPISchemaReader().readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/Requests/ListRequest.json").toURI()), null);
+            BrAPIClass listRequest = new BrAPISchemaReader().
+                readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/Requests/ListRequest.json").toURI()), null).
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
 
             assertNotNull(listRequest);
             assertEquals("ListRequest", listRequest.getName());
@@ -122,8 +131,11 @@ class BrAPISchemaReaderTest {
         try {
             Path path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/BrAPI-Core/Trial.json")).toURI());
 
-            BrAPIClass trialSchema =
-                new BrAPISchemaReader().readSchema(path, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), "BrAPI-Core");
+            BrAPIClass trialSchema = new BrAPISchemaReader().
+                readSchema(path, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), "BrAPI-Core").
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
+
 
             assertNotNull(trialSchema);
 
@@ -135,8 +147,10 @@ class BrAPISchemaReaderTest {
 
             path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/BrAPI-Core/ListType.json")).toURI());
 
-            BrAPIClass listTypeSchema =
-                new BrAPISchemaReader().readSchema(path, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), "BrAPI-Core");
+            BrAPIClass listTypeSchema = new BrAPISchemaReader().
+                readSchema(path, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), "BrAPI-Core").
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
 
             assertNotNull(listTypeSchema);
 
@@ -147,8 +161,10 @@ class BrAPISchemaReaderTest {
 
             path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/Requests/ListRequest.json")).toURI());
 
-            BrAPIClass listRequest =
-                new BrAPISchemaReader().readSchema(null, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), null);
+            BrAPIClass listRequest = new BrAPISchemaReader().
+                readSchema(null, String.join("\n", Files.readAllLines(path, Charset.defaultCharset())), null).
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
 
             assertNotNull(listRequest);
             assertEquals("ListRequest", listRequest.getName());

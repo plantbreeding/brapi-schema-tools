@@ -30,14 +30,15 @@ public class StringUtils {
         replace("(.+[^aeiou])ies$").with("$1y"),
         replace("(.+)zes$").with("$1"),
         replace("([m|l])ice$").with("$1ouse"),
-        replace("matrices$").with("matrix"),
+        replace("(.+)matrices$").with("$1matrix"),
         replace("indices$").with("index"),
         replace("(.+[^aeiou])ices$").with("$1ice"),
         replace("(.*)ices$").with("$1ex"),
         replace("(octop|vir)i$").with("$1us"),
         replace("bases$").with("base"),
         replace("(.+(s|x|sh|ch))es$").with("$1"),
-        replace("(.+)s$").with("$1")
+        replace("(.+)s$").with("$1"),
+        replace("analysis$").with("analysis$")
     );
 
     private static final List<Replacer> pluralisations = ImmutableList.of(

@@ -86,7 +86,7 @@ public class GraphQLGenerator {
     public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorMetadata metadata) {
 
         try {
-            return new Generator(options, metadata, schemaReader.readDirectories(schemaDirectory)).generate();
+            return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(brAPISchemas -> new Generator(options, metadata, brAPISchemas).generate()) ;
         } catch (BrAPISchemaReaderException e) {
             return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }

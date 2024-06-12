@@ -13,4 +13,6 @@ public class BrAPIObjectProperty {
     String description;
     BrAPIType type;
     boolean required;
+    String referencedAttribute;
+    BrAPIRelationshipType relationshipType;
 }

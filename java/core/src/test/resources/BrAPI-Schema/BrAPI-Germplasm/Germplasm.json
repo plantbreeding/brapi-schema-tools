@@ -390,7 +390,6 @@
                 "progenyPedigreeNodes": {
                     "title": "progenyPedigreeNodes",
                     "description": "progenyPedigreeNodes",
-                    "referencedAttribute": "parentGermplasm",
                     "relationshipType": "one-to-many",
                     "items": {
                         "$ref": "PedigreeNode.json#/$defs/PedigreeNode",
@@ -404,7 +403,6 @@
                 "parentPedigreeNodes": {
                     "title": "parentPedigreeNodes",
                     "description": "parentPedigreeNodes",
-                    "referencedAttribute": "progenyGermplasm",
                     "relationshipType": "one-to-many",
                     "items": {
                         "$ref": "PedigreeNode.json#/$defs/PedigreeNode",
@@ -416,9 +414,8 @@
                     ]
                 },
                 "siblingPedigreeNodes": {
-                    "title": "siblingPedigreeNodes",
+                    "title": "SiblingPedigreeNodes",
                     "description": "siblingPedigreeNodes",
-                    "referencedAttribute": "siblingGermplasm",
                     "relationshipType": "one-to-many",
                     "items": {
                         "$ref": "PedigreeNode.json#/$defs/PedigreeNode",

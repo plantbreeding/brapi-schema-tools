@@ -29,25 +29,7 @@
                 },
                 "coordinates": {
                     "description": "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                    "properties": {
-                        "geometry": {
-                            "description": "A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.",
-                            "$ref": "../BrAPI-Common/GeoJSONGeometry.json#/$defs/GeoJSONGeometry"
-                        },
-                        "type": {
-                            "default": "Feature",
-                            "description": "The literal string \"Feature\"",
-                            "type": [
-                                "null",
-                                "string"
-                            ]
-                        }
-                    },
-                    "title": "GeoJSON",
-                    "type": [
-                        "null",
-                        "object"
-                    ]
+                    "$ref": "../BrAPI-Common/GeoJSON.json#/$defs/GeoJSON"
                 },
                 "countryCode": {
                     "description": "[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec\n<br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.'",
@@ -181,7 +163,7 @@
                     ]
                 },
                 "seedLots": {
-                    "title": "seedLots",
+                    "title": "SeedLots",
                     "description": "seedLots",
                     "referencedAttribute": "location",
                     "relationshipType": "one-to-many",
@@ -195,7 +177,7 @@
                     ]
                 },
                 "observationUnits": {
-                    "title": "observationUnits",
+                    "title": "ObservationUnits",
                     "description": "observationUnits",
                     "referencedAttribute": "location",
                     "relationshipType": "one-to-many",
