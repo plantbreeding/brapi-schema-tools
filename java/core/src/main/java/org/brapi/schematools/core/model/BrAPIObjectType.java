@@ -5,6 +5,9 @@ import lombok.Value;
 
 import java.util.List;
 
+/**
+ * An Object definition that has {@link #properties}
+ */
 @Builder(toBuilder = true)
 @Value
 public class BrAPIObjectType implements BrAPIClass {
@@ -12,6 +15,5 @@ public class BrAPIObjectType implements BrAPIClass {
     String description;
     String module;
     BrAPIMetadata metadata;
-    boolean request;
     List<BrAPIObjectProperty> properties;
 }

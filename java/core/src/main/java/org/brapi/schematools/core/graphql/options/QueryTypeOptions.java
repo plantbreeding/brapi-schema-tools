@@ -3,6 +3,9 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+/**
+ * Provides options for the generation of the Query Type
+ */
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @Builder

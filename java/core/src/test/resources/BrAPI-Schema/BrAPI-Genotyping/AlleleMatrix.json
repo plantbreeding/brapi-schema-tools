@@ -76,6 +76,7 @@
                 },
                 "pagination": {
                     "description": "Pagination for the matrix",
+                    "title": "MatrixPage",
                     "items": {
                         "properties": {
                             "dimension": {

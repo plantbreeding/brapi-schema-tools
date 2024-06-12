@@ -123,7 +123,10 @@
                         }
                     }
                 }
-            ]
+            ],
+            "brapi-metadata": {
+                "request": true
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/LocationRequest.json",

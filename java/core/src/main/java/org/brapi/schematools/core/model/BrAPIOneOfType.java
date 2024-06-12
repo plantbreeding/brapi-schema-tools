@@ -5,6 +5,9 @@ import lombok.Value;
 
 import java.util.List;
 
+/**
+ * A BrAPI Class that represents one and only one {@link #possibleTypes}.
+ */
 @Builder(toBuilder = true)
 @Value
 public class BrAPIOneOfType implements BrAPIClass {

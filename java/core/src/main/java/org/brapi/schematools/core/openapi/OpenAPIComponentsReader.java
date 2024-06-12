@@ -11,7 +11,17 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static java.nio.file.Files.find;
 
+/**
+ * Utility class for reading OpenAPI Components from YAML files.
+ */
 public class OpenAPIComponentsReader {
+
+    /**
+     * Read OpenAPI Components from YAML files.
+     * @param schemaDirectory The path to the directory containing the YAML files.
+     * @return OpenAPI Components read from YAML files.
+     * @throws OpenAPIComponentsException if there is an problem reading the YAML files.
+     */
     public Components readComponents(Path schemaDirectory) throws OpenAPIComponentsException {
 
         Components components = new Components();

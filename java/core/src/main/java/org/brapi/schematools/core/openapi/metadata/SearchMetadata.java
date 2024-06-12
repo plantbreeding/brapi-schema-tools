@@ -6,6 +6,9 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides metadata for the Search Post and Get endpoints
+ */
 @Getter
 @Setter
 public class SearchMetadata {

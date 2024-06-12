@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.openapi;
 
+import graphql.schema.GraphQLSchema;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
@@ -30,6 +32,9 @@ import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
+/**
+ * Generates a OpenAPI Specification from a BrAPI Json Schema.
+ */
 @AllArgsConstructor
 public class OpenAPIGenerator {
 
@@ -37,28 +42,63 @@ public class OpenAPIGenerator {
     private final OpenAPIComponentsReader componentsReader;
     private final OpenAPIGeneratorOptions options ;
 
+    /**
+     * Creates a OpenAPIGenerator using a default {@link BrAPISchemaReader} and
+     * the default {@link OpenAPIGeneratorOptions}.
+     */
     public OpenAPIGenerator() {
         this(new BrAPISchemaReader(), new OpenAPIComponentsReader(), OpenAPIGeneratorOptions.load()) ;
     }
 
+    /**
+     * Creates a GraphQLGenerator using a default {@link BrAPISchemaReader} and
+     * the provided {@link OpenAPIGeneratorOptions}.
+     * @param options The options to be used in the generation.
+     */
     public OpenAPIGenerator(OpenAPIGeneratorOptions options) {
         this(new BrAPISchemaReader(), new OpenAPIComponentsReader(), options) ;
     }
 
+    /**
+     * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
+     * for each module. See {@link OpenAPIGeneratorOptions#separatingByModule}.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
+     * @return a list of {@link OpenAPI} generated from the complete BrAPI Specification
+     */
     public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory) {
         return generate(schemaDirectory, componentsDirectory, new OpenAPIGeneratorMetadata()) ;
     }
 
+    /**
+     * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
+     * for each module. See {@link OpenAPIGeneratorOptions#separatingByModule}.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
+     * @param metadata additional metadata that is used in the generation
+     * @return a list of {@link OpenAPI} generated from the complete BrAPI Specification
+     */
     public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory, OpenAPIGeneratorMetadata metadata) {
 
         try {
-            return new OpenAPIGenerator.Generator(options, metadata, schemaReader.readDirectories(schemaDirectory), componentsReader.readComponents(componentsDirectory)).generate();
+            Components components = componentsReader.readComponents(componentsDirectory) ;
+
+            return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
+                brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate());
         } catch (BrAPISchemaReaderException | OpenAPIComponentsException e) {
             return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
     }
 
-    public static class Generator {
+    private static class Generator {
         private final OpenAPIGeneratorOptions options;
 
         private final OpenAPIGeneratorMetadata metadata;

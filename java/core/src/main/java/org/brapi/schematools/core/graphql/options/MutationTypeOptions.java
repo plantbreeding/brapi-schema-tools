@@ -7,6 +7,9 @@ import lombok.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Provides options for the generation of the Mutation Type
+ */
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @Builder
@@ -21,6 +24,11 @@ public class MutationTypeOptions {
     @Builder.Default
     Map<String, Boolean> generatingFor = new HashMap<>();
 
+    /**
+     * Determines if the Mutation is generated for a specific primary model
+     * @param name the name of the primary model
+     * @return <code>true</code> if the Mutation is generated for a specific primary model, <code>false</code> otherwise
+     */
     @JsonIgnore
     public boolean isGeneratingFor(String name) {
         return generatingFor.getOrDefault(name, generating) ;

@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
+/**
+ * Provides options for the generation of Ids
+ */
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @Builder
@@ -21,6 +24,12 @@ public class IdsOptions {
     @Builder.Default
     Map<String, String> parameterFor = new HashMap<>();
 
+    /**
+     * Gets the id parameter name for a specific primary model. For example the id parameter (or field)
+     * name of Study, would be 'studyDbiId' by default. Use {@link #parameterFor} to override this value.
+     * @param name the name of the primary model
+     * @return id parameter name for a specific primary model
+     */
     @JsonIgnore
     public String getIDParameterFor(String name) {
         return parameterFor.getOrDefault(name, String.format(nameFormat, toParameterCase(name))) ;

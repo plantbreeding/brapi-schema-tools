@@ -24,7 +24,12 @@ publishing {
     repositories {
         maven {
             name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            } else {
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            }
+
             credentials {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
@@ -78,10 +83,6 @@ project.plugins.withType(MavenPublishPlugin).all {
             name = "${project.group}:${project.name}"
             description = name
             url = "https://github.com/plantbreeding/brapi-schema-tools"
-            autoReleaseAfterClose = true
-            properties = [
-                autoReleaseAfterClose: true
-            ]
             licenses {
                 license {
                     name = "MIT License"

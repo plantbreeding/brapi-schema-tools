@@ -6,6 +6,10 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Provides metadata for the Delete endpoints
+ */
 @Getter
 @Setter
 public class DeleteMetadata {

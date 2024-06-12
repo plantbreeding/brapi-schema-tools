@@ -18,6 +18,7 @@ class GraphQLGeneratorTest {
         try {
             schema = new GraphQLGenerator().generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
         } catch (URISyntaxException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         assertNotNull(schema);
