@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class StringUtils {
     private static final Set<String> unpluralisables = ImmutableSet.of(
         "equipment", "information", "rice", "money", "species", "series",
-        "fish", "sheep", "deer");
+        "fish", "sheep", "deer", "analysis");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
         replace("(.*)people$").with("$1person"),
@@ -31,14 +31,14 @@ public class StringUtils {
         replace("(.+)zes$").with("$1"),
         replace("([m|l])ice$").with("$1ouse"),
         replace("(.+)matrices$").with("$1matrix"),
+        replace("(.+)Matrices$").with("$1Matrix"),
         replace("indices$").with("index"),
         replace("(.+[^aeiou])ices$").with("$1ice"),
         replace("(.*)ices$").with("$1ex"),
         replace("(octop|vir)i$").with("$1us"),
         replace("bases$").with("base"),
         replace("(.+(s|x|sh|ch))es$").with("$1"),
-        replace("(.+)s$").with("$1"),
-        replace("analysis$").with("analysis$")
+        replace("(.+)s$").with("$1")
     );
 
     private static final List<Replacer> pluralisations = ImmutableList.of(
