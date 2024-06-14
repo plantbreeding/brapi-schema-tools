@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.openapi;
 
-import graphql.schema.GraphQLSchema;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;

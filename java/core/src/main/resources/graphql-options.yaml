@@ -28,8 +28,8 @@ queryType:
         descriptionFormat: Returns %s objects
         generateFor:
             BreedingMethod: false
-            Cross: false
-            CrossingProjects: false
+            GenomeMap: false
+            Season: false
 mutationType:
     generate: false
     name: Mutation

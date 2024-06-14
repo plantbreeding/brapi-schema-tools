@@ -97,15 +97,12 @@ public class GraphQLGenerator {
         private final GraphQLGeneratorOptions options;
         private final GraphQLGeneratorMetadata metadata;
         private final Map<String, BrAPIClass> brAPISchemas;
-
         private final Map<String, GraphQLObjectType> objectOutputTypes;
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
         private final Map<String, GraphQLInputObjectType> inputObjectTypes;
         private final Set<GraphQLType> additionalTypes;
-
         private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
-
 
         public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas) {
             this.options = options;

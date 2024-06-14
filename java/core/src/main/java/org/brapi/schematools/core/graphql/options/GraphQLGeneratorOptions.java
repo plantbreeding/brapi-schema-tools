@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import graphql.schema.GraphQLScalarType;
 import lombok.*;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 

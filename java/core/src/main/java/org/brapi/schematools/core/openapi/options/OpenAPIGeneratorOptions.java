@@ -6,8 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
-import org.brapi.schematools.core.graphql.options.QueryTypeOptions;
-import org.brapi.schematools.core.graphql.options.SingleQueryOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 
 import java.io.IOException;

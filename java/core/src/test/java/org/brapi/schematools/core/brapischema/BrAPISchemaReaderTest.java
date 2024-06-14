@@ -1,7 +1,6 @@
 package org.brapi.schematools.core.brapischema;
 
 import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
