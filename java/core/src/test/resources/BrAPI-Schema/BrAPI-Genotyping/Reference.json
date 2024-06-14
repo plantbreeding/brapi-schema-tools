@@ -111,6 +111,7 @@
                 },
                 "species": {
                     "description": "An ontology term describing an attribute.",
+                    "title": "OntologyTerm",
                     "properties": {
                         "term": {
                             "description": "Ontology term - the label of the ontology term the termId is pointing to.",
