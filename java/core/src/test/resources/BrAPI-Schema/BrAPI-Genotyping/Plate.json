@@ -93,7 +93,7 @@
             "title": "Plate",
             "type": "object",
             "brapi-metadata": {
-                "primaryModel": false
+                "primaryModel": true
             }
         }
     },

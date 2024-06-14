@@ -158,7 +158,7 @@
             "title": "Sample",
             "type": "object",
             "brapi-metadata": {
-                "primaryModel": false
+                "primaryModel": true
             }
         }
     },

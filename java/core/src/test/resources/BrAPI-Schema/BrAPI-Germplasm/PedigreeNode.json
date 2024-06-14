@@ -139,18 +139,10 @@
                 "siblings": {
                     "description": "A list of sibling germplasm references in the pedigree tree for this germplasm. These represent edges in the tree, connecting to other nodes.\n<br/> Siblings share at least one parent with the given germplasm. \n<br/> If the parameter 'includeSiblings' is set to false, then this array should be empty, null, or not present in the response.",
                     "items": {
-                        "properties": {
-                            "siblingGermplasm": {
-                                "$ref": "Germplasm.json#/$defs/Germplasm",
-                                "description": "The ID which uniquely identifies a parent germplasm",
-                                "referencedAttribute": "siblingPedigreeNodes",
-                                "relationshipType": "many-to-one"
-                            }
-                        },
-                        "required": [
-                            "germplasmDbId"
-                        ],
-                        "type": "object"
+                        "$ref": "Germplasm.json#/$defs/Germplasm",
+                        "description": "The ID which uniquely identifies a parent germplasm",
+                        "referencedAttribute": "siblingPedigreeNodes",
+                        "relationshipType": "many-to-one"
                     },
                     "type": [
                         "null",
@@ -165,7 +157,7 @@
             "title": "PedigreeNode",
             "type": "object",
             "brapi-metadata": {
-                "primaryModel": false
+                "primaryModel": true
             }
         }
     },

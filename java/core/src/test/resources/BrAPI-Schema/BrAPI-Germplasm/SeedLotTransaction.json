@@ -69,7 +69,7 @@
             "title": "SeedLotTransaction",
             "type": "object",
             "brapi-metadata": {
-                "primaryModel": false
+                "primaryModel": true
             }
         }
     },

@@ -52,6 +52,7 @@
                     "description": "Set of Analysis descriptors for this VariantSet",
                     "items": {
                         "description": "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used.",
+                        "title": "Analysis",
                         "properties": {
                             "analysisDbId": {
                                 "description": "Unique identifier for this analysis description",
@@ -304,7 +305,7 @@
             "title": "VariantSet",
             "type": "object",
             "brapi-metadata": {
-                "primaryModel": false
+                "primaryModel": true
             }
         }
     },
