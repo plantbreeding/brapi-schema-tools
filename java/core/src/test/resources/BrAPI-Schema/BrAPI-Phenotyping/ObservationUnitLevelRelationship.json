@@ -33,10 +33,7 @@
                 }
             },
             "title": "ObservationUnitLevelRelationship",
-            "type": "object",
-            "brapi-metadata": {
-                "primaryModel": true
-            }
+            "type": "object"
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Phenotyping/ObservationUnitLevelRelationship.json",

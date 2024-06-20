@@ -1,12 +1,107 @@
+separateByModule: false
+createNewRequest: true
+createNewRequestFor:
+    BreedingMethod: false
+    Call: false
+    CallSet: false
+    Event: false
+    GenomeMap: false
+    Reference: false
+    PedigreeNode: false
+    PlannedCross: false
+    Season: false
+    Variant: false
+    VariantSet: false
+newRequestNameFormat: "%sNewRequest"
+singleResponseNameFormat: "%sSingleResponse"
+listResponseNameFormat: "%sListResponse"
+searchRequestNameFormat: "%sSearchRequest"
 singleGet:
     generate: true
-    descriptionFormat: Returns a %s object by id
+    summaryFormat: Get the details of a specific %s
+    descriptionFormat: Get details for a %s
+    generateFor:
+        AlleleMatrix: false
+        Call: false
+        Cross: false
+        Event: false
+        MarkerPosition: false
+        PlannedCross: false
 listGet:
     generate: true
-    descriptionFormat: Returns a %s object by id
+    summaryFormat: Get a filtered list of %s
+    descriptionFormat: Get a list of %s
+    generateFor:
+        AlleleMatrix: false
+    pagedDefault: true
+    paged:
+        BreedingMethod: false
+search:
+    generate: true
+    summaryFormat: Submit a search request for `%s`
+    submitDescriptionFormat:  |-
+        Submit a search request for `%s`<br/>
+        Search requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. 
+        If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
+        Use the corresponding `GET /search/%s/{searchResultsDbId}` to retrieve the results of the search. <br/> 
+        Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
+    retrieveDescriptionFormat: |-
+        Get the results of a `%s` search request <br/>
+        Clients should submit a search request using the corresponding `POST /search/%s` endpoint.
+        Search requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. 
+        If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
+        Use this endpoint to retrieve the results of the search. <br/> 
+        Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
+    generateFor:
+        AlleleMatrix: false
+        BreedingMethod: false
+        Cross: false
+        CrossProject: false
+        Method: false
+        Ontology: false
+        Scale: false
+        Trait: false
 post:
     generate: true
+    summaryFormat: Create new %s
+    descriptionFormat: Add new %s to database
+    generateFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        Event: false
+        GenomeMap: false
+        MarkerPosition: false
+        Reference: false
+        Variant: false
+        VariantSet: false
 put:
     generate: true
+    summaryFormat: Update the details for an existing %s
+    descriptionFormat: Update the details for an existing %s
+    generateFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        Cross: false
+        Event: false
+        GenomeMap: false
+        MarkerPosition: false
+        Reference: false
+        Variant: false
 delete:
     generate: false
+    summaryFormat: Delete an existing %s
+    descriptionFormat: Delete existing %s
+    generateFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        Event: false
+        GenomeMap: false
+        MarkerPosition: false
+        Reference: false
+        Variant: false
+        VariantSet: false
+ids:
+    nameFormat: "%sDbId"

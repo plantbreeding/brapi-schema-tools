@@ -7,7 +7,7 @@
                 },
                 {
                     "$ref": "Parameters/ObservationVariableParameters.json#/$defs/ObservationVariableParameters"
-                },
+                }
             ],
             "brapi-metadata": {
                 "request": true

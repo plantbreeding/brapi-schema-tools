@@ -1,11 +1,15 @@
 package org.brapi.schematools.core.openapi.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,22 +60,87 @@ class OpenAPIGeneratorOptionsTest {
     private void checkOptions(OpenAPIGeneratorOptions options) {
         assertNotNull(options);
 
+        checkOptions(options.getIds());
+        checkOptions(options.getSingleGet());
+        checkOptions(options.getListGet());
+        checkOptions(options.getPost());
+        checkOptions(options.getPut());
+        checkOptions(options.getDelete());
+
+        assertTrue(options.isGeneratingSingleGet()) ;
+        assertTrue(options.isGeneratingListGet()) ;
+        assertTrue(options.isGeneratingSearch()) ;
+        assertTrue(options.isGeneratingPost()) ;
+        assertTrue(options.isGeneratingPut()) ;
+        assertFalse(options.isGeneratingDelete()); ;
         assertTrue(options.isGeneratingEndpoint());
+        assertTrue(options.isGeneratingEndpointWithId());
+        assertTrue(options.isGeneratingSearchEndpoint());
 
-        assertNotNull(options.getSingleGet());
-        assertTrue(options.getSingleGet().isGenerating());
+        assertTrue(options.isGeneratingSingleGetEndpointFor("Trial"));
+        assertFalse(options.isGeneratingSingleGetEndpointFor("AlleleMatrix"));
+        assertTrue(options.isGeneratingListGetEndpointFor("Trial"));
+        assertFalse(options.isGeneratingListGetEndpointFor("AlleleMatrix"));
+        assertTrue(options.isGeneratingPostEndpointFor("Trial"));
+        assertTrue(options.isGeneratingPutEndpointFor("Trial"));
+        assertFalse(options.isGeneratingDeleteEndpointFor("Trial"));
+        assertTrue(options.isGeneratingSearchEndpointFor("Trial"));
+        assertTrue(options.isGeneratingEndpointFor("Trial"));
+        assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
+        assertTrue(options.isGeneratingNewRequestFor("Trial"));
+        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
+        assertTrue(options.isGeneratingListResponseFor("Trial"));
+        assertEquals("TrialSingleResponse", options.getSingleResponseNameFor("Trial"));
+        assertEquals("TrialListResponse", options.getListResponseNameFor("Trial"));
+        assertTrue(options.isGeneratingSearchRequestFor("Trial"));
+        assertEquals("TrialSearchRequest", options.getSearchRequestNameFor("Trial"));
+        assertEquals("Trials", options.getPluralFor("Trial"));
+        assertEquals("Studies", options.getPluralFor("Study"));
+        assertEquals("trialDbId", options.getSingularForProperty("trialDbIds"));
+    }
 
-        assertNotNull(options.getListGet());
-        assertTrue(options.getListGet().isGenerating());
+    private void checkOptions(IdsOptions options) {
+        assertNotNull(options);
+    }
 
-        assertNotNull(options.getPost());
-        assertTrue(options.getPost().isGenerating());
+    private void checkOptions(SingleGetOptions options) {
+        assertNotNull(options);
+        assertTrue(options.isGenerating());
+        assertTrue(options.isGeneratingFor("Trial"));
+        assertTrue(options.isGeneratingFor("BreedingMethod"));
+        assertFalse(options.isGeneratingFor("AlleleMatrix"));
+    }
 
-        assertNotNull(options.getPut());
-        assertTrue(options.getPut().isGenerating());
+    private void checkOptions(PostOptions options) {
+        assertNotNull(options);
+        assertTrue(options.isGenerating());
+        assertTrue(options.isGeneratingFor("Trial"));
+        assertTrue(options.isGeneratingFor("BreedingMethod"));
+        assertFalse(options.isGeneratingFor("AlleleMatrix"));
+    }
 
-        assertNotNull(options.getDelete());
-        assertFalse(options.getDelete().isGenerating());
+    private void checkOptions(PutOptions options) {
+        assertNotNull(options);
+        assertTrue(options.isGenerating());
+        assertTrue(options.isGeneratingFor("Trial"));
+        assertTrue(options.isGeneratingFor("BreedingMethod"));
+        assertFalse(options.isGeneratingFor("AlleleMatrix"));
+    }
+
+    private void checkOptions(ListGetOptions options) {
+        assertNotNull(options);
+        assertTrue(options.isGenerating());
+        assertTrue(options.isGeneratingFor("Trial"));
+        assertTrue(options.isGeneratingFor("BreedingMethod"));
+        assertFalse(options.isGeneratingFor("AlleleMatrix"));
+    }
+
+    private void checkOptions(DeleteOptions options) {
+        assertNotNull(options);
+        assertFalse(options.isGenerating());
+        assertFalse(options.isGeneratingFor("Trial"));
+        assertFalse(options.isGeneratingFor("BreedingMethod"));
+        assertFalse(options.isGeneratingFor("AlleleMatrix"));
     }
 
 }

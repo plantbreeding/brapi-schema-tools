@@ -20,7 +20,7 @@ singleGet:
     generate: true
     summaryFormat: Get the details of a specific %s
     descriptionFormat: Get details for a %s
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
         Call: false
         Cross: false
@@ -31,7 +31,7 @@ listGet:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
     pagedDefault: true
     paged:
@@ -52,7 +52,7 @@ search:
         If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
         BreedingMethod: false
         Cross: false
@@ -65,7 +65,7 @@ post:
     generate: true
     summaryFormat: Create new %s
     descriptionFormat: Add new %s to database
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
         Call: false
         CallSet: false
@@ -79,7 +79,7 @@ put:
     generate: true
     summaryFormat: Update the details for an existing %s
     descriptionFormat: Update the details for an existing %s
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
         Call: false
         CallSet: false
@@ -93,7 +93,7 @@ delete:
     generate: false
     summaryFormat: Delete an existing %s
     descriptionFormat: Delete existing %s
-    generatingFor:
+    generateFor:
         AlleleMatrix: false
         Call: false
         CallSet: false

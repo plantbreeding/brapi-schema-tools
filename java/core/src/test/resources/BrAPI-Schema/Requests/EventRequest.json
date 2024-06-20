@@ -38,7 +38,7 @@
                             "type": "array",
                             "items": {
                                 "type": "string"
-                            },
+                            }
                         },
                         "dateRangeStart": {
                             "description": "Filter based on an Event start date.",

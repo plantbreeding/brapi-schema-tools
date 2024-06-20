@@ -27,15 +27,7 @@
             },
             "required": [],
             "title": "ObservationUnitLevel",
-            "type": [
-                "null",
-                "object"
-            ]
-        },
-        "title": "ObservationUnitLevel",
-        "type": "object",
-        "brapi-metadata": {
-            "primaryModel": true
+            "type": "object"
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Phenotyping/ObservationUnitLevel.json",

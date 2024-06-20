@@ -1,19 +1,34 @@
+input:
+    name: input
+    nameFormat: "%sInput"
+    typeNameFormat: "%sInput"
 queryType:
     generate: true
     name: Query
+    partitionedByCrop: true
     singleQuery:
         generate: true
         descriptionFormat: Returns a %s object by id
+        generateFor:
+            AlleleMatrix: false
+            Call: false
+            Cross: false
+            Event: false
+            MarkerPosition: false
+            PlannedCross: false
     listQuery:
         generate: true
         descriptionFormat: Returns %s objects
-        inputName: input
-        inputNameFormat: "%sInput"
         responseTypeNameFormat: "%sListResponse"
         dataFieldName: data
         pagedDefault: true
         paged:
             BreedingMethod: false
+        input:
+            BreedingMethod: false
+            CrossingProject: true
+        generateFor:
+            AlleleMatrix: false
         pagingInputName: paging
         pageInputTypeName: PageInput
         pageTypeName: PageInfo
@@ -21,9 +36,60 @@ queryType:
     searchQuery:
         generate: true
         descriptionFormat: Returns %s objects
+        generateFor:
+            AlleleMatrix: false
+            BreedingMethod: false
+            Cross: false
+            CrossProject: false
+            Method: false
+            Ontology: false
+            Scale: false
+            Trait: false
 mutationType:
     generate: false
     name: Mutation
+    createMutation:
+        generate: true
+        nameFormat: create%s
+        descriptionFormat: Update the details for an existing %s
+        generateFor:
+            AlleleMatrix: false
+            Call: false
+            CallSet: false
+            Cross: false
+            Event: false
+            GenomeMap: false
+            MarkerPosition: false
+            Reference: false
+            Variant: false
+    updateMutation:
+        generate: true
+        nameFormat: update%s
+        descriptionFormat: Update the details for an existing %s
+        generateFor:
+            AlleleMatrix: false
+            Call: false
+            CallSet: false
+            Cross: false
+            Event: false
+            GenomeMap: false
+            MarkerPosition: false
+            Reference: false
+            Variant: false
+    deleteMutation:
+        generate: false
+        descriptionFormat: Delete existing %s
+        nameFormat: delete%s
+        generateFor:
+            AlleleMatrix: false
+            Call: false
+            CallSet: false
+            Event: false
+            GenomeMap: false
+            MarkerPosition: false
+            Reference: false
+            Variant: false
+            VariantSet: false
 ids:
     useIDType: true
     nameFormat: "%sDbId"

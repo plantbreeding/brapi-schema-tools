@@ -117,7 +117,7 @@ public class GraphQLGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingListQueries() {
-        return queryType != null && queryType.isGenerating()  && queryType.getSingleQuery() != null &&
+        return queryType != null && queryType.isGenerating()  && queryType.getListQuery() != null &&
             (queryType.getListQuery().isGenerating() || queryType.getListQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 

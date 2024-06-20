@@ -24,7 +24,8 @@
                             "description": "The ID which uniquely identifies a `GenomeMap`",
                             "items": {
                                 "type": "string"
-                            }
+                            },
+                            "type": "array"
                         },
                         "mapPUI": {
                             "description": "The DOI or other permanent identifier for a `GenomeMap`",
@@ -44,7 +45,8 @@
                             "description": "The type of map, usually \"Genetic\" or \"Physical\"",
                             "items": {
                                 "type": "string"
-                            }
+                            },
+                            "type": "array"
                         }
                     }
                 }

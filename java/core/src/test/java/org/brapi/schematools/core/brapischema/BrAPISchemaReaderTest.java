@@ -31,35 +31,35 @@ class BrAPISchemaReaderTest {
                 getResult().stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
             assertNotNull(schemas);
-            assertEquals(54, schemas.size());
+            assertEquals(94, schemas.size());
 
             BrAPIClass trialSchema = schemas.get("Trial");
             assertNotNull(trialSchema);
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNotNull(trialSchema.getMetadata());
-            assertFalse(trialSchema.getMetadata().isPrimaryModel());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
 
             BrAPIClass sampleSchema = schemas.get("Sample");
             assertNotNull(sampleSchema);
             assertEquals("Sample", sampleSchema.getName());
             assertEquals("BrAPI-Genotyping", sampleSchema.getModule());
             assertNotNull(sampleSchema.getMetadata());
-            assertFalse(sampleSchema.getMetadata().isPrimaryModel());
+            assertTrue(sampleSchema.getMetadata().isPrimaryModel());
 
             BrAPIClass germplasmSchema = schemas.get("Germplasm");
             assertNotNull(germplasmSchema);
             assertEquals("Germplasm", germplasmSchema.getName());
             assertEquals("BrAPI-Germplasm", germplasmSchema.getModule());
             assertNotNull(germplasmSchema.getMetadata());
-            assertFalse(germplasmSchema.getMetadata().isPrimaryModel());
+            assertTrue(germplasmSchema.getMetadata().isPrimaryModel());
 
             BrAPIClass traitSchema = schemas.get("Trait");
             assertNotNull(traitSchema);
             assertEquals("Trait", traitSchema.getName());
             assertEquals("BrAPI-Phenotyping", traitSchema.getModule());
             assertNotNull(traitSchema.getMetadata());
-            assertFalse(traitSchema.getMetadata().isPrimaryModel());
+            assertTrue(traitSchema.getMetadata().isPrimaryModel());
 
             BrAPIClass listType = schemas.get("ListType");
             assertNotNull(listType);
@@ -73,6 +73,7 @@ class BrAPISchemaReaderTest {
             assertNull(listRequest.getModule());
             assertNotNull(listRequest.getMetadata());
             assertTrue(listRequest.getMetadata().isRequest());
+            assertFalse(listRequest.getMetadata().isPrimaryModel());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,13 +95,12 @@ class BrAPISchemaReaderTest {
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNotNull(trialSchema.getMetadata());
-            assertFalse(trialSchema.getMetadata().isPrimaryModel());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
 
             BrAPIClass listTypeSchema = new BrAPISchemaReader().
                 readSchema(Path.of(ClassLoader.getSystemResource("BrAPI-Schema/BrAPI-Core/ListType.json").toURI()), "BrAPI-Core").
                 onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
                 getResult();
-
 
             assertNotNull(listTypeSchema);
 
@@ -142,7 +142,7 @@ class BrAPISchemaReaderTest {
             assertEquals("Trial", trialSchema.getName());
             assertEquals("BrAPI-Core", trialSchema.getModule());
             assertNotNull(trialSchema.getMetadata());
-            assertFalse(trialSchema.getMetadata().isPrimaryModel());
+            assertTrue(trialSchema.getMetadata().isPrimaryModel());
 
             path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/BrAPI-Core/ListType.json")).toURI());
 
@@ -170,6 +170,7 @@ class BrAPISchemaReaderTest {
             assertNull(listRequest.getModule());
             assertNotNull(listRequest.getMetadata());
             assertTrue(listRequest.getMetadata().isRequest());
+            assertFalse(listRequest.getMetadata().isPrimaryModel());
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
