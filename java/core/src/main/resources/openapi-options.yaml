@@ -1,7 +1,17 @@
 separateByModule: false
 createNewRequest: true
 createNewRequestFor:
+    BreedingMethod: false
+    Call: false
+    CallSet: false
+    Event: false
+    GenomeMap: false
+    Reference: false
+    PedigreeNode: false
+    PlannedCross: false
     Season: false
+    Variant: false
+    VariantSet: false
 newRequestNameFormat: "%sNewRequest"
 singleResponseNameFormat: "%sSingleResponse"
 listResponseNameFormat: "%sListResponse"
@@ -13,13 +23,19 @@ singleGet:
     generatingFor:
         AlleleMatrix: false
         Call: false
+        Cross: false
+        Event: false
         MarkerPosition: false
+        PlannedCross: false
 listGet:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
     generatingFor:
         AlleleMatrix: false
+    pagedDefault: true
+    paged:
+         BreedingMethod: false
 search:
     generate: true
     summaryFormat: Submit a search request for `%s`
@@ -38,6 +54,13 @@ search:
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
     generatingFor:
         AlleleMatrix: false
+        BreedingMethod: false
+        Cross: false
+        CrossProject: false
+        Method: false
+        Ontology: false
+        Scale: false
+        Trait: false
 post:
     generate: true
     summaryFormat: Create new %s
@@ -46,8 +69,12 @@ post:
         AlleleMatrix: false
         Call: false
         CallSet: false
+        Event: false
         GenomeMap: false
         MarkerPosition: false
+        Reference: false
+        Variant: false
+        VariantSet: false
 put:
     generate: true
     summaryFormat: Update the details for an existing %s
@@ -56,13 +83,25 @@ put:
         AlleleMatrix: false
         Call: false
         CallSet: false
+        Cross: false
+        Event: false
         GenomeMap: false
         MarkerPosition: false
+        Reference: false
+        Variant: false
 delete:
     generate: false
     summaryFormat: Delete an existing %s
     descriptionFormat: Delete existing %s
     generatingFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        Event: false
+        GenomeMap: false
         MarkerPosition: false
+        Reference: false
+        Variant: false
+        VariantSet: false
 ids:
     nameFormat: "%sDbId"

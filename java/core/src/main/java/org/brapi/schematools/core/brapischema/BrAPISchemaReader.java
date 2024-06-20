@@ -111,7 +111,6 @@ public class BrAPISchemaReader {
     }
 
     private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
-
         return types.mapResult(this::dereference).mapResultToResponse(this::validate) ;
     }
 
@@ -123,13 +122,14 @@ public class BrAPISchemaReader {
 
         types.forEach(type -> {
             if (type instanceof BrAPIAllOfType brAPIAllOfType) {
-                brAPIClasses.add(BrAPIObjectType.builder().
-                    name(brAPIAllOfType.getName()).
-                    description(brAPIAllOfType.getDescription()).
-                    module(brAPIAllOfType.getModule()).
-                    properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build()) ;
+                brAPIClasses.add(BrAPIObjectType.builder()
+                    .name(brAPIAllOfType.getName())
+                    .description(brAPIAllOfType.getDescription())
+                    .module(brAPIAllOfType.getModule())
+                    .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
+                    .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build());
             } else {
-                brAPIClasses.add(type) ;
+                brAPIClasses.add(type);
             }
         });
 
@@ -379,15 +379,15 @@ public class BrAPISchemaReader {
 
         List<BrAPIObjectProperty> properties = new ArrayList<>();
         return Response.empty().
-            mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", false).
+            mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", true).
                 mapResultToResponse(additionalPropertiesNode -> createProperty(path, additionalPropertiesNode, "additionalProperties",
                     module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add))).
-            mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", false).
+            mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", true).
                 mapResult(JsonNode::fields).
                 mapResultToResponse(fields -> createProperties(path, fields, module, required)).
                 onSuccessDoWithResult(properties::addAll)).
             onSuccessDo(() -> builder.properties(properties)).
-            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", false).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
                 mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
@@ -441,6 +441,8 @@ public class BrAPISchemaReader {
             mapResult(this::childNodes).
             mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createAllTypes(path, nodes, name, module))).
             onSuccessDoWithResult(builder::allTypes).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
@@ -464,6 +466,8 @@ public class BrAPISchemaReader {
             mapResult(this::childNodes).
             mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createPossibleTypes(path, nodes, name, module))).
             onSuccessDoWithResult(builder::possibleTypes).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
@@ -487,6 +491,8 @@ public class BrAPISchemaReader {
         return findStringList(jsonNode, "enum", true).
             mapResultToResponse(strings -> createEnumValues(strings, type)).
             onSuccessDoWithResult(builder::values).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 

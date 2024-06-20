@@ -222,7 +222,7 @@ public class OpenAPIGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingListGetEndpointFor(String name) {
-        return listGet != null && listGet.generatingFor.getOrDefault(name, listGet.isGenerating()) ;
+        return listGet != null && listGet.isGeneratingFor(name) ;
     }
 
     /**
@@ -233,7 +233,7 @@ public class OpenAPIGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingPostEndpointFor(String name) {
-        return post != null && post.generatingFor.getOrDefault(name, post.isGenerating()) ;
+        return post != null && post.isGeneratingFor(name) ;
     }
 
     /**
@@ -244,7 +244,7 @@ public class OpenAPIGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingPutEndpointFor(String name) {
-        return put != null && put.generatingFor.getOrDefault(name, put.isGenerating()) ;
+        return put != null && put.isGeneratingFor(name) ;
     }
 
     /**
@@ -255,19 +255,19 @@ public class OpenAPIGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingDeleteEndpointFor(String name) {
-        return delete != null && delete.generatingFor.getOrDefault(name, delete.isGenerating()) ;
+        return delete != null && delete.isGeneratingFor(name) ;
     }
 
     /**
      * Determines if the Generator should generate the Search Post and Get Endpoint for a specific Primary Model.
-     * Returns <code>true</code> if
+     * Returns <code>true</code> if {@link #isGeneratingSearch()} is set to <code>true</code> or
      * {@link SearchOptions#generatingFor} is set to <code>true</code> for the specified type
      * @param name the name of the Primary Model
      * @return <code>true</code> if the Generator should generate the Search Post and Get  Endpoint for a specific Primary Model, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchEndpointFor(String name) {
-        return search != null && search.getGeneratingFor().getOrDefault(name, isGeneratingSearch()) ;
+        return search != null && search.isGeneratingFor(name) ;
     }
 
     /**

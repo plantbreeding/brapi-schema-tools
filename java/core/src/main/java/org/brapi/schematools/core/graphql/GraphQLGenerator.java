@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLFloat;
@@ -101,7 +102,6 @@ public class GraphQLGenerator {
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
         private final Map<String, GraphQLInputObjectType> inputObjectTypes;
-        private final Set<GraphQLType> additionalTypes;
         private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
 
         public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas) {
@@ -112,25 +112,31 @@ public class GraphQLGenerator {
             unionTypes = new HashMap<>();
             enumTypes = new HashMap<>();
             inputObjectTypes = new HashMap<>();
-            additionalTypes = new HashSet<>();
         }
 
         public Response<GraphQLSchema> generate() {
             return brAPISchemas.values().stream().
                 filter(this::isInputType).
-                map(this::createInputObjectType).collect(Response.toList()).
-                onSuccessDoWithResult(additionalTypes::addAll).
+                map(this::createInputTypeFromClass).collect(Response.toList()).
+                //onSuccessDoWithResult(additionalTypes::addAll).
                 merge(() -> brAPISchemas.values().stream().
                     filter(this::isNonPrimaryModel).
                     map(this::createOutputType).
-                    collect(Response.toList()).
-                    onSuccessDoWithResult(additionalTypes::addAll)).
+                    collect(Response.toList())).
+                mapOnCondition(options.isGeneratingCreateMutation() || options.isGeneratingUpdateMutation(),
+                    () -> brAPISchemas.values().stream().
+                        filter(this::isGeneratingInputTypeFor).
+                        map(this::createInputObjectTypeForModel).
+                        collect(Response.toList())).
                 map(() -> brAPISchemas.values().stream().
                     filter(this::isPrimaryModel).
                     map(type -> createObjectType((BrAPIObjectType) type)).
-                    collect(Response.toList()).
-                    onSuccessDoWithResult(additionalTypes::addAll)).
+                    collect(Response.toList())).
                 mapResultToResponse(this::createSchema);
+        }
+
+        private boolean isGeneratingInputTypeFor(BrAPIClass brAPIClass) {
+            return isPrimaryModel(brAPIClass) && (options.isGeneratingCreateMutationFor(brAPIClass.getName()) || options.isGeneratingDeleteMutationFor(brAPIClass.getName())) ;
         }
 
         private boolean isInputType(BrAPIClass type) {
@@ -145,7 +151,7 @@ public class GraphQLGenerator {
             return !isInputType(type) && (type.getMetadata() == null || !type.getMetadata().isPrimaryModel()) ;
         }
 
-        private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> types) {
+        private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> primaryTypes) {
 
             GraphQLSchema.Builder builder = GraphQLSchema.newSchema();
 
@@ -153,17 +159,17 @@ public class GraphQLGenerator {
                 GraphQLObjectType.Builder query = newObject().name(options.getQueryType().getName());
 
                 if (options.isGeneratingSingleQueries()) {
-                    types.stream().filter(type -> options.getQueryType().getSingleQuery().getGeneratingFor().
+                    primaryTypes.stream().filter(type -> options.getQueryType().getSingleQuery().getGeneratingFor().
                         getOrDefault(type.getName(), options.getQueryType().getSingleQuery().isGenerating())).map(this::generateSingleGraphQLQuery).forEach(query::field);
                 }
 
                 if (options.isGeneratingListQueries()) {
-                    types.stream().filter(type -> options.getQueryType().getListQuery().getGeneratingFor().
+                    primaryTypes.stream().filter(type -> options.getQueryType().getListQuery().getGeneratingFor().
                         getOrDefault(type.getName(), options.getQueryType().getListQuery().isGenerating())).map(this::generateListGraphQLQuery).forEach(query::field);
                 }
 
                 if (options.isGeneratingSearchQueries()) {
-                    types.stream().filter(type -> options.getQueryType().getSearchQuery().getGeneratingFor().
+                    primaryTypes.stream().filter(type -> options.getQueryType().getSearchQuery().getGeneratingFor().
                         getOrDefault(type.getName(), options.getQueryType().getSearchQuery().isGenerating())).map(this::generateSearchGraphQLQuery).forEach(query::field);
                 }
 
@@ -173,19 +179,28 @@ public class GraphQLGenerator {
             if (options.isGeneratingMutationType()) {
                 GraphQLObjectType.Builder mutation = newObject().name(options.getMutationType().getName());
 
-                types.stream().filter(type -> options.getMutationType().getGeneratingFor().
-                    getOrDefault(type.getName(), options.getMutationType().isGenerating())).map(this::generateSingleGraphQLMutation).forEach(mutation::field);
+                primaryTypes.stream().filter(type -> options.isGeneratingCreateMutationFor(type.getName()))
+                    .map(this::generateCreateGraphQLMutation).forEach(mutation::field);
+
+                primaryTypes.stream().filter(type -> options.isGeneratingUpdateMutationFor(type.getName()))
+                    .map(this::generateUpdateGraphQLMutation).forEach(mutation::field);
+
+                primaryTypes.stream().filter(type -> options.isGeneratingDeleteMutationFor(type.getName()))
+                    .map(this::generateDeleteGraphQLMutation).forEach(mutation::field);
 
                 builder.mutation(mutation);
             }
 
+            objectOutputTypes.values().forEach(builder::additionalType);
+            enumTypes.values().forEach(builder::additionalType);
+            inputObjectTypes.values().forEach(builder::additionalType);
+            unionTypes.values().forEach(builder::additionalType);
+
             if (options.isGeneratingListQueries() &&
                 (options.getQueryType().getListQuery().isPagedDefault() || options.getQueryType().getListQuery().getPaged().values().stream().anyMatch(paged -> paged))) {
-                additionalTypes.add(createPageInputType());
-                additionalTypes.add(createPageType());
+                builder.additionalType(createPageInputType());
+                builder.additionalType(createPageType());
             }
-
-            builder.additionalTypes(additionalTypes);
 
             unionTypes.values().forEach(graphQLType -> codeRegistry.typeResolver(graphQLType, new UnionTypeResolver(graphQLType)));
 
@@ -205,9 +220,9 @@ public class GraphQLGenerator {
             } else if (type instanceof BrAPIOneOfType) {
                 return createUnionOutputType((BrAPIOneOfType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIArrayType) {
-                return createListType((BrAPIArrayType) type).mapResult(t -> t);
+                return createOutputListType((BrAPIArrayType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIReferenceType) {
-                return createReferenceType((BrAPIReferenceType) type).mapResult(t -> t);
+                return createOutputReferenceType((BrAPIReferenceType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIEnumType) {
                 return createEnumType((BrAPIEnumType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIPrimitiveType) {
@@ -217,11 +232,11 @@ public class GraphQLGenerator {
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown output type '%s'", type.getName()));
         }
 
-        private Response<GraphQLTypeReference> createReferenceType(BrAPIReferenceType type) {
+        private Response<GraphQLTypeReference> createOutputReferenceType(BrAPIReferenceType type) {
             return success(GraphQLTypeReference.typeRef(type.getName()));
         }
 
-        private Response<GraphQLList> createListType(BrAPIArrayType type) {
+        private Response<GraphQLList> createOutputListType(BrAPIArrayType type) {
             return createOutputType(type.getItems()).mapResult(GraphQLList::list);
         }
 
@@ -253,47 +268,104 @@ public class GraphQLGenerator {
                 map(() -> success(builder.build()));
         }
 
-        private Response<GraphQLInputObjectType> createInputObjectType(BrAPIClass type) {
+        private Response<GraphQLTypeReference> createInputReferenceType(BrAPIReferenceType type) {
+            BrAPIClass referencedSchema = this.brAPISchemas.get(type.getName());
 
-            if (type instanceof BrAPIObjectType brAPIObjectType) {
+            if (referencedSchema != null && !(referencedSchema instanceof BrAPIEnumType)) {
+                String inputTypeName = options.getInput().getNameFormat() != null ?
+                    String.format(options.getInput().getNameFormat(), type.getName()) : type.getName();
 
-                String queryName = toPlural(toParameterCase(brAPIObjectType.getName().substring(0, brAPIObjectType.getName().length() - 7)));
-
-                String name = String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName));
-
-                GraphQLInputObjectType existingType = inputObjectTypes.get(name);
-
-                if (existingType != null) {
-                    return success(existingType);
+                if (!isInputType(referencedSchema)) {
+                    return createInputObjectTypeForModel(referencedSchema).
+                        withResult(GraphQLTypeReference.typeRef(inputTypeName)) ;
                 }
 
+                return success(GraphQLTypeReference.typeRef(inputTypeName)) ;
+            }
+
+            return success(GraphQLTypeReference.typeRef(type.getName()));
+        }
+
+        private Response<GraphQLList> createInputListType(BrAPIArrayType type) {
+            return createInputType(type.getItems()).mapResult(GraphQLList::list);
+        }
+
+        private Response<GraphQLInputType> createInputObjectTypeForModel(BrAPIClass type) {
+            return createInputObjectType(type.getName(), type) ;
+        }
+
+        private Response<GraphQLInputType> createInputTypeFromClass(BrAPIClass type) {
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
+                if (type.getName().endsWith("Request")) {
+                    String queryName = toPlural(toParameterCase(type.getName().substring(0, type.getName().length() - 7)));
+
+                    return createInputObjectType(StringUtils.toSentenceCase(queryName), type) ;
+                } else {
+                    return createInputObjectType(type.getName(), brAPIObjectType).mapResult(t -> t);
+                }
+
+            } else if (type instanceof BrAPIEnumType brAPIEnumType) {
+                return createEnumType(brAPIEnumType).mapResult(t -> t);
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIEnumType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+            }
+        }
+
+        private Response<GraphQLInputType> createInputObjectType(String name, BrAPIClass type) {
+
+            String inputTypeName = options.getInput().getNameFormat() != null ?
+                String.format(options.getInput().getNameFormat(), name) : name;
+
+            GraphQLInputObjectType existingType = inputObjectTypes.get(inputTypeName);
+
+            if (existingType != null) {
+                return success(existingType);
+            }
+
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
                 GraphQLInputObjectType.Builder builder = newInputObject().
-                    name(name).
+                    name(inputTypeName).
                     description(brAPIObjectType.getDescription());
 
                 return brAPIObjectType.getProperties().stream().map(this::createInputObjectField).collect(Response.toList()).
                     onSuccessDoWithResult(builder::fields).
                     map(() -> addInputObjectType(builder.build()));
+            } else if (type instanceof BrAPIOneOfType brAPIOneOfType) {
+                GraphQLInputObjectType.Builder builder = newInputObject().
+                    name(inputTypeName).
+                    description(brAPIOneOfType.getDescription());
+
+                return brAPIOneOfType.getPossibleTypes().stream().flatMap(this::extractProperties).map(this::createInputObjectField).collect(Response.toList()).
+                    onSuccessDoWithResult(builder::fields).
+                    map(() -> addInputObjectType(builder.build()));
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIOneOfType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+            }
+        }
+
+        private Stream<BrAPIObjectProperty> extractProperties(BrAPIType brAPIType) {
+            if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType.getProperties().stream() ;
+            } else {
+                return Stream.empty() ;
             }
         }
 
         private Response<GraphQLInputType> createInputType(BrAPIType type) {
 
             if (type instanceof BrAPIObjectType) {
-                return createInputObjectType((BrAPIObjectType) type).mapResult(t -> t);
+                return createInputObjectTypeForModel((BrAPIObjectType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIArrayType) {
-                return createListType((BrAPIArrayType) type).mapResult(t -> t);
+                return createInputListType((BrAPIArrayType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIReferenceType) {
-                return createReferenceType((BrAPIReferenceType) type).mapResult(t -> t);
+                return createInputReferenceType((BrAPIReferenceType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIEnumType) {
                 return createEnumType((BrAPIEnumType) type).mapResult(t -> t);
             } else if (type instanceof BrAPIPrimitiveType) {
                 return createScalarType((BrAPIPrimitiveType) type).mapResult(t -> t);
             }
 
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown input type '%s'", type.getName()));
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown input type '%s' for '%s'", type.getClass().getSimpleName(), type.getName()));
         }
 
         private Response<GraphQLInputObjectField> createInputObjectField(BrAPIObjectProperty property) {
@@ -387,7 +459,7 @@ public class GraphQLGenerator {
             return success(type);
         }
 
-        private Response<GraphQLInputObjectType> addInputObjectType(GraphQLInputObjectType type) {
+        private Response<GraphQLInputType> addInputObjectType(GraphQLInputObjectType type) {
             inputObjectTypes.put(type.getName(), type);
 
             return success(type);
@@ -450,10 +522,10 @@ public class GraphQLGenerator {
 
             if (hasInput) {
                 arguments.add(GraphQLArgument.newArgument().
-                    name(options.getQueryType().getListQuery().getInputNameFormat() != null ?
-                        String.format(options.getQueryType().getListQuery().getInputNameFormat(), StringUtils.toParameterCase(type.getName())) :
-                        options.getQueryType().getListQuery().getInputName()).
-                    type(GraphQLTypeReference.typeRef(String.format(options.getQueryType().getListQuery().getInputTypeNameFormat(), StringUtils.toSentenceCase(queryName)))).
+                    name(options.getInput().getNameFormat() != null ?
+                        String.format(options.getInput().getNameFormat(), StringUtils.toParameterCase(type.getName())) :
+                        options.getInput().getName()).
+                    type(GraphQLTypeReference.typeRef(String.format(options.getInput().getTypeNameFormat(), StringUtils.toSentenceCase(queryName)))).
                     build());
             }
 
@@ -511,16 +583,94 @@ public class GraphQLGenerator {
 
             boolean paged = options.getQueryType().getListQuery().getPaged().getOrDefault(type.getName(), options.getQueryType().getListQuery().isPagedDefault());
 
-            return GraphQLFieldDefinition.newFieldDefinition().
-                name(toParameterCase(queryName)).
-                description(createListQueryDescription(type)).
-                arguments(createListQueryArguments(queryName, paged, type)).
-                type(createListResponse(queryName, paged, type));
+            return GraphQLFieldDefinition.newFieldDefinition()
+                .name(toParameterCase(queryName))
+                .description(createListQueryDescription(type))
+                .arguments(createListQueryArguments(queryName, paged, type))
+                .type(createListResponse(queryName, paged, type));
         }
 
-        private GraphQLFieldDefinition.Builder generateSingleGraphQLMutation(GraphQLObjectType type) {
-            return GraphQLFieldDefinition.newFieldDefinition().
-                name(toParameterCase(type.getName()));
+        private GraphQLFieldDefinition.Builder generateCreateGraphQLMutation(GraphQLObjectType type) {
+            return GraphQLFieldDefinition.newFieldDefinition()
+                .name(options.getMutationType().getCreateMutation().getMutationNameFor(type.getName()))
+                .description(createCreateMutationDescription(type))
+                .arguments(createCreateMutationArguments(type))
+                .type(options.getMutationType().getCreateMutation().isMultiple() ?
+                    GraphQLList.list(GraphQLTypeReference.typeRef(type.getName())) : GraphQLTypeReference.typeRef(type.getName())) ;
+        }
+
+        private String createCreateMutationDescription(GraphQLObjectType type) {
+            return String.format(options.getMutationType().getCreateMutation().getDescriptionFormat(), type.getName());
+        }
+
+        private List<GraphQLArgument> createCreateMutationArguments(GraphQLObjectType type) {
+            List<GraphQLArgument> arguments = new ArrayList<>();
+
+            String inputTypeName = String.format(options.getInput().getTypeNameFormat(), type.getName()) ;
+
+            arguments.add(GraphQLArgument.newArgument().
+                    name(options.getInput().getNameFormat() != null ?
+                        String.format(options.getInput().getNameFormat(), StringUtils.toParameterCase(type.getName())) :
+                        options.getInput().getName()).
+                    type(options.getMutationType().getCreateMutation().isMultiple() ?
+                        GraphQLList.list(GraphQLTypeReference.typeRef(inputTypeName)) : GraphQLTypeReference.typeRef(inputTypeName)).
+                    build());
+
+            return arguments;
+        }
+
+        private GraphQLFieldDefinition.Builder generateUpdateGraphQLMutation(GraphQLObjectType type) {
+            return GraphQLFieldDefinition.newFieldDefinition()
+                .name(options.getMutationType().getUpdateMutation().getMutationNameFor(type.getName()))
+                .description(createUpdateMutationDescription(type))
+                .arguments(createUpdateMutationArguments(type))
+                .type(options.getMutationType().getUpdateMutation().isMultiple() ?
+                    GraphQLList.list(GraphQLTypeReference.typeRef(type.getName())) : GraphQLTypeReference.typeRef(type.getName())) ;
+        }
+
+        private String createUpdateMutationDescription(GraphQLObjectType type) {
+            return String.format(options.getMutationType().getUpdateMutation().getDescriptionFormat(), type.getName());
+        }
+
+        private List<GraphQLArgument> createUpdateMutationArguments(GraphQLObjectType type) {
+            List<GraphQLArgument> arguments = new ArrayList<>();
+
+            arguments.add(GraphQLArgument.newArgument().
+                name(options.getInput().getNameFormat() != null ?
+                    String.format(options.getInput().getNameFormat(), StringUtils.toParameterCase(type.getName())) :
+                    options.getInput().getName()).
+                type(options.getMutationType().getUpdateMutation().isMultiple() ?
+                    GraphQLList.list(GraphQLTypeReference.typeRef(type.getName())) : GraphQLTypeReference.typeRef(type.getName())).
+                build());
+
+            return arguments;
+        }
+
+        private GraphQLFieldDefinition.Builder generateDeleteGraphQLMutation(GraphQLObjectType type) {
+            return GraphQLFieldDefinition.newFieldDefinition()
+                .name(options.getMutationType().getDeleteMutation().getMutationNameFor(type.getName()))
+                .description(createDeleteMutationDescription(type))
+                .arguments(createDeleteMutationArguments(type))
+                .type(options.getMutationType().getDeleteMutation().isMultiple() ?
+                    GraphQLList.list(GraphQLTypeReference.typeRef(type.getName())) : GraphQLTypeReference.typeRef(type.getName())) ;
+        }
+
+        private String createDeleteMutationDescription(GraphQLObjectType type) {
+            return String.format(options.getMutationType().getDeleteMutation().getDescriptionFormat(), type.getName());
+        }
+
+        private List<GraphQLArgument> createDeleteMutationArguments(GraphQLObjectType type) {
+            List<GraphQLArgument> arguments = new ArrayList<>();
+
+            arguments.add(GraphQLArgument.newArgument().
+                name(options.getInput().getNameFormat() != null ?
+                    String.format(options.getInput().getNameFormat(), StringUtils.toParameterCase(type.getName())) :
+                    options.getInput().getName()).
+                type(options.getMutationType().getDeleteMutation().isMultiple() ?
+                    GraphQLList.list(GraphQLTypeReference.typeRef(type.getName())) : GraphQLTypeReference.typeRef(type.getName())).
+                build());
+
+            return arguments;
         }
     }
 

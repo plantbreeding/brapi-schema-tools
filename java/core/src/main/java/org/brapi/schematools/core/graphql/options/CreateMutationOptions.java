@@ -8,42 +8,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides options for the generation of List Queries
+ * Provides options for the generation of New Mutations
  */
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ListQueryOptions {
+public class CreateMutationOptions {
     @JsonProperty("generate")
     boolean generating;
+    String nameFormat;
     String descriptionFormat;
-
-    String responseTypeNameFormat;
-    String dataFieldName;
-
-    boolean pagedDefault;
-    @Builder.Default
-    Map<String, Boolean> paged = new HashMap<>();
-    @Builder.Default
-    Map<String, Boolean> input = new HashMap<>();
     @JsonProperty("generateFor")
     @Builder.Default
     Map<String, Boolean> generatingFor = new HashMap<>();
-
-    String pagingInputName;
-    String pageInputTypeName;
-    String pageTypeName;
-    String pageFieldName;
+    boolean multiple;
 
     /**
-     * Determines if the List Query is generated for a specific primary model
+     * Determines if the Create Mutation is generated for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the List Query is generated for a specific primary model, <code>false</code> otherwise
+     * @return <code>true</code> if the Create Mutation is generated for a specific primary model, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingFor(String name) {
         return generatingFor.getOrDefault(name, generating) ;
+    }
+
+    /**
+     * Gets the name for the Mutation for a specific primary model
+     * @param name the name of the primary model
+     * @return the name for the Mutation for a specific primary model
+     */
+    public String getMutationNameFor(String name) {
+        return String.format(nameFormat, name) ;
     }
 }

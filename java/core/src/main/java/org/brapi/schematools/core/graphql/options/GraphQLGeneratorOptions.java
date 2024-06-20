@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.openapi.options.SearchOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GraphQLGeneratorOptions {
 
+    InputOptions input ;
     QueryTypeOptions queryType;
     MutationTypeOptions mutationType;
     IdsOptions ids;
@@ -85,54 +87,138 @@ public class GraphQLGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Query Type. Short-cut for {@link QueryTypeOptions#generating}
+     * Determines if the Generator should generate the Query Type.
      * @return <code>true</code> if the Generator should generate the Query Type, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingQueryType() {
-        return queryType != null && queryType.isGenerating();
+        return isGeneratingSingleQueries() || isGeneratingListQueries() || isGeneratingSearchQueries() ;
     }
 
     /**
      * Determines if the Generator should generate any single query. Returns <code>true</code> if
+     * {@link QueryTypeOptions#generating} is set to <code>true</code> AND one of
      * {@link SingleQueryOptions#generating} is set to <code>true</code> or
      * {@link SingleQueryOptions#generatingFor} is set to <code>true</code> for any type
      * @return <code>true</code> if the Generator should generate any single query, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSingleQueries() {
-        return isGeneratingQueryType() && (queryType.getSingleQuery().isGenerating() || queryType.getSingleQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
+        return queryType != null && queryType.isGenerating()  && queryType.getSingleQuery() != null &&
+            (queryType.getSingleQuery().isGenerating() || queryType.getSingleQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     /**
      * Determines if the Generator should generate any list query. Returns <code>true</code> if
+     * {@link QueryTypeOptions#generating} is set to <code>true</code> AND one of
      * {@link ListQueryOptions#generating} is set to <code>true</code> or
      * {@link ListQueryOptions#generatingFor} is set to <code>true</code> for any type
      * @return <code>true</code> if the Generator should generate any list query, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueries() {
-        return isGeneratingQueryType() && (queryType.getListQuery().isGenerating() || queryType.getListQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
+        return queryType != null && queryType.isGenerating()  && queryType.getSingleQuery() != null &&
+            (queryType.getListQuery().isGenerating() || queryType.getListQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     /**
      * Determines if the Generator should generate any search query. Returns <code>true</code> if
+     * {@link QueryTypeOptions#generating} is set to <code>true</code> AND one of
      * {@link SearchQueryOptions#generating} is set to <code>true</code> or
-     * {@link SearchQueryOptions#generatingFor}  is set to <code>true</code> for any type
+     * {@link SearchQueryOptions#generatingFor} is set to <code>true</code> for any type
      * @return <code>true</code> if the Generator should generate any search query, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueries() {
-        return isGeneratingQueryType() && (queryType.getSearchQuery().isGenerating() || queryType.getSearchQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
+        return queryType != null && queryType.isGenerating() && queryType.getSingleQuery() != null &&
+            (queryType.getSearchQuery().isGenerating() || queryType.getSearchQuery().getGeneratingFor().values().stream().anyMatch(value -> value));
     }
 
     /**
-     * Determines if the Generator should generate the Mutation Type. Short-cut for {@link MutationTypeOptions#generating}
+     * Determines if the Generator should generate the Mutation Type.
      * @return <code>true</code> if the Generator should generate the Mutation Type, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingMutationType() {
-        return mutationType != null && (mutationType.isGenerating() || mutationType.getGeneratingFor().values().stream().anyMatch(value -> value));
+        return isGeneratingCreateMutation() || isGeneratingUpdateMutation() || isGeneratingDeleteMutation();
+    }
+
+    /**
+     * Determines if the Generator should generate the Create mutations. Returns <code>true</code> if
+     * {@link MutationTypeOptions#generating} is set to <code>true</code> AND one of
+     * {@link CreateMutationOptions#generating} is set to <code>true</code> or
+     * {@link CreateMutationOptions#generatingFor}  is set to <code>true</code> for any type
+     * @return <code>true</code> if the Generator should generate New mutations, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingCreateMutation() {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getCreateMutation() != null &&
+            (mutationType.getCreateMutation().isGenerating() || mutationType.getCreateMutation().getGeneratingFor().values().stream().anyMatch(value -> value));
+    }
+
+    /**
+     * Determines if the Generator should generate the Create mutation for a specific Primary Model.
+     * Returns <code>true</code> if {@link MutationTypeOptions#generating} is set to <code>true</code> AND
+     * one of {@link CreateMutationOptions#isGenerating()} is set to <code>true</code> or
+     * {@link CreateMutationOptions#generatingFor} is set to <code>true</code> for the specified type
+     * @param name the name of the Primary Model
+     * @return <code>true</code> if the Generator should generate Create mutation for a specific Primary Model, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingCreateMutationFor(String name) {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getCreateMutation().isGeneratingFor(name) ;
+    }
+
+    /**
+     * Determines if the Generator should generate the Update mutations. Returns <code>true</code> if
+     * {@link MutationTypeOptions#generating} is set to <code>true</code> AND one of
+     * {@link UpdateMutationOptions#generating} is set to <code>true</code> or
+     * {@link UpdateMutationOptions#generatingFor}  is set to <code>true</code> for any type
+     * @return <code>true</code> if the Generator should generate Update mutations, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingUpdateMutation() {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getUpdateMutation() != null &&
+            (mutationType.getUpdateMutation().isGenerating() || mutationType.getUpdateMutation().getGeneratingFor().values().stream().anyMatch(value -> value));
+    }
+
+    /**
+     * Determines if the Generator should generate the Update mutation for a specific Primary Model.
+     * Returns <code>true</code> if {@link MutationTypeOptions#generating} is set to <code>true</code> AND
+     * one of {@link UpdateMutationOptions#isGenerating()} is set to <code>true</code> or
+     * {@link UpdateMutationOptions#generatingFor} is set to <code>true</code> for the specified type
+     * @param name the name of the Primary Model
+     * @return <code>true</code> if the Generator should generate Update mutation for a specific Primary Model, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingUpdateMutationFor(String name) {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getUpdateMutation().isGeneratingFor(name) ;
+    }
+
+    /**
+     * Determines if the Generator should generate the Delete mutations. Returns <code>true</code> if
+     * {@link MutationTypeOptions#generating} is set to <code>true</code> AND one of
+     * {@link DeleteMutationOptions#generating} is set to <code>true</code> or
+     * {@link DeleteMutationOptions#generatingFor}  is set to <code>true</code> for any type
+     * @return <code>true</code> if the Generator should generate Delete mutations, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingDeleteMutation() {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getUpdateMutation() != null &&
+            (mutationType.getUpdateMutation().isGenerating() || mutationType.getUpdateMutation().getGeneratingFor().values().stream().anyMatch(value -> value));
+    }
+
+    /**
+     * Determines if the Generator should generate the Delete mutation for a specific Primary Model.
+     * Returns <code>true</code> if {@link MutationTypeOptions#generating} is set to <code>true</code> AND
+     * one of {@link DeleteMutationOptions#isGenerating()} is set to <code>true</code> or
+     * {@link DeleteMutationOptions#generatingFor} is set to <code>true</code> for the specified type
+     * @param name the name of the Primary Model
+     * @return <code>true</code> if the Generator should generate Delete mutation for a specific Primary Model, <code>false</code> otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingDeleteMutationFor(String name) {
+        return mutationType != null && mutationType.isGenerating() && mutationType.getUpdateMutation().isGeneratingFor(name) ;
     }
 
     /**

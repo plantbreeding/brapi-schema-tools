@@ -20,6 +20,9 @@ public class ListGetOptions {
     boolean generating;
     String summaryFormat;
     String descriptionFormat;
+    boolean pagedDefault;
+    @Builder.Default
+    Map<String, Boolean> paged = new HashMap<>();
     @JsonProperty("generateFor")
     @Builder.Default
     Map<String, Boolean> generatingFor = new HashMap<>();
