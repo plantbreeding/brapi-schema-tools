@@ -1,6 +1,6 @@
 {
     "$defs": {
-        "PlannedCrossRequest": {
+        "SeedLotRequest": {
             "allOf": [
                 {
                     "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
@@ -49,6 +49,6 @@
             }
         }
     },
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/PlannedCrossRequest.json",
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/SeedLotRequest.json",
     "$schema": "http://json-schema.org/draft/2020-12/schema"
 }
