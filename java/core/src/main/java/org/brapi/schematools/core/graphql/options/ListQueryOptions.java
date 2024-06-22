@@ -3,12 +3,9 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractOptions;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
 /**
  * Provides options for the generation of List Queries

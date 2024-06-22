@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 
 import java.util.HashMap;
@@ -16,6 +15,9 @@ public class AbstractGeneratorOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralFor = new HashMap<>();
+    public void validate() {
+        assert pluralFor != null : String.format("'pluralFor' option on %s is null", this.getClass().getSimpleName());
+    }
 
     /**
      * Gets the Pluralised name for a specific Primary Model. For example plural

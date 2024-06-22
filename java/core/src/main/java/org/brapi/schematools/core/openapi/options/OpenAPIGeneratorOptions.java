@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
-import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
@@ -104,10 +102,16 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        return mapper.readValue(inputStream, OpenAPIGeneratorOptions.class).validate();
+        OpenAPIGeneratorOptions options = mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
+
+        options.validate() ;
+
+        return options ;
     }
 
-    public OpenAPIGeneratorOptions validate() {
+    public void validate() {
+        super.validate() ;
+
         assert singleGet != null : "Single Get Endpoint Options are null";
         assert listGet != null : "List Get Endpoint Options are null";
         assert post != null : "Post Endpoint Options are null";
@@ -130,8 +134,6 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
         assert listResponseNameFormat != null : "'listResponseNameFormat' option is null" ;
         assert searchRequestNameFormat != null : "'searchRequestNameFormat' option is null" ;
         assert pathItemNameFor != null : "'pathItemNameFor' option is null" ;
-
-        return this ;
     }
 
     /**

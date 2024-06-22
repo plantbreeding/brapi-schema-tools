@@ -3,7 +3,6 @@ package org.brapi.schematools.core.openapi.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractOptions;
 
 

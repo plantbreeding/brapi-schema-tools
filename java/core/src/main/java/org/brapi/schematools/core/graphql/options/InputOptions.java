@@ -3,8 +3,9 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.StringUtils;
+
+import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 @Getter(AccessLevel.PRIVATE)
 @Setter
@@ -27,7 +28,7 @@ public class InputOptions {
      */
     @JsonIgnore
     public final String getNameFor(@NonNull String name) {
-        return nameFormat != null ? String.format(nameFormat, name) : name ;
+        return nameFormat != null ? String.format(nameFormat, toParameterCase(name)) : this.name ;
     }
 
     /**

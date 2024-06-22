@@ -14,8 +14,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.brapi.schematools.core.utils.StringUtils.toPlural;
-
 /**
  * Options for the {@link GraphQLGenerator}.
  */
@@ -69,10 +67,16 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        return mapper.readValue(inputStream, GraphQLGeneratorOptions.class).validate();
+        GraphQLGeneratorOptions options = mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
+
+        options.validate() ;
+
+        return options ;
     }
 
-    public GraphQLGeneratorOptions validate() {
+    public void validate() {
+        super.validate() ;
+
         assert input != null : "Input Options are null";
         assert queryType != null : "Query Options are null";
         assert mutationType != null : "Mutation Options are null";
@@ -82,8 +86,6 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
         queryType.validate() ;
         mutationType.validate() ;
         ids.validate() ;
-
-        return this ;
     }
 
     /**
@@ -117,9 +119,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any list query. Returns <code>true</code> if
+     * Determines if the Generator should generate any List Query. Returns <code>true</code> if
      * {@link ListQueryOptions#isGenerating} is set to <code>true</code> for any type
-     * @return <code>true</code> if the Generator should generate any list query, <code>false</code> otherwise
+     * @return <code>true</code> if the Generator should generate any List Query, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueries() {
@@ -127,10 +129,10 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the list query for a specific Primary Model.
+     * Determines if the Generator should generate the List Query for a specific Primary Model.
      * Returns <code>true</code> if {@link ListQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate list query for a specific Primary Model, <code>false</code> otherwise
+     * @return <code>true</code> if the Generator should generate List Query for a specific Primary Model, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueryFor(String name) {
@@ -138,9 +140,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any search query. Returns <code>true</code> if
+     * Determines if the Generator should generate any Search Query. Returns <code>true</code> if
      * {@link SearchQueryOptions#isGenerating} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any search query, <code>false</code> otherwise
+     * @return <code>true</code> if the Generator should generate any Search Query, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueries() {
@@ -148,10 +150,10 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the search query for a specific Primary Model.
+     * Determines if the Generator should generate the Search Query for a specific Primary Model.
      * Returns <code>true</code> if {@link SearchQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate search query for a specific Primary Model, <code>false</code> otherwise
+     * @return <code>true</code> if the Generator should generate Search Query for a specific Primary Model, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueryFor(String name) {
@@ -227,7 +229,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingDeleteMutationFor(String name) {
-        return  mutationType.getUpdateMutation().isGeneratingFor(name) ;
+        return mutationType.getUpdateMutation().isGeneratingFor(name) ;
     }
 
     /**
@@ -240,42 +242,83 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Gets the name of the input list query of specific primary model
+     * Gets the name of the List or Search Query input type for of specific primary model
      * @param name the name of the primary model
-     * @return the name of the input list query of specific primary model
+     * @return the name of the List or Search input type for of specific primary model
      */
     @JsonIgnore
-    public final String getListQueryInputTypeNameFor(@NonNull String name) {
+    public final String getQueryInputTypeNameFor(@NonNull String name) {
         return input.getTypeNameForQuery(queryType.getListQuery().getNameFor(name)) ;
     }
 
+
     /**
-     * Gets the name of the input list query of specific primary model
+     * Gets the name of the List or Search Query input type for of specific primary model
      * @param type the primary model
-     * @return the name of the input list query of specific primary model
+     * @return the name of the List or Search input type for of specific primary model
      */
     @JsonIgnore
-    public final String getListQueryInputTypeNameFor(@NonNull BrAPIType type) {
-        return getListQueryInputTypeNameFor(type.getName()) ;
+    public final String getQueryInputTypeNameFor(@NonNull BrAPIType type) {
+        return getQueryInputTypeNameFor(type.getName()) ;
     }
 
     /**
-     * Gets the name of the input search query of specific primary model
+     * Gets the name of the Single Query of specific primary model
      * @param name the name of the primary model
-     * @return the name of the input search query of specific primary model
+     * @return the name of the Single Query of specific primary model
      */
-    @JsonIgnore
-    public final String getSearchQueryInputTypeNameFor(@NonNull String name) {
-        return input.getTypeNameForQuery(queryType.getListQuery().getNameFor(name)) ;
+    public String getSingleQueryNameFor(String name) {
+        return getNameFor(this.queryType.getSingleQuery(), name) ;
     }
 
     /**
-     * Gets the name of the input search query of specific primary model
-     * @param type the primary model
-     * @return the name of the input search query of specific primary model
+     * Gets the name of the List Query of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the List Query of specific primary model
      */
-    @JsonIgnore
-    public final String getSearchQueryInputTypeNameFor(@NonNull BrAPIType type) {
-        return getSearchQueryInputTypeNameFor(type.getName()) ;
+    public String getListQueryNameFor(String name) {
+        return getNameFor(this.queryType.getListQuery(), name) ;
+    }
+
+    /**
+     * Gets the name of the Search Query of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the Search Query of specific primary model
+     */
+    public String getSearchQueryNameFor(String name) {
+        return getNameFor(this.queryType.getSearchQuery(), name) ;
+    }
+
+    /**
+     * Gets the name of the Create Mutation of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the Create Mutation of specific primary model
+     */
+    public String getCreateMutationNameFor(String name) {
+        return getNameFor(this.mutationType.getCreateMutation(), name) ;
+    }
+
+    /**
+     * Gets the name of the Update Mutation of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the Update Mutation of specific primary model
+     */
+    public String getUpdateMutationNameFor(String name) {
+        return getNameFor(this.mutationType.getUpdateMutation(), name) ;
+    }
+
+    /**
+     * Gets the name of the Delete Mutation of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the Delete Mutation of specific primary model
+     */
+    public String getDeleteMutationNameFor(String name) {
+        return getNameFor(this.mutationType.getDeleteMutation(), name) ;
+    }
+
+    private String getNameFor(AbstractGraphQLOptions options, String name) {
+        String newName = options.isPluralisingName() ? getPluralFor(name) : name;
+
+        return options.getNameFor(newName) ;
     }
 }

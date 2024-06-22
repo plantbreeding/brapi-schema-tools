@@ -3,7 +3,6 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractOptions;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
@@ -12,11 +11,13 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 /**
  * Provides general options for the generation of Endpoints
  */
-@Getter(AccessLevel.PRIVATE)
+@Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractGraphQLOptions extends AbstractOptions {
+    private boolean pluralisingName;
+    @Getter(AccessLevel.PRIVATE)
     private String nameFormat;
 
     public void validate() {
@@ -43,7 +44,5 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
     public final String getNameFor(@NonNull BrAPIType type) {
         return getNameFor(type.getName());
     }
-
-
 }
 
