@@ -105,7 +105,7 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
-        System.err.println("There were errors generating the GraphQL Schema:");
+        System.err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
         response.getAllErrors().forEach(this::printError);
     }
 

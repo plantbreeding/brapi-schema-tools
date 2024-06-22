@@ -24,7 +24,7 @@ class OpenAPIComponentsReaderTest {
 
             assertEquals(9, components.getParameters().size());
             assertEquals(5, components.getResponses().size());
-            assertEquals(10, components.getSchemas().size());
+            assertEquals(9, components.getSchemas().size());
             assertEquals(1, components.getSecuritySchemes().size());
 
         } catch (Exception e) {

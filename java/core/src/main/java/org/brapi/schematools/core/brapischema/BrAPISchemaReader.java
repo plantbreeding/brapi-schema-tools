@@ -67,7 +67,7 @@ public class BrAPISchemaReader {
      */
     public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) throws BrAPISchemaReaderException {
         try {
-            return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).flatMap(this::createBrAPISchemas).collect(Response.toList())) ;
+            return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).map(this::createBrAPISchemas).collect(Response.mergeLists())) ;
         } catch (RuntimeException | IOException e) {
             throw new BrAPISchemaReaderException(e);
         }
@@ -85,7 +85,7 @@ public class BrAPISchemaReader {
      */
     public Response<BrAPIClass> readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
         try {
-            return createBrAPISchemas(schemaPath, module).collect(Response.toList()).mapResult(list -> list.get(0)) ;
+            return createBrAPISchemas(schemaPath, module).mapResult(list -> list.get(0)) ;
         } catch (RuntimeException e) {
             throw new BrAPISchemaReaderException(e);
         }
@@ -104,14 +104,13 @@ public class BrAPISchemaReader {
      */
     public Response<BrAPIClass> readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
         try {
-            return createBrAPISchemas(path, objectMapper.readTree(schema), module).collect(Response.toList()).mapResult(list -> list.get(0)) ;
+            return createBrAPISchemas(path, objectMapper.readTree(schema), module).mapResult(list -> list.get(0)) ;
         } catch (RuntimeException| JsonProcessingException e) {
             throw new BrAPISchemaReaderException(String.format("Can not read schema at '%s' in module '%s' from '%s', due to '%s'", path, module, schema, e.getMessage()), e);
         }
     }
 
     private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
-
         return types.mapResult(this::dereference).mapResultToResponse(this::validate) ;
     }
 
@@ -123,13 +122,14 @@ public class BrAPISchemaReader {
 
         types.forEach(type -> {
             if (type instanceof BrAPIAllOfType brAPIAllOfType) {
-                brAPIClasses.add(BrAPIObjectType.builder().
-                    name(brAPIAllOfType.getName()).
-                    description(brAPIAllOfType.getDescription()).
-                    module(brAPIAllOfType.getModule()).
-                    properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build()) ;
+                brAPIClasses.add(BrAPIObjectType.builder()
+                    .name(brAPIAllOfType.getName())
+                    .description(brAPIAllOfType.getDescription())
+                    .module(brAPIAllOfType.getModule())
+                    .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
+                    .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build());
             } else {
-                brAPIClasses.add(type) ;
+                brAPIClasses.add(type);
             }
         });
 
@@ -210,7 +210,7 @@ public class BrAPISchemaReader {
         return properties ;
     }
 
-    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path) {
+    private Response<List<BrAPIClass>> createBrAPISchemas(Path path) {
         return createBrAPISchemas(path, findModule(path));
     }
 
@@ -220,15 +220,19 @@ public class BrAPISchemaReader {
         return module != null && COMMON_MODULES.contains(module) ? null : module;
     }
 
-    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path, String module) {
-        JsonSchema schema = factory.getSchema(path.toUri());
+    private Response<List<BrAPIClass>> createBrAPISchemas(Path path, String module) {
+        try {
+            JsonSchema schema = factory.getSchema(path.toUri());
 
-        JsonNode json = schema.getSchemaNode();
+            JsonNode json = schema.getSchemaNode();
 
-        return createBrAPISchemas(path, json, module);
+            return createBrAPISchemas(path, json, module);
+        } catch (RuntimeException e) {
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not read schemas from for module '%s' from path '%s' due to '%s'", module, path, e.getMessage())) ;
+        }
     }
 
-    private Stream<Response<BrAPIClass>> createBrAPISchemas(Path path, JsonNode json, String module) {
+    private Response<List<BrAPIClass>> createBrAPISchemas(Path path, JsonNode json, String module) {
         JsonNode defs = json.get("$defs");
 
         if (defs != null) {
@@ -239,7 +243,7 @@ public class BrAPISchemaReader {
 
         return Stream.generate(() -> null)
             .takeWhile(x -> iterator.hasNext())
-            .map(n -> iterator.next()).map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module));
+            .map(n -> iterator.next()).map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module)).collect(Response.toList());
     }
 
     private Response<BrAPIClass> createBrAPIClass(Path path, JsonNode jsonNode, String fallbackName, String module) {
@@ -379,15 +383,15 @@ public class BrAPISchemaReader {
 
         List<BrAPIObjectProperty> properties = new ArrayList<>();
         return Response.empty().
-            mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", false).
+            mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", true).
                 mapResultToResponse(additionalPropertiesNode -> createProperty(path, additionalPropertiesNode, "additionalProperties",
                     module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add))).
-            mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", false).
+            mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", true).
                 mapResult(JsonNode::fields).
                 mapResultToResponse(fields -> createProperties(path, fields, module, required)).
                 onSuccessDoWithResult(properties::addAll)).
             onSuccessDo(() -> builder.properties(properties)).
-            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", false).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
                 mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
@@ -441,6 +445,8 @@ public class BrAPISchemaReader {
             mapResult(this::childNodes).
             mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createAllTypes(path, nodes, name, module))).
             onSuccessDoWithResult(builder::allTypes).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
@@ -464,6 +470,8 @@ public class BrAPISchemaReader {
             mapResult(this::childNodes).
             mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createPossibleTypes(path, nodes, name, module))).
             onSuccessDoWithResult(builder::possibleTypes).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
@@ -487,6 +495,8 @@ public class BrAPISchemaReader {
         return findStringList(jsonNode, "enum", true).
             mapResultToResponse(strings -> createEnumValues(strings, type)).
             onSuccessDoWithResult(builder::values).
+            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
+                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
             map(() -> success(builder.build()));
     }
 
