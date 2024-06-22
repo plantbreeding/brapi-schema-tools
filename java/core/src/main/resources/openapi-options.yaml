@@ -1,11 +1,13 @@
 separateByModule: false
-createNewRequest: true
-createNewRequestFor:
+generateNewRequest: true
+generateNewRequestFor:
+    AlleleMatrix: false
     BreedingMethod: false
     Call: false
     CallSet: false
     Event: false
     GenomeMap: false
+    MarkerPosition: false
     Reference: false
     PedigreeNode: false
     PlannedCross: false
@@ -16,6 +18,10 @@ newRequestNameFormat: "%sNewRequest"
 singleResponseNameFormat: "%sSingleResponse"
 listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
+pluralFor:
+    AlleleMatrix: AlleleMatrix
+pathItemNameFor:
+    PedigreeNode: pedigrees
 singleGet:
     generate: true
     summaryFormat: Get the details of a specific %s
@@ -35,10 +41,13 @@ listGet:
         AlleleMatrix: false
     pagedDefault: true
     paged:
-         BreedingMethod: false
+        BreedingMethod: false
+    inputFor:
+        BreedingMethod: false
 search:
     generate: true
     summaryFormat: Submit a search request for `%s`
+    descriptionFormat: Submit a search request for `%s`t
     submitDescriptionFormat:  |-
         Submit a search request for `%s`<br/>
         Search requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. 
@@ -105,3 +114,6 @@ delete:
         VariantSet: false
 ids:
     nameFormat: "%sDbId"
+    parameterFor:
+        GermplasmAttribute: attributeDbId
+        GermplasmAttributeValue: attributeValueDbId

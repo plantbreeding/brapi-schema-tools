@@ -1,37 +1,46 @@
 package org.brapi.schematools.core.openapi.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import org.brapi.schematools.core.model.BrAPIType;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 /**
  * Provides options for the generation of Search Post and Get Endpoints
  */
-@Getter
-@Setter(AccessLevel.PRIVATE)
-@Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SearchOptions {
-    @JsonProperty("generate")
-    boolean generating;
-    String summaryFormat;
-    String submitDescriptionFormat;
-    String retrieveDescriptionFormat;
-    @JsonProperty("generateFor")
-    @Builder.Default
-    Map<String, Boolean> generatingFor = new HashMap<>();
+@Getter(AccessLevel.PRIVATE)
+@Setter
+public class SearchOptions  extends AbstractOpenAPIOptions {
+    private String submitDescriptionFormat;
+    private String retrieveDescriptionFormat;
+
+    public void validate() {
+        super.validate();
+        assert submitDescriptionFormat != null : String.format("'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
+        assert retrieveDescriptionFormat != null : String.format("'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
+    }
+
 
     /**
-     * Determines if the Search Post and Get Endpoints are generated for a specific primary model
-     * @param name the name of the primary model
-     * @return <code>true</code> if the Search Post and Get Endpoints are generated for a specific primary model, <code>false</code> otherwise
+     * Gets the submit description for a specific primary model
+     * @param type the primary model
+     * @return the submit description for a specific primary model
      */
     @JsonIgnore
-    public boolean isGeneratingFor(String name) {
-        return generatingFor.getOrDefault(name, generating) ;
+    public final String getSubmitDescriptionFormat(BrAPIType type) {
+        return String.format(submitDescriptionFormat, type.getName(), toParameterCase(type.getName())) ;
+    }
+
+    /**
+     * Gets the retrieve description for a specific primary model
+     * @param type the primary model
+     * @return the retrieve description for a specific primary model
+     */
+    @JsonIgnore
+    public final String getRetrieveDescriptionFormat(BrAPIType type) {
+        return String.format(retrieveDescriptionFormat, type.getName(), toParameterCase(type.getName())) ;
     }
 }

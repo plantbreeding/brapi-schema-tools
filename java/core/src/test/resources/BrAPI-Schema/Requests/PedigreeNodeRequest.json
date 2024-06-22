@@ -1,6 +1,6 @@
 {
     "$defs": {
-        "PedigreeRequest": {
+        "PedigreeNodeRequest": {
             "allOf": [
                 {
                     "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
@@ -166,6 +166,6 @@
             }
         }
     },
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/PedigreeRequest.json",
+    "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/PedigreeNodeRequest.json",
     "$schema": "http://json-schema.org/draft/2020-12/schema"
 }

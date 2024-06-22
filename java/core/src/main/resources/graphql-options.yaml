@@ -1,13 +1,15 @@
+pluralFor:
+    AlleleMatrix: AlleleMatrix
 input:
     name: input
     nameFormat: "%sInput"
     typeNameFormat: "%sInput"
 queryType:
-    generate: true
     name: Query
     partitionedByCrop: true
     singleQuery:
         generate: true
+        nameFormat: "%s"
         descriptionFormat: Returns a %s object by id
         generateFor:
             AlleleMatrix: false
@@ -18,6 +20,7 @@ queryType:
             PlannedCross: false
     listQuery:
         generate: true
+        nameFormat: "%s"
         descriptionFormat: Returns %s objects
         responseTypeNameFormat: "%sListResponse"
         dataFieldName: data
@@ -35,7 +38,10 @@ queryType:
         pageFieldName: page
     searchQuery:
         generate: true
+        nameFormat: "%sSearch"
         descriptionFormat: Returns %s objects
+        responseTypeNameFormat: "%sResponse"
+        searchIdFieldName: searchDbId
         generateFor:
             AlleleMatrix: false
             BreedingMethod: false
@@ -46,7 +52,6 @@ queryType:
             Scale: false
             Trait: false
 mutationType:
-    generate: false
     name: Mutation
     createMutation:
         generate: true

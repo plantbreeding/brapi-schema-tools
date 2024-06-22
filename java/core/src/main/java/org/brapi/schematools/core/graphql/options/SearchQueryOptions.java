@@ -1,36 +1,23 @@
 package org.brapi.schematools.core.graphql.options;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Provides options for the generation of Search Queries
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
-@Builder
+@Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SearchQueryOptions {
-    @JsonProperty("generate")
-    boolean generating;
-    String nameFormat;
-    String descriptionFormat;
-    @JsonProperty("generateFor")
-    @Builder.Default
-    Map<String, Boolean> generatingFor = new HashMap<>();
+public class SearchQueryOptions extends AbstractGraphQLQueryOptions {
+    private String searchIdFieldName ;
 
-    /**
-     * Determines if the Search Query is generated for a specific primary model
-     * @param name the name of the primary model
-     * @return <code>true</code> if the Search Query is generated for a specific primary model, <code>false</code> otherwise
-     */
-    @JsonIgnore
-    public boolean isGeneratingFor(String name) {
-        return generatingFor.getOrDefault(name, generating) ;
+    public void validate() {
+        super.validate();
+        assert searchIdFieldName != null : String.format("'searchIdFieldName' option on %s is null", this.getClass().getSimpleName());
     }
 }

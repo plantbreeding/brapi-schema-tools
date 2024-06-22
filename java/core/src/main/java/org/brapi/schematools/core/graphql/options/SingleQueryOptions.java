@@ -1,35 +1,17 @@
 package org.brapi.schematools.core.graphql.options;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Provides options for the generation of Single Queries
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
-@Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SingleQueryOptions {
-    @JsonProperty("generate")
-    boolean generating;
-    String descriptionFormat;
-    @JsonProperty("generateFor")
-    @Builder.Default
-    Map<String, Boolean> generatingFor = new HashMap<>();
+public class SingleQueryOptions extends AbstractGraphQLOptions {
 
-    /**
-     * Determines if the Single Query is generated for a specific primary model
-     * @param name the name of the primary model
-     * @return <code>true</code> if the Single Query is generated for a specific primary model, <code>false</code> otherwise
-     */
-    @JsonIgnore
-    public boolean isGeneratingFor(String name) {
-        return generatingFor.getOrDefault(name, generating) ;
-    }
 }

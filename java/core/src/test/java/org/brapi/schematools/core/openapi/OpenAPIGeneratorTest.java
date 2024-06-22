@@ -23,7 +23,7 @@ class OpenAPIGeneratorTest {
     void generate() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(false).build()).
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
                 generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ class OpenAPIGeneratorTest {
     void generateByModule() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.builder().separatingByModule(true).build()).
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(true)).
                 generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
             e.printStackTrace();

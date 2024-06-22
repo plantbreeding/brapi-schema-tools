@@ -1,12 +1,14 @@
 {
     "separateByModule": false,
-    "createNewRequest": true,
-    "createNewRequestFor": {
+    "generateNewRequest": true,
+    "generateNewRequestFor": {
+        "AlleleMatrix": false,
         "BreedingMethod": false,
         "Call": false,
         "CallSet": false,
         "Event": false,
         "GenomeMap": false,
+        "MarkerPosition": false,
         "Reference": false,
         "PedigreeNode": false,
         "PlannedCross": false,
@@ -18,6 +20,12 @@
     "singleResponseNameFormat": "%sSingleResponse",
     "listResponseNameFormat": "%sListResponse",
     "searchRequestNameFormat": "%sSearchRequest",
+    "pluralFor": {
+        "AlleleMatrix": "AlleleMatrix"
+    },
+    "pathItemNameFor": {
+        "PedigreeNode": "pedigrees"
+    },
     "singleGet": {
         "generate": true,
         "summaryFormat": "Get the details of a specific %s",
@@ -41,11 +49,15 @@
         "pagedDefault": true,
         "paged": {
             "BreedingMethod": false
+        },
+        "inputFor": {
+            "BreedingMethod": false
         }
     },
     "search": {
         "generate": true,
         "summaryFormat": "Submit a search request for `%s`",
+        "descriptionFormat": "Submit a search request for `%s`t",
         "submitDescriptionFormat": "Submit a search request for `%s`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/%s/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
         "retrieveDescriptionFormat": "Get the results of a `%s` search request <br/>\nClients should submit a search request using the corresponding `POST /search/%s` endpoint.\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse this endpoint to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
         "generateFor": {
@@ -108,6 +120,10 @@
         }
     },
     "ids": {
-        "nameFormat": "%sDbId"
+        "nameFormat": "%sDbId",
+        "parameterFor": {
+            "GermplasmAttribute": "attributeDbId",
+            "GermplasmAttributeValue": "attributeValueDbId"
+        }
     }
 }
