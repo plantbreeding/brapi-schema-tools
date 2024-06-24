@@ -360,9 +360,12 @@ public class GraphQLGenerator {
                     name(name).
                     description(brAPIObjectType.getDescription());
 
-                return brAPIObjectType.getProperties().stream().map(this::createInputObjectField).collect(Response.toList()).
-                    onSuccessDoWithResult(builder::fields).
-                    map(() -> addInputObjectType(builder.build()));
+                boolean hasExternalReferences = brAPIObjectType.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences")) ;
+
+                return brAPIObjectType.getProperties().stream().map(this::createInputObjectField).collect(Response.toList())
+                    .onSuccessDoWithResult(builder::fields)
+                    .mapOnCondition(hasExternalReferences, () -> createExternalReferencesInputObjectField().onSuccessDoWithResult(builder::field))
+                    .map(() -> addInputObjectType(builder.build()));
             } else if (type instanceof BrAPIOneOfType brAPIOneOfType) {
                 GraphQLInputObjectType.Builder builder = newInputObject().
                     name(name).
@@ -409,6 +412,14 @@ public class GraphQLGenerator {
             return createInputType(property.getType()).
                 onSuccessDoWithResult(builder::type).
                 map(() -> success(builder.build()));
+        }
+
+        private Response<GraphQLInputObjectField> createExternalReferencesInputObjectField() {
+            return success(newInputObjectField()
+                .name("externalReferences")
+                .description("Filter by External References")
+                .type(GraphQLList.list(GraphQLTypeReference.typeRef("ExternalReferenceInput")))
+                .build()) ;
         }
 
         private Response<GraphQLUnionType> createUnionOutputType(BrAPIOneOfType type) {
