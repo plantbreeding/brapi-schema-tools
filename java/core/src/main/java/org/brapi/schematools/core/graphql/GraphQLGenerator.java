@@ -289,7 +289,7 @@ public class GraphQLGenerator {
 
             return type.getInterfaces().stream().map(
                     interfaceType -> createInterfaceType(interfaceType).onSuccessDoWithResult(builder::withInterface)).collect(Response.toList())
-                .map(() -> type.getProperties().stream().map(this::createFieldDefinition).collect(Response.toList()))
+                .map(() -> extractProperties(type).map(this::createFieldDefinition).collect(Response.toList()))
                 .onSuccessDoWithResult(builder::fields)
                 .map(() -> addObjectType(builder.build()));
         }

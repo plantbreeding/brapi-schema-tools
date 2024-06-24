@@ -262,8 +262,8 @@ public class BrAPISchemaReader {
         return interfaces ;
     }
 
-    private boolean isInterface(BrAPIObjectType type) {
-        return type.getMetadata() != null && type.getMetadata().isInterfaceClass() ;
+    private boolean isInterface(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isInterfaceClass() ;
     }
 
 
