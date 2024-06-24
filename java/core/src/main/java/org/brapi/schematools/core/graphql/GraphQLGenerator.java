@@ -30,6 +30,7 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
+import static graphql.schema.GraphQLInterfaceType.newInterface;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
@@ -100,6 +101,7 @@ public class GraphQLGenerator {
         private final GraphQLGeneratorMetadata metadata;
         private final Map<String, BrAPIClass> brAPISchemas;
         private final Map<String, GraphQLObjectType> objectOutputTypes;
+        private final Map<String, GraphQLInterfaceType> interfaceTypes;
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
         private final Map<String, GraphQLNamedInputType> inputTypes;
@@ -110,6 +112,7 @@ public class GraphQLGenerator {
             this.metadata = metadata;
             this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
             objectOutputTypes = new HashMap<>();
+            interfaceTypes = new HashMap<>();
             unionTypes = new HashMap<>();
             enumTypes = new HashMap<>();
             inputTypes = new HashMap<>();
@@ -135,6 +138,10 @@ public class GraphQLGenerator {
                         filter(this::isGeneratingInputTypeForSearchQuery).
                         map(this::createInputObjectTypeForSearchQuery).
                         collect(Response.toList())).
+                map(() -> brAPISchemas.values().stream().
+                    filter(this::isInterface).
+                    map(type -> createInterfaceType((BrAPIObjectType) type)).
+                    collect(Response.toList())).
                 map(() -> brAPISchemas.values().stream().
                     filter(this::isPrimaryModel).
                     map(type -> createObjectType((BrAPIObjectType) type)).
@@ -165,7 +172,7 @@ public class GraphQLGenerator {
         }
 
         private boolean isNonPrimaryModel(BrAPIClass type) {
-            return type.getMetadata() == null || !(type.getMetadata().isPrimaryModel() || type.getMetadata().isRequest() || type.getMetadata().isParameters());
+            return type.getMetadata() == null || !(type.getMetadata().isPrimaryModel() || type.getMetadata().isRequest() || type.getMetadata().isParameters() || type.getMetadata().isInterfaceClass());
         }
 
         private boolean isModel(BrAPIClass type) {
@@ -174,6 +181,10 @@ public class GraphQLGenerator {
 
         private boolean isRequest(BrAPIClass type) {
             return type.getMetadata() != null && type.getMetadata().isRequest() ;
+        }
+
+        private boolean isInterface(BrAPIClass type) {
+            return type.getMetadata() != null && type.getMetadata().isInterfaceClass() ;
         }
 
         private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> primaryTypes) {
@@ -213,6 +224,7 @@ public class GraphQLGenerator {
             }
 
             objectOutputTypes.values().forEach(builder::additionalType);
+            interfaceTypes.values().forEach(builder::additionalType);
             enumTypes.values().forEach(builder::additionalType);
             inputTypes.values().forEach(builder::additionalType);
             unionTypes.values().forEach(builder::additionalType);
@@ -222,6 +234,7 @@ public class GraphQLGenerator {
                 builder.additionalType(createPageType());
             }
 
+            interfaceTypes.values().forEach(graphQLType -> codeRegistry.typeResolver(graphQLType, new InterfaceTypeResolver(graphQLType)));
             unionTypes.values().forEach(graphQLType -> codeRegistry.typeResolver(graphQLType, new UnionTypeResolver(graphQLType)));
 
             builder.codeRegistry(codeRegistry.build());
@@ -272,9 +285,34 @@ public class GraphQLGenerator {
                 name(type.getName()).
                 description(type.getDescription());
 
-            return type.getProperties().stream().map(this::createFieldDefinition).collect(Response.toList()).
-                onSuccessDoWithResult(builder::fields).
-                map(() -> addObjectType(builder.build()));
+            type.getInterfaces().forEach(interfaceType -> builder.withInterface(GraphQLTypeReference.typeRef(interfaceType.getName()))) ;
+
+            return type.getInterfaces().stream().map(
+                    interfaceType -> createInterfaceType(interfaceType).onSuccessDoWithResult(builder::withInterface)).collect(Response.toList())
+                .map(() -> type.getProperties().stream().map(this::createFieldDefinition).collect(Response.toList()))
+                .onSuccessDoWithResult(builder::fields)
+                .map(() -> addObjectType(builder.build()));
+        }
+
+        private Response<GraphQLInterfaceType> createInterfaceType(BrAPIObjectType type) {
+
+            GraphQLInterfaceType existingType = interfaceTypes.get(type.getName());
+
+            if (existingType != null) {
+                return success(existingType);
+            }
+
+            GraphQLInterfaceType.Builder builder = newInterface().
+                name(type.getName()).
+                description(type.getDescription());
+
+            type.getInterfaces().forEach(interfaceType -> builder.withInterface(GraphQLTypeReference.typeRef(interfaceType.getName()))) ;
+
+            return type.getInterfaces().stream().map(
+                    interfaceType -> createInterfaceType(interfaceType).onSuccessDoWithResult(builder::withInterface)).collect(Response.toList())
+                .map(() -> type.getProperties().stream().map(this::createFieldDefinition).collect(Response.toList()))
+                .onSuccessDoWithResult(builder::fields)
+                .map(() -> addInterfaceType(builder.build()));
         }
 
         private Response<GraphQLFieldDefinition> createFieldDefinition(BrAPIObjectProperty property) {
@@ -487,6 +525,12 @@ public class GraphQLGenerator {
 
         private Response<GraphQLObjectType> addObjectType(GraphQLObjectType type) {
             objectOutputTypes.put(type.getName(), type);
+
+            return success(type);
+        }
+
+        private Response<GraphQLInterfaceType> addInterfaceType(GraphQLInterfaceType type) {
+            interfaceTypes.put(type.getName(), type);
 
             return success(type);
         }
@@ -798,6 +842,17 @@ public class GraphQLGenerator {
         @Override
         public GraphQLObjectType getType(TypeResolutionEnvironment schemaName) {
             return (GraphQLObjectType) this.unionType.getTypes().get(0);
+        }
+    }
+
+    @AllArgsConstructor
+    private static class InterfaceTypeResolver implements TypeResolver {
+
+        private GraphQLInterfaceType interfaceType;
+
+        @Override
+        public GraphQLObjectType getType(TypeResolutionEnvironment schemaName) {
+            return (GraphQLObjectType) this.interfaceType.getChildren().get(0) ;
         }
     }
 }

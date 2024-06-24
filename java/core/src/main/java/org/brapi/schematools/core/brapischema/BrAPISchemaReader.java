@@ -127,7 +127,9 @@ public class BrAPISchemaReader {
                     .description(brAPIAllOfType.getDescription())
                     .module(brAPIAllOfType.getModule())
                     .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
-                    .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)).build());
+                    .interfaces(extractInterfaces(brAPIAllOfType, typeMap))
+                    .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap))
+                    .build());
             } else {
                 brAPIClasses.add(type);
             }
@@ -181,8 +183,11 @@ public class BrAPISchemaReader {
             if (metadata.isParameters()) {
                 ++i;
             }
+            if (metadata.isInterfaceClass()) {
+                ++i;
+            }
             if (i > 1) {
-                return fail(Response.ErrorType.VALIDATION, "'primaryModel', 'request', 'parameters' are mutually exclusive, only one can be set to to true") ;
+                return fail(Response.ErrorType.VALIDATION, "'primaryModel', 'request', 'parameters', 'interface' are mutually exclusive, only one can be set to to true") ;
             }
         }
 
@@ -241,6 +246,26 @@ public class BrAPISchemaReader {
 
         return properties ;
     }
+
+    private List<BrAPIObjectType> extractInterfaces(BrAPIAllOfType brAPIAllOfType, Map<String, BrAPIType> typeMap) {
+
+        List<BrAPIObjectType> interfaces = new ArrayList<>() ;
+
+        brAPIAllOfType.getAllTypes().forEach(type -> {
+            BrAPIType allType = typeMap.get(type.getName());
+
+            if (allType instanceof BrAPIObjectType && isInterface((BrAPIObjectType)allType)) {
+                interfaces.add((BrAPIObjectType) allType) ;
+            }
+        });
+
+        return interfaces ;
+    }
+
+    private boolean isInterface(BrAPIObjectType type) {
+        return type.getMetadata() != null && type.getMetadata().isInterfaceClass() ;
+    }
+
 
     private Response<List<BrAPIClass>> createBrAPISchemas(Path path) {
         return createBrAPISchemas(path, findModule(path));
@@ -404,9 +429,10 @@ public class BrAPISchemaReader {
 
     private Response<BrAPIType> createObjectType(Path path, JsonNode jsonNode, String name, String module) {
 
-        BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder().
-            name(name).
-            module(module);
+        BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder()
+            .name(name)
+            .module(module)
+            .interfaces(new ArrayList<>());
 
         findString(jsonNode, "description", false).
             onSuccessDoWithResult(builder::description);
@@ -461,6 +487,10 @@ public class BrAPISchemaReader {
             onSuccessDoWithResult(builder::primaryModel).
             merge(findBoolean(metadata, "request", false, false)).
             onSuccessDoWithResult(builder::request).
+            merge(findBoolean(metadata, "parameters", false, false)).
+            onSuccessDoWithResult(builder::parameters).
+            merge(findBoolean(metadata, "interface", false, false)).
+            onSuccessDoWithResult(builder::interfaceClass).
             map(() -> success(builder.build()));
     }
 
