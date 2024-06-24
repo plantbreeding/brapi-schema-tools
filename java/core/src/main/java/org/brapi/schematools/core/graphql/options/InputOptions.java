@@ -22,9 +22,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the name of the input for a specific primary model
+     * Gets the name of the input parameter for a specific primary model
      * @param name the name of the primary model
-     * @return the name of the input for a specific primary model
+     * @return the name of the input parameter for a specific primary model
      */
     @JsonIgnore
     public final String getNameFor(@NonNull String name) {
@@ -32,9 +32,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the name of input for a specific primary model
+     * Gets the name of input parameter for a specific primary model
      * @param type the primary model
-     * @return the name of the input for a specific primary model
+     * @return the name of the input parameter for a specific primary model
      */
     @JsonIgnore
     public final String getNameFor(@NonNull BrAPIType type) {
@@ -42,9 +42,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a specific primary model
+     * Gets the type name of the input for a specific primary model
      * @param name the name of the primary model
-     * @return the  type name for a specific primary model
+     * @return the type name of the input for a specific primary model
      */
     @JsonIgnore
     public final String getTypeNameFor(@NonNull String name) {
@@ -52,9 +52,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a specific primary model
+     * Gets the type name of the input for a specific primary model
      * @param type the primary model
-     * @return the  type name for a specific primary model
+     * @return the type name of the input for a specific primary model
      */
     @JsonIgnore
     public final String getTypeNameFor(@NonNull BrAPIType type) {
@@ -62,9 +62,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a query
+     * Gets the type name of the input for a query
      * @param queryName the name of the query
-     * @return the name of the type name for a query
+     * @return the type name of the input for a query
      */
     @JsonIgnore
     public final String getTypeNameForQuery(@NonNull String queryName) {

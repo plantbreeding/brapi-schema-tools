@@ -139,22 +139,54 @@ public class BrAPISchemaReader {
     private Response<List<BrAPIClass>> validate(List<BrAPIClass> brAPIClasses) {
         Map<String, BrAPIClass> classesMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
-        return brAPIClasses.stream().map(brAPIClass -> validateType(classesMap, brAPIClass).mapResult(t -> (BrAPIClass)t)).collect(Response.toList()) ;
+        return brAPIClasses.stream().map(brAPIClass -> validateClass(classesMap, brAPIClass).mapResult(t -> (BrAPIClass)t)).collect(Response.toList()) ;
+    }
+
+    private Response<BrAPIType> validateClass(final Map<String, BrAPIClass> classesMap, BrAPIClass brAPIClass) {
+        return validateBrAPIMetadata(brAPIClass.getMetadata()).map(() -> {
+                if (brAPIClass instanceof BrAPIAllOfType brAPIAllOfType) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("BrAPIAllOfType '%s' was not de-referenced", brAPIAllOfType.getName())) ;
+                }
+
+                if (brAPIClass instanceof BrAPIOneOfType brAPIOneOfType) {
+                    return brAPIOneOfType.getPossibleTypes().stream().map(possibleType -> validateType(classesMap, possibleType)).collect(Response.toList()).withResult(brAPIClass) ;
+                }
+
+                if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
+                    return brAPIObjectType.getProperties().stream().map(property -> validateProperty(classesMap, brAPIObjectType, property)).collect(Response.toList()).withResult(brAPIClass) ;
+                }
+
+                return success(brAPIClass) ;
+        }) ;
     }
 
     private Response<BrAPIType> validateType(final Map<String, BrAPIClass> classesMap, BrAPIType brAPIType) {
-
-        if (brAPIType instanceof BrAPIAllOfType brAPIAllOfType) {
-            return fail(Response.ErrorType.VALIDATION, String.format("Can not BrAPIAllOfType '%s' was not de-referenced", brAPIAllOfType.getName())) ;
-        } else if (brAPIType instanceof BrAPIOneOfType brAPIOneOfType) {
-            return brAPIOneOfType.getPossibleTypes().stream().map(possibleType -> validateType(classesMap, possibleType)).collect(Response.toList()).
-                merge(success(brAPIType)) ;
-        } else if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
-            return brAPIObjectType.getProperties().stream().map(property -> validateProperty(classesMap, brAPIObjectType, property)).collect(Response.toList()).
-                merge(success(brAPIType)) ;
+        if (brAPIType instanceof BrAPIClass brAPIAllOfType) {
+            return validateClass(classesMap, brAPIAllOfType) ;
         } else {
             return success(brAPIType) ;
         }
+    }
+
+    private Response<BrAPIMetadata> validateBrAPIMetadata(BrAPIMetadata metadata) {
+
+        if (metadata != null) {
+            int i = 0 ;
+            if (metadata.isPrimaryModel()) {
+                ++i;
+            }
+            if (metadata.isRequest()) {
+                ++i;
+            }
+            if (metadata.isParameters()) {
+                ++i;
+            }
+            if (i > 1) {
+                return fail(Response.ErrorType.VALIDATION, "'primaryModel', 'request', 'parameters' are mutually exclusive, only one can be set to to true") ;
+            }
+        }
+
+        return success(metadata) ;
     }
 
     private Response<BrAPIObjectProperty> validateProperty(Map<String, BrAPIClass> classesMap, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {

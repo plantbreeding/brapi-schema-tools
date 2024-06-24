@@ -242,13 +242,34 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull String name) {
+        return input.getNameFor(getListQueryNameFor(name)) ;
+    }
+
+
+    /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param type the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull BrAPIType type) {
+        return getQueryInputParameterNameFor(type.getName()) ;
+    }
+
+    /**
      * Gets the name of the List or Search Query input type for of specific primary model
      * @param name the name of the primary model
      * @return the name of the List or Search input type for of specific primary model
      */
     @JsonIgnore
     public final String getQueryInputTypeNameFor(@NonNull String name) {
-        return input.getTypeNameForQuery(queryType.getListQuery().getNameFor(name)) ;
+        return input.getTypeNameForQuery(getListQueryNameFor(name)) ;
     }
 
 

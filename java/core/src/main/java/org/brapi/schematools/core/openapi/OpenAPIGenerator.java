@@ -512,7 +512,7 @@ public class OpenAPIGenerator {
             String idParameter = options.getIds().getIDParameterFor(type) ;
 
             return createProperties(type.getProperties().stream().filter(property -> !property.getName().equals(idParameter)).toList()).mapResult(
-                schema -> new ObjectSchema().properties(schema).name(type.getName()).description(type.getDescription())) ;
+                schema -> new ObjectSchema().properties(schema).name(options.getNewRequestNameFor(type)).description(type.getDescription())) ;
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {

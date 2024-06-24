@@ -89,6 +89,7 @@ mutationType:
     deleteMutation:
         generate: false
         pluralisingName: true
+        multiple: true
         nameFormat: delete%s
         descriptionFormat: Delete existing %s
         generateFor:
