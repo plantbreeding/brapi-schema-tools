@@ -4,10 +4,13 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
     name = "brapi",
+    description = "Command line tools for the BrAPI JSON schema, see the sub-commands for details",
+    version = "0.0.2",
+    footer = "Copyright (c) 2024 The Breeding API",
     subcommands = {
+        ValidateSubCommand.class,
         GenerateSubCommand.class
     },
-    version = "1.0",
     mixinStandardHelpOptions = true
 )
 public class BrAPICommand {

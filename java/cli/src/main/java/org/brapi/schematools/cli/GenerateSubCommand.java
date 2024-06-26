@@ -23,13 +23,14 @@ import java.nio.file.Path;
 import java.util.List;
 
 @CommandLine.Command(
-    name = "generate", mixinStandardHelpOptions = true
+    name = "generate", mixinStandardHelpOptions = true,
+    description = "Generates the OpenAPI Specification or GraphQL Schema from a BrAPI JSON schema"
 )
 public class GenerateSubCommand implements Runnable {
 
     private static final OutputFormat DEFAULT_FORMAT = OutputFormat.OPEN_API;
 
-    @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI json schema")
+    @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI JSON schema")
     private Path schemaDirectory;
 
     @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
@@ -105,7 +106,12 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
-        System.err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
+        if (response.getAllErrors().size() == 1) {
+            System.err.printf("There was 1 error generating the GraphQL Schema:%n");
+        } else {
+            System.err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
+        }
+
         response.getAllErrors().forEach(this::printError);
     }
 
@@ -151,7 +157,12 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
-        System.err.println("There were errors generating the OpenAPI Specification:");
+        if (response.getAllErrors().size() == 1) {
+            System.err.printf("There was 1 error generating the OpenAPI Specification:%n");
+        } else {
+            System.err.printf("There were %d errors generating the OpenAPI Specification:%n", response.getAllErrors().size());
+        }
+
         response.getAllErrors().forEach(this::printError);
     }
 
