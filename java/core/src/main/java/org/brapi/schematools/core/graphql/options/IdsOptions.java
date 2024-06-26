@@ -6,6 +6,11 @@ import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
+
 /**
  * Provides options for the generation of Ids
  */
@@ -18,9 +23,12 @@ public class IdsOptions {
     String nameFormat;
     @JsonProperty("useIDType")
     boolean usingIDType;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> fieldFor = new HashMap<>();
 
     public void validate() {
-        assert nameFormat != null : "'nameFormat' option on Mutation Ids Options is null";
+        assert nameFormat != null : String.format("'nameFormat' option on %s is null", this.getClass().getSimpleName());
+        assert fieldFor != null : String.format("'fieldFor' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**
@@ -41,5 +49,30 @@ public class IdsOptions {
     @JsonIgnore
     public final String getNameFor(@NonNull BrAPIType type) {
         return getNameFor(type.getName());
+    }
+
+    /**
+     * Gets the id field name for a specific primary model. For example the id field
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * @param name the name of the primary model
+     * @return id parameter name for a specific primary model
+     */
+    @JsonIgnore
+    public String getIDFieldFor(String name) {
+        return fieldFor.getOrDefault(name, String.format(nameFormat, toParameterCase(name))) ;
+    }
+
+    /**
+     * Sets the id field name for a specific primary model. For example the id field
+     * name of Study, would be 'studyDbiId' by default.
+     * @param name the name of the primary model
+     * @param idField the id field name for a specific primary model.
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public IdsOptions setIDFieldFor(String name, String idField) {
+        fieldFor.put(name, idField) ;
+
+        return this ;
     }
 }

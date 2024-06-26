@@ -440,21 +440,32 @@ public class BrAPISchemaReader {
         List<String> required = findStringList(jsonNode, "required", false).getResultIfPresentOrElseResult(Collections.emptyList());
 
         List<BrAPIObjectProperty> properties = new ArrayList<>();
-        return Response.empty().
-            mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", true).
+        return Response.empty()
+            .mapOnCondition(jsonNode.has("additionalProperties"), () -> findChildNode(jsonNode, "additionalProperties", true).
                 mapResultToResponse(additionalPropertiesNode -> createProperty(path, additionalPropertiesNode, "additionalProperties",
-                    module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add))).
-            mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", true).
-                mapResult(JsonNode::fields).
-                mapResultToResponse(fields -> createProperties(path, fields, module, required)).
-                onSuccessDoWithResult(properties::addAll)).
-            onSuccessDo(() -> builder.properties(properties)).
-            mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true).
-                mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata)).
-            map(() -> success(builder.build()));
+                    module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add)))
+            .mapOnCondition(jsonNode.has("properties"), () -> findChildNode(jsonNode, "properties", true)
+                    .mapResult(JsonNode::fields)
+                .mapResultToResponse(fields -> createProperties(path, fields, module, required))
+                .onSuccessDoWithResult(properties::addAll))
+            .onSuccessDo(() -> builder.properties(properties))
+            .merge(validateRequiredProperties(required, properties, name))
+            .mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(jsonNode, "brapi-metadata", true)
+                .mapResultToResponse(this::parseMetadata).onSuccessDoWithResult(builder::metadata))
+            .map(() -> success(builder.build()));
     }
 
+    private Response<List<BrAPIObjectProperty>> validateRequiredProperties(List<String> requiredPropertyNames, List<BrAPIObjectProperty> properties, String objectName) {
+        return requiredPropertyNames.stream().map(name -> validateRequiredProperty(name, properties, objectName)).collect(Response.toList());
+    }
 
+    private Response<BrAPIObjectProperty> validateRequiredProperty(String requiredPropertyName, List<BrAPIObjectProperty> properties, String objectName) {
+        return properties.stream().filter(property -> property.getName().equals(requiredPropertyName))
+            .findAny().map(Response::success)
+            .orElse(fail(Response.ErrorType.VALIDATION,
+                String.format("The required property '%s' is not found in the list of properties of '%s', expecting one of '%s", requiredPropertyName, objectName,
+                    properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", "))))) ;
+    }
 
     private Response<List<BrAPIObjectProperty>> createProperties(Path path, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
         return Streams.stream(fields).map(field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey()))).collect(Response.toList());
