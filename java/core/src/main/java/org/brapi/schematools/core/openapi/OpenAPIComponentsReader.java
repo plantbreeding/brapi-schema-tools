@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static java.nio.file.Files.find;
+import static org.brapi.schematools.core.response.Response.fail;
 
 /**
  * Utility class for reading OpenAPI Components from YAML files.
@@ -20,18 +21,16 @@ public class OpenAPIComponentsReader {
      * Read OpenAPI Components from YAML files.
      * @param schemaDirectory The path to the directory containing the YAML files.
      * @return OpenAPI Components read from YAML files.
-     * @throws OpenAPIComponentsException if there is an problem reading the YAML files.
      */
-    public Components readComponents(Path schemaDirectory) throws OpenAPIComponentsException {
+    public Response<Components> readComponents(Path schemaDirectory) {
 
         Components components = new Components();
         try {
-            find(schemaDirectory, 3, this::schemaPathMatcher).map(this::readComponentFile).collect(Response.toList()).
-                getResultOrThrow(response -> new RuntimeException(response.getMessagesCombined(","))).forEach(c -> merge(components, c));
-
-            return components ;
+            return find(schemaDirectory, 3, this::schemaPathMatcher).map(this::readComponentFile).collect(Response.toList())
+                .onSuccessDoWithResult(result -> result.forEach(c -> merge(components, c)))
+                .merge(Response.success(components));
         } catch (IOException | RuntimeException e) {
-            throw new OpenAPIComponentsException(e);
+            return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
     }
 

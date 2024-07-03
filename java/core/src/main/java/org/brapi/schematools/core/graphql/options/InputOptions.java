@@ -3,22 +3,28 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.Validation;
 import org.brapi.schematools.core.utils.StringUtils;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
+/**
+ * The options used to generate Input object types
+ */
 @Getter(AccessLevel.PRIVATE)
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class InputOptions {
+public class InputOptions implements Options {
     private String name;
     private String nameFormat;
     private String typeNameFormat;
 
-    public void validate() {
-        assert name != null : "'name' option on Input Options is null";
-        assert typeNameFormat != null : "'typeNameFormat' option on Input Options is null";
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(name, "'name' option on Input Options is null")
+            .assertNotNull(typeNameFormat, "'typeNameFormat' option on Input Options is null") ;
     }
 
     /**

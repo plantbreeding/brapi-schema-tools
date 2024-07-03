@@ -13,7 +13,6 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
@@ -78,7 +77,7 @@ public class OpenAPIGenerator {
      * the BrAPI Json schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
-     * for each module. See {@link OpenAPIGeneratorOptions#separatingByModule}.
+     * for each module. See {@link OpenAPIGeneratorOptions#separateByModule}.
      * @param schemaDirectory the path to the complete BrAPI Specification
      * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
      * @param metadata additional metadata that is used in the generation
@@ -86,14 +85,10 @@ public class OpenAPIGenerator {
      */
     public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory, OpenAPIGeneratorMetadata metadata) {
 
-        try {
-            Components components = componentsReader.readComponents(componentsDirectory) ;
+        return options.validate().asResponse().merge(componentsReader.readComponents(componentsDirectory)).
+                mapResultToResponse(components -> schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
+                    brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate()));
 
-            return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
-                brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate());
-        } catch (BrAPISchemaReaderException | OpenAPIComponentsException e) {
-            return fail(Response.ErrorType.VALIDATION, e.getMessage());
-        }
     }
 
     private static class Generator {

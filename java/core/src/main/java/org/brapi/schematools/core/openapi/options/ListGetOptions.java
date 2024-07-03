@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractOptions;
+import org.brapi.schematools.core.options.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +23,10 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
 
-    public void validate() {
-        super.validate();
-        assert paged != null : String.format("'paged' option on %s is null", this.getClass().getSimpleName());
-        assert inputFor != null : String.format("'inputFor' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -51,6 +52,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     /**
      * Sets if the Endpoint is paged for a specific primary model.
+     * @param name the name of the primary model
      * @param generate <code>true</code> if the Endpoint is paged for a specific primary model, <code>false</code>
      * @return the options for chaining
      */
@@ -63,6 +65,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     /**
      * Sets if the Endpoint is paged for a specific primary model.
+     * @param type the primary model
      * @param generate <code>true</code> if the Endpoint is paged for a specific primary model, <code>false</code>
      * @return the options for chaining
      */
@@ -84,7 +87,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     /**
      * Determines if the List Endpoint has an input for any primary model. Returns <code>true</code> if
-     *      * {@link ListGetOptions#inputFor} is set to <code>true</code> for the primary model
+     * {@link ListGetOptions#inputFor} is set to <code>true</code> for the primary model
      * @param type the primary model
      * @return <code>true</code> if the List Endpoint has an input for the primary model, <code>false</code> otherwise
      */
@@ -94,6 +97,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     /**
      * Sets if the Endpoint has an input for a specific primary model.
+     * @param name the name of the primary model
      * @param generate <code>true</code> if the Endpoint has an input for a specific primary model, <code>false</code>
      * @return the options for chaining
      */
@@ -106,6 +110,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     /**
      * Sets if the Endpoint has an input for a specific primary model.
+     * @param type the primary model
      * @param generate <code>true</code> if the Endpoint has an input for a specific primary model, <code>false</code>
      * @return the options for chaining
      */

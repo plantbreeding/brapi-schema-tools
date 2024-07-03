@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,38 +103,31 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        OpenAPIGeneratorOptions options = mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
     }
 
-    public void validate() {
-        super.validate() ;
-
-        assert singleGet != null : "Single Get Endpoint Options are null";
-        assert listGet != null : "List Get Endpoint Options are null";
-        assert post != null : "Post Endpoint Options are null";
-        assert put != null : "Put Endpoint Options are null";
-        assert delete != null : "Delete Endpoint Options are null";
-        assert search != null : "Search Endpoint Options are null";
-        assert ids != null : "Id Options are null";
-
-        singleGet.validate() ;
-        listGet.validate() ;
-        post.validate() ;
-        put.validate() ;
-        delete.validate() ;
-        search.validate() ;
-        ids.validate() ;
-
-        assert generateNewRequestFor != null : "'generateNewRequestFor' option is null" ;
-        assert newRequestNameFormat != null : "'newRequestNameFormat' option is null" ;
-        assert singleResponseNameFormat != null : "'singleResponseNameFormat' option is null" ;
-        assert listResponseNameFormat != null : "'listResponseNameFormat' option is null" ;
-        assert searchRequestNameFormat != null : "'searchRequestNameFormat' option is null" ;
-        assert pathItemNameFor != null : "'pathItemNameFor' option is null" ;
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
+            .assertNotNull(listGet != null,  "List Get Endpoint Options are null")
+            .assertNotNull( post != null, "Post Endpoint Options are null")
+            .assertNotNull(put != null, "Put Endpoint Options are null")
+            .assertNotNull(delete != null,  "Delete Endpoint Options are null")
+            .assertNotNull(search != null,  "Search Endpoint Options are null")
+            .assertNotNull(ids != null,  "Id Options are null")
+            .merge(singleGet)
+            .merge(listGet)
+            .merge(post)
+            .merge(put)
+            .merge(delete)
+            .merge(search)
+            .merge(ids)
+            .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
+            .assertNotNull(newRequestNameFormat != null,  "'newRequestNameFormat' option is null")
+            .assertNotNull( singleResponseNameFormat != null, "'singleResponseNameFormat' option is null")
+            .assertNotNull(listResponseNameFormat != null, "'listResponseNameFormat' option is null")
+            .assertNotNull(searchRequestNameFormat != null,  "'searchRequestNameFormat' option is null")
+            .assertNotNull(pathItemNameFor != null,  "'pathItemNameFor' option is null") ;
     }
 
     /**

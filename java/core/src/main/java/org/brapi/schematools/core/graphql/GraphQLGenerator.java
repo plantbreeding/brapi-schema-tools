@@ -3,7 +3,6 @@ package org.brapi.schematools.core.graphql;
 import graphql.AssertException;
 import graphql.TypeResolutionEnvironment;
 import graphql.schema.*;
-import io.swagger.v3.oas.models.media.ObjectSchema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
@@ -88,12 +87,8 @@ public class GraphQLGenerator {
      * @return the {@link GraphQLSchema} from the complete BrAPI Specification
      */
     public Response<GraphQLSchema> generate(Path schemaDirectory, GraphQLGeneratorMetadata metadata) {
-
-        try {
-            return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(brAPISchemas -> new Generator(options, metadata, brAPISchemas).generate()) ;
-        } catch (BrAPISchemaReaderException e) {
-            return fail(Response.ErrorType.VALIDATION, e.getMessage());
-        }
+        return options.validate().asResponse().merge(
+            schemaReader.readDirectories(schemaDirectory).mapResultToResponse(brAPISchemas -> new Generator(options, metadata, brAPISchemas).generate())) ;
     }
 
     @Getter

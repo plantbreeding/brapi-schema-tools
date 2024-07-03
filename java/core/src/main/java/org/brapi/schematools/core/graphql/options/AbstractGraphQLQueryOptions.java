@@ -3,12 +3,16 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
+/**
+ * Abstract base class for all GraphQL Options
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,10 +25,10 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> input = new HashMap<>();
 
-    public void validate() {
-        super.validate();
-        assert responseTypeNameFormat != null : String.format("'responseTypeNameFormat' option on %s is null", this.getClass().getSimpleName());
-        assert input != null : String.format("'input' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(responseTypeNameFormat, "'responseTypeNameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**

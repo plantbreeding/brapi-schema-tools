@@ -63,13 +63,12 @@ public class BrAPISchemaReader {
      *
      * @param schemaDirectory the parent directory that holds all the module directories
      * @return a response containing a list of BrAPIClass with one type per JSON Schema or validation errors
-     * @throws BrAPISchemaReaderException if there is a problem reading the directories or JSON schemas
      */
-    public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) throws BrAPISchemaReaderException {
+    public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory)  {
         try {
             return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).map(this::createBrAPISchemas).collect(Response.mergeLists())) ;
         } catch (RuntimeException | IOException e) {
-            throw new BrAPISchemaReaderException(e);
+            return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
     }
 

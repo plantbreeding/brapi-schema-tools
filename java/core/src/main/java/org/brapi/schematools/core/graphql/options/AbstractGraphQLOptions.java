@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractOptions;
+import org.brapi.schematools.core.options.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
@@ -20,9 +21,8 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
     @Getter(AccessLevel.PRIVATE)
     private String nameFormat;
 
-    public void validate() {
-        super.validate();
-        assert nameFormat != null : String.format("'nameFormat' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return super.validate().assertNotNull("'nameFormat' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**

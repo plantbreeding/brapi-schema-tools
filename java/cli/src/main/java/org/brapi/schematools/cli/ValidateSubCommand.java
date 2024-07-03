@@ -1,27 +1,10 @@
 package org.brapi.schematools.cli;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.introspection.IntrospectionQuery;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.SchemaPrinter;
-import io.swagger.v3.core.util.Json31;
-import io.swagger.v3.oas.models.OpenAPI;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
-import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.openapi.OpenAPIGenerator;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -38,13 +21,9 @@ public class ValidateSubCommand implements Runnable {
     public void run() {
         BrAPISchemaReader schemaReader = new BrAPISchemaReader() ;
 
-        try {
-            schemaReader.readDirectories(schemaDirectory)
+        schemaReader.readDirectories(schemaDirectory)
                     .onFailDoWithResponse(this::printErrors)
                     .onSuccessDo(() -> System.out.println("The BrAPI JSON schema is valid"));
-        } catch (BrAPISchemaReaderException e) {
-            System.out.println(e.getMessage());
-        }
 
     }
 

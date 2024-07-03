@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.Validation;
 import org.brapi.schematools.core.utils.StringUtils;
 
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class IdsOptions {
+public class IdsOptions implements Options {
     @Getter(AccessLevel.PRIVATE)
     String nameFormat;
     @JsonProperty("useIDType")
@@ -26,9 +28,10 @@ public class IdsOptions {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> fieldFor = new HashMap<>();
 
-    public void validate() {
-        assert nameFormat != null : String.format("'nameFormat' option on %s is null", this.getClass().getSimpleName());
-        assert fieldFor != null : String.format("'fieldFor' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(fieldFor, "'fieldFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -42,7 +45,7 @@ public class IdsOptions {
     }
 
     /**
-     * Gets the name of id for a specific primary model
+     * Gets the name of id for a specific primary model. Use {@link #setIDFieldFor} to override this value.
      * @param type the primary model
      * @return the name of the id for a specific primary model
      */
@@ -53,7 +56,7 @@ public class IdsOptions {
 
     /**
      * Gets the id field name for a specific primary model. For example the id field
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDFieldFor} to override this value.
      * @param name the name of the primary model
      * @return id parameter name for a specific primary model
      */

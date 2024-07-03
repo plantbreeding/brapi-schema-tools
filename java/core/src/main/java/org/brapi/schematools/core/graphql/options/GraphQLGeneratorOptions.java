@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,25 +68,20 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        GraphQLGeneratorOptions options = mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
     }
 
-    public void validate() {
-        super.validate() ;
+    public Validation validate() {
 
-        assert input != null : "Input Options are null";
-        assert queryType != null : "Query Options are null";
-        assert mutationType != null : "Mutation Options are null";
-        assert ids != null : "Id Options are null";
-
-        input.validate() ;
-        queryType.validate() ;
-        mutationType.validate() ;
-        ids.validate() ;
+        return super.validate()
+            .assertNotNull(input, "Input Options are null")
+            .assertNotNull(queryType != null,  "Query Options are null")
+            .assertNotNull( mutationType != null, "Mutation Options are null")
+            .assertNotNull(ids != null,  "Id Options are null")
+            .merge(input)
+            .merge(queryType)
+            .merge(mutationType)
+            .merge(ids) ;
     }
 
     /**

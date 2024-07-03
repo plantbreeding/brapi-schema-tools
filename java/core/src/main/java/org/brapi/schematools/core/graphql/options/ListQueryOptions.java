@@ -3,6 +3,7 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +32,15 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     private String pageTypeName;
     private String pageFieldName;
 
-    public void validate() {
-        super.validate();
-        assert dataFieldName != null : String.format("'dataFieldName' option on %s is null", this.getClass().getSimpleName());
-        assert paged != null : String.format("'paged' option on %s is null", this.getClass().getSimpleName());
-        assert input != null : String.format("'input' option on %s is null", this.getClass().getSimpleName());
-        assert pagingInputName != null : String.format("'pagingInputName' option on %s is null", this.getClass().getSimpleName());
-        assert pageInputTypeName != null : String.format("'pageInputTypeName' option on %s is null", this.getClass().getSimpleName());
-        assert pageTypeName != null : String.format("'pageTypeName' option on %s is null", this.getClass().getSimpleName());
-        assert pageFieldName != null : String.format("'pageFieldName' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(dataFieldName, "'dataFieldName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagingInputName, "'pagingInputName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageInputTypeName, "'pageInputTypeName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageTypeName, "'pageTypeName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageFieldName,  "'pageFieldName' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**

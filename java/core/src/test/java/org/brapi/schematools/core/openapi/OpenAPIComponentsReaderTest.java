@@ -15,7 +15,8 @@ class OpenAPIComponentsReaderTest {
 
         try {
             Components components =
-                new OpenAPIComponentsReader().readComponents(Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
+                new OpenAPIComponentsReader().readComponents(Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI())).
+                    onFailDoWithResponse(response -> fail(response.getMessagesCombined(", "))).getResult();
 
             assertNotNull(components);
             assertNotNull(components.getParameters());

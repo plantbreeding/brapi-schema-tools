@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,14 +22,15 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class IdsOptions {
+public class IdsOptions implements Options {
     private String nameFormat;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> parameterFor = new HashMap<>();
 
-    public void validate() {
-        assert nameFormat != null : String.format("'nameFormat' option on %s is null", this.getClass().getSimpleName());
-        assert parameterFor != null : String.format("'parameterFor' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(parameterFor, "'parameterFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**

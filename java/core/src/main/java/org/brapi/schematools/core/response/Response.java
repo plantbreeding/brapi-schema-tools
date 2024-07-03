@@ -2,6 +2,7 @@ package org.brapi.schematools.core.response;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.brapi.schematools.core.options.Validation;
 
 import java.util.*;
 import java.util.function.*;
@@ -35,10 +36,27 @@ public class Response<T> {
     }
 
     private Response(Response<T> response) {
+        this() ;
         this.getErrors(ErrorType.VALIDATION).addAll(response.getErrors(ErrorType.VALIDATION));
         this.getErrors(ErrorType.PERMISSION).addAll(response.getErrors(ErrorType.PERMISSION));
         this.getErrors(ErrorType.OTHER).addAll(response.getErrors(ErrorType.OTHER));
         this.result = response.result;
+    }
+
+    private Response(Validation validation) {
+        this() ;
+        validation.getErrors().forEach(error -> {
+            switch (error.getType()) {
+                case VALIDATION:
+                    this.getErrors(ErrorType.VALIDATION).add(error);
+                    break;
+                case PERMISSION:
+                    this.getErrors(ErrorType.PERMISSION).add(error);
+                    break;
+                case OTHER:
+                    this.getErrors(ErrorType.OTHER).add(error);
+            }
+        });
     }
 
     /**
@@ -273,7 +291,7 @@ public class Response<T> {
     /**
      * Merges any errors from this response into provided response,
      * the result from this response is lost.
-     * @param response the response uses as a source of errors.
+     * @param response the response used as a source of errors.
      * @return the provided response
      * @param <U> the result type of the provided response
      */
@@ -297,6 +315,16 @@ public class Response<T> {
         response.getErrors(ErrorType.PERMISSION).addAll(this.getErrors(ErrorType.PERMISSION));
         response.getErrors(ErrorType.OTHER).addAll(this.getErrors(ErrorType.OTHER));
         return response;
+    }
+
+    /**
+     * Merges any errors from the validation,
+     * @param validation the validation used as a source of errors.
+     * @return the provided response
+     * @param <U> the result type of the provided validation
+     */
+    public <U> Response<U> merge(Validation validation) {
+        return new Response<>(validation);
     }
 
     /**

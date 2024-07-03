@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractOptions;
+import org.brapi.schematools.core.options.Validation;
 
 
 /**
@@ -16,9 +17,8 @@ import org.brapi.schematools.core.options.AbstractOptions;
 public abstract class AbstractOpenAPIOptions extends AbstractOptions {
     private String summaryFormat;
 
-    public void validate() {
-        super.validate();
-        assert summaryFormat != null : String.format("'summaryFormat' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return super.validate().assertNotNull(summaryFormat, "'summaryFormat' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**

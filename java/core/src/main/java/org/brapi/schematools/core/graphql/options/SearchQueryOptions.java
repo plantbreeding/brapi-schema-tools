@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.brapi.schematools.core.options.Validation;
 
 /**
  * Provides options for the generation of Search Queries
@@ -16,8 +17,8 @@ import lombok.Setter;
 public class SearchQueryOptions extends AbstractGraphQLQueryOptions {
     private String searchIdFieldName ;
 
-    public void validate() {
-        super.validate();
-        assert searchIdFieldName != null : String.format("'searchIdFieldName' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName()) ;
     }
 }

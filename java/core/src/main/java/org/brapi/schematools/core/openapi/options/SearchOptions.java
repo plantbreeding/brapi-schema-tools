@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
@@ -17,10 +18,10 @@ public class SearchOptions  extends AbstractOpenAPIOptions {
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
 
-    public void validate() {
-        super.validate();
-        assert submitDescriptionFormat != null : String.format("'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
-        assert retrieveDescriptionFormat != null : String.format("'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
 

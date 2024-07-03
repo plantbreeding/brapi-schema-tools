@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.Validation;
 
 /**
  * Provides options for the generation of the Query Type
@@ -13,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class QueryTypeOptions {
+public class QueryTypeOptions implements Options {
     private String name;
     private boolean partitionedByCrop;
     @Setter(AccessLevel.PRIVATE)
@@ -23,15 +25,14 @@ public class QueryTypeOptions {
     @Setter(AccessLevel.PRIVATE)
     private SearchQueryOptions searchQuery;
 
-    public void validate() {
-        assert name != null : "Name option on QueryType Options is null";
-
-        assert singleQuery != null : "SingleQuery Options are null";
-        assert listQuery != null : "ListQuery Options are null";
-        assert searchQuery != null : "SearchQuery Options are null";
-
-        singleQuery.validate() ;
-        listQuery.validate() ;
-        searchQuery.validate() ;
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(name, "'name' option on QueryType Options is null")
+            .assertNotNull(singleQuery,  "SingleQuery Options are null")
+            .assertNotNull(listQuery,  "ListQuery Options are null")
+            .assertNotNull(searchQuery,  "SearchQuery Options are null")
+            .merge(singleQuery)
+            .merge(listQuery)
+            .merge(searchQuery) ;
     }
 }

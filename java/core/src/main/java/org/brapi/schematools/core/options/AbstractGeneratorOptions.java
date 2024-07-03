@@ -11,17 +11,22 @@ import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
-public class AbstractGeneratorOptions {
+/**
+ * Abstract class for all Generator Options
+ */
+public class AbstractGeneratorOptions implements Options {
 
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralFor = new HashMap<>();
-    public void validate() {
-        assert pluralFor != null : String.format("'pluralFor' option on %s is null", this.getClass().getSimpleName());
+
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(pluralFor, "'pluralFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
      * Gets the Pluralised name for a specific Primary Model. For example plural
-     * name of Study, would be 'Studies' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'Studies' by default. Use {@link #setPluralFor} to override this value.
      * @param name the name of the Primary Model
      * @return the pluralised name for a specific Primary Model
      */
@@ -32,7 +37,7 @@ public class AbstractGeneratorOptions {
 
     /**
      * Gets the pluralised name for a specific Primary Model. For example plural
-     * name of Study, would be 'Studies' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'Studies' by default. Use {@link #setPluralFor} to override this value.
      * @param type the Primary Model
      * @return the pluralised name for a specific Primary Model
      */
