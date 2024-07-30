@@ -144,7 +144,7 @@ public class BrAPISchemaReader {
     }
 
     private Response<BrAPIType> validateClass(final Map<String, BrAPIClass> classesMap, BrAPIClass brAPIClass) {
-        return validateBrAPIMetadata(brAPIClass.getMetadata()).map(() -> {
+        return validateBrAPIMetadata(brAPIClass).map(() -> {
                 if (brAPIClass instanceof BrAPIAllOfType brAPIAllOfType) {
                     return fail(Response.ErrorType.VALIDATION, String.format("BrAPIAllOfType '%s' was not de-referenced", brAPIAllOfType.getName())) ;
                 }
@@ -169,7 +169,8 @@ public class BrAPISchemaReader {
         }
     }
 
-    private Response<BrAPIMetadata> validateBrAPIMetadata(BrAPIMetadata metadata) {
+    private Response<BrAPIMetadata> validateBrAPIMetadata(BrAPIClass brAPIClass) {
+        BrAPIMetadata metadata = brAPIClass.getMetadata();
 
         if (metadata != null) {
             int i = 0 ;
@@ -186,7 +187,7 @@ public class BrAPISchemaReader {
                 ++i;
             }
             if (i > 1) {
-                return fail(Response.ErrorType.VALIDATION, "'primaryModel', 'request', 'parameters', 'interface' are mutually exclusive, only one can be set to to true") ;
+                return fail(Response.ErrorType.VALIDATION, String.format("In class '%s', 'primaryModel', 'request', 'parameters', 'interface' are mutually exclusive, only one can be set to to true", brAPIClass.getName())) ;
             }
         }
 
@@ -462,7 +463,7 @@ public class BrAPISchemaReader {
         return properties.stream().filter(property -> property.getName().equals(requiredPropertyName))
             .findAny().map(Response::success)
             .orElse(fail(Response.ErrorType.VALIDATION,
-                String.format("The required property '%s' is not found in the list of properties of '%s', expecting one of '%s", requiredPropertyName, objectName,
+                String.format("The required property '%s' is not found in the list of properties of '%s', expecting one of '%s'", requiredPropertyName, objectName,
                     properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", "))))) ;
     }
 
