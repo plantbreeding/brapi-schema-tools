@@ -11,13 +11,13 @@ There is also a basic spring application that allow you to view the BrAPI Specif
     * In windows
 
     ```powershell
-    BrAPITools
+    brapi
     ```
 
     * In Linux or macOS
 
     ```shell
-    BrAPITools 
+    brapi 
     ```
 
 ## For developers

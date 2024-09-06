@@ -10,6 +10,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1'
     api 'com.graphql-java:graphql-java:22.0'
     api 'io.swagger.core.v3:swagger-core:2.2.22'
+    api 'org.apache.jena:jena-ontapi:5.1.0'
     implementation 'io.swagger.parser.v3:swagger-parser:2.1.22'
 }
 

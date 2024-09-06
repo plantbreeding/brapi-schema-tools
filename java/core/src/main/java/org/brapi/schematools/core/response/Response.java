@@ -4,6 +4,7 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.options.Validation;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -114,6 +115,18 @@ public class Response<T> {
      */
     public static <T> Response<T> fail(ErrorType type, String message) {
         return fail(type, "", message);
+    }
+
+    /**
+     * Creates a failed response for the validation of a file path
+     * @param type The type of error
+     * @param path the path of the file being validated
+     * @param message The error message
+     * @return an empty response with the added error
+     * @param <T> The type of the result
+     */
+    public static <T> Response<T> fail(ErrorType type, Path path, String message) {
+        return fail(type, "", String.format("In '%s' %s", path.toFile(), message));
     }
 
     /**
