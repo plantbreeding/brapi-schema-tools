@@ -8,8 +8,11 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
 import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
+import org.apache.jena.ontapi.model.OntModel;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
+import org.brapi.schematools.core.ontmodel.OntModelGenerator;
+import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
@@ -27,6 +30,8 @@ import java.util.List;
     description = "Generates the OpenAPI Specification or GraphQL Schema from a BrAPI JSON schema"
 )
 public class GenerateSubCommand implements Runnable {
+    private PrintWriter out ;
+    private PrintWriter err ;
 
     private static final OutputFormat DEFAULT_FORMAT = OutputFormat.OPEN_API;
 
@@ -34,26 +39,43 @@ public class GenerateSubCommand implements Runnable {
     private Path schemaDirectory;
 
     @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
-    private OutputFormat outputFormat;
+    private OutputFormat outputFormat = DEFAULT_FORMAT;
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
     private Path outputPathFile;
 
-    @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components")
+    @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components, required for the OPEN_API output format")
     private Path componentsDirectory;
+
+    @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
+    private Path optionsPath;
 
     @Override
     public void run() {
-        switch (outputFormat) {
+        try {
+            out = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+            err = new PrintWriter(System.err) ;
 
-            case OPEN_API -> {
-                OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
-                generateOpenAPISpecification(options);
+            switch (outputFormat) {
+
+                case OPEN_API -> {
+                    OpenAPIGeneratorOptions options = optionsPath != null ?
+                        OpenAPIGeneratorOptions.load(optionsPath) : OpenAPIGeneratorOptions.load() ;
+                    generateOpenAPISpecification(options);
+                }
+                case GRAPHQL -> {
+                    GraphQLGeneratorOptions options = optionsPath != null ?
+                        GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
+                    generateGraphQLSchema(options);
+                }
+                case OWL -> {
+                    OntModelGeneratorOptions options = optionsPath != null ?
+                        OntModelGeneratorOptions.load(optionsPath) :  OntModelGeneratorOptions.load() ;
+                    generateOntModel(options);
+                }
             }
-            case GRAPHQL -> {
-                GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
-                generateGraphQLSchema(options);
-            }
+        } catch (IOException exception) {
+            err.println(exception.getMessage());
         }
 
     }
@@ -73,13 +95,11 @@ public class GenerateSubCommand implements Runnable {
                 Files.createDirectories(outputPathFile.getParent());
             }
 
-            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+            out.print(new SchemaPrinter().print(schema));
 
-            writer.print(new SchemaPrinter().print(schema));
-
-            writer.close();
+            out.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            err.println(e.getMessage());
         }
     }
 
@@ -90,26 +110,24 @@ public class GenerateSubCommand implements Runnable {
                 Files.createDirectories(outputPathFile.getParent());
             }
 
-            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
-
             GraphQL graphQL = GraphQL.newGraphQL(schema).build();
             ExecutionResult executionResult = graphQL.execute(IntrospectionQuery.INTROSPECTION_QUERY);
 
             ObjectMapper mapper = new ObjectMapper();
 
-            writer.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
+            out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
 
-            writer.close();
+            out.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            err.println(e.getMessage());
         }
     }
 
     private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
         if (response.getAllErrors().size() == 1) {
-            System.err.printf("There was 1 error generating the GraphQL Schema:%n");
+            err.printf("There was 1 error generating the GraphQL Schema:%n");
         } else {
-            System.err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
+            err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
         }
 
         response.getAllErrors().forEach(this::printError);
@@ -140,20 +158,14 @@ public class GenerateSubCommand implements Runnable {
                     outputPathFile != null ? outputPathFile.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null));
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            err.println(e.getMessage());
         }
     }
 
     private void outputOpenAPISpecification(OpenAPI specification, Path outputPathFile) {
-        try {
-            PrintWriter writer = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
+        out.print(Json31.pretty(specification));
 
-            writer.print(Json31.pretty(specification));
-
-            writer.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
+        out.close();
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
@@ -166,18 +178,39 @@ public class GenerateSubCommand implements Runnable {
         response.getAllErrors().forEach(this::printError);
     }
 
+    private void generateOntModel(OntModelGeneratorOptions options) {
+        OntModelGenerator ontModelGenerator = new OntModelGenerator(options);
+
+        Response<OntModel> response = ontModelGenerator.generate(schemaDirectory);
+
+        response.onSuccessDoWithResult(this::outputOntModel).onFailDoWithResponse(this::printOntModelErrors);
+    }
+
+    private void outputOntModel(OntModel model) {
+        model.write(out) ;
+    }
+
+    private void printOntModelErrors(Response<OntModel> response) {
+        if (response.getAllErrors().size() == 1) {
+            err.printf("There was 1 error generating the RDF Graph:%n");
+        } else {
+            err.printf("There were %d errors generating the RDF Graph:%n", response.getAllErrors().size());
+        }
+
+        response.getAllErrors().forEach(this::printError);
+    }
     private void printError(Response.Error error) {
         switch (error.getType()) {
 
             case VALIDATION -> {
-                System.err.print("Validation Error :");
+                err.print("Validation Error :");
             }
             case PERMISSION, OTHER -> {
-                System.err.print("Error :");
+                err.print("Error :");
             }
         }
-        System.err.print('\t');
+        err.print('\t');
 
-        System.err.println(error.getMessage());
+        err.println(error.getMessage());
     }
 }
