@@ -77,7 +77,7 @@ public class OpenAPIGenerator {
      * the BrAPI Json schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
-     * for each module. See {@link OpenAPIGeneratorOptions#separateByModule}.
+     * for each module. See {@link OpenAPIGeneratorOptions#isSeparatingByModule()}.
      * @param schemaDirectory the path to the complete BrAPI Specification
      * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
      * @param metadata additional metadata that is used in the generation
@@ -143,6 +143,7 @@ public class OpenAPIGenerator {
             List<BrAPIObjectType> primaryTypes = types.stream().
                 filter(type -> type instanceof BrAPIObjectType).
                 filter(type -> Objects.nonNull(type.getMetadata()) && type.getMetadata().isPrimaryModel()).
+                sorted(Comparator.comparing(BrAPIType::getName)).
                 map(type -> (BrAPIObjectType)type).
                 toList();
 
@@ -403,7 +404,7 @@ public class OpenAPIGenerator {
         }
 
         private String createSearchPathItemWithIdName(BrAPIObjectType type) {
-            return String.format("/search/%s/{%s}", toParameterCase(options.getPluralFor(type)), options.getIds().getIDParameterFor(type));
+            return String.format("/search/%s/{%s}", toParameterCase(options.getPluralFor(type)), options.getParameters().getIdParameterFor(type));
         }
 
         public Response<PathItem> createSearchPathItem(BrAPIObjectType type) {
@@ -464,7 +465,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Map<String, Schema>> generateSchemas(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes) {
-            Map<String, Schema> schemas = new HashMap<>() ;
+            Map<String, Schema> schemas = new TreeMap<>() ;
 
             return primaryTypes.stream().map(type -> generateSchemasForType(type).onSuccessDoWithResult(schemas::putAll)).collect(Response.toList()).
                 merge(nonPrimaryTypes.stream().map(type -> createSchemaForType(type).onSuccessDoWithResult(schema -> schemas.put(type.getName(), schema))).collect(Response.toList())).
@@ -474,7 +475,7 @@ public class OpenAPIGenerator {
 
         private Response<Map<String, Schema>> generateSchemasForType(BrAPIObjectType type) {
 
-            Map<String, Schema> schemas = new HashMap<>() ;
+            Map<String, Schema> schemas = new TreeMap<>() ;
 
             boolean creatingNewRequest = options.isGeneratingNewRequestFor(type) ;
 
@@ -488,26 +489,41 @@ public class OpenAPIGenerator {
                 map(() -> success(schemas)) ;
         }
 
+        /**
+         * Creates the base schema for a type
+         * @param type The BrAPI Object type to start from
+         * @param creatingNewRequest <code>true</code> if the there will be a separate new request
+         * @return the base schema for a type
+         */
         private Response<Schema> createSchemaForType(BrAPIObjectType type, boolean creatingNewRequest) {
             if (creatingNewRequest) {
-                String idParameter = options.getIds().getIDParameterFor(type) ;
+                String idParameter = options.getParameters().getIdParameterFor(type) ;
 
-                return type.getProperties().stream().filter(property -> property.getName().equals(idParameter)).findAny().map(this::createProperty).
-                    orElse(fail(Response.ErrorType.VALIDATION, String.format("Can not find property '%s' in type '%s'", idParameter, type.getName()))).
-                    mapResultToResponse(idProperty -> success(new ObjectSchema().name(type.getName())).
-                        onSuccessDoWithResult(schema -> schema.addAllOfItem(new ObjectSchema().
-                            addRequiredItem(idParameter).
-                            addProperty(idParameter, idProperty))));
+                if (type.getProperties().stream().noneMatch(property -> property.getName().equals(idParameter))) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("Can not find property '%s' in type '%s'", idParameter, type.getName())) ;
+                }
+
+                return createObjectSchema(type, type.getProperties().stream().filter(property -> !property.getName().equals(idParameter)).toList())
+                    .onSuccessDoWithResult(result-> result.addRequiredItem(idParameter)) ;
             } else {
                 return createObjectSchema(type) ;
             }
         }
 
+        /**
+         * Creates the New Request schema for a type. Makes the id property required,
+         * of fails if not present
+         * @param type The BrAPI Object type to start from
+         * @return the New Request schema for a type
+         */
         private Response<Schema> createNewRequestSchemaForType(BrAPIObjectType type) {
-            String idParameter = options.getIds().getIDParameterFor(type) ;
+            String idParameter = options.getParameters().getIdParameterFor(type) ;
 
-            return createProperties(type.getProperties().stream().filter(property -> !property.getName().equals(idParameter)).toList()).mapResult(
-                schema -> new ObjectSchema().properties(schema).name(options.getNewRequestNameFor(type)).description(type.getDescription())) ;
+            if (type.getProperties().stream().noneMatch(property -> property.getName().equals(idParameter))) {
+                return fail(Response.ErrorType.VALIDATION, String.format("Can not find property '%s' in type '%s'", idParameter, type.getName())) ;
+            }
+
+            return createObjectSchema(type).onSuccessDoWithResult(result-> result.addRequiredItem(idParameter)) ;
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {
@@ -521,7 +537,7 @@ public class OpenAPIGenerator {
 
             if (requestSchema instanceof BrAPIObjectType brAPIObjectType) {
                 return createProperties(brAPIObjectType.getProperties().stream().toList()).mapResult(
-                    schema -> new ObjectSchema().properties(schema).name(name).description(type.getDescription()));
+                    properties -> new ObjectSchema().properties(properties).name(name).description(type.getDescription()));
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
             }
@@ -559,20 +575,59 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createObjectSchema(BrAPIObjectType type) {
-            return createProperties(type.getProperties()).mapResult(
-                schema -> new ObjectSchema().properties(schema).name(type.getName()).description(type.getDescription())) ;
+            return createObjectSchema(type, type.getProperties()) ;
+        }
+
+        private Response<Schema> createObjectSchema(BrAPIObjectType type, List<BrAPIObjectProperty> properties) {
+            return createProperties(properties).mapResult(
+                schema -> new ObjectSchema()
+                    .properties(schema)
+                    .name(type.getName())
+                    .description(type.getDescription())) ;
         }
 
         private Response<Map<String, Schema>> createProperties(List<BrAPIObjectProperty> properties) {
 
-            Map<String, Schema> schemas = new HashMap<>() ;
+            Map<String, Schema> schemas = new TreeMap<>() ;
 
-            return properties.stream().map(property -> createProperty(property).onSuccessDoWithResult(schema -> schemas.put(property.getName(), schema))).collect(Response.toList()).
+            return properties.stream().map(property -> createProperty(property).onSuccessDoWithResult(schemas::putAll)).collect(Response.toList()).
                 map(() -> success(schemas));
         }
 
-        private Response<Schema> createProperty(BrAPIObjectProperty property) {
-            return createSchemaForType(property.getType()) ;
+        private Response<Map<String, Schema>> createProperty(BrAPIObjectProperty property) {
+            BrAPIType type = property.getType() ;
+
+            if (type instanceof BrAPIReferenceType) {
+                type = brAPISchemas.get(type.getName()) ;
+            }
+
+            if (type instanceof BrAPIPrimitiveType || type instanceof BrAPIEnumType || type instanceof BrAPIOneOfType)  {
+                return createSchemaForType(type).mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
+            } else if (type instanceof BrAPIObjectType brAPIObjectType) {
+                List<BrAPIObjectProperty> linkProperties = options.getParameters().getLinkParametersFor(brAPIObjectType) ;
+
+                if (linkProperties.isEmpty()) {
+                    return createSchemaForType(type).mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
+                } else {
+                    return createLinkingProperties(linkProperties) ;
+                }
+            } else if (type instanceof BrAPIArrayType brAPIArrayType) {
+                if (BrAPIRelationshipType.ONE_TO_MANY.equals(property.getRelationshipType())) {
+                    return success(Collections.emptyMap()) ; // this is a sub-path or separate endpoint
+                } else {
+                    return createSchemaForType(brAPIArrayType).mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
+                }
+
+            }
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unsupported type '%s' for property '%s'", type.getClass(), property.getName()));
+        }
+
+        private Response<Map<String, Schema>> createLinkingProperties(List<BrAPIObjectProperty> linkProperties) {
+            Map<String, Schema> schemas =  new HashMap<>() ;
+
+            return linkProperties.stream().map(linkProperty -> createSchemaForType(linkProperty.getType())
+                .onSuccessDoWithResult(schema -> schemas.put(linkProperty.getName(), schema))).collect(Response.toList())
+                .merge(() -> success(schemas)) ;
         }
 
         private Response<Schema> createOneOfType(BrAPIOneOfType type) {

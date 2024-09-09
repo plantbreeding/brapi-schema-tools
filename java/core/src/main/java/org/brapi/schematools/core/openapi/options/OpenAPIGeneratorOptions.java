@@ -44,7 +44,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
-    private IdsOptions ids;
+    private ParametersOptions parameters;
 
     @Getter(AccessLevel.PRIVATE)
     boolean separateByModule;
@@ -114,14 +114,14 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(put != null, "Put Endpoint Options are null")
             .assertNotNull(delete != null,  "Delete Endpoint Options are null")
             .assertNotNull(search != null,  "Search Endpoint Options are null")
-            .assertNotNull(ids != null,  "Id Options are null")
+            .assertNotNull(parameters != null,  "Id Options are null")
             .merge(singleGet)
             .merge(listGet)
             .merge(post)
             .merge(put)
             .merge(delete)
             .merge(search)
-            .merge(ids)
+            .merge(parameters)
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
             .assertNotNull(newRequestNameFormat != null,  "'newRequestNameFormat' option is null")
             .assertNotNull( singleResponseNameFormat != null, "'singleResponseNameFormat' option is null")
@@ -344,6 +344,6 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for a specific Primary Model
      */
     public String getPathItemWithIdNameFor(BrAPIType type) {
-        return String.format("%s/{%s}", getPathItemNameFor(type), ids.getIDParameterFor(type));
+        return String.format("%s/{%s}", getPathItemNameFor(type), parameters.getIdParameterFor(type));
     }
 }
