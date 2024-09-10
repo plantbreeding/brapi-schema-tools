@@ -31,7 +31,7 @@ jobs:
 
       - name: Publish package
         working-directory: ./java
-        run: ./gradlew publish
+        run: ./gradlew clean publishToSonatype closeAndReleaseSonatypeStagingRepository --no-daemon
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
