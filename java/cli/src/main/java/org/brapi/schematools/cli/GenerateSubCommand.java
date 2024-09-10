@@ -76,8 +76,10 @@ public class GenerateSubCommand implements Runnable {
             }
         } catch (IOException exception) {
             err.println(exception.getMessage());
+        } finally {
+            out.close();
+            err.close();
         }
-
     }
 
     private void generateGraphQLSchema(GraphQLGeneratorOptions options) {
@@ -96,8 +98,6 @@ public class GenerateSubCommand implements Runnable {
             }
 
             out.print(new SchemaPrinter().print(schema));
-
-            out.close();
         } catch (IOException e) {
             err.println(e.getMessage());
         }
@@ -116,8 +116,6 @@ public class GenerateSubCommand implements Runnable {
             ObjectMapper mapper = new ObjectMapper();
 
             out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
-
-            out.close();
         } catch (IOException e) {
             err.println(e.getMessage());
         }
@@ -164,8 +162,6 @@ public class GenerateSubCommand implements Runnable {
 
     private void outputOpenAPISpecification(OpenAPI specification, Path outputPathFile) {
         out.print(Json31.pretty(specification));
-
-        out.close();
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {

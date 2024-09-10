@@ -114,22 +114,22 @@ delete:
         Reference: false
         Variant: false
         VariantSet: false
-parameters:
+properties:
     id:
         nameFormat: "%sDbId"
         link: true
-        parameterFor:
+        propertyFor:
             GermplasmAttribute: attributeDbId
             GermplasmAttributeValue: attributeValueDbId
     name:
         nameFormat: "%sName"
         link: true
-        parameterFor:
+        propertyFor:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
     pui:
         nameFormat: "%sPUI"
         link: true
-        parameterFor:
+        propertyFor:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI

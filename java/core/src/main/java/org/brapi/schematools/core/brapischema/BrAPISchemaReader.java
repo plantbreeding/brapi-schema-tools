@@ -19,11 +19,7 @@ import org.brapi.schematools.core.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -64,9 +60,9 @@ public class BrAPISchemaReader {
      * @param schemaDirectory the parent directory that holds all the module directories
      * @return a response containing a list of BrAPIClass with one type per JSON Schema or validation errors
      */
-    public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory)  {
+    public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) {
         try {
-            return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).map(this::createBrAPISchemas).collect(Response.mergeLists())) ;
+            return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).map(this::createBrAPISchemas).collect(Response.mergeLists()));
         } catch (RuntimeException | IOException e) {
             return fail(Response.ErrorType.VALIDATION, schemaDirectory, e.getMessage());
         }
@@ -84,7 +80,7 @@ public class BrAPISchemaReader {
      */
     public Response<BrAPIClass> readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
         try {
-            return createBrAPISchemas(schemaPath, module).mapResult(list -> list.get(0)) ;
+            return createBrAPISchemas(schemaPath, module).mapResult(list -> list.get(0));
         } catch (RuntimeException e) {
             throw new BrAPISchemaReaderException(e);
         }
@@ -103,21 +99,21 @@ public class BrAPISchemaReader {
      */
     public Response<BrAPIClass> readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
         try {
-            return createBrAPISchemas(path, objectMapper.readTree(schema), module).mapResult(list -> list.get(0)) ;
-        } catch (RuntimeException| JsonProcessingException e) {
+            return createBrAPISchemas(path, objectMapper.readTree(schema), module).mapResult(list -> list.get(0));
+        } catch (RuntimeException | JsonProcessingException e) {
             throw new BrAPISchemaReaderException(String.format("Can not read schema at '%s' in module '%s' from '%s', due to '%s'", path, module, schema, e.getMessage()), e);
         }
     }
 
     private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
-        return types.mapResult(this::dereference).mapResultToResponse(this::validate) ;
+        return types.mapResult(this::dereference).mapResultToResponse(this::validate);
     }
 
     private List<BrAPIClass> dereference(List<BrAPIClass> types) {
 
         Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
-        List<BrAPIClass> brAPIClasses = new ArrayList<>() ;
+        List<BrAPIClass> brAPIClasses = new ArrayList<>();
 
         types.forEach(type -> {
             if (type instanceof BrAPIAllOfType brAPIAllOfType) {
@@ -134,38 +130,38 @@ public class BrAPISchemaReader {
             }
         });
 
-        return brAPIClasses ;
+        return brAPIClasses;
     }
 
     private Response<List<BrAPIClass>> validate(List<BrAPIClass> brAPIClasses) {
         Map<String, BrAPIClass> classesMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
-        return brAPIClasses.stream().map(brAPIClass -> validateClass(classesMap, brAPIClass).mapResult(t -> (BrAPIClass)t)).collect(Response.toList()) ;
+        return brAPIClasses.stream().map(brAPIClass -> validateClass(classesMap, brAPIClass).mapResult(t -> (BrAPIClass) t)).collect(Response.toList());
     }
 
     private Response<BrAPIType> validateClass(final Map<String, BrAPIClass> classesMap, BrAPIClass brAPIClass) {
         return validateBrAPIMetadata(brAPIClass).map(() -> {
-                if (brAPIClass instanceof BrAPIAllOfType brAPIAllOfType) {
-                    return fail(Response.ErrorType.VALIDATION, String.format("BrAPIAllOfType '%s' was not de-referenced", brAPIAllOfType.getName())) ;
-                }
+            if (brAPIClass instanceof BrAPIAllOfType brAPIAllOfType) {
+                return fail(Response.ErrorType.VALIDATION, String.format("BrAPIAllOfType '%s' was not de-referenced", brAPIAllOfType.getName()));
+            }
 
-                if (brAPIClass instanceof BrAPIOneOfType brAPIOneOfType) {
-                    return brAPIOneOfType.getPossibleTypes().stream().map(possibleType -> validateType(classesMap, possibleType)).collect(Response.toList()).withResult(brAPIClass) ;
-                }
+            if (brAPIClass instanceof BrAPIOneOfType brAPIOneOfType) {
+                return brAPIOneOfType.getPossibleTypes().stream().map(possibleType -> validateType(classesMap, possibleType)).collect(Response.toList()).withResult(brAPIClass);
+            }
 
-                if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
-                    return brAPIObjectType.getProperties().stream().map(property -> validateProperty(classesMap, brAPIObjectType, property)).collect(Response.toList()).withResult(brAPIClass) ;
-                }
+            if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType.getProperties().stream().map(property -> validateProperty(classesMap, brAPIObjectType, property)).collect(Response.toList()).withResult(brAPIClass);
+            }
 
-                return success(brAPIClass) ;
-        }) ;
+            return success(brAPIClass);
+        });
     }
 
     private Response<BrAPIType> validateType(final Map<String, BrAPIClass> classesMap, BrAPIType brAPIType) {
         if (brAPIType instanceof BrAPIClass brAPIAllOfType) {
-            return validateClass(classesMap, brAPIAllOfType) ;
+            return validateClass(classesMap, brAPIAllOfType);
         } else {
-            return success(brAPIType) ;
+            return success(brAPIType);
         }
     }
 
@@ -173,7 +169,7 @@ public class BrAPISchemaReader {
         BrAPIMetadata metadata = brAPIClass.getMetadata();
 
         if (metadata != null) {
-            int i = 0 ;
+            int i = 0;
             if (metadata.isPrimaryModel()) {
                 ++i;
             }
@@ -187,19 +183,50 @@ public class BrAPISchemaReader {
                 ++i;
             }
             if (i > 1) {
-                return fail(Response.ErrorType.VALIDATION, String.format("In class '%s', 'primaryModel', 'request', 'parameters', 'interface' are mutually exclusive, only one can be set to to true", brAPIClass.getName())) ;
+                return fail(Response.ErrorType.VALIDATION, String.format("In class '%s', 'primaryModel', 'request', 'properties', 'interface' are mutually exclusive, only one can be set to to true", brAPIClass.getName()));
             }
         }
 
-        return success(metadata) ;
+        return success(metadata);
     }
 
     private Response<BrAPIObjectProperty> validateProperty(Map<String, BrAPIClass> classesMap, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
+        BrAPIType propertyType = property.getType();
+
+        if (propertyType instanceof BrAPIReferenceType brAPIReferenceType) {
+            propertyType = classesMap.get(brAPIReferenceType.getName());
+
+            if (propertyType == null) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Property '%s' in type '%s' is a Reference, but the referenced type '%s' is not available",
+                        property.getName(), brAPIObjectType.getName(), brAPIReferenceType.getName()));
+            }
+        }
+
+        BrAPIRelationshipType relationshipType = property.getRelationshipType() ;
+
+        if (relationshipType != null) {
+            switch (relationshipType) {
+                case MANY_TO_ONE, ONE_TO_ONE -> {
+                    if (propertyType instanceof BrAPIArrayType) {
+                        return Response.fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is an array",
+                            property.getName(), brAPIObjectType.getName(), relationshipType, propertyType.getName()));
+                    }
+                }
+                case ONE_TO_MANY, MANY_TO_MANY -> {
+                    if (!(propertyType instanceof BrAPIArrayType)) {
+                        return Response.fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is not an array",
+                            property.getName(), brAPIObjectType.getName(), relationshipType, propertyType.getName()));
+                    }
+                }
+            }
+        }
+
         if (property.getReferencedAttribute() != null) {
 
             BrAPIType type = unwrapType(property.getType());
 
-            BrAPIClass referencedType = classesMap.get(type.getName()) ;
+            BrAPIClass referencedType = classesMap.get(type.getName());
 
             if (referencedType == null) {
                 return Response.fail(Response.ErrorType.VALIDATION,
@@ -219,51 +246,51 @@ public class BrAPISchemaReader {
             }
         }
 
-        return Response.success(property) ;
+        return Response.success(property);
     }
 
     private BrAPIType unwrapType(BrAPIType type) {
         if (type instanceof BrAPIArrayType brAPIArrayType) {
-            return unwrapType(brAPIArrayType.getItems()) ;
+            return unwrapType(brAPIArrayType.getItems());
         }
 
-        return type ;
+        return type;
     }
 
     private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
 
         if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
-            properties.addAll(brAPIObjectType.getProperties()) ;
+            properties.addAll(brAPIObjectType.getProperties());
         } else {
             if (brAPIType instanceof BrAPIAllOfType brAPIAllOfType) {
-                brAPIAllOfType.getAllTypes().forEach(type -> extractProperties(properties, type, typeMap)) ;
+                brAPIAllOfType.getAllTypes().forEach(type -> extractProperties(properties, type, typeMap));
             } else {
                 if (brAPIType instanceof BrAPIReferenceType brAPIReferenceType) {
-                    extractProperties(properties, typeMap.get(brAPIReferenceType.getName()), typeMap) ;
+                    extractProperties(properties, typeMap.get(brAPIReferenceType.getName()), typeMap);
                 }
             }
         }
 
-        return properties ;
+        return properties;
     }
 
     private List<BrAPIObjectType> extractInterfaces(BrAPIAllOfType brAPIAllOfType, Map<String, BrAPIType> typeMap) {
 
-        List<BrAPIObjectType> interfaces = new ArrayList<>() ;
+        List<BrAPIObjectType> interfaces = new ArrayList<>();
 
         brAPIAllOfType.getAllTypes().forEach(type -> {
             BrAPIType allType = typeMap.get(type.getName());
 
-            if (allType instanceof BrAPIObjectType && isInterface((BrAPIObjectType)allType)) {
-                interfaces.add((BrAPIObjectType) allType) ;
+            if (allType instanceof BrAPIObjectType && isInterface((BrAPIObjectType) allType)) {
+                interfaces.add((BrAPIObjectType) allType);
             }
         });
 
-        return interfaces ;
+        return interfaces;
     }
 
     private boolean isInterface(BrAPIClass brAPIClass) {
-        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isInterfaceClass() ;
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isInterfaceClass();
     }
 
 
@@ -285,7 +312,7 @@ public class BrAPISchemaReader {
 
             return createBrAPISchemas(path, json, module);
         } catch (RuntimeException e) {
-            return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not read schemas from for module '%s' from path '%s' due to '%s'", module, path, e.getMessage())) ;
+            return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not read schemas from for module '%s' from path '%s' due to '%s'", module, path, e.getMessage()));
         }
     }
 
@@ -307,7 +334,7 @@ public class BrAPISchemaReader {
         try {
             return createType(path, jsonNode, fallbackName, module).mapResult(type -> (BrAPIClass) type);
         } catch (ClassCastException e) {
-            return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not cast type '%s' to BrAPIClass!", fallbackName)) ;
+            return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not cast type '%s' to BrAPIClass!", fallbackName));
         }
     }
 
@@ -413,7 +440,7 @@ public class BrAPISchemaReader {
             }
             return success(matcher.group(2));
         } else {
-            return fail(Response.ErrorType.VALIDATION, path ,String.format("Ref '%s' does not match ref pattern '%s'", ref, REF_PATTERN));
+            return fail(Response.ErrorType.VALIDATION, path, String.format("Ref '%s' does not match ref pattern '%s'", ref, REF_PATTERN));
         }
     }
 
@@ -445,7 +472,7 @@ public class BrAPISchemaReader {
                 mapResultToResponse(additionalPropertiesNode -> createProperty(path, additionalPropertiesNode, "additionalProperties",
                     module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add)))
             .mapOnCondition(jsonNode.has("properties"), () -> findChildNode(path, jsonNode, "properties", true)
-                    .mapResult(JsonNode::fields)
+                .mapResult(JsonNode::fields)
                 .mapResultToResponse(fields -> createProperties(path, fields, module, required))
                 .onSuccessDoWithResult(properties::addAll))
             .onSuccessDo(() -> builder.properties(properties))
@@ -464,7 +491,7 @@ public class BrAPISchemaReader {
             .findAny().map(Response::success)
             .orElse(fail(Response.ErrorType.VALIDATION,
                 String.format("The required property '%s' is not found in the list of properties of '%s', expecting one of '%s'", requiredPropertyName, objectName,
-                    properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", "))))) ;
+                    properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", ")))));
     }
 
     private Response<List<BrAPIObjectProperty>> createProperties(Path path, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
@@ -498,7 +525,7 @@ public class BrAPISchemaReader {
             onSuccessDoWithResult(builder::primaryModel).
             merge(findBoolean(path, metadata, "request", false, false)).
             onSuccessDoWithResult(builder::request).
-            merge(findBoolean(path, metadata, "parameters", false, false)).
+            merge(findBoolean(path, metadata, "properties", false, false)).
             onSuccessDoWithResult(builder::parameters).
             merge(findBoolean(path, metadata, "interface", false, false)).
             onSuccessDoWithResult(builder::interfaceClass).
@@ -646,7 +673,7 @@ public class BrAPISchemaReader {
         }
 
         if (jsonNode != null) {
-            return fail(Response.ErrorType.VALIDATION, path,String.format("Node type '%s' is not string", jsonNode.getClass().getName()));
+            return fail(Response.ErrorType.VALIDATION, path, String.format("Node type '%s' is not string", jsonNode.getClass().getName()));
         } else {
             return Response.empty();
         }
