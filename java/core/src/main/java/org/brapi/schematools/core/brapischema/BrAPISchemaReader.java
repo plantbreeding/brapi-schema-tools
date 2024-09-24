@@ -529,7 +529,7 @@ public class BrAPISchemaReader {
             onSuccessDoWithResult(builder::primaryModel).
             merge(findBoolean(path, metadata, "request", false, false)).
             onSuccessDoWithResult(builder::request).
-            merge(findBoolean(path, metadata, "properties", false, false)).
+            merge(findBoolean(path, metadata, "parameters", false, false)).
             onSuccessDoWithResult(builder::parameters).
             merge(findBoolean(path, metadata, "interface", false, false)).
             onSuccessDoWithResult(builder::interfaceClass).
