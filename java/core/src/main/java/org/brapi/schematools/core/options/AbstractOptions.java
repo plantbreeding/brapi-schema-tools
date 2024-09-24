@@ -3,6 +3,7 @@ package org.brapi.schematools.core.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;

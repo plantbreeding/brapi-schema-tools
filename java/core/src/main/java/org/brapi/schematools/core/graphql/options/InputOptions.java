@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.Options;
-import org.brapi.schematools.core.options.Validation;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 

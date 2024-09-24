@@ -6,7 +6,6 @@ import graphql.schema.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.brapischema.BrAPISchemaReaderException;
 import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.*;

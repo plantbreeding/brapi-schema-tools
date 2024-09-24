@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
-import org.brapi.schematools.core.options.Validation;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.jena.ontapi.model.OntModel;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
+import org.brapi.schematools.core.markdown.MarkdownGenerator;
 import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
@@ -41,8 +42,8 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
     private OutputFormat outputFormat = DEFAULT_FORMAT;
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file for the result. If omitted the output will be written to the standard out")
-    private Path outputPathFile;
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file or directory for the generated result. If omitted the output will be written to the standard out")
+    private Path outputPath;
 
     @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components, required for the OPEN_API output format")
     private Path componentsDirectory;
@@ -50,10 +51,15 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
     private Path optionsPath;
 
+    @CommandLine.Option(names = {"-m", "--metadata"}, description = "The path of the metadata file. If not provided the default metadata for the specified output format will be used.")
+    private Path metadataPath;
+
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
+    private boolean overwrite = true;
+
     @Override
     public void run() {
         try {
-            out = new PrintWriter(outputPathFile != null ? new FileOutputStream(outputPathFile.toFile()) : System.out);
             err = new PrintWriter(System.err) ;
 
             switch (outputFormat) {
@@ -73,11 +79,16 @@ public class GenerateSubCommand implements Runnable {
                         OntModelGeneratorOptions.load(optionsPath) :  OntModelGeneratorOptions.load() ;
                     generateOntModel(options);
                 }
+                case MARKDOWN -> {
+                    generateMarkdown();
+                }
             }
         } catch (IOException exception) {
             err.println(exception.getMessage());
         } finally {
-            out.close();
+            if (out != null) {
+                out.close();
+            }
             err.close();
         }
     }
@@ -91,31 +102,27 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void outputIDLSchema(GraphQLSchema schema) {
-
         try {
-            if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent());
+            if (openWriter(outputPath)) {
+                out.print(new SchemaPrinter().print(schema));
+                out.close();
             }
-
-            out.print(new SchemaPrinter().print(schema));
         } catch (IOException e) {
             err.println(e.getMessage());
         }
     }
 
     private void outputIntrospectionSchema(GraphQLSchema schema) {
-
         try {
-            if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent());
-            }
-
             GraphQL graphQL = GraphQL.newGraphQL(schema).build();
             ExecutionResult executionResult = graphQL.execute(IntrospectionQuery.INTROSPECTION_QUERY);
 
             ObjectMapper mapper = new ObjectMapper();
 
-            out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
+            if (openWriter(outputPath)) {
+                out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
+                out.close();
+            }
         } catch (IOException e) {
             err.println(e.getMessage());
         }
@@ -141,27 +148,29 @@ public class GenerateSubCommand implements Runnable {
 
     private void outputOpenAPISpecification(List<OpenAPI> specifications) {
         try {
-            if (outputPathFile != null) {
-                Files.createDirectories(outputPathFile.getParent());
-            }
-
             if (specifications.size() == 1) {
-                outputOpenAPISpecification(specifications.get(0), outputPathFile);
+                outputOpenAPISpecification(specifications.get(0), outputPath);
             } else {
-                if (outputPathFile != null) {
-                    Files.createDirectories(outputPathFile);
+                if (outputPath != null) {
+                    if (!Files.isDirectory(optionsPath)) {
+                        err.printf("Output path '%s' must be a directory if outputting separate files:%n", outputPath.toFile());
+                    }
                 }
-
-                specifications.forEach(specification -> outputOpenAPISpecification(specification,
-                    outputPathFile != null ? outputPathFile.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null));
+                for (OpenAPI specification : specifications) {
+                    outputOpenAPISpecification(specification,
+                        outputPath != null ? outputPath.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null) ;
+                }
             }
         } catch (IOException e) {
             err.println(e.getMessage());
         }
     }
 
-    private void outputOpenAPISpecification(OpenAPI specification, Path outputPathFile) {
-        out.print(Json31.pretty(specification));
+    private void outputOpenAPISpecification(OpenAPI specification, Path outputPath) throws IOException {
+        if (openWriter(outputPath)) {
+            out.print(Json31.pretty(specification));
+            out.close();
+        }
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
@@ -183,7 +192,15 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void outputOntModel(OntModel model) {
-        model.write(out) ;
+        try {
+            if (openWriter(outputPath)) {
+                model.write(out);
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            err.println(e.getMessage());
+        }
     }
 
     private void printOntModelErrors(Response<OntModel> response) {
@@ -195,6 +212,70 @@ public class GenerateSubCommand implements Runnable {
 
         response.getAllErrors().forEach(this::printError);
     }
+
+    private boolean openWriter(Path outputPathFile) throws IOException {
+        if (outputPathFile != null) {
+            Files.createDirectories(outputPathFile.getParent());
+
+            if (!overwrite && Files.exists(outputPathFile)) {
+                err.println(String.format("Output file '%s' already exists was not overwritten", outputPath));
+                return false ;
+            }
+
+            out = new PrintWriter(new FileOutputStream(outputPathFile.toFile()));
+        } else {
+            out = new PrintWriter(System.out);
+        }
+
+        return true ;
+    }
+
+    private void generateMarkdown() {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    err.println("For Markdown generation the output path must be a directory");
+                }
+
+                Files.createDirectories(outputPath);
+
+                MarkdownGenerator markdownGenerator = new MarkdownGenerator(outputPath, overwrite);
+
+                Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
+
+                response.onSuccessDoWithResult(this::outputPaths).onFailDoWithResponse(this::printMarkdownErrors);
+
+                out = new PrintWriter(new FileOutputStream(outputPath.toFile()));
+            } else {
+                err.println("For Markdown generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            err.println(exception.getMessage());
+        }
+    }
+
+    private void outputPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any markdown files");
+        } else if (paths.size() == 1) {
+            System.out.println(String.format("Generated '1' markdown file:"));
+            System.out.println(paths.get(0).toString());
+        } else {
+            System.out.println(String.format("Generated '%s' markdown files:", paths.size()));
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printMarkdownErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            err.printf("There was 1 error generating the Markdown:%n");
+        } else {
+            err.printf("There were %d errors generating the Markdown:%n", response.getAllErrors().size());
+        }
+
+        response.getAllErrors().forEach(this::printError);
+    }
+
     private void printError(Response.Error error) {
         switch (error.getType()) {
 

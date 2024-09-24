@@ -2,7 +2,7 @@ package org.brapi.schematools.core.response;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.brapi.schematools.core.options.Validation;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.nio.file.Path;
 import java.util.*;

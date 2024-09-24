@@ -1,14 +1,13 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
-import org.brapi.schematools.core.options.Validation;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,15 +45,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return The default options
      */
     public static GraphQLGeneratorOptions load() {
-
-        try {
-            InputStream inputStream = GraphQLGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("graphql-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
-            throw new RuntimeException(e);
-        }
+        return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
     }
 
     /**
@@ -65,10 +56,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static GraphQLGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        return mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
+        return ConfigurationUtils.load(inputStream, GraphQLGeneratorOptions.class) ;
     }
 
     public Validation validate() {

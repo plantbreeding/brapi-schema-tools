@@ -1,6 +1,7 @@
-package org.brapi.schematools.core.options;
+package org.brapi.schematools.core.valdiation;
 
 import lombok.Getter;
+import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.response.Response;
 
 import java.util.ArrayList;

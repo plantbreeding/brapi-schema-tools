@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.Options;
-import org.brapi.schematools.core.options.Validation;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;

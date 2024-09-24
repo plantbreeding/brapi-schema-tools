@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;

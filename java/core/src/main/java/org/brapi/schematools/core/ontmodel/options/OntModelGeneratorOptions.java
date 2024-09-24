@@ -2,12 +2,14 @@ package org.brapi.schematools.core.ontmodel.options;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.Options;
-import org.brapi.schematools.core.options.Validation;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
