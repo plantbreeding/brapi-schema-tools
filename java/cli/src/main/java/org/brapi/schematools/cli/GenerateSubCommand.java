@@ -10,9 +10,11 @@ import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.jena.ontapi.model.OntModel;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.markdown.MarkdownGenerator;
 import org.brapi.schematools.core.ontmodel.OntModelGenerator;
+import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
@@ -26,6 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * The Generate Sub-command
+ */
 @CommandLine.Command(
     name = "generate", mixinStandardHelpOptions = true,
     description = "Generates the OpenAPI Specification or GraphQL Schema from a BrAPI JSON schema"
@@ -72,12 +77,15 @@ public class GenerateSubCommand implements Runnable {
                 case GRAPHQL -> {
                     GraphQLGeneratorOptions options = optionsPath != null ?
                         GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
+                    GraphQLGeneratorMetadata metadata ;
                     generateGraphQLSchema(options);
                 }
                 case OWL -> {
                     OntModelGeneratorOptions options = optionsPath != null ?
                         OntModelGeneratorOptions.load(optionsPath) :  OntModelGeneratorOptions.load() ;
-                    generateOntModel(options);
+                    OntModelGeneratorMetadata metadata = metadataPath != null ?
+                        OntModelGeneratorMetadata.load(metadataPath) :  OntModelGeneratorMetadata.load() ;
+                    generateOntModel(options, metadata);
                 }
                 case MARKDOWN -> {
                     generateMarkdown();
@@ -183,10 +191,10 @@ public class GenerateSubCommand implements Runnable {
         response.getAllErrors().forEach(this::printError);
     }
 
-    private void generateOntModel(OntModelGeneratorOptions options) {
+    private void generateOntModel(OntModelGeneratorOptions options, OntModelGeneratorMetadata metadata) {
         OntModelGenerator ontModelGenerator = new OntModelGenerator(options);
 
-        Response<OntModel> response = ontModelGenerator.generate(schemaDirectory);
+        Response<OntModel> response = ontModelGenerator.generate(schemaDirectory, metadata);
 
         response.onSuccessDoWithResult(this::outputOntModel).onFailDoWithResponse(this::printOntModelErrors);
     }
@@ -194,7 +202,7 @@ public class GenerateSubCommand implements Runnable {
     private void outputOntModel(OntModel model) {
         try {
             if (openWriter(outputPath)) {
-                model.write(out);
+                model.write(out, "TURTLE");
                 out.flush();
                 out.close();
             }

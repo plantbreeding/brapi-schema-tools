@@ -6,8 +6,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
@@ -73,7 +75,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the options file can not be found or is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
+        return ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class) ;
     }
 
     /**
@@ -81,13 +83,9 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return The default options
      */
     public static OpenAPIGeneratorOptions load() {
-
         try {
-            InputStream inputStream = OpenAPIGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("openapi-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
+            return ConfigurationUtils.load("openapi-options.yaml", OpenAPIGeneratorOptions.class) ;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -100,10 +98,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        return mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
+        return ConfigurationUtils.load(inputStream, OpenAPIGeneratorOptions.class) ;
     }
 
     public Validation validate() {

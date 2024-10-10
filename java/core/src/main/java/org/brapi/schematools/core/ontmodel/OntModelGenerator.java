@@ -128,31 +128,34 @@ public class OntModelGenerator {
 
             BrAPIType type = property.getType();
 
-            if (type instanceof BrAPIObjectType) {
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
+                ontProperty = model.createObjectProperty(createURIForBrAPIObjectProperty(ontClass, property));
+                ontClass.addProperty(ontProperty, createURIForBrAPIClass(brAPIObjectType)) ;
 
-            } else if (type instanceof BrAPIArrayType) {
+            } else if (type instanceof BrAPIArrayType brAPIArrayType) {
                 ontProperty = model.createObjectProperty(String.format("%s/%s", ontClass.getNameSpace(), property.getName()));
-               // ontClass.addProperty(ontProperty, ((BrAPIArrayType) type).getItems()) ;
+                //ontClass.addProperty(ontProperty, brAPIArrayType.getItems()) ;
 
             } else if (type instanceof BrAPIReferenceType) {
 
             } else if (type instanceof BrAPIEnumType) {
 
             } else if (type instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                ontProperty = model.createDataProperty(String.format("%s/%s", ontClass.getNameSpace(), property.getName()));
-                try {
-                    switch (brAPIPrimitiveType.getName()) {
-                        case "string" -> ontClass.addProperty(ontProperty, XSDDatatype.XSDstring.getURI()) ;
-                        case "integer" -> ontClass.addProperty(ontProperty, XSDDatatype.XSDinteger.getURI()) ;
-                        case "number" -> ontClass.addProperty(ontProperty, XSDDatatype.XSDdouble.getURI()) ;
-                        case "boolean" -> ontClass.addProperty(ontProperty, XSDDatatype.XSDboolean.getURI()) ;
-                        default ->
-                            Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s'", type));
+                ontProperty = model.createObjectProperty(createURIForBrAPIObjectProperty(ontClass, property));
+
+                String typeURI = switch (brAPIPrimitiveType.getName()) {
+                        case "string" -> XSDDatatype.XSDstring.getURI();
+                        case "integer" -> XSDDatatype.XSDinteger.getURI();
+                        case "number" -> XSDDatatype.XSDdouble.getURI();
+                        case "boolean" -> XSDDatatype.XSDboolean.getURI();
+                        default -> null;
                     };
-                } catch (NumberFormatException e) {
+
+                if (typeURI == null) {
                     return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find XSDDatatype for '%s' in property '%s'", brAPIPrimitiveType.getName(), property.getName()));
                 }
-                ontClass.addProperty(ontProperty, XSDDatatype.XSDstring.getURI()) ;
+
+                ontClass.addProperty(ontProperty, typeURI) ;
             }
 
             return success(ontProperty) ;
@@ -165,19 +168,23 @@ public class OntModelGenerator {
         private Response<OntClass> createEnumType(BrAPIEnumType brAPIEnumType) {
             OntClass.Named ontClass = model.createOntClass(namespace + brAPIEnumType.getName());
 
-            OntClass.OneOf oneOf = ontClass.as(OntClass.OneOf.class);
+            //OntClass.OneOf oneOf = ontClass.as(OntClass.OneOf.class);
 
-            oneOf.setComponents(brAPIEnumType.getValues().stream().map(this::createOntIndividual).toList()) ;
+           // oneOf.setComponents(brAPIEnumType.getValues().stream().map(this::createOntIndividual).toList()) ;
 
-            return success(oneOf);
+            return success(ontClass);
         }
 
         private OntIndividual createOntIndividual(BrAPIEnumValue enumValue) {
             return model.createIndividual(namespace + enumValue.getName()) ;
         }
 
-        private String createURIForBrAPIClass(BrAPIObjectType brAPIObjectType) {
-            return namespace + brAPIObjectType.getName() ;
+        private String createURIForBrAPIObjectProperty(OntClass.Named ontClass, BrAPIObjectProperty property) {
+            return String.format("%s/%s", ontClass.getURI(), property.getName()) ;
+        }
+
+        private String createURIForBrAPIClass(BrAPIClass brAPIClass) {
+            return String.format("%s/%s", namespace, brAPIClass.getName()) ;
         }
     }
 }

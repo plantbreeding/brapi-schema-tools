@@ -45,7 +45,11 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return The default options
      */
     public static GraphQLGeneratorOptions load() {
-        return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
+        try {
+            return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

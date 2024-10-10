@@ -33,7 +33,11 @@ public class OntModelGeneratorMetadata implements Metadata {
      * @return The default metadata
      */
     public static OntModelGeneratorMetadata load() {
-        return ConfigurationUtils.load("ont-model-metadata,yaml", OntModelGeneratorMetadata.class) ;
+        try {
+            return ConfigurationUtils.load("ont-model-metadata.yaml", OntModelGeneratorMetadata.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
