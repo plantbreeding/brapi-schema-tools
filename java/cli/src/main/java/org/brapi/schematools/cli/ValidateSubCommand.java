@@ -8,6 +8,9 @@ import picocli.CommandLine;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * The Validate Sub-command
+ */
 @CommandLine.Command(
     name = "validate", mixinStandardHelpOptions = true,
     description = "Validates the BrAPI JSON schema"

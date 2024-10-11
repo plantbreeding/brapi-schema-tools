@@ -34,7 +34,14 @@ public class PropertiesOptions implements Options {
             .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
-
+    /**
+     * Gets the list of link properties that are used to generate links to the
+     * provided object type.
+     *
+     * This is usually the object dbId, but can also be the name and/or PUI.
+     * @param brAPIObjectType the object type from which the properties will be obtained
+     * @return list of link properties that are used to generate links to the object
+     */
     public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectType brAPIObjectType) {
         List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
 

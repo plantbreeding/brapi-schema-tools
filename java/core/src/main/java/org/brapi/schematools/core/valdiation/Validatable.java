@@ -1,5 +1,8 @@
 package org.brapi.schematools.core.valdiation;
 
+/**
+ * Interface that markers a class that can be validated.
+ */
 public interface Validatable {
     /**
      * Checks if the Validatable object is valid, return a list of errors if it is not valid

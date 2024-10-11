@@ -1,7 +1,9 @@
 package org.brapi.schematools.core.markdown;
 
+import graphql.schema.GraphQLSchema;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIEnumType;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
@@ -21,18 +23,31 @@ import java.util.List;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
-
+/**
+ * Generates a Markdown files for type and their field descriptions from a BrAPI Json Schema.
+ */
 @AllArgsConstructor
 public class MarkdownGenerator {
     private final BrAPISchemaReader schemaReader = new BrAPISchemaReader() ;
 
     private Path outputPath ;
     private boolean overwrite ;
+
+    /**
+     * Generates Markdown files for type and their field descriptions
+     * from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @return the paths of the Markdown files generated from the complete BrAPI Specification
+     */
     public Response<List<Path>> generate(Path schemaDirectory) {
         return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(brAPISchemas -> new MarkdownGenerator.Generator(brAPISchemas).generate()) ;
     }
 
-    public class Generator {
+    private class Generator {
 
         private final List<BrAPIClass> brAPISchemas ;
         private final Path descriptionsPath ;

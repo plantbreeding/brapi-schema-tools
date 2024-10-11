@@ -2,6 +2,9 @@ package org.brapi.schematools.cli;
 
 import picocli.CommandLine;
 
+/**
+ * Main class for the BrAPI application
+ */
 @CommandLine.Command(
     name = "brapi",
     description = "Command line tools for the BrAPI JSON schema, see the sub-commands for details",
@@ -14,6 +17,11 @@ import picocli.CommandLine;
     mixinStandardHelpOptions = true
 )
 public class BrAPICommand {
+
+    /**
+     * Main method for application
+     * @param args arguments for application
+     */
     public static void main(String[] args) {
         new CommandLine(new BrAPICommand()).execute(args);
     }

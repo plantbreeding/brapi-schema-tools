@@ -39,7 +39,8 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setPropertyNameFor(String, String)}
+     * to override this value.
      * @param name the name of the primary model
      * @return property name for a specific primary model
      */
@@ -50,7 +51,8 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setPropertyNameFor(String, String)}
+     * to override this value.
      * @param type the primary model
      * @return property name for a specific primary model
      */
@@ -86,7 +88,8 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the plural property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setPluralPropertyNameFor} to
+     * override this value.
      * @param name the name of the primary model
      * @return property name for a specific primary model
      */
@@ -97,7 +100,8 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the plural property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setPluralPropertyNameFor}
+     * to override this value.
      * @param type the primary model
      * @return property name for a specific primary model
      */
