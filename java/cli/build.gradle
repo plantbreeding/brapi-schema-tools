@@ -1,9 +1,6 @@
 plugins {
-    id 'brapi.schema-tools.java-conventions'
+    id 'brapi.schema-tools.java-library-conventions'
     id 'application'
-    id 'java-library'
-    id "signing"
-    id 'maven-publish'
 }
 
 dependencies {
@@ -22,35 +19,4 @@ jar {
     manifest {
         attributes 'Main-Class': application.mainClass
     }
-}
-
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'brapi-schema-tools-cii'
-
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            name = "OSSRH"
-            if(project.version.endsWith('-SNAPSHOT')) {
-                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            } else {
-                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            }
-
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
