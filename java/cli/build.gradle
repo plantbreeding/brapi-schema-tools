@@ -28,7 +28,7 @@ jar {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId = 'brapi-schema-tools-cii'
+            artifactId = 'brapi-schema-tools-cli'
 
             from components.java
         }
