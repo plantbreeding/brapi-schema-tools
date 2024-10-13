@@ -291,7 +291,9 @@ public class GenerateSubCommand implements Runnable {
             if (outputPath != null) {
                 Files.createDirectories(outputPath.getParent());
 
-                if (Files.isRegularFile(outputPath)) {
+                // TODO option for split files by module
+
+                if (Files.exists(outputPath) && !Files.isRegularFile(outputPath)) {
                     err.println("For Excel (xlsx) generation the output path must be a file");
                 }
 
@@ -303,7 +305,7 @@ public class GenerateSubCommand implements Runnable {
             } else {
                 err.println("For Excel (xlsx) generation the output file must be provided");
             }
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             err.println(exception.getMessage());
         }
     }

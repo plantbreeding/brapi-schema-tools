@@ -27,6 +27,7 @@ import java.util.List;
 public class XSSFWorkbookGeneratorOptions implements Options {
 
     List<String> dataClassProperties ;
+    List<String> dataClassFieldProperties ;
 
     /**
      * Load the options from an options file in YAML or Json. The options file may have missing

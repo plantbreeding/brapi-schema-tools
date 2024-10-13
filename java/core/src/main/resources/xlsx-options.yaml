@@ -2,3 +2,6 @@ dataClassProperties:
     - name
     - module
     - description
+dataClassFieldProperties:
+    - name
+    - description

@@ -9,6 +9,8 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -20,17 +22,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.function.Function.identity;
 import static org.brapi.schematools.core.response.Response.fail;
-import static org.brapi.schematools.core.response.Response.success;
 
 /**
  * Generates Excel (xlsx) file(s) for type and their field descriptions from a BrAPI Json Schema.
@@ -81,7 +78,8 @@ public class XSSFWorkbookGenerator {
         private final List<BrAPIClass> brAPISchemas ;
 
         public Generator(List<BrAPIClass> brAPISchemas) {
-            this.brAPISchemas = brAPISchemas.stream().filter(this::isGenerating).collect(Collectors.toList()) ;
+            this.brAPISchemas = brAPISchemas.stream().filter(this::isGenerating).
+                sorted(Comparator.comparing(BrAPIClass::getName)).collect(Collectors.toList()) ;
         }
 
         public Response<List<Path>> generate() {
@@ -104,14 +102,29 @@ public class XSSFWorkbookGenerator {
 
             Sheet sheet = workbook.createSheet("Data Classes");
 
-            List<PropertyDescriptor> propertyDescriptors = propertyDescriptors(BrAPIClass.class, options.getDataClassProperties());
+            createHeaderRow(workbook, sheet, options.getDataClassProperties()) ;
+            createRows(sheet, 1, null, options.getDataClassProperties(), brAPIClasses);
 
-            createHeaderRow(workbook, sheet, propertyDescriptors) ;
-            createRows(sheet, 1, propertyDescriptors, brAPIClasses);
+            formatSheet(sheet, brAPIClasses.size()) ;
 
-            formatSheet(workbook, sheet, brAPIClasses.size()) ;
+            sheet = workbook.createSheet("Data Classes Fields");
+
+            createHeaderRow(workbook, sheet, options.getDataClassFieldProperties()) ;
+            createRows(sheet, 1, BrAPIClass::getName, options.getDataClassFieldProperties(), brAPIClasses, this::findFields);
+
+            formatSheet(sheet, brAPIClasses.size()) ;
 
             return saveWorkbook(workbook, outputPath).mapResult(Collections::singletonList) ;
+        }
+
+        private List<BrAPIObjectProperty> findFields(BrAPIClass brAPIClass) {
+            List<BrAPIObjectProperty> properties = new ArrayList<>() ;
+
+            if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType.getProperties();
+            }
+
+            return properties ;
         }
 
         private Response<Path> saveWorkbook(Workbook workbook, Path path) {
@@ -125,17 +138,7 @@ public class XSSFWorkbookGenerator {
             }
         }
 
-        private List<PropertyDescriptor> propertyDescriptors(Class<?> descriptorClass, List<String> propertyNames) {
-            Map<String, PropertyDescriptor> propertyDescriptors = Arrays.stream(PropertyUtils.getPropertyDescriptors(descriptorClass)).collect(Collectors.toMap(PropertyDescriptor::getName, identity()));
-
-            return propertyNames
-                .stream()
-                .map(propertyDescriptors::get)
-                .filter(Objects::nonNull).
-                toList();
-        }
-
-        private void formatSheet(Workbook workbook, Sheet sheet, int lastIndex) {
+        private void formatSheet(Sheet sheet, int lastIndex) {
             CellRangeAddress ca =
                 new CellRangeAddress(0, lastIndex,
                     sheet.getRow(0).getFirstCellNum(),
@@ -143,11 +146,11 @@ public class XSSFWorkbookGenerator {
             sheet.setAutoFilter(ca);
         }
 
-        private void createHeaderRow(Workbook workbook, Sheet sheet, List<PropertyDescriptor> columns) {
-            createHeaderRow(workbook, sheet, columns, null);
+        private void createHeaderRow(Workbook workbook, Sheet sheet, List<String> properties) {
+            createHeaderRow(workbook, sheet, properties, null);
         }
 
-        private void createHeaderRow(Workbook workbook, Sheet sheet, List<PropertyDescriptor> columns, String header) {
+        private void createHeaderRow(Workbook workbook, Sheet sheet, List<String> properties, String header) {
             Row headerRow = sheet.createRow(0);
 
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -162,10 +165,10 @@ public class XSSFWorkbookGenerator {
                 ++columnIndex ;
             }
 
-            for (PropertyDescriptor column : columns) {
+            for (String property : properties) {
                 sheet.setColumnWidth(columnIndex, 6000);
                 Cell headerCell = headerRow.createCell(columnIndex);
-                headerCell.setCellValue(StringUtils.toLabel(column.getName()));
+                headerCell.setCellValue(StringUtils.toLabel(property));
                 headerCell.setCellStyle(headerStyle);
                 ++columnIndex ;
             }
@@ -185,27 +188,27 @@ public class XSSFWorkbookGenerator {
             return headerStyle ;
         }
 
-        private <T> void createRows(Sheet sheet, int startIndex, List<PropertyDescriptor> propertyDescriptors, List<T> values) {
+        private <T> int createRows(Sheet sheet, int startIndex, String header, List<String> properties, List<T> values) {
             int rowIndex = startIndex ;
 
             for (Object value : values) {
-                createRow(sheet, propertyDescriptors, rowIndex, null, value);
+                createRow(sheet, properties, rowIndex, header, value);
 
                 ++rowIndex ;
             }
+
+            return rowIndex ;
         }
 
-        private <T> void createRows(Sheet sheet, int startIndex, List<PropertyDescriptor> columns, String header, List<T> values) {
+        private <T, V> void createRows(Sheet sheet, int startIndex, Function<T, String> headerFunction, List<String> properties, List<T> values, Function<T, List<V>> valuesFunction) {
             int rowIndex = startIndex ;
 
-            for (Object value : values) {
-                createRow(sheet, columns, rowIndex, header, value);
-
-                ++rowIndex ;
+            for (T value : values) {
+                rowIndex = createRows(sheet, rowIndex, headerFunction.apply(value), properties, valuesFunction.apply(value));
             }
         }
 
-        private <T> void createRow(Sheet sheet, List<PropertyDescriptor> propertyDescriptors, int rowIndex, String header, T bean)  {
+        private <T> void createRow(Sheet sheet, List<String> properties, int rowIndex, String header, T bean)  {
             Row row = sheet.createRow(rowIndex);
 
             int columnIndex = 0 ;
@@ -216,11 +219,11 @@ public class XSSFWorkbookGenerator {
                 ++columnIndex ;
             }
 
-            for (PropertyDescriptor column : propertyDescriptors) {
+            for (String property : properties) {
                 Cell cell = row.createCell(columnIndex);
                 Object value = null;
                 try {
-                    value = PropertyUtils.getProperty(bean, column.getName());
+                    value = PropertyUtils.getProperty(bean, property);
                     if (value instanceof Boolean booleanValue) {
                         cell.setCellValue(booleanValue);
                     } else if (value instanceof Integer integerValue) {
@@ -233,7 +236,7 @@ public class XSSFWorkbookGenerator {
                         cell.setCellValue(value.toString());
                     }
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    log.warn(String.format("Error parsing bean with column '%s', at index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
+                    log.warn(String.format("Error parsing bean with property '%s', at index '%d' due to '%s'", property, rowIndex, e.getMessage())) ;
                 }
 
                 ++columnIndex ;
