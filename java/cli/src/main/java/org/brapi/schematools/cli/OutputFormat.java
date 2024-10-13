@@ -20,5 +20,9 @@ public enum OutputFormat {
     /**
      * Use this format to generate Markdown for type and their field descriptions
      */
-    MARKDOWN
+    MARKDOWN,
+    /**
+     * Use this format to generate Excel (xlsx) for types and their field descriptions
+     */
+    XLSX
 }

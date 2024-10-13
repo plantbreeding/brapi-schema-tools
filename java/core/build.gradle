@@ -12,6 +12,9 @@ dependencies {
     api 'io.swagger.core.v3:swagger-core:2.2.22'
     api 'org.apache.jena:jena-ontapi:5.1.0'
     implementation 'io.swagger.parser.v3:swagger-parser:2.1.22'
+    implementation 'org.apache.poi:poi:5.2.5'
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
 }
 
 publishing {

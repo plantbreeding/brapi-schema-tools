@@ -19,6 +19,7 @@ import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
 import picocli.CommandLine;
 
 import java.io.FileOutputStream;
@@ -89,6 +90,9 @@ public class GenerateSubCommand implements Runnable {
                 }
                 case MARKDOWN -> {
                     generateMarkdown();
+                }
+                case XLSX -> {
+                    generateExcel();
                 }
             }
         } catch (IOException exception) {
@@ -251,9 +255,7 @@ public class GenerateSubCommand implements Runnable {
 
                 Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
 
-                response.onSuccessDoWithResult(this::outputPaths).onFailDoWithResponse(this::printMarkdownErrors);
-
-                out = new PrintWriter(new FileOutputStream(outputPath.toFile()));
+                response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
             } else {
                 err.println("For Markdown generation the output directory must be provided");
             }
@@ -262,7 +264,7 @@ public class GenerateSubCommand implements Runnable {
         }
     }
 
-    private void outputPaths(List<Path> paths) {
+    private void outputMarkdownPaths(List<Path> paths) {
         if (paths.isEmpty()) {
             System.out.println("Did not generate any markdown files");
         } else if (paths.size() == 1) {
@@ -279,6 +281,50 @@ public class GenerateSubCommand implements Runnable {
             err.printf("There was 1 error generating the Markdown:%n");
         } else {
             err.printf("There were %d errors generating the Markdown:%n", response.getAllErrors().size());
+        }
+
+        response.getAllErrors().forEach(this::printError);
+    }
+
+    private void generateExcel() {
+        try {
+            if (outputPath != null) {
+                Files.createDirectories(outputPath.getParent());
+
+                if (Files.isRegularFile(outputPath)) {
+                    err.println("For Excel (xlsx) generation the output path must be a file");
+                }
+
+                XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath, overwrite);
+
+                Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
+
+                response.onSuccessDoWithResult(this::outputExcelPaths).onFailDoWithResponse(this::printExcelErrors);
+            } else {
+                err.println("For Excel (xlsx) generation the output file must be provided");
+            }
+        } catch (IOException exception) {
+            err.println(exception.getMessage());
+        }
+    }
+
+    private void outputExcelPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any excel files");
+        } else if (paths.size() == 1) {
+            System.out.println(String.format("Generated '1' excel file:"));
+            System.out.println(paths.get(0).toString());
+        } else {
+            System.out.println(String.format("Generated '%s' excel files:", paths.size()));
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printExcelErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            err.printf("There was 1 error generating the Excel:%n");
+        } else {
+            err.printf("There were %d errors generating the Excel:%n", response.getAllErrors().size());
         }
 
         response.getAllErrors().forEach(this::printError);

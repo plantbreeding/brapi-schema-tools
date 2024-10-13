@@ -1,12 +1,9 @@
 package org.brapi.schematools.core.openapi.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -14,7 +11,6 @@ import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;

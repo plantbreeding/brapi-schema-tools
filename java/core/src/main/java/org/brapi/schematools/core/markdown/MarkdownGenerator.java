@@ -1,9 +1,7 @@
 package org.brapi.schematools.core.markdown;
 
-import graphql.schema.GraphQLSchema;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIEnumType;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
@@ -11,7 +9,6 @@ import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIOneOfType;
 import org.brapi.schematools.core.response.Response;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;

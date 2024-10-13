@@ -1,0 +1,4 @@
+dataClassProperties:
+    - name
+    - module
+    - description
