@@ -41,7 +41,8 @@ public class MarkdownGenerator {
      * @return the paths of the Markdown files generated from the complete BrAPI Specification
      */
     public Response<List<Path>> generate(Path schemaDirectory) {
-        return schemaReader.readDirectories(schemaDirectory).mapResultToResponse(brAPISchemas -> new MarkdownGenerator.Generator(brAPISchemas).generate()) ;
+        return schemaReader.readDirectories(schemaDirectory)
+            .mapResultToResponse(brAPISchemas -> new MarkdownGenerator.Generator(brAPISchemas).generate()) ;
     }
 
     private class Generator {

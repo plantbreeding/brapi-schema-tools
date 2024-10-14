@@ -13,20 +13,23 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.BrAPITClassCacheUtil;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.brapi.schematools.core.xlsx.options.ColumnOption;
+import org.brapi.schematools.core.xlsx.options.ValuePropertyOption;
 import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
 
-import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.function.Function.identity;
 import static org.brapi.schematools.core.response.Response.fail;
 
 /**
@@ -75,24 +78,24 @@ public class XSSFWorkbookGenerator {
 
     private class Generator {
 
-        private final List<BrAPIClass> brAPISchemas ;
+        private final Map<String, BrAPIClass> brAPIClasses ;
 
         public Generator(List<BrAPIClass> brAPISchemas) {
-            this.brAPISchemas = brAPISchemas.stream().filter(this::isGenerating).
-                sorted(Comparator.comparing(BrAPIClass::getName)).collect(Collectors.toList()) ;
+
+            brAPIClasses = new BrAPITClassCacheUtil(this::isGenerating).createMap(brAPISchemas) ;
         }
 
         public Response<List<Path>> generate() {
             try {
                 Function<Response<List<Workbook>>, Response<?>> saveWorkbooks;
-                return generateDataClasses(brAPISchemas) ;
+                return generateDataClasses(new ArrayList<>(brAPIClasses.values())) ;
             } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
             }
         }
 
         private boolean isGenerating(BrAPIClass brAPIClass) {
-            return brAPIClass.getMetadata() != null && !(brAPIClass.getMetadata().isRequest() || brAPIClass.getMetadata().isParameters());
+            return brAPIClass.getMetadata() == null || !(brAPIClass.getMetadata().isRequest() || brAPIClass.getMetadata().isParameters());
         }
 
         private Response<List<Path>> generateDataClasses(List<BrAPIClass> brAPIClasses) {
@@ -109,7 +112,7 @@ public class XSSFWorkbookGenerator {
 
             sheet = workbook.createSheet("Data Classes Fields");
 
-            createHeaderRow(workbook, sheet, options.getDataClassFieldProperties()) ;
+            createHeaderRow(workbook, sheet, options.getDataClassFieldProperties(), options.getDataClassFieldHeader()) ;
             createRows(sheet, 1, BrAPIClass::getName, options.getDataClassFieldProperties(), brAPIClasses, this::findFields);
 
             formatSheet(sheet, brAPIClasses.size()) ;
@@ -146,11 +149,11 @@ public class XSSFWorkbookGenerator {
             sheet.setAutoFilter(ca);
         }
 
-        private void createHeaderRow(Workbook workbook, Sheet sheet, List<String> properties) {
-            createHeaderRow(workbook, sheet, properties, null);
+        private void createHeaderRow(Workbook workbook, Sheet sheet, List<ColumnOption> columns) {
+            createHeaderRow(workbook, sheet, columns, null);
         }
 
-        private void createHeaderRow(Workbook workbook, Sheet sheet, List<String> properties, String header) {
+        private void createHeaderRow(Workbook workbook, Sheet sheet, List<ColumnOption> columns, String header) {
             Row headerRow = sheet.createRow(0);
 
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -165,10 +168,10 @@ public class XSSFWorkbookGenerator {
                 ++columnIndex ;
             }
 
-            for (String property : properties) {
+            for (ColumnOption column : columns) {
                 sheet.setColumnWidth(columnIndex, 6000);
                 Cell headerCell = headerRow.createCell(columnIndex);
-                headerCell.setCellValue(StringUtils.toLabel(property));
+                headerCell.setCellValue(column.getLabel() != null ? column.getLabel() : StringUtils.toLabel(column.getName()));
                 headerCell.setCellStyle(headerStyle);
                 ++columnIndex ;
             }
@@ -188,11 +191,11 @@ public class XSSFWorkbookGenerator {
             return headerStyle ;
         }
 
-        private <T> int createRows(Sheet sheet, int startIndex, String header, List<String> properties, List<T> values) {
+        private <T> int createRows(Sheet sheet, int startIndex, String header, List<ColumnOption> columns, List<T> values) {
             int rowIndex = startIndex ;
 
             for (Object value : values) {
-                createRow(sheet, properties, rowIndex, header, value);
+                createRow(sheet, columns, rowIndex, header, value);
 
                 ++rowIndex ;
             }
@@ -200,15 +203,15 @@ public class XSSFWorkbookGenerator {
             return rowIndex ;
         }
 
-        private <T, V> void createRows(Sheet sheet, int startIndex, Function<T, String> headerFunction, List<String> properties, List<T> values, Function<T, List<V>> valuesFunction) {
+        private <T, V> void createRows(Sheet sheet, int startIndex, Function<T, String> headerFunction, List<ColumnOption> columns, List<T> values, Function<T, List<V>> valuesFunction) {
             int rowIndex = startIndex ;
 
             for (T value : values) {
-                rowIndex = createRows(sheet, rowIndex, headerFunction.apply(value), properties, valuesFunction.apply(value));
+                rowIndex = createRows(sheet, rowIndex, headerFunction.apply(value), columns, valuesFunction.apply(value));
             }
         }
 
-        private <T> void createRow(Sheet sheet, List<String> properties, int rowIndex, String header, T bean)  {
+        private <T> void createRow(Sheet sheet, List<ColumnOption> columns, int rowIndex, String header, T bean)  {
             Row row = sheet.createRow(rowIndex);
 
             int columnIndex = 0 ;
@@ -219,29 +222,50 @@ public class XSSFWorkbookGenerator {
                 ++columnIndex ;
             }
 
-            for (String property : properties) {
-                Cell cell = row.createCell(columnIndex);
-                Object value = null;
+            for (ColumnOption column : columns) {
                 try {
-                    value = PropertyUtils.getProperty(bean, property);
-                    if (value instanceof Boolean booleanValue) {
-                        cell.setCellValue(booleanValue);
-                    } else if (value instanceof Integer integerValue) {
-                        cell.setCellValue(integerValue);
-                    } else if (value instanceof Double doubleValue) {
-                        cell.setCellValue(doubleValue);
-                    } else if (value instanceof List listValue) {
-                        cell.setCellValue(listValue.stream().collect(Collectors.joining(", ")).toString());
-                    } else if (value != null) {
-                        cell.setCellValue(value.toString());
-                    }
+                    updateCellValue(row.createCell(columnIndex), column, column.getDefaultValue(), rowIndex, PropertyUtils.getProperty(bean, column.getName())) ;
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    log.warn(String.format("Error parsing bean with property '%s', at index '%d' due to '%s'", property, rowIndex, e.getMessage())) ;
+                    log.warn(String.format("Error parsing bean with property '%s', at index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
                 }
-
                 ++columnIndex ;
             }
         }
-    }
 
+        private <T> void updateCellValue(Cell cell, ValuePropertyOption column, Object defaultValue, int rowIndex, Object value) {
+            try {
+                if (value instanceof Boolean booleanValue) {
+                    cell.setCellValue(booleanValue);
+                } else if (value instanceof Integer integerValue) {
+                    cell.setCellValue(integerValue);
+                } else if (value instanceof Double doubleValue) {
+                    cell.setCellValue(doubleValue);
+                } else if (value instanceof List listValue) {
+                    if (column.getIndex() != null) {
+                        updateCellValue(cell, column, defaultValue, rowIndex, listValue.get(column.getIndex()));
+                    } else {
+                        cell.setCellValue(listValue.stream().collect(Collectors.joining(", ")).toString());
+                    }
+                } else if (value instanceof Map mapValue) {
+                    if (column.getKey() != null) {
+                        updateCellValue(cell, column, defaultValue, rowIndex, mapValue.get(column.getKey()));
+                    } else {
+                        cell.setCellValue(mapValue.entrySet().stream().collect(Collectors.joining(", ")).toString());
+                    }
+                } else if (value != null) {
+                    if (column.getChildProperty() != null) {
+                        updateCellValue(cell, column.getChildProperty(), defaultValue, rowIndex, PropertyUtils.getProperty(value, column.getChildProperty().getName())) ;
+                    } else {
+                        cell.setCellValue(value.toString());
+                    }
+                } else if (column.getDefaultValue() != null) {
+                    updateCellValue(cell, column, null, rowIndex, column.getDefaultValue());
+                } else if (defaultValue != null) {
+                    updateCellValue(cell, column, null, rowIndex, defaultValue);
+                }
+            } catch (Exception e) {
+                log.warn(String.format("Error parsing bean with property '%s', at row index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
+            }
+        }
+    }
 }

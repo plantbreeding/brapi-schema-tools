@@ -26,8 +26,9 @@ import java.util.List;
 @Accessors(chain = true)
 public class XSSFWorkbookGeneratorOptions implements Options {
 
-    List<String> dataClassProperties ;
-    List<String> dataClassFieldProperties ;
+    List<ColumnOption> dataClassProperties ;
+    String dataClassFieldHeader ;
+    List<ColumnOption> dataClassFieldProperties ;
 
     /**
      * Load the options from an options file in YAML or Json. The options file may have missing
@@ -71,6 +72,10 @@ public class XSSFWorkbookGeneratorOptions implements Options {
     }
 
     public Validation validate() {
-        return Validation.valid() ;
+
+        return Validation.valid()
+            .merge(dataClassProperties)
+            .assertNotNull(dataClassFieldHeader, "'dataClassFieldHeader' option on %s is null", this.getClass().getSimpleName())
+            .merge(dataClassFieldProperties) ;
     }
 }
