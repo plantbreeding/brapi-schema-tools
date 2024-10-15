@@ -56,6 +56,7 @@ public class XSSFWorkbookGenerator {
      * Creates a XSSFWorkbookGenerator using a default {@link BrAPISchemaReader} and
      * the provided {@link XSSFWorkbookGenerator}.
      * @param options The options to be used in the generation.
+     * @param outputPath the path of the output file or directory
      */
     public XSSFWorkbookGenerator(XSSFWorkbookGeneratorOptions options, Path outputPath) {
         this(new BrAPISchemaReader(), options, outputPath) ;

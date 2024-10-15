@@ -14,9 +14,9 @@ import java.util.function.Predicate;
  * Additional classes are added to the cached depending on the subclass of {@link BrAPIClass}
  * For {@link BrAPIObjectType} utility checks the properties and
  * tries to cache any that are the return type of these properties {@link BrAPIClass}es.
- * If an {@link BrAPIArrayType} is encountered then the {@link BrAPIArrayType#getItems()} is
+ * If an {@link BrAPIArrayType} is encountered then the {@see BrAPIArrayType#getItems()} is
  * checked recursively to be included in the cache.
- * For {@link BrAPIOneOfType} it is added to the cache and any of {@link BrAPIOneOfType#getPossibleTypes()}
+ * For {@link BrAPIOneOfType} it is added to the cache and any of {@see BrAPIOneOfType#getPossibleTypes()}
  * are checked recursively to be included in the cache.
  * {@link BrAPIAllOfType} are ignored.
  */
