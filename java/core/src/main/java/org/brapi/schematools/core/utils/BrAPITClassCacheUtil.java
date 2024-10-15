@@ -25,6 +25,11 @@ public class BrAPITClassCacheUtil {
 
     private Predicate<BrAPIClass> cachePredicate ;
 
+    /**
+     * Creates the cache of classes as a Map
+     * @param brAPIClasses the list of possible classes to be cached.
+     * @return the cache of classes as a Map
+     */
     public Map<String, BrAPIClass> createMap(List<BrAPIClass> brAPIClasses) {
         return new Cache(brAPIClasses).brAPIClassMap ;
     }

@@ -297,7 +297,7 @@ public class GenerateSubCommand implements Runnable {
                     err.println("For Excel (xlsx) generation the output path must be a file");
                 }
 
-                XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath, overwrite);
+                XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
 
                 Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
 

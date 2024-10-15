@@ -42,14 +42,14 @@ public class XSSFWorkbookGenerator {
     private final XSSFWorkbookGeneratorOptions options;
 
     private Path outputPath ;
-    private boolean overwrite ;
 
     /**
      * Creates a XSSFWorkbookGenerator using a default {@link BrAPISchemaReader} and
      * the default {@link OntModelGeneratorOptions}.
+     * @param outputPath the path of the output file or directory
      */
-    public XSSFWorkbookGenerator(Path outputPath, boolean overwrite) {
-        this(new BrAPISchemaReader(), XSSFWorkbookGeneratorOptions.load(), outputPath, overwrite) ;
+    public XSSFWorkbookGenerator(Path outputPath) {
+        this(new BrAPISchemaReader(), XSSFWorkbookGeneratorOptions.load(), outputPath) ;
     }
 
     /**
@@ -57,8 +57,8 @@ public class XSSFWorkbookGenerator {
      * the provided {@link XSSFWorkbookGenerator}.
      * @param options The options to be used in the generation.
      */
-    public XSSFWorkbookGenerator(XSSFWorkbookGeneratorOptions options, Path outputPath, boolean overwrite) {
-        this(new BrAPISchemaReader(), options, outputPath, overwrite) ;
+    public XSSFWorkbookGenerator(XSSFWorkbookGeneratorOptions options, Path outputPath) {
+        this(new BrAPISchemaReader(), options, outputPath) ;
     }
 
     /**
@@ -87,7 +87,6 @@ public class XSSFWorkbookGenerator {
 
         public Response<List<Path>> generate() {
             try {
-                Function<Response<List<Workbook>>, Response<?>> saveWorkbooks;
                 return generateDataClasses(new ArrayList<>(brAPIClasses.values())) ;
             } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
