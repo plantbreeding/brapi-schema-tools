@@ -76,6 +76,7 @@ post:
     descriptionFormat: Add new %s to database
     generateFor:
         AlleleMatrix: false
+        BreedingMethod: false
         Call: false
         CallSet: false
         Event: false
@@ -90,6 +91,7 @@ put:
     descriptionFormat: Update the details for an existing %s
     generateFor:
         AlleleMatrix: false
+        BreedingMethod: false
         Call: false
         CallSet: false
         Cross: false
@@ -112,8 +114,22 @@ delete:
         Reference: false
         Variant: false
         VariantSet: false
-ids:
-    nameFormat: "%sDbId"
-    parameterFor:
-        GermplasmAttribute: attributeDbId
-        GermplasmAttributeValue: attributeValueDbId
+properties:
+    id:
+        nameFormat: "%sDbId"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+    name:
+        nameFormat: "%sName"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeName
+            GermplasmAttributeValue: attributeValueName
+    pui:
+        nameFormat: "%sPUI"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributePUI
+            GermplasmAttributeValue: attributeValuePUI
