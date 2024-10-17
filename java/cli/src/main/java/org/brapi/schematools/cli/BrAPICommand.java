@@ -22,7 +22,7 @@ public class BrAPICommand {
      * Main method for application
      * @param args arguments for application
      */
-    public static void main(String[] args) {
-        new CommandLine(new BrAPICommand()).execute(args);
+    public static void main(String... args) throws Exception {
+        System.exit(new CommandLine(new BrAPICommand()).execute(args));
     }
 }

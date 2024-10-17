@@ -100,6 +100,9 @@ public class GenerateSubCommand implements Runnable {
             }
         } catch (IOException exception) {
             err.println(exception.getMessage());
+            if (throwExceptionOnFail) {
+                throw new BrAPICommandException(exception.getMessage()) ;
+            }
         } finally {
             if (out != null) {
                 out.close();
