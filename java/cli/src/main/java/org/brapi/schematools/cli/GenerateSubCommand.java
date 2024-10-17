@@ -63,6 +63,9 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
     private boolean overwrite = true;
 
+    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
+    private boolean throwExceptionOnFail = false;
+
     @Override
     public void run() {
         try {
@@ -141,13 +144,18 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.printf("There was 1 error generating the GraphQL Schema:%n");
+            err.println(message = "There was 1 error generating the GraphQL Schema");
         } else {
-            err.printf("There were %d errors generating the GraphQL Schema:%n", response.getAllErrors().size());
+            err.println(message = String.format("There were %d errors generating the GraphQL Schema", response.getAllErrors().size()));
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
@@ -186,13 +194,18 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            System.err.printf("There was 1 error generating the OpenAPI Specification:%n");
+            System.err.println(message = "There was 1 error generating the OpenAPI Specification");
         } else {
-            System.err.printf("There were %d errors generating the OpenAPI Specification:%n", response.getAllErrors().size());
+            System.err.println(message = String.format("There were %d errors generating the OpenAPI Specification", response.getAllErrors().size()));
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private void generateOntModel(OntModelGeneratorOptions options, OntModelGeneratorMetadata metadata) {
@@ -216,13 +229,18 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printOntModelErrors(Response<OntModel> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.printf("There was 1 error generating the RDF Graph:%n");
+            err.println(message = "There was 1 error generating the RDF Graph");
         } else {
-            err.printf("There were %d errors generating the RDF Graph:%n", response.getAllErrors().size());
+            err.println(message = String.format("There were %d errors generating the RDF Graph", response.getAllErrors().size()));
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private boolean openWriter(Path outputPathFile) throws IOException {
@@ -268,22 +286,27 @@ public class GenerateSubCommand implements Runnable {
         if (paths.isEmpty()) {
             System.out.println("Did not generate any markdown files");
         } else if (paths.size() == 1) {
-            System.out.println(String.format("Generated '1' markdown file:"));
+            System.out.println("Generated '1' markdown file:");
             System.out.println(paths.get(0).toString());
         } else {
-            System.out.println(String.format("Generated '%s' markdown files:", paths.size()));
+            System.out.printf("Generated '%s' markdown files:%n", paths.size());
             paths.forEach(path -> System.out.println(path.toString()));
         }
     }
 
     private void printMarkdownErrors(Response<List<Path>> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.printf("There was 1 error generating the Markdown:%n");
+            err.println(message = "There was 1 error generating the Markdown");
         } else {
-            err.printf("There were %d errors generating the Markdown:%n", response.getAllErrors().size());
+            err.println(message = String.format("There were %d errors generating the Markdown", response.getAllErrors().size())); ;
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private void generateExcel() {
@@ -323,13 +346,18 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printExcelErrors(Response<List<Path>> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.printf("There was 1 error generating the Excel:%n");
+            err.println(message = "There was 1 error generating the Excel");
         } else {
-            err.printf("There were %d errors generating the Excel:%n", response.getAllErrors().size());
+            err.println(message = String.format("There were %d errors generating the Excel", response.getAllErrors().size()));
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private void printError(Response.Error error) {

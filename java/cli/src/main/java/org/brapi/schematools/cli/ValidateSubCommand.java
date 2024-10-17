@@ -20,6 +20,9 @@ public class ValidateSubCommand implements Runnable {
     @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI JSON schema")
     private Path schemaDirectory;
 
+    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
+    private boolean throwExceptionOnFail = false ;
+
     @Override
     public void run() {
         BrAPISchemaReader schemaReader = new BrAPISchemaReader() ;
@@ -31,13 +34,18 @@ public class ValidateSubCommand implements Runnable {
     }
 
     private void printErrors(Response<List<BrAPIClass>> response) {
+        String message ;
         if (response.getAllErrors().size() == 1) {
-            System.err.printf("There was 1 error validating the JSON Schema:%n");
+            System.err.println(message = "There was 1 error validating the JSON Schema");
         } else {
-            System.err.printf("There were %d errors validating the JSON Schema:%n", response.getAllErrors().size());
+            System.err.println(message = String.format("There were %d errors validating the JSON Schema", response.getAllErrors().size()));
         }
 
         response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
     }
 
     private void printError(Response.Error error) {
