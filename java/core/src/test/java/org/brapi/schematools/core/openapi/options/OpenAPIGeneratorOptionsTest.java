@@ -223,7 +223,7 @@ class OpenAPIGeneratorOptionsTest {
     private void checkOptions(OpenAPIGeneratorOptions options) {
         assertNotNull(options);
 
-        assertNotNull(options.getIds());
+        assertNotNull(options.getProperties());
         assertNotNull(options.getSingleGet());
         assertNotNull(options.getListGet());
         assertNotNull(options.getPost());

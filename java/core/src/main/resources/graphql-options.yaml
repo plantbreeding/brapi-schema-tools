@@ -1,5 +1,11 @@
 pluralFor:
     AlleleMatrix: AlleleMatrix
+ids:
+    useIDType: true
+    nameFormat: "%sDbId"
+    fieldFor:
+        GermplasmAttribute: attributeDbId
+        GermplasmAttributeValue: attributeValueDbId
 input:
     name: input
     nameFormat: "%sInput"
@@ -69,6 +75,7 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     updateMutation:
@@ -84,11 +91,13 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     deleteMutation:
         generate: false
         pluralisingName: true
+        multiple: true
         nameFormat: delete%s
         descriptionFormat: Delete existing %s
         generateFor:
@@ -98,9 +107,7 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
             VariantSet: false
-ids:
-    useIDType: true
-    nameFormat: "%sDbId"

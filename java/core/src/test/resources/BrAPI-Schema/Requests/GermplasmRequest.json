@@ -3,26 +3,21 @@
         "GermplasmRequest": {
             "allOf": [
                 {
-                    "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
-                },
-                {
                     "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
-                },
-                {
-                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
                 },
                 {
                     "$ref": "Parameters/GermplasmParameters.json#/$defs/GermplasmParameters"
                 },
                 {
-                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
+                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
                 },
                 {
                     "$ref": "Parameters/StudyParameters.json#/$defs/StudyParameters"
                 },
                 {
-                    "$ref": "Parameters/ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
+                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
                 },
+
                 {
                     "type": "object",
                     "properties": {

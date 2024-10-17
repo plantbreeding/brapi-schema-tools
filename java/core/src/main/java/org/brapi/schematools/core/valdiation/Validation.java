@@ -1,0 +1,198 @@
+package org.brapi.schematools.core.valdiation;
+
+import lombok.Getter;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.brapi.schematools.core.response.Response;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.brapi.schematools.core.response.Response.empty;
+
+/**
+ * Provides the results of a validation
+ */
+@Getter
+public class Validation {
+    List<Response.Error> errors = new ArrayList<>();
+
+    /**
+     * Get a valid instant of the Validation
+     * @return a valid instant of the Validation
+     */
+    public static Validation valid() {
+        return new Validation();
+    }
+
+    /**
+     * Checks if the value is non-null.
+     * @param value the value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertNotNull(Object value, String errorMessage, Object... args) {
+        if (value == null) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Validate that only one of the provided properties is non-null
+     * @param value the value to be tested
+     * @param properties the array of properties to be checked
+     * @return this Validation
+     */
+    public Validation assertMutuallyExclusive(Object value, String... properties) {
+        if (value == null) {
+            addError("Value is null!") ;
+        } else {
+            int count = 0;
+
+            for (String property : properties) {
+                try {
+                    if (PropertyUtils.getProperty(value, property) != null) {
+                        ++count;
+                    }
+                } catch (Exception e) {
+                    addError(e);
+                }
+            }
+
+            if (count > 1) {
+                addError("Only one of '%s' can be provided", String.join(", ", Arrays.asList(properties)));
+            }
+        }
+
+        return this ;
+    }
+
+    public Validation assertClass(Object value, List<Class<?>> classes) {
+        if (value != null && classes.stream().noneMatch(aClass -> value.getClass().isAssignableFrom(aClass))) {
+            addError("Value must one of '%s', but was '%s'",
+                classes.stream().map(Class::getName).collect(Collectors.joining(", ")), value.getClass().getName());
+        }
+
+        return this ;
+    }
+
+    /**
+     * Was the validation successful,
+     * @return <code>true</code> if the validation was successful, <code>false</code> otherwise
+     */
+    public boolean isValid() {
+        return errors.isEmpty();
+    }
+
+    /**
+     * Merge the objects to Validation, by calling the {@link Validatable#validate()} method
+     * and adding any errors to this Validation
+     * @param validatable the object to be validated
+     * @return this Validation
+     */
+    public Validation merge(Validatable validatable) {
+        addAllErrors(validatable.validate().getErrors()) ;
+
+        return this ;
+    }
+
+    /**
+     * Merge the objects to Validation, by calling the {@link Validatable#validate()} method
+     * and adding any errors to this Validation
+     * @param validatable the object to be validated
+     * @param prefixMessage prefix any errors with this message
+     * @return this Validation
+     */
+    public Validation merge(Validatable validatable, String prefixMessage) {
+        addAllErrors(validatable.validate().getErrors(), prefixMessage) ;
+
+        return this ;
+    }
+
+    /**
+     * If the condition is true, merge the objects to Validation, by calling the {@link Validatable#validate()} method
+     * and adding any errors to this Validation
+     * @param condition if <code>true</code> merge, otherwise don't
+     * @param validatable the object to be validated
+     * @return this Validation
+     */
+    public Validation mergeOnCondition(boolean condition, Validatable validatable) {
+        if (condition) {
+            addAllErrors(validatable.validate().getErrors());
+        }
+
+        return this ;
+    }
+
+    /**
+     * If the condition is true, merge the objects to Validation, by calling the {@link Validatable#validate()} method
+     * and adding any errors to this Validation
+     * @param condition if <code>true</code> merge, otherwise don't
+     * @param validatable the object to be validated
+     * @param prefixMessage prefix any errors with this message
+     * @return this Validation
+     */
+    public Validation mergeOnCondition(boolean condition, Validatable validatable, String prefixMessage) {
+        if (condition) {
+            addAllErrors(validatable.validate().getErrors(), prefixMessage);
+        }
+
+        return this ;
+    }
+
+    /**
+     * Merge the objects to Validation, by calling the {@link Validatable#validate()} method
+     * in each object and adding any errors to this Validation
+     * @param validatableList the options to be validated
+     * @return this Validation
+     */
+    public <T extends Validatable> Validation merge(List<T> validatableList) {
+        validatableList
+            .stream()
+            .map(Validatable::validate)
+            .map(Validation::getErrors)
+            .forEach(this::addAllErrors);
+
+        return this ;
+    }
+
+    /**
+     * Returns this Validation as a Response
+     * @return this Validation as a Response
+     * @param <U> The type of the result
+     */
+    public <U> Response<U> asResponse () {
+        if (errors.isEmpty()) {
+            return empty() ;
+        } else {
+            return empty().merge(this) ;
+        }
+    }
+
+    private void addError(String errorMessage, Object... args) {
+        String message = args != null && args.length > 0 ? String.format(errorMessage, args) : errorMessage;
+        errors.add(Response.Error.of("", message, Response.ErrorType.VALIDATION));
+    }
+
+    private void addError(String message) {
+        errors.add(Response.Error.of("", message, Response.ErrorType.VALIDATION));
+    }
+
+    private void addError(Exception e) {
+        errors.add(Response.Error.of("", e.getMessage(), Response.ErrorType.VALIDATION));
+    }
+
+    private void addAllErrors(List<Response.Error> errors) {
+        this.errors.addAll(errors);
+    }
+
+    private void addAllErrors(List<Response.Error> errors, String prefixMessage) {
+        errors.forEach(error ->
+            this.errors.add(Response.Error.of(error.getCode(), String.format("%s %s", prefixMessage, error.getMessage()), error.getType()))
+        );
+    }
+}

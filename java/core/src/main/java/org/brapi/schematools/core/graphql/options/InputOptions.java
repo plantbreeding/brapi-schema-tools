@@ -3,28 +3,34 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
+/**
+ * The options used to generate Input object types
+ */
 @Getter(AccessLevel.PRIVATE)
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class InputOptions {
+public class InputOptions implements Options {
     private String name;
     private String nameFormat;
     private String typeNameFormat;
 
-    public void validate() {
-        assert name != null : "'name' option on Input Options is null";
-        assert typeNameFormat != null : "'typeNameFormat' option on Input Options is null";
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(name, "'name' option on Input Options is null")
+            .assertNotNull(typeNameFormat, "'typeNameFormat' option on Input Options is null") ;
     }
 
     /**
-     * Gets the name of the input for a specific primary model
+     * Gets the name of the input parameter for a specific primary model
      * @param name the name of the primary model
-     * @return the name of the input for a specific primary model
+     * @return the name of the input parameter for a specific primary model
      */
     @JsonIgnore
     public final String getNameFor(@NonNull String name) {
@@ -32,9 +38,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the name of input for a specific primary model
+     * Gets the name of input parameter for a specific primary model
      * @param type the primary model
-     * @return the name of the input for a specific primary model
+     * @return the name of the input parameter for a specific primary model
      */
     @JsonIgnore
     public final String getNameFor(@NonNull BrAPIType type) {
@@ -42,9 +48,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a specific primary model
+     * Gets the type name of the input for a specific primary model
      * @param name the name of the primary model
-     * @return the  type name for a specific primary model
+     * @return the type name of the input for a specific primary model
      */
     @JsonIgnore
     public final String getTypeNameFor(@NonNull String name) {
@@ -52,9 +58,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a specific primary model
+     * Gets the type name of the input for a specific primary model
      * @param type the primary model
-     * @return the  type name for a specific primary model
+     * @return the type name of the input for a specific primary model
      */
     @JsonIgnore
     public final String getTypeNameFor(@NonNull BrAPIType type) {
@@ -62,9 +68,9 @@ public class InputOptions {
     }
 
     /**
-     * Gets the type name for a query
+     * Gets the type name of the input for a query
      * @param queryName the name of the query
-     * @return the name of the type name for a query
+     * @return the type name of the input for a query
      */
     @JsonIgnore
     public final String getTypeNameForQuery(@NonNull String queryName) {

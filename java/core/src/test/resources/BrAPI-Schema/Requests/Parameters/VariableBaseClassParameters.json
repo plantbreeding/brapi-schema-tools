@@ -3,22 +3,16 @@
         "VariableBaseClassParameters": {
             "allOf": [
                 {
-                    "$ref": "PagingParameters.json#/$defs/PagingParameters"
-                },
-                {
-                    "$ref": "ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
-                },
-                {
                     "$ref": "CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
                 },
                 {
                     "$ref": "ProgramParameters.json#/$defs/ProgramParameters"
                 },
                 {
-                    "$ref": "TrialParameters.json#/$defs/TrialParameters"
+                    "$ref": "StudyParameters.json#/$defs/StudyParameters"
                 },
                 {
-                    "$ref": "StudyParameters.json#/$defs/StudyParameters"
+                    "$ref": "TrialParameters.json#/$defs/TrialParameters"
                 },
                 {
                     "type": "object",
@@ -215,7 +209,10 @@
                         }
                     }
                 }
-            ]
+            ],
+            "brapi-metadata": {
+                "parameters": true
+            }
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/Requests/Parameters/VariableBaseClassParameters.json",

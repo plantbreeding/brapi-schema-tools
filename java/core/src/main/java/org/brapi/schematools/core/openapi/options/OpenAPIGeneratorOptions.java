@@ -1,17 +1,16 @@
 package org.brapi.schematools.core.openapi.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
-    private IdsOptions ids;
+    private PropertiesOptions properties;
 
     @Getter(AccessLevel.PRIVATE)
     boolean separateByModule;
@@ -72,7 +71,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the options file can not be found or is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
+        return ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class) ;
     }
 
     /**
@@ -80,13 +79,9 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return The default options
      */
     public static OpenAPIGeneratorOptions load() {
-
         try {
-            InputStream inputStream = OpenAPIGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("openapi-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
+            return ConfigurationUtils.load("openapi-options.yaml", OpenAPIGeneratorOptions.class) ;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,41 +94,31 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        OpenAPIGeneratorOptions options = mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return ConfigurationUtils.load(inputStream, OpenAPIGeneratorOptions.class) ;
     }
 
-    public void validate() {
-        super.validate() ;
-
-        assert singleGet != null : "Single Get Endpoint Options are null";
-        assert listGet != null : "List Get Endpoint Options are null";
-        assert post != null : "Post Endpoint Options are null";
-        assert put != null : "Put Endpoint Options are null";
-        assert delete != null : "Delete Endpoint Options are null";
-        assert search != null : "Search Endpoint Options are null";
-        assert ids != null : "Id Options are null";
-
-        singleGet.validate() ;
-        listGet.validate() ;
-        post.validate() ;
-        put.validate() ;
-        delete.validate() ;
-        search.validate() ;
-        ids.validate() ;
-
-        assert generateNewRequestFor != null : "'generateNewRequestFor' option is null" ;
-        assert newRequestNameFormat != null : "'newRequestNameFormat' option is null" ;
-        assert singleResponseNameFormat != null : "'singleResponseNameFormat' option is null" ;
-        assert listResponseNameFormat != null : "'listResponseNameFormat' option is null" ;
-        assert searchRequestNameFormat != null : "'searchRequestNameFormat' option is null" ;
-        assert pathItemNameFor != null : "'pathItemNameFor' option is null" ;
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
+            .assertNotNull(listGet != null,  "List Get Endpoint Options are null")
+            .assertNotNull( post != null, "Post Endpoint Options are null")
+            .assertNotNull(put != null, "Put Endpoint Options are null")
+            .assertNotNull(delete != null,  "Delete Endpoint Options are null")
+            .assertNotNull(search != null,  "Search Endpoint Options are null")
+            .assertNotNull(properties != null,  "Id Options are null")
+            .merge(singleGet)
+            .merge(listGet)
+            .merge(post)
+            .merge(put)
+            .merge(delete)
+            .merge(search)
+            .merge(properties)
+            .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
+            .assertNotNull(newRequestNameFormat != null,  "'newRequestNameFormat' option is null")
+            .assertNotNull( singleResponseNameFormat != null, "'singleResponseNameFormat' option is null")
+            .assertNotNull(listResponseNameFormat != null, "'listResponseNameFormat' option is null")
+            .assertNotNull(searchRequestNameFormat != null,  "'searchRequestNameFormat' option is null")
+            .assertNotNull(pathItemNameFor != null,  "'pathItemNameFor' option is null") ;
     }
 
     /**
@@ -350,6 +335,6 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for a specific Primary Model
      */
     public String getPathItemWithIdNameFor(BrAPIType type) {
-        return String.format("%s/{%s}", getPathItemNameFor(type), ids.getIDParameterFor(type));
+        return String.format("%s/{%s}", getPathItemNameFor(type), properties.getIdPropertyNameFor(type));
     }
 }

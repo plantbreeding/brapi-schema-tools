@@ -1,13 +1,13 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,13 +45,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return The default options
      */
     public static GraphQLGeneratorOptions load() {
-
         try {
-            InputStream inputStream = GraphQLGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("graphql-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
+            return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,28 +60,20 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static GraphQLGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        GraphQLGeneratorOptions options = mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return ConfigurationUtils.load(inputStream, GraphQLGeneratorOptions.class) ;
     }
 
-    public void validate() {
-        super.validate() ;
+    public Validation validate() {
 
-        assert input != null : "Input Options are null";
-        assert queryType != null : "Query Options are null";
-        assert mutationType != null : "Mutation Options are null";
-        assert ids != null : "Id Options are null";
-
-        input.validate() ;
-        queryType.validate() ;
-        mutationType.validate() ;
-        ids.validate() ;
+        return super.validate()
+            .assertNotNull(input, "Input Options are null")
+            .assertNotNull(queryType != null,  "Query Options are null")
+            .assertNotNull( mutationType != null, "Mutation Options are null")
+            .assertNotNull(ids != null,  "Id Options are null")
+            .merge(input)
+            .merge(queryType)
+            .merge(mutationType)
+            .merge(ids) ;
     }
 
     /**
@@ -242,13 +230,34 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull String name) {
+        return input.getNameFor(getListQueryNameFor(name)) ;
+    }
+
+
+    /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param type the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull BrAPIType type) {
+        return getQueryInputParameterNameFor(type.getName()) ;
+    }
+
+    /**
      * Gets the name of the List or Search Query input type for of specific primary model
      * @param name the name of the primary model
      * @return the name of the List or Search input type for of specific primary model
      */
     @JsonIgnore
     public final String getQueryInputTypeNameFor(@NonNull String name) {
-        return input.getTypeNameForQuery(queryType.getListQuery().getNameFor(name)) ;
+        return input.getTypeNameForQuery(getListQueryNameFor(name)) ;
     }
 
 

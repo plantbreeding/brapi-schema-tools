@@ -12,6 +12,10 @@ import java.util.regex.Pattern;
  * Utility class for working with Strings
  */
 public class StringUtils {
+
+    public static String capitalise(String value) {
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
+    }
     private static final Set<String> unpluralisables = ImmutableSet.of(
         "equipment", "information", "rice", "money", "species", "series",
         "fish", "sheep", "deer");
@@ -165,6 +169,15 @@ public class StringUtils {
      */
     public static boolean startsWithUpperCase(String value) {
         return value.matches("^[A-Z].*$");
+    }
+
+    /**
+     * Create a label for a property
+     * @param propertyName the property name in lower camel case
+     * @return a label for the property in sentence case
+     */
+    public static String toLabel(String propertyName) {
+        return capitalise(propertyName).replaceAll("([A-Z])", " $1").trim() ;
     }
 
     static class Replacer {

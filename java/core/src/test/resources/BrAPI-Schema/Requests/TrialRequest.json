@@ -3,19 +3,7 @@
         "TrialRequest": {
             "allOf": [
                 {
-                    "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
-                },
-                {
                     "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
-                },
-                {
-                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
-                },
-                {
-                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
-                },
-                {
-                    "$ref": "Parameters/StudyParameters.json#/$defs/StudyParameters"
                 },
                 {
                     "$ref": "Parameters/LocationParameters.json#/$defs/LocationParameters"
@@ -24,7 +12,13 @@
                     "$ref": "Parameters/ObservationVariableParameters.json#/$defs/ObservationVariableParameters"
                 },
                 {
-                    "$ref": "Parameters/ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
+                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
+                },
+                {
+                    "$ref": "Parameters/StudyParameters.json#/$defs/StudyParameters"
+                },
+                {
+                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
                 },
                 {
                     "type": "object",

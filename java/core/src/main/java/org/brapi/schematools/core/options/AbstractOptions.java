@@ -3,6 +3,7 @@ package org.brapi.schematools.core.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +16,22 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractOptions {
+public abstract class AbstractOptions implements Options {
     private boolean generate;
     private String descriptionFormat;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateFor = new HashMap<>();
 
-    public void validate() {
-        assert descriptionFormat != null : String.format("'descriptionFormat' option on %s is null", this.getClass().getSimpleName());
-        assert generateFor != null : String.format("'generateFor' option on %s is null", this.getClass().getSimpleName());
+    /**
+     * Checks if the current options are valid, return a list of errors if the options are not valid
+     *
+     * @return a Validation object than can be used queried to find if the options are valid and any errors
+     * if the options are not valid
+     */
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(generateFor, "'generateFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -92,6 +100,7 @@ public abstract class AbstractOptions {
 
     /**
      * Sets if the Endpoint/Query/Mutation is generated for a specific primary model.
+     * @param type the primary model
      * @param generate <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code>
      * @return the options for chaining
      */
@@ -99,5 +108,6 @@ public abstract class AbstractOptions {
     public AbstractOptions setGenerateFor(BrAPIType type, boolean generate) {
         return setGenerateFor(type.getName(), generate) ;
     }
+
 }
 
