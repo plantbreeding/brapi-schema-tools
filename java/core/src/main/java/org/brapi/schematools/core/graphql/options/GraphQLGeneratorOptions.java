@@ -1,9 +1,11 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -13,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Options for the {@link GraphQLGenerator}.
@@ -28,6 +32,11 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     private QueryTypeOptions queryType;
     private MutationTypeOptions mutationType;
     private IdsOptions ids;
+    @JsonProperty("mergeOneOfType")
+    private boolean mergingOneOfType ;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> mergingOneOfTypeFor = new HashMap<>();
 
     /**
      * Load the options from an options file in YAML or Json. The options file may have missing
@@ -239,7 +248,6 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
         return input.getNameFor(getListQueryNameFor(name)) ;
     }
 
-
     /**
      * Gets the name of the List or Search Query input parameter for of specific primary model
      * @param type the primary model
@@ -259,7 +267,6 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     public final String getQueryInputTypeNameFor(@NonNull String name) {
         return input.getTypeNameForQuery(getListQueryNameFor(name)) ;
     }
-
 
     /**
      * Gets the name of the List or Search Query input type for of specific primary model
@@ -329,5 +336,24 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
         String newName = options.isPluralisingName() ? getPluralFor(name) : name;
 
         return options.getNameFor(newName) ;
+    }
+
+    public boolean isMergingOneOfType(BrAPIClass type) {
+        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergingOneOfType) ;
+    }
+
+    /**
+     * Sets if the possible types of a 'OneOf' type are merged into a single type.
+     *
+     * @param name the name of the type
+     * @param isMergingOneOfType <code>true</code> if the possible types of a 'OneOf' type are merged into a single type,
+     *                 <code>false</code> otherwise
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final GraphQLGeneratorOptions setMergingOneOfType(String name, boolean isMergingOneOfType) {
+        mergingOneOfTypeFor.put(name, isMergingOneOfType) ;
+
+        return this ;
     }
 }

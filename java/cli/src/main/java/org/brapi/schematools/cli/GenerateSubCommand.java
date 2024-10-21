@@ -98,7 +98,7 @@ public class GenerateSubCommand implements Runnable {
                     generateExcel();
                 }
             }
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             err.println(exception.getMessage());
             if (throwExceptionOnFail) {
                 throw new BrAPICommandException(exception.getMessage()) ;

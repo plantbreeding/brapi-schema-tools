@@ -25,6 +25,7 @@ public class IdsOptions implements Options {
     String nameFormat;
     @JsonProperty("useIDType")
     boolean usingIDType;
+    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> fieldFor = new HashMap<>();
 
@@ -63,6 +64,17 @@ public class IdsOptions implements Options {
     @JsonIgnore
     public String getIDFieldFor(String name) {
         return fieldFor.getOrDefault(name, String.format(nameFormat, toParameterCase(name))) ;
+    }
+
+    /**
+     * Gets the id field name for a specific primary model. For example the id field
+     * name of Study, would be 'studyDbiId' by default. Use {@link #setIDFieldFor} to override this value.
+     * @param type the primary model
+     * @return id parameter name for a specific primary model
+     */
+    @JsonIgnore
+    public String getIDFieldFor(@NonNull BrAPIType type) {
+        return getIDFieldFor(type.getName()) ;
     }
 
     /**
