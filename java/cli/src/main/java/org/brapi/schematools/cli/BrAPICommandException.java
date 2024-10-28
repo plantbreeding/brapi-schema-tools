@@ -16,6 +16,12 @@ public class BrAPICommandException extends RuntimeException {
         this.allErrors = new ArrayList<>() ;
     }
 
+    public BrAPICommandException(String message, Throwable cause) {
+        super(message, cause) ;
+
+        this.allErrors = new ArrayList<>() ;
+    }
+
     public BrAPICommandException(String message, Collection<Response.Error> allErrors) {
         super(message) ;
 

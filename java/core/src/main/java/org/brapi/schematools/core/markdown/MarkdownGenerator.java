@@ -60,7 +60,11 @@ public class MarkdownGenerator {
             try {
                 Files.createDirectories(descriptionsPath) ;
                 Files.createDirectories(fieldsPath) ;
-                return brAPISchemas.stream().filter(this::isGenerating).map(this::generateMarkdown).collect(Response.mergeLists()) ;
+                return brAPISchemas
+                    .stream()
+                    .filter(this::isGenerating)
+                    .map(this::generateMarkdown)
+                    .collect(Response.mergeLists()) ;
             } catch (IOException e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
             }

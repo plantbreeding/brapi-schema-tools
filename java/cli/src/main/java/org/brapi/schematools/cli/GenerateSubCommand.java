@@ -66,6 +66,9 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
     private boolean throwExceptionOnFail = false;
 
+    @CommandLine.Option(names = {"-s", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
+    private boolean stackTrace = false;
+
     @Override
     public void run() {
         try {
@@ -100,8 +103,13 @@ public class GenerateSubCommand implements Runnable {
             }
         } catch (Exception exception) {
             err.println(exception.getMessage());
+            if (stackTrace) {
+                exception.printStackTrace(err);
+            }
+
             if (throwExceptionOnFail) {
-                throw new BrAPICommandException(exception.getMessage()) ;
+
+                throw new BrAPICommandException(exception.getMessage(), exception) ;
             }
         } finally {
             if (out != null) {

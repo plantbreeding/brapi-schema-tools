@@ -16,6 +16,7 @@ import java.nio.file.Path;
 @Setter
 public class OntModelGeneratorMetadata implements Metadata {
     private String namespace ;
+    private String language ;
 
     /**
      * Load the metadata from a metadata file in YAML or Json. The metadata file may have missing
