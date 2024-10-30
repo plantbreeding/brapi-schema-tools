@@ -5,7 +5,6 @@ import org.brapi.schematools.core.response.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 @Getter
 public class BrAPICommandException extends RuntimeException {
