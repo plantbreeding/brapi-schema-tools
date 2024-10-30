@@ -1,13 +1,11 @@
 package org.brapi.schematools.core.markdown;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.model.BrAPIEnumType;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIOneOfType;
+import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.BrAPITClassCacheUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,12 +15,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 /**
  * Generates a Markdown files for type and their field descriptions from a BrAPI Json Schema.
  */
+@Slf4j
 @AllArgsConstructor
 public class MarkdownGenerator {
     private final BrAPISchemaReader schemaReader = new BrAPISchemaReader() ;
@@ -47,11 +48,11 @@ public class MarkdownGenerator {
 
     private class Generator {
 
-        private final List<BrAPIClass> brAPISchemas ;
+        private final Map<String, BrAPIClass> brAPIClasses ;
         private final Path descriptionsPath ;
         private final Path fieldsPath ;
-        public Generator(List<BrAPIClass> brAPISchemas) {
-            this.brAPISchemas = brAPISchemas ;
+        public Generator(List<BrAPIClass> brAPIClasses) {
+            this.brAPIClasses = new BrAPITClassCacheUtil(this::isGenerating).createMap(brAPIClasses) ;
             this.descriptionsPath = outputPath.resolve("descriptions") ;
             this.fieldsPath = outputPath.resolve("fields") ;
         }
@@ -60,18 +61,20 @@ public class MarkdownGenerator {
             try {
                 Files.createDirectories(descriptionsPath) ;
                 Files.createDirectories(fieldsPath) ;
-                return brAPISchemas
-                    .stream()
-                    .filter(this::isGenerating)
-                    .map(this::generateMarkdown)
-                    .collect(Response.mergeLists()) ;
-            } catch (IOException e) {
+                return generateMarkdownFiles(new ArrayList<>(brAPIClasses.values())) ;
+            } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
             }
         }
 
         private boolean isGenerating(BrAPIClass brAPIClass) {
-            return brAPIClass.getMetadata() != null && !(brAPIClass.getMetadata().isRequest() || brAPIClass.getMetadata().isParameters());
+            return brAPIClass.getMetadata() == null || !(brAPIClass.getMetadata().isRequest() || brAPIClass.getMetadata().isParameters());
+        }
+
+        private Response<List<Path>> generateMarkdownFiles(List<BrAPIClass> brAPIClasses) {
+            return brAPIClasses.stream()
+                .map(this::generateMarkdown)
+                .collect(Response.mergeLists());
         }
 
         private Response<List<Path>> generateMarkdown(BrAPIClass brAPIClass) {
@@ -119,13 +122,34 @@ public class MarkdownGenerator {
         }
 
         private Response<List<Path>> generateMarkdownForEnumType(BrAPIEnumType brAPIEnumType) {
-            return success(Collections.emptyList()) ;
+
+            List<Path> paths = new ArrayList<>() ;
+            Path descriptionPath = descriptionsPath.resolve(String.format("%s.md", brAPIEnumType.getName()));
+
+            return writeToFile(descriptionPath, createDescription(brAPIEnumType))
+                .onSuccessDoWithResult(paths::addAll)
+                .map(() -> success(paths)) ;
+        }
+
+        private String createDescription(BrAPIEnumType brAPIEnumType) {
+            StringBuilder description = new StringBuilder(brAPIEnumType.getDescription() != null ? brAPIEnumType.getDescription() : "");
+
+            description.append("\n\n Possible values are: \n");
+
+            for (BrAPIEnumValue value : brAPIEnumType.getValues()) {
+                description
+                    .append("* ")
+                    .append(value.getName())
+                    .append("\n");
+            }
+
+            return description.toString();
         }
 
         private Response<List<Path>> writeToFile(Path path, String text) {
             try {
                 if (overwrite && Files.exists(path)) {
-                    System.out.printf("Output file '%s' already exists and was not overwritten%n", path);
+                    log.warn("Output file '{}' already exists and was not overwritten", path);
                     return success(Collections.emptyList()) ;
                 } else {
                     PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(path, Charset.defaultCharset()));
