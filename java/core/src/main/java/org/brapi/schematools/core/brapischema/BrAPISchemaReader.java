@@ -17,6 +17,7 @@ import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -65,10 +66,14 @@ public class BrAPISchemaReader {
      * @return a response containing a list of BrAPIClass with one type per JSON Schema or validation errors
      */
     public Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) {
-        try {
-            return dereferenceAndValidate(find(schemaDirectory, 3, this::schemaPathMatcher).map(this::createBrAPISchemas).collect(Response.mergeLists()));
-        } catch (RuntimeException | IOException e) {
-            return fail(Response.ErrorType.VALIDATION, schemaDirectory, e.getMessage());
+
+        try (Stream<Path> schemas = find(schemaDirectory, 3, this::schemaPathMatcher)) {
+            return dereferenceAndValidate(schemas.map(this::createBrAPISchemas).collect(Response.mergeLists()));
+        } catch (NoSuchFileException noSuchFileException) {
+            return fail(Response.ErrorType.VALIDATION, String.format("The schema directory '%s' does not exist", schemaDirectory));
+        }
+        catch (RuntimeException | IOException e) {
+            return fail(Response.ErrorType.VALIDATION, schemaDirectory, String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
         }
     }
 
