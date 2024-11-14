@@ -16,8 +16,7 @@ public class ConfigurationUtils {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     
     /**
-     * Load the configurations from a file in YAML or Json. The file may have missing
-     * (defined) values, in these cases the default values are loaded.
+     * Load the configurations from a file in YAML or Json.
      * @param configurationsFile The path to the configuration file in YAML or Json.
      * @param configurationClass The configuration class.
      * @param <T> the class of the configuration
@@ -45,8 +44,7 @@ public class ConfigurationUtils {
     }
 
     /**
-     * Load the configurations from an input stream in YAML or Json. The configuration file may have missing
-     * (defined) values, in these cases the default values are loaded.
+     * Load the configurations from an input stream in YAML or Json.
      * @param inputStream The input stream in YAML or Json
      * @param configurationClass The configuration class.
      * @param <T> the class of the configuration

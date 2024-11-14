@@ -74,6 +74,15 @@ public class PropertiesOptions implements Options {
      * @param type The BrAPI type
      * @return the id parameter name for a type
      */
+    public String getIdPropertyNameFor(String type) {
+        return id.getPropertyNameFor(type) ;
+    }
+
+    /**
+     * Gets the id parameter name for a type
+     * @param type The BrAPI type
+     * @return the id parameter name for a type
+     */
     public String getIdPropertyNameFor(BrAPIType type) {
         return id.getPropertyNameFor(type) ;
     }

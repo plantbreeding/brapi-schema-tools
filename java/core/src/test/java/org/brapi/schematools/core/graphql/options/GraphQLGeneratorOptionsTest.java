@@ -47,6 +47,22 @@ class GraphQLGeneratorOptionsTest {
         checkOptions(options);
     }
 
+    @Test
+    void overwrite() {
+        GraphQLGeneratorOptions options = null;
+        try {
+            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("graphql-overwrite-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+        checkOptions(options);
+
+        assertEquals("attributeDbId", options.getIds().getIDFieldFor("GermplasmAttribute")) ;
+        assertEquals("attributeDbId", options.getIds().getIDFieldFor("CultivarAttribute")) ;
+    }
+
     private void checkOptions(GraphQLGeneratorOptions options) {
         assertNotNull(options);
 
