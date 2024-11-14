@@ -4,16 +4,8 @@ ids:
     useIDType: true
     nameFormat: "%sDbId"
     fieldFor:
-        CultivarAttribute: attributeDbId
-        CultivarAttributeValue: attributeValueDbId
         GermplasmAttribute: attributeDbId
         GermplasmAttributeValue: attributeValueDbId
-        LocaleAttribute: attributeDbId
-        LocaleAttributeValue: attributeValueDbId
-        ObservationUnitAttribute: attributeDbId
-        ObservationUnitAttributeValue: attributeValueDbId
-        SeedLotAttribute: attributeDbId
-        SeedLotAttributeValue: attributeValueDbId
 input:
     name: input
     nameFormat: "%sInput"
