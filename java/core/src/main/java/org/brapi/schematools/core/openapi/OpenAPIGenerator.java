@@ -132,7 +132,8 @@ public class OpenAPIGenerator {
             Info info = new Info();
 
             info.setTitle(title);
-            info.setVersion(metadata.getVersion() != null ?metadata.getVersion() : "0.0.0");
+            info.setTitle(metadata.getTitle() != null ? metadata.getTitle() : title);
+            info.setVersion(metadata.getVersion() != null ? metadata.getVersion() : "0.0.0");
 
             openAPI.setInfo(info);
 

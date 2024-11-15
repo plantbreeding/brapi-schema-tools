@@ -3,6 +3,11 @@ package org.brapi.schematools.core.openapi.metadata;
 import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.metadata.Metadata;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 
 /**
  * Provides metadata for the OpenAPI generation
@@ -10,11 +15,47 @@ import org.brapi.schematools.core.metadata.Metadata;
 @Getter
 @Setter
 public class OpenAPIGeneratorMetadata implements Metadata {
-    String version ;
-    SingleGetMetadata singleGet = new SingleGetMetadata() ;
-    ListGetMetadata listGet = new ListGetMetadata() ;
-    PostMetadata post = new PostMetadata() ;
-    PutMetadata put = new PutMetadata() ;
-    DeleteMetadata delete = new DeleteMetadata() ;
-    SearchMetadata search = new SearchMetadata() ;
+    private String title ;
+    private String version ;
+
+    private SingleGetMetadata singleGet = new SingleGetMetadata() ;
+    private ListGetMetadata listGet = new ListGetMetadata() ;
+    private PostMetadata post = new PostMetadata() ;
+    private PutMetadata put = new PutMetadata() ;
+    private DeleteMetadata delete = new DeleteMetadata() ;
+    private SearchMetadata search = new SearchMetadata() ;
+
+    /**
+     * Load the metadata from a metadata file in YAML or Json. The metadata file may have missing
+     * (defined) values, in these cases the default values are loaded. See {@link #load()}
+     * @param metadataFile The path to the metadata file in YAML or Json.
+     * @return The metadata loaded from the YAML or Json file.
+     * @throws IOException if the metadata file can not be found or is incorrectly formatted.
+     */
+    public static OpenAPIGeneratorMetadata load(Path metadataFile) throws IOException {
+        return ConfigurationUtils.load(metadataFile, OpenAPIGeneratorMetadata.class) ;
+    }
+
+    /**
+     * Load the default metadata
+     * @return The default metadata
+     */
+    public static OpenAPIGeneratorMetadata load() {
+        try {
+            return ConfigurationUtils.load("openapi-metadata.yaml", OpenAPIGeneratorMetadata.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Load the metadata from an metadata input stream in YAML or Json. The metadata file may have missing
+     * (defined) values, in these cases the default values are loaded. See {@link #load()}
+     * @param inputStream The input stream in YAML or Json.
+     * @return The metadata loaded from input stream.
+     * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
+     */
+    public static OpenAPIGeneratorMetadata load(InputStream inputStream) throws IOException {
+        return ConfigurationUtils.load(inputStream, OpenAPIGeneratorMetadata.class) ;
+    }
 }

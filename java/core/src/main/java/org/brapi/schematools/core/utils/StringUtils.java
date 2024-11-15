@@ -2,6 +2,7 @@ package org.brapi.schematools.core.utils;
 
 import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
+import org.atteo.evo.inflector.English;
 
 import java.util.List;
 import java.util.Set;
@@ -16,12 +17,11 @@ public class StringUtils {
     public static String capitalise(String value) {
         return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
-    private static final Set<String> unpluralisables = ImmutableSet.of(
-        "equipment", "information", "rice", "money", "species", "series",
-        "fish", "sheep", "deer");
+    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
         replace("(.*)people$").with("$1person"),
+        replace("(.*)People$").with("$1Person"),
         replace("oxen$").with("ox"),
         replace("children$").with("child"),
         replace("feet$").with("foot"),
@@ -46,22 +46,10 @@ public class StringUtils {
     );
 
     private static final List<Replacer> pluralisations = ImmutableList.of(
+        replace("(.*)matrix$").with("$1matrices"),
+        replace("(.*)Matrix$").with("$1Matrices"),
         replace("(.*)person$").with("$1people"),
-        replace("ox$").with("oxen"),
-        replace("child$").with("children"),
-        replace("foot$").with("feet"),
-        replace("tooth$").with("teeth"),
-        replace("goose$").with("geese"),
-        replace("(.*)fe?$").with("$1ves"),
-        replace("(.*)man$").with("$1men"),
-        replace("(.+[aeiou]y)$").with("$1s"),
-        replace("(.+[^aeiou])y$").with("$1ies"),
-        replace("(.+z)$").with("$1zes"),
-        replace("([m|l])ouse$").with("$1ice"),
-        replace("(.+)(e|i)x$").with("$1ices"),
-        replace("(octop|vir)us$").with("$1i"),
-        replace("(.+(s|x|sh|ch))$").with("$1es"),
-        replace("(.+)").with("$1s")
+        replace("(.*)Person$").with("$1People")
     );
 
     /**
@@ -71,6 +59,7 @@ public class StringUtils {
      * @return singular form of a plural noun
      */
     public static String toSingular(String value) {
+
         if (unpluralisables.contains(value.toLowerCase())) {
             return value;
         }
@@ -81,7 +70,7 @@ public class StringUtils {
             }
         }
 
-        return value;
+        return value ;
     }
 
     /**
@@ -101,7 +90,7 @@ public class StringUtils {
             }
         }
 
-        return value;
+        return English.plural(value);
     }
 
     /**

@@ -17,6 +17,7 @@ import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
+import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
@@ -79,13 +80,16 @@ public class GenerateSubCommand implements Runnable {
                 case OPEN_API -> {
                     OpenAPIGeneratorOptions options = optionsPath != null ?
                         OpenAPIGeneratorOptions.load(optionsPath) : OpenAPIGeneratorOptions.load() ;
-                    generateOpenAPISpecification(options);
+                    OpenAPIGeneratorMetadata metadata = metadataPath != null ?
+                        OpenAPIGeneratorMetadata.load(metadataPath) :  OpenAPIGeneratorMetadata.load() ;
+                    generateOpenAPISpecification(options, metadata);
                 }
                 case GRAPHQL -> {
                     GraphQLGeneratorOptions options = optionsPath != null ?
                         GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
-                    GraphQLGeneratorMetadata metadata ;
-                    generateGraphQLSchema(options);
+                    GraphQLGeneratorMetadata metadata = metadataPath != null ?
+                        GraphQLGeneratorMetadata.load(metadataPath) :  GraphQLGeneratorMetadata.load() ;
+                    generateGraphQLSchema(options, metadata);
                 }
                 case OWL -> {
                     OntModelGeneratorOptions options = optionsPath != null ?
@@ -119,10 +123,10 @@ public class GenerateSubCommand implements Runnable {
         }
     }
 
-    private void generateGraphQLSchema(GraphQLGeneratorOptions options) {
+    private void generateGraphQLSchema(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata) {
         GraphQLGenerator graphQLGenerator = new GraphQLGenerator(options);
 
-        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory);
+        Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, metadata);
 
         response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors);
     }
@@ -169,10 +173,10 @@ public class GenerateSubCommand implements Runnable {
         }
     }
 
-    private void generateOpenAPISpecification(OpenAPIGeneratorOptions options) {
+    private void generateOpenAPISpecification(OpenAPIGeneratorOptions options, OpenAPIGeneratorMetadata metadata) {
         OpenAPIGenerator openAPIGenerator = new OpenAPIGenerator(options);
 
-        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, componentsDirectory);
+        Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, componentsDirectory, metadata);
 
         response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors);
     }

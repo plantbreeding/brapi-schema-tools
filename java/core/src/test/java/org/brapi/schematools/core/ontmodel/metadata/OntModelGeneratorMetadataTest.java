@@ -8,10 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class OntModelGeneratorMetadataTest {
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
     void load() {
         OntModelGeneratorMetadata metadata = OntModelGeneratorMetadata.load();
