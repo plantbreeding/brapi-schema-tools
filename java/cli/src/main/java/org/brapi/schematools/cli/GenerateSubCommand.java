@@ -106,14 +106,16 @@ public class GenerateSubCommand implements Runnable {
                 }
             }
         } catch (Exception exception) {
-            err.println(exception.getMessage());
+
+            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
+            err.println(message);
+
             if (stackTrace) {
                 exception.printStackTrace(err);
             }
 
             if (throwExceptionOnFail) {
-
-                throw new BrAPICommandException(exception.getMessage(), exception) ;
+                throw new BrAPICommandException(message, exception) ;
             }
         } finally {
             if (out != null) {
