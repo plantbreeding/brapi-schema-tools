@@ -515,7 +515,7 @@ public class BrAPISchemaReader {
                     .mapResultToResponse(fields -> createProperties(path, fields, module, required))
                     .onSuccessDoWithResult(properties::addAll))
                 .onSuccessDo(() -> builder.properties(properties))
-                .merge(validateRequiredProperties(required, properties, name))
+                .mapResult(propertyList -> validateRequiredProperties(required, properties, name))
                 .mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(path, jsonNode, "brapi-metadata", true)
                     .mapResultToResponse(metadata -> parseMetadata(path, metadata)).onSuccessDoWithResult(builder::metadata))
                 .map(() -> success(builder.build()));
@@ -528,7 +528,7 @@ public class BrAPISchemaReader {
         private Response<BrAPIObjectProperty> validateRequiredProperty(String requiredPropertyName, List<BrAPIObjectProperty> properties, String objectName) {
             return properties.stream().filter(property -> property.getName().equals(requiredPropertyName))
                 .findAny().map(Response::success)
-                .orElse(fail(Response.ErrorType.VALIDATION,
+                .orElseGet(() -> fail(Response.ErrorType.VALIDATION,
                     String.format("The required property '%s' is not found in the list of properties of '%s', expecting one of '%s'", requiredPropertyName, objectName,
                         properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", ")))));
         }

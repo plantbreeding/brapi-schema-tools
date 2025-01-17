@@ -633,7 +633,7 @@ public class OpenAPIGenerator {
                         .mapResultToResponse(this::createArraySchemaForType)
                         .mapResult(arraySchema -> Collections.singletonMap(property.getName(), arraySchema))
                         .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(itemType)))
-                        .orElse(success(Collections.emptyMap()));
+                        .or(() -> success(Collections.emptyMap()));
                 } ;
             }
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Unsupported type '%s' for property '%s'", type.getClass(), property.getName()));
