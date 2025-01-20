@@ -39,7 +39,7 @@ public abstract class AbstractOpenAPIOptions extends AbstractOptions {
      * @return the summary for a specific primary model
      */
     @JsonIgnore
-    private final String getSummaryFor(@NonNull String name) {
+    public final String getSummaryFor(@NonNull String name) {
         return String.format(summaryFormat, name) ;
     }
 

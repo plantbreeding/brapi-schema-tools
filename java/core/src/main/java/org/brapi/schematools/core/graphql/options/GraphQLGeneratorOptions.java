@@ -1,7 +1,6 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
@@ -31,8 +30,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     private QueryTypeOptions queryType;
     private MutationTypeOptions mutationType;
     private IdsOptions ids;
-    @JsonProperty("mergeOneOfType")
-    private Boolean mergingOneOfType ;
+    private Boolean mergeOneOfType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> mergingOneOfTypeFor = new HashMap<>();
@@ -108,8 +106,8 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
             ids.override(overrideOptions.ids) ;
         }
 
-        if (mergingOneOfType != null) {
-            setMergingOneOfType(overrideOptions.mergingOneOfType) ;
+        if (mergeOneOfType != null) {
+            setMergeOneOfType(overrideOptions.mergeOneOfType) ;
         }
 
         mergingOneOfTypeFor.putAll(overrideOptions.mergingOneOfTypeFor);
@@ -377,7 +375,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return <code>true</code> if the possible types of a 'OneOf' type are merged into a single type.
      */
     public boolean isMergingOneOfType(BrAPIClass type) {
-        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergingOneOfType) ;
+        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
     }
 
     /**
@@ -389,7 +387,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public final GraphQLGeneratorOptions setMergingOneOfType(String name, boolean isMergingOneOfType) {
+    public final GraphQLGeneratorOptions setMergeOneOfType(String name, boolean isMergingOneOfType) {
         mergingOneOfTypeFor.put(name, isMergingOneOfType) ;
 
         return this ;

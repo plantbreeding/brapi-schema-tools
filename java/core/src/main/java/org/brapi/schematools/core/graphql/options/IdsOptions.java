@@ -1,7 +1,6 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.Options;
@@ -22,9 +21,8 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class IdsOptions implements Options {
     @Getter(AccessLevel.PRIVATE)
-    String nameFormat;
-    @JsonProperty("useIDType")
-    Boolean usingIDType;
+    private String nameFormat;
+    private Boolean useIDType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> fieldFor = new HashMap<>();
@@ -44,8 +42,8 @@ public class IdsOptions implements Options {
             setNameFormat(overrideOptions.nameFormat);
         }
 
-        if (overrideOptions.usingIDType != null) {
-            setUsingIDType(overrideOptions.usingIDType);
+        if (overrideOptions.useIDType != null) {
+            setUseIDType(overrideOptions.useIDType);
         }
 
         fieldFor.putAll(overrideOptions.fieldFor) ;
@@ -56,7 +54,7 @@ public class IdsOptions implements Options {
      * @return <code>true</code> if the built-in GraphQLID type should be used for IDs instead of GraphQLString, <code>false</code> otherwise
      */
     public boolean isUsingIDType() {
-        return usingIDType ;
+        return useIDType;
     }
 
     /**

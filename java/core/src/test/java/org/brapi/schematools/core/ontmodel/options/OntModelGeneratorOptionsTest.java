@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.ontmodel.options;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -67,6 +71,23 @@ class OntModelGeneratorOptionsTest {
         assertEquals("test2", options.getName());
     }
 
+    @Test
+    void compare() {
+        try {
+            OntModelGeneratorOptions options1 = OntModelGeneratorOptions.load() ;
+            OntModelGeneratorOptions options2 = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("ont-model-no-override-options.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     private void checkDefaultOptions(OntModelGeneratorOptions options) {
         checkOptions(options);
 

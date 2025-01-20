@@ -130,7 +130,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
         }
 
         if (overrideOptions.generateNewRequestFor != null) {
-            generateNewRequestFor = overrideOptions.generateNewRequestFor ;
+            generateNewRequestFor.putAll(overrideOptions.generateNewRequestFor) ;
         }
 
         if (overrideOptions.newRequestNameFormat != null) {
@@ -150,7 +150,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
         }
 
         if (overrideOptions.pathItemNameFor != null) {
-            pathItemNameFor = overrideOptions.pathItemNameFor ;
+            pathItemNameFor.putAll(overrideOptions.pathItemNameFor) ;
         }
 
         return this ;
@@ -376,7 +376,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the Pluralised name for a specific Primary Model
      */
     public String getPathItemNameFor(String name) {
-        return String.format("/%s", toParameterCase(getPluralFor(name)));
+        return pathItemNameFor.getOrDefault(name, String.format("/%s", toParameterCase(getPluralFor(name))));
     }
 
     /**

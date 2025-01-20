@@ -26,17 +26,6 @@ public class OpenAPIGeneratorMetadata implements Metadata {
     private SearchMetadata search = new SearchMetadata() ;
 
     /**
-     * Load the metadata from a metadata file in YAML or Json. The metadata file may have missing
-     * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param metadataFile The path to the metadata file in YAML or Json.
-     * @return The metadata loaded from the YAML or Json file.
-     * @throws IOException if the metadata file can not be found or is incorrectly formatted.
-     */
-    public static OpenAPIGeneratorMetadata load(Path metadataFile) throws IOException {
-        return ConfigurationUtils.load(metadataFile, OpenAPIGeneratorMetadata.class) ;
-    }
-
-    /**
      * Load the default metadata
      * @return The default metadata
      */
@@ -49,6 +38,18 @@ public class OpenAPIGeneratorMetadata implements Metadata {
     }
 
     /**
+     * Load the metadata from a metadata file in YAML or Json. The metadata file may have missing
+     * (defined) values, in these cases the default values are loaded. See {@link #load()}
+     * @param metadataFile The path to the metadata file in YAML or Json.
+     * @return The metadata loaded from the YAML or Json file.
+     * @throws IOException if the metadata file can not be found or is incorrectly formatted.
+     */
+    public static OpenAPIGeneratorMetadata load(Path metadataFile) throws IOException {
+        return load().override(ConfigurationUtils.load(metadataFile, OpenAPIGeneratorMetadata.class)) ;
+    }
+
+
+    /**
      * Load the metadata from an metadata input stream in YAML or Json. The metadata file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      * @param inputStream The input stream in YAML or Json.
@@ -56,7 +57,7 @@ public class OpenAPIGeneratorMetadata implements Metadata {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static OpenAPIGeneratorMetadata load(InputStream inputStream) throws IOException {
-        return ConfigurationUtils.load(inputStream, OpenAPIGeneratorMetadata.class) ;
+        return load().override(ConfigurationUtils.load(inputStream, OpenAPIGeneratorMetadata.class)) ;
     }
 
     /**

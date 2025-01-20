@@ -34,6 +34,8 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param overrideOptions the options which will be used to override this Options Object
      */
     public void override(ListGetOptions overrideOptions) {
+        super.override(overrideOptions);
+
         if (overrideOptions.pagedDefault != null) {
             setPagedDefault(overrideOptions.pagedDefault);
         }

@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.graphql.options;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
 
@@ -68,6 +72,23 @@ class GraphQLGeneratorOptionsTest {
         assertTrue(options.getQueryType().getSearchQuery().isGenerating());
     }
 
+    //@Test
+    void compare() {
+        try {
+            GraphQLGeneratorOptions options1 = GraphQLGeneratorOptions.load() ;
+            GraphQLGeneratorOptions options2 = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("graphql-no-override-options.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     private void checkDefaultOptions(GraphQLGeneratorOptions options) {
         checkOptions(options);
 

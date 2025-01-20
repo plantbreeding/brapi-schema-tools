@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.ontmodel.metadata;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -59,7 +63,24 @@ class OntModelGeneratorMetadataTest {
 
         assertEquals("es", metadata.getLanguage());
     }
+    
+    @Test
+    void compare() {
+        try {
+            OntModelGeneratorMetadata options1 = OntModelGeneratorMetadata.load() ;
+            OntModelGeneratorMetadata options2 = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("ont-model-no-override-metadata.yaml").toURI()));
 
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     private void checkDefaultMetadata(OntModelGeneratorMetadata metadata) {
         checkMetadata(metadata);
 

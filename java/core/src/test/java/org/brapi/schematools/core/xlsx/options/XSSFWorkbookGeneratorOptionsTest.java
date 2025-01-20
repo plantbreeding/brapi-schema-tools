@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.xlsx.options;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -77,6 +81,23 @@ class XSSFWorkbookGeneratorOptionsTest {
         assertEquals("Class Name2", options.getDataClassFieldHeader()) ;
     }
 
+    @Test
+    void compare() {
+        try {
+            XSSFWorkbookGeneratorOptions options1 = XSSFWorkbookGeneratorOptions.load() ;
+            XSSFWorkbookGeneratorOptions options2 = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-no-override-options.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     private void checkDefaultOptions(XSSFWorkbookGeneratorOptions options) {
 
         checkOptions(options);

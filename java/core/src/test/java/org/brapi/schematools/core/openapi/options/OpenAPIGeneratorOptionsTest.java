@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.openapi.options;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -71,12 +75,41 @@ class OpenAPIGeneratorOptionsTest {
 
         checkOptions(options);
 
-        assertTrue(options.isGeneratingNewRequestFor("BreedingMethod"));
-        assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+        assertTrue(options.isGeneratingNewRequestFor("AlleleMatrix"));
 
         assertEquals("TrialNewRequest2", options.getNewRequestNameFor("Trial"));
 
-        assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("GermplasmAttribute")) ;
+        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
+
+        assertEquals("pedigree", options.getPathItemNameFor("PedigreeNode"));
+        assertTrue(options.getSingleGet().isGenerating());
+        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+
+        assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+
+        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
+
+        assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
+
+        assertTrue(options.getPut().isGeneratingFor("BreedingMethod"));
+    }
+
+    @Test
+    void compare() {
+        try {
+            OpenAPIGeneratorOptions options1 = OpenAPIGeneratorOptions.load() ;
+            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-no-override-options.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
     private void checkDefaultOptions(OpenAPIGeneratorOptions options) {
@@ -86,6 +119,19 @@ class OpenAPIGeneratorOptionsTest {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
         assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
+
+        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
+
+        assertEquals("pedigrees", options.getPathItemNameFor("PedigreeNode"));
+        assertTrue(options.getSingleGet().isGenerating());
+        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+
+        assertEquals("Get a filtered list of PedigreeNode", options.getListGet().getSummaryFor("PedigreeNode"));
+
+        assertEquals("Create new PedigreeNode", options.getPost().getSummaryFor("PedigreeNode"));
+
+        assertFalse(options.getPut().isGeneratingFor("BreedingMethod"));
+
     }
 
     private void checkOptions(OpenAPIGeneratorOptions options) {
@@ -125,5 +171,7 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals("study", options.getSingularForProperty("studies"));
         assertEquals("trialDbId", options.getSingularForProperty("trialDbIds"));
         assertEquals("studyDbId", options.getSingularForProperty("studyDbIds"));
+
+        assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("GermplasmAttribute")) ;
     }
 }

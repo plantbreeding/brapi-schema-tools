@@ -1,11 +1,10 @@
-separateByModule: false
 generateNewRequestFor:
     AlleleMatrix: true
 newRequestNameFormat: "%sNewRequest2"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
-    PedigreeNode: pedigrees
+    PedigreeNode: pedigree
 singleGet:
     generate: false
     generateFor:

@@ -1,5 +1,9 @@
 package org.brapi.schematools.core.graphql.metadata;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -57,6 +61,24 @@ class GraphQLGeneratorMetadataTest {
         checkMetadata(metadata);
 
         assertEquals("3.2.1", metadata.getVersion());
+    }
+
+    @Test
+    void compare() {
+        try {
+            GraphQLGeneratorMetadata options1 = GraphQLGeneratorMetadata.load() ;
+            GraphQLGeneratorMetadata options2 = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("graphql-no-override-metadata.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
     private void checkDefaultMetadata(GraphQLGeneratorMetadata metadata) {
