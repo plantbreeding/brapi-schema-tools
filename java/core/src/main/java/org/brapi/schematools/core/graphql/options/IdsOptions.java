@@ -24,7 +24,7 @@ public class IdsOptions implements Options {
     @Getter(AccessLevel.PRIVATE)
     String nameFormat;
     @JsonProperty("useIDType")
-    boolean usingIDType;
+    Boolean usingIDType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> fieldFor = new HashMap<>();
@@ -33,6 +33,30 @@ public class IdsOptions implements Options {
         return Validation.valid()
             .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(fieldFor, "'fieldFor' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(IdsOptions overrideOptions) {
+        if (overrideOptions.nameFormat != null) {
+            setNameFormat(overrideOptions.nameFormat);
+        }
+
+        if (overrideOptions.usingIDType != null) {
+            setUsingIDType(overrideOptions.usingIDType);
+        }
+
+        fieldFor.putAll(overrideOptions.fieldFor) ;
+    }
+
+    /**
+     * Determines if the built-in GraphQLID type should be used for IDs instead of GraphQLString
+     * @return <code>true</code> if the built-in GraphQLID type should be used for IDs instead of GraphQLString, <code>false</code> otherwise
+     */
+    public boolean isUsingIDType() {
+        return usingIDType ;
     }
 
     /**

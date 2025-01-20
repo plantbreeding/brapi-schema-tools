@@ -1,0 +1,40 @@
+{
+    "dataClassProperties": [
+        {
+            "name": "name"
+        },
+        {
+            "name": "module"
+        },
+        {
+            "name": "metadata",
+            "label": "Primary Model",
+            "key": "metadata",
+            "defaultValue": false,
+            "childProperty": {
+                "name": "primaryModel"
+            }
+        },
+        {
+            "name": "metadata",
+            "label": "Interface",
+            "key": "metadata",
+            "defaultValue": false,
+            "childProperty": {
+                "name": "interfaceClass"
+            }
+        },
+        {
+            "name": "description"
+        }
+    ],
+    "dataClassFieldHeader": "Class Name",
+    "dataClassFieldProperties": [
+        {
+            "name": "name"
+        },
+        {
+            "name": "description"
+        }
+    ]
+}

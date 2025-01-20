@@ -17,7 +17,7 @@ import java.util.Map;
 @Getter(AccessLevel.PRIVATE)
 @Setter
 public class ListGetOptions extends AbstractOpenAPIOptions {
-    private boolean pagedDefault;
+    private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
@@ -27,6 +27,19 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
         return Validation.valid()
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(ListGetOptions overrideOptions) {
+        if (overrideOptions.pagedDefault != null) {
+            setPagedDefault(overrideOptions.pagedDefault);
+        }
+
+        paged.putAll(overrideOptions.paged);
+        inputFor.putAll(overrideOptions.inputFor);
     }
 
     /**

@@ -23,7 +23,9 @@ class OpenAPIGeneratorOptionsTest {
     void load() {
         OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
 
-        checkOptions(options);
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
@@ -36,7 +38,9 @@ class OpenAPIGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
-        checkOptions(options);
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
@@ -49,14 +53,17 @@ class OpenAPIGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
-        checkOptions(options);
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
     void overwrite() {
         OpenAPIGeneratorOptions options = null;
+
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-overwrite-options.yaml").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -64,11 +71,27 @@ class OpenAPIGeneratorOptionsTest {
 
         checkOptions(options);
 
+        assertTrue(options.isGeneratingNewRequestFor("BreedingMethod"));
+        assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+
+        assertEquals("TrialNewRequest2", options.getNewRequestNameFor("Trial"));
+
         assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("GermplasmAttribute")) ;
-        assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("CultivarAttribute")) ;
+    }
+
+    private void checkDefaultOptions(OpenAPIGeneratorOptions options) {
+        checkOptions(options);
+
+        assertFalse(options.isGeneratingNewRequestFor("BreedingMethod"));
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+
+        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
     }
 
     private void checkOptions(OpenAPIGeneratorOptions options) {
+        assertNotNull(options.validate());
+        assertTrue(options.validate().isValid()) ;
+
         assertNotNull(options);
 
         assertNotNull(options.getProperties());
@@ -86,15 +109,11 @@ class OpenAPIGeneratorOptionsTest {
 
         assertTrue(options.isGeneratingEndpointWithId()) ;
         assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
         assertTrue(options.isGeneratingNewRequestFor("Trial"));
-        assertFalse(options.isGeneratingNewRequestFor("BreedingMethod"));
 
         assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
-        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
         assertEquals("TrialSingleResponse", options.getSingleResponseNameFor("Trial"));
         assertEquals("TrialListResponse", options.getListResponseNameFor("Trial"));
         assertEquals("TrialSearchRequest", options.getSearchRequestNameFor("Trial"));

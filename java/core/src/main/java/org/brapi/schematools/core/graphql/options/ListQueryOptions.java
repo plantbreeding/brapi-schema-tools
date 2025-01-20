@@ -19,7 +19,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     private String dataFieldName;
 
     @Getter(AccessLevel.PRIVATE)
-    private boolean pagedDefault;
+    private Boolean pagedDefault;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
@@ -44,9 +44,46 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     }
 
     /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(ListQueryOptions overrideOptions) {
+        super.override(overrideOptions);
+
+
+        if (overrideOptions.dataFieldName != null) {
+            setDataFieldName(overrideOptions.dataFieldName); ;
+        }
+
+        if (overrideOptions.pagedDefault != null) {
+            setPagedDefault(overrideOptions.pagedDefault); ;
+        }
+
+        paged.putAll(overrideOptions.paged);
+        input.putAll(overrideOptions.input);
+
+        if (overrideOptions.pagingInputName != null) {
+            setPagingInputName(overrideOptions.pagingInputName); ;
+        }
+
+        if (overrideOptions.pageInputTypeName != null) {
+            setPageInputTypeName(overrideOptions.pageInputTypeName); ;
+        }
+
+        if (overrideOptions.pageTypeName != null) {
+            setPageTypeName(overrideOptions.pageTypeName); ;
+        }
+
+        if (overrideOptions.pageFieldName != null) {
+            setPageFieldName(overrideOptions.pageFieldName); ;
+        }
+    }
+
+    /**
      * Determine if any list query has paging
      * @return <code>true</code> if any list query has paging. <code>false</code> otherwise
      */
+    @JsonIgnore
     public boolean hasPaging() {
         return pagedDefault || paged.values().stream().anyMatch(paged -> paged) ;
     }

@@ -22,6 +22,18 @@ public abstract class AbstractOpenAPIOptions extends AbstractOptions {
     }
 
     /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractOpenAPIOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.summaryFormat != null) {
+            setSummaryFormat(overrideOptions.summaryFormat) ;
+        }
+    }
+
+    /**
      * Gets the summary for a specific primary model
      * @param name the name of the primary model
      * @return the summary for a specific primary model
@@ -40,5 +52,7 @@ public abstract class AbstractOpenAPIOptions extends AbstractOptions {
     public final String getSummaryFor(@NonNull BrAPIType type) {
         return getSummaryFor(type.getName());
     }
+
+
 }
 

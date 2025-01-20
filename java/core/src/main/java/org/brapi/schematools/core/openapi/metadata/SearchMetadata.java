@@ -12,7 +12,6 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class SearchMetadata implements Metadata {
-    Map<String, String> summaries = new HashMap<>() ;
-    Map<String, String> descriptions = new HashMap<>() ;
+public class SearchMetadata extends AbstractOpenAPIMetadata {
+
 }

@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.graphql.options;
 
+import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ class GraphQLGeneratorOptionsTest {
     void load() {
         GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
 
-        checkOptions(options);
+        checkDefaultOptions(options);
     }
 
     @Test
@@ -31,7 +32,7 @@ class GraphQLGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
-        checkOptions(options);
+        checkDefaultOptions(options);
     }
 
     @Test
@@ -44,37 +45,62 @@ class GraphQLGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
-        checkOptions(options);
+        checkDefaultOptions(options);
     }
 
     @Test
     void overwrite() {
         GraphQLGeneratorOptions options = null;
         try {
-            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("graphql-overwrite-options.yaml").toURI()));
+            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("graphql-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
 
         checkOptions(options);
+        assertFalse(options.isUsingIDType());
+        assertFalse(options.getQueryType().isPartitionedByCrop());
+        assertEquals("Query2", options.getQueryType().getName());
 
-        assertEquals("attributeDbId", options.getIds().getIDFieldFor("GermplasmAttribute")) ;
-        assertEquals("attributeDbId", options.getIds().getIDFieldFor("CultivarAttribute")) ;
+        assertTrue(options.getQueryType().getSingleQuery().isGenerating());
+        assertFalse(options.getQueryType().getListQuery().isGenerating());
+        assertTrue(options.getQueryType().getSearchQuery().isGenerating());
+    }
+
+    private void checkDefaultOptions(GraphQLGeneratorOptions options) {
+        checkOptions(options);
+
+        assertTrue(options.isUsingIDType());
+        assertTrue(options.getQueryType().isPartitionedByCrop());
+        assertEquals("Query", options.getQueryType().getName());
+
+        assertTrue(options.getQueryType().getSingleQuery().isGenerating());
+        assertTrue(options.getQueryType().getListQuery().isGenerating());
+        assertTrue(options.getQueryType().getSearchQuery().isGenerating());
     }
 
     private void checkOptions(GraphQLGeneratorOptions options) {
         assertNotNull(options);
 
+        Validation validation = options.validate();
+
+        assertNotNull(validation);
+
+        if (!validation.isValid()) {
+            fail(validation.getAllErrorsMessage()) ;
+        }
+
         assertTrue(options.isGeneratingQueryType());
 
         checkOptions(options.getIds());
         checkOptions(options.getQueryType());
+
         checkOptions(options.getMutationType());
         checkOptions(options.getInput());
 
         assertNotNull(options.getQueryType());
-        assertEquals("Query", options.getQueryType().getName());
+
         assertNotNull(options.getQueryType().getSingleQuery());
 
         assertTrue(options.isGeneratingMutationType());
@@ -82,18 +108,16 @@ class GraphQLGeneratorOptionsTest {
         assertEquals("Mutation", options.getMutationType().getName());
 
         assertNotNull(options.getIds());
-        assertTrue(options.getIds().isUsingIDType());
+
+        assertEquals("attributeDbId", options.getIds().getIDFieldFor("GermplasmAttribute")) ;
     }
 
     private void checkOptions(IdsOptions options) {
         assertNotNull(options);
-        assertTrue(options.isUsingIDType());
     }
 
     private void checkOptions(QueryTypeOptions options) {
         assertNotNull(options);
-        assertTrue(options.isPartitionedByCrop());
-        assertEquals("Query", options.getName());
         checkOptions(options.getSingleQuery()) ;
         checkOptions(options.getListQuery()) ;
         checkOptions(options.getSearchQuery()) ;
@@ -101,18 +125,15 @@ class GraphQLGeneratorOptionsTest {
 
     private void checkOptions(SingleQueryOptions options) {
         assertNotNull(options);
-        assertTrue(options.isGenerating());
         assertEquals("Returns a Trial object by id", options.getDescriptionFor("Trial"));
     }
 
     private void checkOptions(ListQueryOptions options) {
         assertNotNull(options);
-        assertTrue(options.isGenerating());
     }
 
     private void checkOptions(SearchQueryOptions options) {
         assertNotNull(options);
-        assertTrue(options.isGenerating());
     }
 
     private void checkOptions(MutationTypeOptions options) {

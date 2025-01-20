@@ -3,6 +3,7 @@ package org.brapi.schematools.core.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.options.AbstractOpenAPIOptions;
 import org.brapi.schematools.core.valdiation.Validation;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractOptions implements Options {
-    private boolean generate;
+    private Boolean generate;
     private String descriptionFormat;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateFor = new HashMap<>();
@@ -35,6 +36,23 @@ public abstract class AbstractOptions implements Options {
     }
 
     /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractOptions overrideOptions) {
+
+        if (overrideOptions.generate != null) {
+            setGenerate(overrideOptions.generate);
+        }
+
+        if (overrideOptions.descriptionFormat != null) {
+            setDescriptionFormat(overrideOptions.descriptionFormat);
+        }
+
+        generateFor.putAll(overrideOptions.generateFor);
+    }
+
+    /**
      * Determines if the Endpoint/Query/Mutation is generated for any primary model. Returns <code>true</code> if
      * {@link AbstractOptions#generate} is set to <code>true</code> or
      * {@link AbstractOptions#generateFor} is set to <code>true</code> for any type
@@ -42,7 +60,7 @@ public abstract class AbstractOptions implements Options {
      */
     @JsonIgnore
     public final boolean isGenerating() {
-        return generate || generateFor.values().stream().anyMatch(value -> value);
+        return generate != null && generate || generateFor.values().stream().anyMatch(value -> value);
     }
 
     /**
@@ -108,6 +126,5 @@ public abstract class AbstractOptions implements Options {
     public AbstractOptions setGenerateFor(BrAPIType type, boolean generate) {
         return setGenerateFor(type.getName(), generate) ;
     }
-
 }
 

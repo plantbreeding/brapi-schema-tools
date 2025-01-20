@@ -1,5 +1,11 @@
 pluralFor:
     AlleleMatrix: AlleleMatrix
+ids:
+    useIDType: true
+    nameFormat: "%sDbId"
+    fieldFor:
+        GermplasmAttribute: attributeDbId
+        GermplasmAttributeValue: attributeValueDbId
 input:
     name: input
     nameFormat: "%sInput"
@@ -9,6 +15,7 @@ queryType:
     partitionedByCrop: true
     singleQuery:
         generate: true
+        pluralisingName: false
         nameFormat: "%s"
         descriptionFormat: Returns a %s object by id
         generateFor:
@@ -20,6 +27,7 @@ queryType:
             PlannedCross: false
     listQuery:
         generate: true
+        pluralisingName: true
         nameFormat: "%s"
         descriptionFormat: Returns %s objects
         responseTypeNameFormat: "%sListResponse"
@@ -38,10 +46,11 @@ queryType:
         pageFieldName: page
     searchQuery:
         generate: true
+        pluralisingName: true
         nameFormat: "%sSearch"
         descriptionFormat: Returns %s objects
         responseTypeNameFormat: "%sResponse"
-        searchIdFieldName: searchDbId
+        searchIdFieldName: searchResultsDbId
         generateFor:
             AlleleMatrix: false
             BreedingMethod: false
@@ -55,8 +64,9 @@ mutationType:
     name: Mutation
     createMutation:
         generate: true
+        pluralisingName: false
         nameFormat: create%s
-        descriptionFormat: Update the details for an existing %s
+        descriptionFormat: Create a new %s
         generateFor:
             AlleleMatrix: false
             Call: false
@@ -65,10 +75,12 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     updateMutation:
         generate: true
+        pluralisingName: false
         nameFormat: update%s
         descriptionFormat: Update the details for an existing %s
         generateFor:
@@ -79,12 +91,15 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     deleteMutation:
         generate: false
-        descriptionFormat: Delete existing %s
+        pluralisingName: true
+        multiple: true
         nameFormat: delete%s
+        descriptionFormat: Delete existing %s
         generateFor:
             AlleleMatrix: false
             Call: false
@@ -92,9 +107,10 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
             VariantSet: false
-ids:
-    useIDType: true
-    nameFormat: "%sDbId"
+mergeOneOfType: true
+mergingOneOfTypeFor:
+    GeoJSONGeometry: false

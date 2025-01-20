@@ -24,6 +24,21 @@ public class SearchOptions  extends AbstractOpenAPIOptions {
             .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(SearchOptions overrideOptions) {
+        super.override(overrideOptions);
+
+        if (overrideOptions.submitDescriptionFormat != null) {
+            setSubmitDescriptionFormat(overrideOptions.submitDescriptionFormat);
+        }
+
+        if (overrideOptions.retrieveDescriptionFormat != null) {
+            setRetrieveDescriptionFormat(overrideOptions.retrieveDescriptionFormat);
+        }
+    }
 
     /**
      * Gets the submit description for a specific primary model

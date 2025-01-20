@@ -3,6 +3,7 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.options.PropertyOptions;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.valdiation.Validation;
@@ -25,6 +26,24 @@ public class InputOptions implements Options {
         return Validation.valid()
             .assertNotNull(name, "'name' option on Input Options is null")
             .assertNotNull(typeNameFormat, "'typeNameFormat' option on Input Options is null") ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(InputOptions overrideOptions) {
+        if (overrideOptions.name != null) {
+            setName(overrideOptions.name); ;
+        }
+
+        if (overrideOptions.nameFormat != null) {
+            setNameFormat(overrideOptions.nameFormat); ;
+        }
+
+        if (overrideOptions.typeNameFormat != null) {
+            setTypeNameFormat(overrideOptions.typeNameFormat); ;
+        }
     }
 
     /**

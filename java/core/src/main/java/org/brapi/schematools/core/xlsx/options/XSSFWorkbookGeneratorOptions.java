@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
@@ -31,6 +33,18 @@ public class XSSFWorkbookGeneratorOptions implements Options {
     List<ColumnOption> dataClassFieldProperties ;
 
     /**
+     * Load the default options
+     * @return The default options
+     */
+    public static XSSFWorkbookGeneratorOptions load() {
+        try {
+            return ConfigurationUtils.load("xlsx-options.yaml", XSSFWorkbookGeneratorOptions.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Load the options from an options file in YAML or Json. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      * @param optionsFile The path to the options file in YAML or Json.
@@ -38,23 +52,7 @@ public class XSSFWorkbookGeneratorOptions implements Options {
      * @throws IOException if the options file can not be found or is incorrectly formatted.
      */
     public static XSSFWorkbookGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
-    }
-
-    /**
-     * Load the default options
-     * @return The default options
-     */
-    public static XSSFWorkbookGeneratorOptions load() {
-
-        try {
-            InputStream inputStream = XSSFWorkbookGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("xlsx-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
-            throw new RuntimeException(e);
-        }
+        return load().override(ConfigurationUtils.load(optionsFile, XSSFWorkbookGeneratorOptions.class)) ;
     }
 
     /**
@@ -65,10 +63,7 @@ public class XSSFWorkbookGeneratorOptions implements Options {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static XSSFWorkbookGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        return mapper.readValue(inputStream, XSSFWorkbookGeneratorOptions.class);
+        return load().override(ConfigurationUtils.load(inputStream, XSSFWorkbookGeneratorOptions.class)) ;
     }
 
     public Validation validate() {
@@ -77,5 +72,26 @@ public class XSSFWorkbookGeneratorOptions implements Options {
             .merge(dataClassProperties)
             .assertNotNull(dataClassFieldHeader, "'dataClassFieldHeader' option on %s is null", this.getClass().getSimpleName())
             .merge(dataClassFieldProperties) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public XSSFWorkbookGeneratorOptions override(XSSFWorkbookGeneratorOptions overrideOptions) {
+
+        if (overrideOptions.dataClassProperties != null) {
+            setDataClassProperties(overrideOptions.dataClassProperties) ;
+        }
+
+        if (overrideOptions.dataClassFieldHeader != null) {
+            dataClassFieldHeader = overrideOptions.dataClassFieldHeader ;
+        }
+
+        if (overrideOptions.dataClassFieldProperties != null) {
+           setDataClassFieldProperties(overrideOptions.getDataClassFieldProperties()) ;
+        }
+
+        return this ;
     }
 }

@@ -2,6 +2,7 @@ package org.brapi.schematools.core.openapi.metadata;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.metadata.Metadata;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 
@@ -57,5 +58,37 @@ public class OpenAPIGeneratorMetadata implements Metadata {
      */
     public static OpenAPIGeneratorMetadata load(InputStream inputStream) throws IOException {
         return ConfigurationUtils.load(inputStream, OpenAPIGeneratorMetadata.class) ;
+    }
+
+    public OpenAPIGeneratorMetadata override(OpenAPIGeneratorMetadata overrideMetadata) {
+        if (overrideMetadata.title != null) {
+            setTitle(overrideMetadata.title);
+        }
+
+        if (overrideMetadata.version != null) {
+            setVersion(overrideMetadata.version);
+        }
+
+        if (overrideMetadata.singleGet != null) {
+            singleGet.override(overrideMetadata.getSingleGet()) ;
+        }
+
+        if (overrideMetadata.listGet != null) {
+            listGet.override(overrideMetadata.getListGet()) ;
+        }
+
+        if (overrideMetadata.post != null) {
+            post.override(overrideMetadata.getPost()) ;
+        }
+
+        if (overrideMetadata.put != null) {
+            put.override(overrideMetadata.getPut()) ;
+        }
+
+        if (overrideMetadata.search != null) {
+            search.override(overrideMetadata.getSearch()) ;
+        }
+
+        return this ;
     }
 }

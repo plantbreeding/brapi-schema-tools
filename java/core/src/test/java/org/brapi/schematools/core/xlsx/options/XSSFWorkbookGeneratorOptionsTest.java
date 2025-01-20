@@ -1,10 +1,18 @@
 package org.brapi.schematools.core.xlsx.options;
 
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class XSSFWorkbookGeneratorOptionsTest {
     @Test
@@ -16,5 +24,79 @@ class XSSFWorkbookGeneratorOptionsTest {
         validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
 
         assertTrue(validation.isValid()) ;
+
+        checkDefaultOptions(options);
+    }
+
+    @Test
+    void loadJson() {
+        XSSFWorkbookGeneratorOptions options = null;
+        try {
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-test-options.json").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+        checkDefaultOptions(options);
+    }
+
+    @Test
+    void loadYaml() {
+        XSSFWorkbookGeneratorOptions options = null;
+        try {
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-test-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+        checkDefaultOptions(options);
+    }
+
+    @Test
+    void overwrite() {
+        XSSFWorkbookGeneratorOptions options = null;
+        try {
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-override-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
+        checkOptions(options);
+
+        assertFalse(options.getDataClassProperties().isEmpty()) ;
+        assertEquals(2, options.getDataClassProperties().size()); ;
+        assertEquals("name", options.getDataClassProperties().get(0).getName()) ;
+        assertEquals("module", options.getDataClassProperties().get(1).getName()) ;
+
+        assertFalse(options.getDataClassFieldProperties().isEmpty()) ;
+        assertEquals(1, options.getDataClassFieldProperties().size()); ;
+        assertEquals("name", options.getDataClassFieldProperties().get(0).getName()) ;
+
+        assertEquals("Class Name2", options.getDataClassFieldHeader()) ;
+    }
+
+    private void checkDefaultOptions(XSSFWorkbookGeneratorOptions options) {
+
+        checkOptions(options);
+
+        assertFalse(options.getDataClassProperties().isEmpty()) ;
+        assertEquals(5, options.getDataClassProperties().size()); ;
+        assertEquals("name", options.getDataClassProperties().get(0).getName()) ;
+        assertEquals("module", options.getDataClassProperties().get(1).getName()) ;
+
+        assertFalse(options.getDataClassFieldProperties().isEmpty()) ;
+        assertEquals(2, options.getDataClassFieldProperties().size()); ;
+        assertEquals("name", options.getDataClassFieldProperties().get(0).getName()) ;
+        assertEquals("description", options.getDataClassFieldProperties().get(1).getName()) ;
+        assertEquals("Class Name", options.getDataClassFieldHeader()) ;
+    }
+
+
+    private void checkOptions(XSSFWorkbookGeneratorOptions options) {
+
+
     }
 }

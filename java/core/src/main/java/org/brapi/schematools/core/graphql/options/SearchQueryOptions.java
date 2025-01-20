@@ -21,4 +21,16 @@ public class SearchQueryOptions extends AbstractGraphQLQueryOptions {
         return Validation.valid()
             .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName()) ;
     }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(SearchQueryOptions overrideOptions) {
+        super.override(overrideOptions);
+
+        if (overrideOptions.searchIdFieldName != null) {
+            setSearchIdFieldName(overrideOptions.searchIdFieldName); ;
+        }
+    }
 }

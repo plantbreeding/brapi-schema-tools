@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.valdiation.Validation;
@@ -33,21 +34,10 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     private MutationTypeOptions mutationType;
     private IdsOptions ids;
     @JsonProperty("mergeOneOfType")
-    private boolean mergingOneOfType ;
+    private Boolean mergingOneOfType ;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> mergingOneOfTypeFor = new HashMap<>();
-
-    /**
-     * Load the options from an options file in YAML or Json. The options file may have missing
-     * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param optionsFile The path to the options file in YAML or Json.
-     * @return The options loaded from the YAML or Json file.
-     * @throws IOException if the options file can not be found or is incorrectly formatted.
-     */
-    public static GraphQLGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
-    }
 
     /**
      * Load the default options
@@ -62,6 +52,17 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Load the options from an options file in YAML or Json. The options file may have missing
+     * (defined) values, in these cases the default values are loaded. See {@link #load()}
+     * @param optionsFile The path to the options file in YAML or Json.
+     * @return The options loaded from the YAML or Json file.
+     * @throws IOException if the options file can not be found or is incorrectly formatted.
+     */
+    public static GraphQLGeneratorOptions load(Path optionsFile) throws IOException {
+        return load().override(ConfigurationUtils.load(optionsFile, GraphQLGeneratorOptions.class)) ;
+    }
+
+    /**
      * Load the options from an options input stream in YAML or Json. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      * @param inputStream The input stream in YAML or Json.
@@ -69,20 +70,52 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static GraphQLGeneratorOptions load(InputStream inputStream) throws IOException {
-        return ConfigurationUtils.load(inputStream, GraphQLGeneratorOptions.class) ;
+        return load().override(ConfigurationUtils.load(inputStream, GraphQLGeneratorOptions .class)) ;
     }
 
     public Validation validate() {
 
         return super.validate()
             .assertNotNull(input, "Input Options are null")
-            .assertNotNull(queryType != null,  "Query Options are null")
-            .assertNotNull( mutationType != null, "Mutation Options are null")
-            .assertNotNull(ids != null,  "Id Options are null")
+            .assertNotNull(queryType,  "Query Options are null")
+            .assertNotNull(mutationType, "Mutation Options are null")
+            .assertNotNull(ids,  "Id Options are null")
             .merge(input)
             .merge(queryType)
             .merge(mutationType)
             .merge(ids) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public GraphQLGeneratorOptions override(GraphQLGeneratorOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.input != null) {
+            input.override(overrideOptions.input) ;
+        }
+
+        if (overrideOptions.queryType != null) {
+            queryType.override(overrideOptions.queryType) ;
+        }
+
+        if (overrideOptions.mutationType != null) {
+            mutationType.override(overrideOptions.mutationType) ;
+        }
+
+        if (overrideOptions.ids != null) {
+            ids.override(overrideOptions.ids) ;
+        }
+
+        if (mergingOneOfType != null) {
+            setMergingOneOfType(overrideOptions.mergingOneOfType) ;
+        }
+
+        mergingOneOfTypeFor.putAll(overrideOptions.mergingOneOfTypeFor);
+
+        return this ;
     }
 
     /**

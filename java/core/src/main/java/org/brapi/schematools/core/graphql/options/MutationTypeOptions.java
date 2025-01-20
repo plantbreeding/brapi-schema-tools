@@ -34,4 +34,26 @@ public class MutationTypeOptions implements Options {
             .merge(updateMutation)
             .merge(deleteMutation) ;
     }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(MutationTypeOptions overrideOptions) {
+        if (overrideOptions.name != null) {
+            setName(overrideOptions.name); ;
+        }
+
+        if (overrideOptions.createMutation != null) {
+            createMutation.override(overrideOptions.createMutation) ;
+        }
+
+        if (overrideOptions.updateMutation != null) {
+            updateMutation.override(overrideOptions.updateMutation) ;
+        }
+
+        if (overrideOptions.deleteMutation != null) {
+            deleteMutation.override(overrideOptions.deleteMutation) ;
+        }
+    }
 }

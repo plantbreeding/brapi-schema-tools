@@ -64,17 +64,6 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     private Map<String, String> pathItemNameFor = new HashMap<>();
 
     /**
-     * Load the options from an options file in YAML or Json. The options file may have missing
-     * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param optionsFile The path to the options file in YAML or Json.
-     * @return The options loaded from the YAML or Json file.
-     * @throws IOException if the options file can not be found or is incorrectly formatted.
-     */
-    public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
-        return ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class) ;
-    }
-
-    /**
      * Load the default options
      * @return The default options
      */
@@ -87,6 +76,17 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Load the options from an options file in YAML or Json. The options file may have missing
+     * (defined) values, in these cases the default values are loaded. See {@link #load()}
+     * @param optionsFile The path to the options file in YAML or Json.
+     * @return The options loaded from the YAML or Json file.
+     * @throws IOException if the options file can not be found or is incorrectly formatted.
+     */
+    public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
+        return load().override(ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class)) ;
+    }
+
+    /**
      * Load the options from an options input stream in YAML or Json. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      * @param inputStream The input stream in YAML or Json.
@@ -94,18 +94,76 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
-        return ConfigurationUtils.load(inputStream, OpenAPIGeneratorOptions.class) ;
+        return load().override(ConfigurationUtils.load(inputStream, OpenAPIGeneratorOptions.class)) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public OpenAPIGeneratorOptions override(OpenAPIGeneratorOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.singleGet != null) {
+            singleGet.override(overrideOptions.getSingleGet()) ;
+        }
+
+        if (overrideOptions.listGet != null) {
+            listGet.override(overrideOptions.getListGet()) ;
+        }
+
+        if (overrideOptions.post != null) {
+            post.override(overrideOptions.getPost()) ;
+        }
+
+        if (overrideOptions.put != null) {
+            put.override(overrideOptions.getPut()) ;
+        }
+
+        if (overrideOptions.search != null) {
+            search.override(overrideOptions.getSearch()) ;
+        }
+
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.getProperties()) ;
+        }
+
+        if (overrideOptions.generateNewRequestFor != null) {
+            generateNewRequestFor = overrideOptions.generateNewRequestFor ;
+        }
+
+        if (overrideOptions.newRequestNameFormat != null) {
+            newRequestNameFormat = overrideOptions.newRequestNameFormat ;
+        }
+
+        if (overrideOptions.singleResponseNameFormat != null) {
+            singleResponseNameFormat = overrideOptions.singleResponseNameFormat ;
+        }
+
+        if (overrideOptions.listResponseNameFormat != null) {
+            listResponseNameFormat = overrideOptions.listResponseNameFormat ;
+        }
+
+        if (overrideOptions.searchRequestNameFormat != null) {
+            searchRequestNameFormat = overrideOptions.searchRequestNameFormat ;
+        }
+
+        if (overrideOptions.pathItemNameFor != null) {
+            pathItemNameFor = overrideOptions.pathItemNameFor ;
+        }
+
+        return this ;
     }
 
     public Validation validate() {
         return super.validate()
             .assertNotNull(singleGet, "Single Get Endpoint Options are null")
-            .assertNotNull(listGet != null,  "List Get Endpoint Options are null")
-            .assertNotNull( post != null, "Post Endpoint Options are null")
-            .assertNotNull(put != null, "Put Endpoint Options are null")
-            .assertNotNull(delete != null,  "Delete Endpoint Options are null")
-            .assertNotNull(search != null,  "Search Endpoint Options are null")
-            .assertNotNull(properties != null,  "Id Options are null")
+            .assertNotNull(listGet,  "List Get Endpoint Options are null")
+            .assertNotNull(post, "Post Endpoint Options are null")
+            .assertNotNull(put, "Put Endpoint Options are null")
+            .assertNotNull(delete,  "Delete Endpoint Options are null")
+            .assertNotNull(search,  "Search Endpoint Options are null")
+            .assertNotNull(properties,  "Id Options are null")
             .merge(singleGet)
             .merge(listGet)
             .merge(post)
@@ -114,11 +172,11 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .merge(search)
             .merge(properties)
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
-            .assertNotNull(newRequestNameFormat != null,  "'newRequestNameFormat' option is null")
-            .assertNotNull( singleResponseNameFormat != null, "'singleResponseNameFormat' option is null")
-            .assertNotNull(listResponseNameFormat != null, "'listResponseNameFormat' option is null")
-            .assertNotNull(searchRequestNameFormat != null,  "'searchRequestNameFormat' option is null")
-            .assertNotNull(pathItemNameFor != null,  "'pathItemNameFor' option is null") ;
+            .assertNotNull(newRequestNameFormat,  "'newRequestNameFormat' option is null")
+            .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
+            .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
+            .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
+            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null") ;
     }
 
     /**

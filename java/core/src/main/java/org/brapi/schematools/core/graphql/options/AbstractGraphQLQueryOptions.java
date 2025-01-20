@@ -32,6 +32,20 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     }
 
     /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractGraphQLQueryOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.responseTypeNameFormat != null) {
+            setResponseTypeNameFormat(overrideOptions.responseTypeNameFormat);
+        }
+
+        input.putAll(overrideOptions.input);
+    }
+
+    /**
      * Gets the response type name of the query for a specific primary model
      * @param queryName the name of the query
      * @return the response type name of the query for a specific primary model

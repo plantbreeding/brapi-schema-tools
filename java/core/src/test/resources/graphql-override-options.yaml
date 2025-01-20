@@ -1,0 +1,17 @@
+pluralFor:
+    AlleleMatrix: AlleleMatrices
+ids:
+    useIDType: false
+input:
+    nameFormat: "%sInputX"
+    typeNameFormat: "%sInput"
+queryType:
+    name: Query2
+    partitionedByCrop: false
+    singleQuery:
+        pluralisingName: true
+        nameFormat: "%s"
+    listQuery:
+        generate: false
+        input:
+            BreedingMethod: true

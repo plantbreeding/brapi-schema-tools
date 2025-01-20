@@ -95,7 +95,11 @@ public class Validation {
      * @return this Validation
      */
     public Validation merge(Validatable validatable) {
-        addAllErrors(validatable.validate().getErrors()) ;
+        if (validatable != null) {
+            addAllErrors(validatable.validate().getErrors());
+        } else {
+            addError("Can not merge null Validatable!");
+        }
 
         return this ;
     }
@@ -108,7 +112,11 @@ public class Validation {
      * @return this Validation
      */
     public Validation merge(Validatable validatable, String prefixMessage) {
-        addAllErrors(validatable.validate().getErrors(), prefixMessage) ;
+        if (validatable != null) {
+            addAllErrors(validatable.validate().getErrors(), prefixMessage);
+        } else {
+            addError("Can not merge null Validatable!");
+        }
 
         return this ;
     }
@@ -122,7 +130,11 @@ public class Validation {
      */
     public Validation mergeOnCondition(boolean condition, Validatable validatable) {
         if (condition) {
-            addAllErrors(validatable.validate().getErrors());
+            if (validatable != null) {
+                addAllErrors(validatable.validate().getErrors());
+            } else {
+                addError("Can not merge null Validatable!");
+            }
         }
 
         return this ;
@@ -138,10 +150,34 @@ public class Validation {
      */
     public Validation mergeOnCondition(boolean condition, Validatable validatable, String prefixMessage) {
         if (condition) {
-            addAllErrors(validatable.validate().getErrors(), prefixMessage);
+            if (validatable != null) {
+                addAllErrors(validatable.validate().getErrors(), prefixMessage);
+            } else {
+                addError("Can not merge null Validatable!");
+            }
         }
 
         return this ;
+    }
+
+    /**
+     * Gets a list of all error messages or an empty list if there are no errors.
+     * @return a list of all error messages or an empty list if there are no errors.
+     */
+    public List<String> getErrorMessages() {
+        return errors.stream().map(Response.Error::getMessage).toList() ;
+    }
+
+    /**
+     * Gets concatenated a list of all error messages or <code>null</code> if there are no errors.
+     * @return a concatenated a list of all error messages or <code>null</code> if there are no errors.
+     */
+    public String getAllErrorsMessage() {
+        if (errors.isEmpty()) {
+            return null ;
+        } else {
+            return errors.stream().map(Response.Error::getMessage).collect(Collectors.joining(", "));
+        }
     }
 
     /**
@@ -151,11 +187,13 @@ public class Validation {
      * @return this Validation
      */
     public <T extends Validatable> Validation merge(List<T> validatableList) {
-        validatableList
-            .stream()
-            .map(Validatable::validate)
-            .map(Validation::getErrors)
-            .forEach(this::addAllErrors);
+        if (validatableList != null) {
+            validatableList
+                .stream()
+                .map(Validatable::validate)
+                .map(Validation::getErrors)
+                .forEach(this::addAllErrors);
+        }
 
         return this ;
     }

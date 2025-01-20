@@ -26,7 +26,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 public class PropertyOptions implements Options {
     private String nameFormat;
     @Getter(AccessLevel.PUBLIC)
-    private boolean link;
+    private Boolean link;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> propertyFor = new HashMap<>();
     private Map<String, String> pluralPropertyFor = new HashMap<>();
@@ -35,6 +35,31 @@ public class PropertyOptions implements Options {
         return Validation.valid()
             .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(PropertyOptions overrideOptions) {
+        if (overrideOptions.nameFormat != null) {
+            setNameFormat(overrideOptions.nameFormat); ;
+        }
+
+        if (overrideOptions.link != null) {
+            setLink(overrideOptions.link); ;
+        }
+
+        propertyFor.putAll(overrideOptions.propertyFor);
+        pluralPropertyFor.putAll(overrideOptions.pluralPropertyFor);
+    }
+
+    /**
+     * Get if this property is used as a foreign key link between entities
+     * @return <code>true</code> if this property is used as a foreign key link between entities, <code>false</code> otherwise
+     */
+    public boolean isLink() {
+        return link != null && link ;
     }
 
     /**

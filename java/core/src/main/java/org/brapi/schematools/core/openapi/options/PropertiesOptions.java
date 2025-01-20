@@ -35,6 +35,24 @@ public class PropertiesOptions implements Options {
     }
 
     /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(PropertiesOptions properties) {
+        if (properties.id != null) {
+            id.override(properties.id) ;
+        }
+
+        if (properties.name != null) {
+            name.override(properties.name) ;
+        }
+
+        if (properties.pui != null) {
+            pui.override(properties.pui) ;
+        }
+    }
+
+    /**
      * Gets the list of link properties that are used to generate links to the
      * provided object type.
      *
