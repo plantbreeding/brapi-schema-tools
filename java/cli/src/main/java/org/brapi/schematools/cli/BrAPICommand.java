@@ -21,6 +21,7 @@ public class BrAPICommand {
     /**
      * Main method for application
      * @param args arguments for application
+     * @throws Exception if the command is not valid.
      */
     public static void main(String... args) throws Exception {
         System.exit(new CommandLine(new BrAPICommand()).execute(args));

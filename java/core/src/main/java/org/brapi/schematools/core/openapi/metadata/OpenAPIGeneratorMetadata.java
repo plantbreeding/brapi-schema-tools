@@ -60,6 +60,11 @@ public class OpenAPIGeneratorMetadata implements Metadata {
         return ConfigurationUtils.load(inputStream, OpenAPIGeneratorMetadata.class) ;
     }
 
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideMetadata the options which will be used to override this Options Object
+     * @return this options for method chaining
+     */
     public OpenAPIGeneratorMetadata override(OpenAPIGeneratorMetadata overrideMetadata) {
         if (overrideMetadata.title != null) {
             setTitle(overrideMetadata.title);

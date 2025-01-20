@@ -53,6 +53,11 @@ public class GraphQLGeneratorMetadata implements Metadata {
         return load().override(ConfigurationUtils.load(inputStream, GraphQLGeneratorMetadata.class)) ;
     }
 
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideMetadata the options which will be used to override this Options Object
+     * @return this options for method chaining
+     */
     public GraphQLGeneratorMetadata override(GraphQLGeneratorMetadata overrideMetadata) {
         if (overrideMetadata.title != null) {
             setTitle(overrideMetadata.title);

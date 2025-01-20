@@ -8,6 +8,9 @@ import org.brapi.schematools.core.valdiation.Validation;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * A value property in a worksheet.
+ */
 @Getter
 @Setter
 public class ValuePropertyOption implements Options {

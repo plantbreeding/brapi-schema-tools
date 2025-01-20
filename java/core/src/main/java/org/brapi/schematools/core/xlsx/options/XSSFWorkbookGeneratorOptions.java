@@ -77,6 +77,7 @@ public class XSSFWorkbookGeneratorOptions implements Options {
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
+     * @return this options for method chaining
      */
     public XSSFWorkbookGeneratorOptions override(XSSFWorkbookGeneratorOptions overrideOptions) {
 

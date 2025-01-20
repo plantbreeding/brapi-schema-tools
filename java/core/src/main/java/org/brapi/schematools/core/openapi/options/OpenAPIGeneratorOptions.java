@@ -100,6 +100,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
+     * @return this object for method chaining
      */
     public OpenAPIGeneratorOptions override(OpenAPIGeneratorOptions overrideOptions) {
         super.override(overrideOptions) ;

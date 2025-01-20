@@ -26,7 +26,11 @@ public class AbstractGeneratorOptions implements Options {
             .assertNotNull(pluralFor, "'pluralFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
-    protected void override(AbstractGeneratorOptions overrideOptions) {
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractGeneratorOptions overrideOptions) {
         pluralFor.putAll(overrideOptions.pluralFor);
     }
 

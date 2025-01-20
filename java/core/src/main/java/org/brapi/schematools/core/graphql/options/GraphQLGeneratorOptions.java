@@ -89,6 +89,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
+     * @return this options for method chaining
      */
     public GraphQLGeneratorOptions override(GraphQLGeneratorOptions overrideOptions) {
         super.override(overrideOptions) ;
@@ -371,6 +372,12 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
         return options.getNameFor(newName) ;
     }
 
+    /**
+     * Gets if the possible types of a 'OneOf' type are merged into a single type.
+     *
+     * @param type the BrAPIClass
+     * @return <code>true</code> if the possible types of a 'OneOf' type are merged into a single type.
+     */
     public boolean isMergingOneOfType(BrAPIClass type) {
         return mergingOneOfTypeFor.getOrDefault(type.getName(), mergingOneOfType) ;
     }

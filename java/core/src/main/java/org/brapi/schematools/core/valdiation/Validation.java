@@ -71,6 +71,12 @@ public class Validation {
         return this ;
     }
 
+    /**
+     * Checks that the provided value is one of the provided classes
+     * @param value the value to be checked
+     * @param classes the list of permitted classes that the provided value must adhere to
+     * @return this Validation
+     */
     public Validation assertClass(Object value, List<Class<?>> classes) {
         if (value != null && classes.stream().noneMatch(aClass -> value.getClass().isAssignableFrom(aClass))) {
             addError("Value must one of '%s', but was '%s'",
@@ -185,7 +191,9 @@ public class Validation {
      * in each object and adding any errors to this Validation
      * @param validatableList the options to be validated
      * @return this Validation
+     * @param <T> the class of Validatable object
      */
+
     public <T extends Validatable> Validation merge(List<T> validatableList) {
         if (validatableList != null) {
             validatableList
