@@ -7,14 +7,12 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;

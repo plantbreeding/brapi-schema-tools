@@ -1,21 +1,17 @@
 package org.brapi.schematools.core.xlsx.options;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 

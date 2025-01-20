@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.xlsx.options;
 
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;

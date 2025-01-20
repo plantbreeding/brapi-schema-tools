@@ -2,7 +2,6 @@ package org.brapi.schematools.core.openapi.metadata;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.metadata.Metadata;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 

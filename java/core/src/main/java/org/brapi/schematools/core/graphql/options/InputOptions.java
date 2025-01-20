@@ -3,7 +3,6 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.options.PropertyOptions;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.valdiation.Validation;

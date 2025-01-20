@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.graphql.options;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

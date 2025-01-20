@@ -1,9 +1,7 @@
 package org.brapi.schematools.core.ontmodel.options;
 
-import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.valdiation.Validation;
-import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

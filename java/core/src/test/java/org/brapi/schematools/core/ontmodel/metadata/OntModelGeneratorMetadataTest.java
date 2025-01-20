@@ -1,7 +1,5 @@
 package org.brapi.schematools.core.ontmodel.metadata;
 
-import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.valdiation.Validation;
 

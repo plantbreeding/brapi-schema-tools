@@ -1,13 +1,14 @@
 package org.brapi.schematools.core.openapi.metadata;
 
-import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class OpenAPIGeneratorMetadataTest {
 
