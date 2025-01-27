@@ -19,6 +19,7 @@ import java.util.Map;
 public abstract class AbstractOptions implements Options {
     private Boolean generate;
     private String descriptionFormat;
+    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateFor = new HashMap<>();
 
@@ -30,6 +31,7 @@ public abstract class AbstractOptions implements Options {
      */
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(generate, "'generate' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateFor, "'generateFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -83,26 +85,6 @@ public abstract class AbstractOptions implements Options {
     }
 
     /**
-     * Gets the description for a specific primary model
-     * @param name the name of the primary model
-     * @return the description for a specific primary model
-     */
-    @JsonIgnore
-    public final String getDescriptionFor(@NonNull String name) {
-        return String.format(descriptionFormat, name) ;
-    }
-
-    /**
-     * Gets the description for a specific primary model
-     * @param type the primary model
-     * @return the description for a specific primary model
-     */
-    @JsonIgnore
-    public final String getDescriptionFor(@NonNull BrAPIType type) {
-        return getDescriptionFor(type.getName());
-    }
-
-    /**
      * Sets if the Endpoint/Query/Mutation is generated for a specific primary model.
      * @param name the name of the primary model
      * @param generate <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code>
@@ -124,6 +106,26 @@ public abstract class AbstractOptions implements Options {
     @JsonIgnore
     public AbstractOptions setGenerateFor(BrAPIType type, boolean generate) {
         return setGenerateFor(type.getName(), generate) ;
+    }
+
+    /**
+     * Gets the description for a specific primary model
+     * @param name the name of the primary model
+     * @return the description for a specific primary model
+     */
+    @JsonIgnore
+    public final String getDescriptionFor(@NonNull String name) {
+        return String.format(descriptionFormat, name) ;
+    }
+
+    /**
+     * Gets the description for a specific primary model
+     * @param type the primary model
+     * @return the description for a specific primary model
+     */
+    @JsonIgnore
+    public final String getDescriptionFor(@NonNull BrAPIType type) {
+        return getDescriptionFor(type.getName());
     }
 }
 

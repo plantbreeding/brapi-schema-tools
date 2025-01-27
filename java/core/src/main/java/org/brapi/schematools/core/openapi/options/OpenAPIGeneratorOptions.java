@@ -45,9 +45,9 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     private PropertiesOptions properties;
 
     @Getter(AccessLevel.PRIVATE)
-    boolean separateByModule;
+    private Boolean separateByModule;
     @Getter(AccessLevel.PRIVATE)
-    private boolean generateNewRequest;
+    private Boolean generateNewRequest;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateNewRequestFor = new HashMap<>();
@@ -62,7 +62,9 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pathItemNameFor = new HashMap<>();
-
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> tagFor = new HashMap<>();
     /**
      * Load the default options
      * @return The default options
@@ -125,8 +127,20 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             search.override(overrideOptions.getSearch()) ;
         }
 
+        if (overrideOptions.delete != null) {
+            delete.override(overrideOptions.getDelete()) ;
+        }
+
         if (overrideOptions.properties != null) {
             properties.override(overrideOptions.getProperties()) ;
+        }
+
+        if (overrideOptions.separateByModule != null) {
+            separateByModule = overrideOptions.separateByModule ;
+        }
+
+        if (overrideOptions.generateNewRequest != null) {
+            generateNewRequest = overrideOptions.generateNewRequest ;
         }
 
         if (overrideOptions.generateNewRequestFor != null) {
@@ -153,6 +167,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             pathItemNameFor.putAll(overrideOptions.pathItemNameFor) ;
         }
 
+        if (overrideOptions.tagFor != null) {
+            tagFor.putAll(overrideOptions.tagFor) ;
+        }
+
         return this ;
     }
 
@@ -165,6 +183,8 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(delete,  "Delete Endpoint Options are null")
             .assertNotNull(search,  "Search Endpoint Options are null")
             .assertNotNull(properties,  "Id Options are null")
+            .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
             .merge(singleGet)
             .merge(listGet)
             .merge(post)
@@ -177,7 +197,8 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
             .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
-            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null") ;
+            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
+            .assertNotNull(tagFor,  "'tagFor' option is null") ;
     }
 
     /**
@@ -191,12 +212,12 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate any Endpoints without an ID parameter. Returns <code>true</code> if
-     * {@link ListGetOptions#isGenerating()} ()} or {@link PostOptions#isGenerating()} is set to <code>true</code>
+     * {@link ListGetOptions#isGenerating()} or {@link PostOptions#isGenerating()} or {@link PutOptions#isGenerating()}  is set to <code>true</code>
      * @return <code>true</code> if the Generator should generate any Endpoints without an ID parameter, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpoint() {
-        return listGet.isGenerating() || post.isGenerating();
+        return listGet.isGenerating() || post.isGenerating() || put.isGenerating() ;
     }
 
     /**
@@ -207,7 +228,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      */
     @JsonIgnore
     public boolean isGeneratingEndpointFor(@NonNull String name) {
-        return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) ;
+        return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) || put.isGeneratingEndpointFor(name) ;
     }
 
     /**
@@ -234,19 +255,19 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingFor(String)} or
+     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
      * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
      * @param name the name of the Primary Model
      * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
-        return singleGet.isGeneratingFor(name) || put.isGeneratingFor(name) || delete.isGeneratingFor(name) ;
+        return singleGet.isGeneratingFor(name) || put.isGeneratingEndpointNameWithIdFor(name) || delete.isGeneratingFor(name) ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingFor(String)} or
+     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
      * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
      * @param type the Primary Model
      * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
@@ -395,5 +416,40 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      */
     public String getPathItemWithIdNameFor(BrAPIType type) {
         return String.format("%s/{%s}", getPathItemNameFor(type), properties.getIdPropertyNameFor(type));
+    }
+
+    /**
+     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
+     * Use {@link #setTagFor(String, String)} to override this value.
+     * @param name the name of the Primary Model
+     * @return the tag name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTagFor(@NonNull String name) {
+        return tagFor.getOrDefault(name, getPluralFor(name)) ;
+    }
+
+    /**
+     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
+     * Use {@link #setTagFor(String, String)} to override this value.
+     * @param type the Primary Model
+     * @return the tag name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTagFor(@NonNull BrAPIType type) {
+        return getTagFor(type.getName()) ;
+    }
+
+    /**
+     * Sets the tag name for a specific primary model.
+     * @param name the name of the primary model
+     * @param tagName the tag name for a specific primary model.
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public AbstractGeneratorOptions setTagFor(String name, String tagName) {
+        tagFor.put(name, tagName) ;
+
+        return this ;
     }
 }

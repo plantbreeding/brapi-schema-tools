@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.brapi.schematools.core.valdiation.Validation;
 
 /**
  * Provides options for the generation of Update Mutations
@@ -15,6 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateMutationOptions extends AbstractGraphQLOptions {
     Boolean multiple;
+
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(multiple, "'multiple' option on %s is null", this.getClass().getSimpleName()) ;
+    }
 
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null

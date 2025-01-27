@@ -76,6 +76,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(queryType,  "Query Options are null")
             .assertNotNull(mutationType, "Mutation Options are null")
             .assertNotNull(ids,  "Id Options are null")
+            .assertNotNull(mergeOneOfType, "'mergeOneOfType' option on %s is null", this.getClass().getSimpleName())
             .merge(input)
             .merge(queryType)
             .merge(mutationType)

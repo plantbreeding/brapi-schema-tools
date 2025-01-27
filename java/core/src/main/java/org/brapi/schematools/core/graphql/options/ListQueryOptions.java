@@ -35,6 +35,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(dataFieldName, "'dataFieldName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagingInputName, "'pagingInputName' option on %s is null", this.getClass().getSimpleName())

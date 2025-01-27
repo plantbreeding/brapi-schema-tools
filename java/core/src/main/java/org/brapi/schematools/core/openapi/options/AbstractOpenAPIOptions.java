@@ -52,7 +52,5 @@ public abstract class AbstractOpenAPIOptions extends AbstractOptions {
     public final String getSummaryFor(@NonNull BrAPIType type) {
         return getSummaryFor(type.getName());
     }
-
-
 }
 

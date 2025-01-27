@@ -180,23 +180,41 @@ public class GenerateSubCommand implements Runnable {
 
         Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, componentsDirectory, metadata);
 
-        response.onSuccessDoWithResult(this::outputOpenAPISpecification).onFailDoWithResponse(this::printOpenAPISpecificationErrors);
+        response
+            .onSuccessDoWithResultOnCondition(!options.isSeparatingByModule(), this::outputOpenAPISpecificationFile)
+            .onSuccessDoWithResultOnCondition(options.isSeparatingByModule(), this::outputOpenAPISpecificationDirectory)
+            .onFailDoWithResponse(this::printOpenAPISpecificationErrors);
     }
 
-    private void outputOpenAPISpecification(List<OpenAPI> specifications) {
+    private void outputOpenAPISpecificationFile(List<OpenAPI> specifications) {
         try {
             if (specifications.size() == 1) {
                 outputOpenAPISpecification(specifications.get(0), outputPath);
             } else {
-                if (outputPath != null) {
-                    if (!Files.isDirectory(optionsPath)) {
-                        err.printf("Output path '%s' must be a directory if outputting separate files:%n", outputPath.toFile());
-                    }
+                if (specifications.size() == 0) {
+                    err.println("No specification to to output!");
+                } else {
+                    err.printf("Can not output several specification to single file: '%s' :%n", outputPath.toFile());
                 }
-                for (OpenAPI specification : specifications) {
-                    outputOpenAPISpecification(specification,
-                        outputPath != null ? outputPath.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null) ;
+            }
+        } catch (IOException e) {
+            err.println(e.getMessage());
+        }
+    }
+
+    private void outputOpenAPISpecificationDirectory(List<OpenAPI> specifications) {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    err.printf("Output path '%s' must be a directory if outputting separate files:%n", outputPath.toFile());
                 }
+
+                Files.createDirectories(outputPath);
+            }
+
+            for (OpenAPI specification : specifications) {
+                outputOpenAPISpecification(specification,
+                    outputPath != null ? outputPath.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null);
             }
         } catch (IOException e) {
             err.println(e.getMessage());

@@ -29,11 +29,13 @@ public class PropertyOptions implements Options {
     private Boolean link;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> propertyFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralPropertyFor = new HashMap<>();
 
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(link, "'link' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 

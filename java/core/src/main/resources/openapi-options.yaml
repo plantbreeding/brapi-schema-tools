@@ -21,7 +21,12 @@ searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
-    PedigreeNode: pedigrees
+    GermplasmAttribute: /attributes
+    GermplasmAttributeValue: /attributevalues
+    PedigreeNode: /pedigrees
+tagFor:
+    BreedingMethod: Germplasm
+    PlannedCross: Crosses
 singleGet:
     generate: true
     summaryFormat: Get the details of a specific %s
@@ -32,6 +37,7 @@ singleGet:
         Cross: false
         Event: false
         MarkerPosition: false
+        Pedigree: false
         PlannedCross: false
 listGet:
     generate: true
@@ -48,6 +54,7 @@ search:
     generate: true
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`t
+    searchIdFieldName: searchResultsDbId
     submitDescriptionFormat:  |-
         Submit a search request for `%s`<br/>
         Search requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. 
@@ -65,10 +72,12 @@ search:
         AlleleMatrix: false
         BreedingMethod: false
         Cross: false
-        CrossProject: false
+        CrossingProject: false
         Method: false
         Ontology: false
+        PlannedCross: false
         Scale: false
+        Season: false
         Trait: false
 post:
     generate: true
@@ -83,6 +92,7 @@ post:
         GenomeMap: false
         MarkerPosition: false
         Reference: false
+        ReferenceSet: false
         Variant: false
         VariantSet: false
 put:
@@ -92,14 +102,19 @@ put:
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
-        Call: false
         CallSet: false
-        Cross: false
         Event: false
         GenomeMap: false
         MarkerPosition: false
         Reference: false
+        ReferenceSet: false
         Variant: false
+        VariantSet: false
+    multiple: false
+    multipleFor:
+        Cross: true
+        PlannedCross: true
+        Pedigree: true
 delete:
     generate: false
     summaryFormat: Delete an existing %s
@@ -121,15 +136,18 @@ properties:
         propertyFor:
             GermplasmAttribute: attributeDbId
             GermplasmAttributeValue: attributeValueDbId
+            GenomeMap: mapDbId
     name:
         nameFormat: "%sName"
         link: true
         propertyFor:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
+            GenomeMap: mapName
     pui:
         nameFormat: "%sPUI"
         link: true
         propertyFor:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
+            GenomeMap: mapPUI

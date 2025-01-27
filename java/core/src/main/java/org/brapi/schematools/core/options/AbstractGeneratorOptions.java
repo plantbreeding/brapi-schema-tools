@@ -20,17 +20,14 @@ public class AbstractGeneratorOptions implements Options {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralFor = new HashMap<>();
 
-    public Validation validate() {
-        return Validation.valid()
-            .assertNotNull(pluralFor, "'pluralFor' option on %s is null", this.getClass().getSimpleName()) ;
-    }
-
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
      */
     public void override(AbstractGeneratorOptions overrideOptions) {
-        pluralFor.putAll(overrideOptions.pluralFor);
+        if (overrideOptions.pluralFor != null) {
+            pluralFor.putAll(overrideOptions.pluralFor);
+        }
     }
 
     /**

@@ -28,6 +28,7 @@ public class QueryTypeOptions implements Options {
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(name, "'name' option on QueryType Options is null")
+            .assertNotNull(partitionedByCrop, "'partitionedByCrop' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(singleQuery,  "SingleQuery Options are null")
             .assertNotNull(listQuery,  "ListQuery Options are null")
             .assertNotNull(searchQuery,  "SearchQuery Options are null")

@@ -22,7 +22,9 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
     private String nameFormat;
 
     public Validation validate() {
-        return super.validate().assertNotNull("'nameFormat' option on %s is null", this.getClass().getSimpleName());
+        return super.validate()
+            .assertNotNull(pluralisingName, "'pluralisingName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**

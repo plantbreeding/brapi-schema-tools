@@ -25,6 +25,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName()) ;
     }

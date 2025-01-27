@@ -633,20 +633,6 @@ public class Response<T> {
     }
 
     /**
-     * If this response has no errors pass the result of this response to the provider consumer
-     * @param consumer a consumer for the result of this response
-     * @return this response
-     */
-    public Response<T> onSuccessDoWithResult(Consumer<T> consumer) {
-        if (this.hasErrors()) {
-            return this;
-        } else {
-            consumer.accept(this.getResult());
-            return this;
-        }
-    }
-
-    /**
      * If the predicate returns <code>true</code> and this response has no errors call the supplier and return this
      * @param predicate if the predicate returns <code>true</code> call the supplier, <code>false</code> do not call the supplier
      * @param supplier the supplier to be called if the predicate returns <code>true</code> and there are no errors
@@ -683,6 +669,35 @@ public class Response<T> {
             action.run();
         }
         return this;
+    }
+
+    /**
+     * If this response has no errors pass the result of this response to the provider consumer
+     * @param consumer a consumer for the result of this response
+     * @return this response
+     */
+    public Response<T> onSuccessDoWithResult(Consumer<T> consumer) {
+        if (this.hasErrors()) {
+            return this;
+        } else {
+            consumer.accept(this.getResult());
+            return this;
+        }
+    }
+
+    /**
+     * If the condition is <code>true</code> and this response has no errors pass the result of this response to the provider consumer
+     * @param condition if is <code>true</code> run the action, <code>false</code> do not run the action
+     * @param consumer a consumer for the result of this response
+     * @return this response
+     */
+    public Response<T> onSuccessDoWithResultOnCondition(final boolean condition, Consumer<T> consumer) {
+        if (this.hasNoErrors() && condition) {
+            consumer.accept(this.getResult());
+            return this;
+        } else {
+            return this;
+        }
     }
 
     /**

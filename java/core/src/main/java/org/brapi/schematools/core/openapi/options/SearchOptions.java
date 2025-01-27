@@ -15,11 +15,15 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Getter(AccessLevel.PRIVATE)
 @Setter
 public class SearchOptions  extends AbstractOpenAPIOptions {
+
+    @Getter(AccessLevel.PUBLIC)
+    private String searchIdFieldName;
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
 
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -30,6 +34,10 @@ public class SearchOptions  extends AbstractOpenAPIOptions {
      */
     public void override(SearchOptions overrideOptions) {
         super.override(overrideOptions);
+
+        if (overrideOptions.searchIdFieldName != null) {
+            setSearchIdFieldName(overrideOptions.searchIdFieldName);
+        }
 
         if (overrideOptions.submitDescriptionFormat != null) {
             setSubmitDescriptionFormat(overrideOptions.submitDescriptionFormat);
