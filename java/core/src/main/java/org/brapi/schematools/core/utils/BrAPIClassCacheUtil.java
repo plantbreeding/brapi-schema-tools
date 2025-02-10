@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  * {@link BrAPIAllOfType} are ignored.
  */
 @AllArgsConstructor
-public class BrAPITClassCacheUtil {
+public class BrAPIClassCacheUtil {
 
     private Predicate<BrAPIClass> cachePredicate ;
 

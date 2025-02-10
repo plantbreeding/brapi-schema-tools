@@ -65,7 +65,7 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
 
     /**
      * Determines if the query or mutation should have a plurialised name
-     * @return <code>true</code> if the query or mutation should have a plurialised name, <code>false </code> otherwise
+     * @return {@code true} if the query or mutation should have a plurialised name, <code>false </code> otherwise
      */
     public boolean isPluralisingName() {
         return pluralisingName != null && pluralisingName ;

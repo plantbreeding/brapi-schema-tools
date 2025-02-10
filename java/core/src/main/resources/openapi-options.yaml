@@ -151,3 +151,17 @@ properties:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
             GenomeMap: mapPUI
+    linkTypeFor:
+        BreedingMethod:
+            germplasm: none
+            pedigreeNodes: none
+        CallSet:
+            calls: sub-path
+        Trial:
+            contacts: embedded
+        Variant:
+            calls: sub-path
+        VariantSet:
+            calls: sub-path
+            callSets: sub-path
+            variants: sub-path

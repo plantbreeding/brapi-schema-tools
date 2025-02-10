@@ -52,7 +52,7 @@ public class IdsOptions implements Options {
 
     /**
      * Determines if the built-in GraphQLID type should be used for IDs instead of GraphQLString
-     * @return <code>true</code> if the built-in GraphQLID type should be used for IDs instead of GraphQLString, <code>false</code> otherwise
+     * @return {@code true} if the built-in GraphQLID type should be used for IDs instead of GraphQLString, {@code false} otherwise
      */
     public boolean isUsingIDType() {
         return useIDType;

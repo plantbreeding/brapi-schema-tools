@@ -13,7 +13,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPITClassCacheUtil;
+import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.xlsx.options.ColumnOption;
 import org.brapi.schematools.core.xlsx.options.ValuePropertyOption;
@@ -83,7 +83,7 @@ public class XSSFWorkbookGenerator {
 
         public Generator(List<BrAPIClass> brAPISchemas) {
 
-            brAPIClasses = new BrAPITClassCacheUtil(this::isGenerating).createMap(brAPISchemas) ;
+            brAPIClasses = new BrAPIClassCacheUtil(this::isGenerating).createMap(brAPISchemas) ;
         }
 
         public Response<List<Path>> generate() {

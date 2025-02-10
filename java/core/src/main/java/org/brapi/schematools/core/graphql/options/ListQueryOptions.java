@@ -82,7 +82,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
 
     /**
      * Determine if any list query has paging
-     * @return <code>true</code> if any list query has paging. <code>false</code> otherwise
+     * @return {@code true} if any list query has paging. {@code false} otherwise
      */
     @JsonIgnore
     public boolean hasPaging() {
@@ -93,7 +93,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Determines if the Query is paged for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull String name) {
@@ -103,7 +103,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Determines if the Query is paged for a specific primary model
      * @param type the primary model
-     * @return <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull BrAPIType type) {
@@ -113,7 +113,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Sets if the Query is paged for a specific primary model
      * @param name the name of the primary model
-     * @param hasInput <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @param hasInput {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore

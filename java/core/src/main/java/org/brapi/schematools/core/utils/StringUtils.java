@@ -149,7 +149,7 @@ public class StringUtils {
      * Determines if the string starts with an lower case character
      *
      * @param value the string to be tested
-     * @return <code>true</code> if the string starts with an lower case character, <code>false</code> otherwise
+     * @return {@code true} if the string starts with an lower case character, {@code false} otherwise
      */
     public static boolean startsWithLowerCase(String value) {
         return value.matches("^[a-z].*$");
@@ -159,7 +159,7 @@ public class StringUtils {
      * Determines if the string starts with an upper case character
      *
      * @param value the string to be tested
-     * @return <code>true</code> if the string starts with an upper case character, <code>false</code> otherwise
+     * @return {@code true} if the string starts with an upper case character, {@code false} otherwise
      */
     public static boolean startsWithUpperCase(String value) {
         return value.matches("^[A-Z].*$");

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPITClassCacheUtil;
+import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -51,7 +51,7 @@ public class MarkdownGenerator {
         private final Path descriptionsPath ;
         private final Path fieldsPath ;
         public Generator(List<BrAPIClass> brAPIClasses) {
-            this.brAPIClasses = new BrAPITClassCacheUtil(this::isGenerating).createMap(brAPIClasses) ;
+            this.brAPIClasses = new BrAPIClassCacheUtil(this::isGenerating).createMap(brAPIClasses) ;
             this.descriptionsPath = outputPath.resolve("descriptions") ;
             this.fieldsPath = outputPath.resolve("fields") ;
         }

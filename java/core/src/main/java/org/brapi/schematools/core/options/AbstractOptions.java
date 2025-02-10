@@ -54,10 +54,10 @@ public abstract class AbstractOptions implements Options {
     }
 
     /**
-     * Determines if the Endpoint/Query/Mutation is generated for any primary model. Returns <code>true</code> if
-     * {@link AbstractOptions#generate} is set to <code>true</code> or
-     * {@link AbstractOptions#generateFor} is set to <code>true</code> for any type
-     * @return <code>true</code> if the Generator should generate any Endpoints/Queries/Mutations, <code>false</code> otherwise
+     * Determines if the Endpoint/Query/Mutation is generated for any primary model. Returns {@code true} if
+     * {@link AbstractOptions#generate} is set to {@code true} or
+     * {@link AbstractOptions#generateFor} is set to {@code true} for any type
+     * @return {@code true} if the Generator should generate any Endpoints/Queries/Mutations, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGenerating() {
@@ -67,7 +67,7 @@ public abstract class AbstractOptions implements Options {
     /**
      * Determines if the Endpoint/Query/Mutation is generated for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull String name) {
@@ -77,7 +77,7 @@ public abstract class AbstractOptions implements Options {
     /**
      * Determines if the Endpoint/Query/Mutation is generated for a specific primary model
      * @param type the primary model
-     * @return <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull BrAPIType type) {
@@ -87,7 +87,7 @@ public abstract class AbstractOptions implements Options {
     /**
      * Sets if the Endpoint/Query/Mutation is generated for a specific primary model.
      * @param name the name of the primary model
-     * @param generate <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code>
+     * @param generate {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore
@@ -100,7 +100,7 @@ public abstract class AbstractOptions implements Options {
     /**
      * Sets if the Endpoint/Query/Mutation is generated for a specific primary model.
      * @param type the primary model
-     * @param generate <code>true</code> if the Endpoint/Query/Mutation is generated for a specific primary model, <code>false</code>
+     * @param generate {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore

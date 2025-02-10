@@ -118,7 +118,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Query Type.
-     * @return <code>true</code> if the Generator should generate the Query Type, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Query Type, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingQueryType() {
@@ -126,9 +126,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any single query. Returns <code>true</code> if
-     * {@link SingleQueryOptions#isGenerating} is set to <code>true</code> or
-     * @return <code>true</code> if the Generator should generate any single query, <code>false</code> otherwise
+     * Determines if the Generator should generate any single query. Returns {@code true} if
+     * {@link SingleQueryOptions#isGenerating} is set to {@code true} or
+     * @return {@code true} if the Generator should generate any single query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSingleQueries() {
@@ -137,9 +137,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the single query for a specific Primary Model.
-     * Returns <code>true</code> if {@link SingleQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link SingleQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate single query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate single query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSingleQueryFor(String name) {
@@ -147,9 +147,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any List Query. Returns <code>true</code> if
-     * {@link ListQueryOptions#isGenerating} is set to <code>true</code> for any type
-     * @return <code>true</code> if the Generator should generate any List Query, <code>false</code> otherwise
+     * Determines if the Generator should generate any List Query. Returns {@code true} if
+     * {@link ListQueryOptions#isGenerating} is set to {@code true} for any type
+     * @return {@code true} if the Generator should generate any List Query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueries() {
@@ -158,9 +158,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the List Query for a specific Primary Model.
-     * Returns <code>true</code> if {@link ListQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link ListQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate List Query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate List Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueryFor(String name) {
@@ -168,9 +168,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Search Query. Returns <code>true</code> if
-     * {@link SearchQueryOptions#isGenerating} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Search Query, <code>false</code> otherwise
+     * Determines if the Generator should generate any Search Query. Returns {@code true} if
+     * {@link SearchQueryOptions#isGenerating} is set to {@code true}
+     * @return {@code true} if the Generator should generate any Search Query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueries() {
@@ -179,9 +179,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Search Query for a specific Primary Model.
-     * Returns <code>true</code> if {@link SearchQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link SearchQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Search Query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Search Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueryFor(String name) {
@@ -190,7 +190,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Mutation Type.
-     * @return <code>true</code> if the Generator should generate the Mutation Type, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Mutation Type, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingMutationType() {
@@ -198,9 +198,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the New mutations. Returns <code>true</code> if
-     * {@link CreateMutationOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate New mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the New mutations. Returns {@code true} if
+     * {@link CreateMutationOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate New mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingCreateMutation() {
@@ -209,9 +209,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the New mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link CreateMutationOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link CreateMutationOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Create mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Create mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingCreateMutationFor(String name) {
@@ -219,9 +219,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Update mutations. Returns <code>true</code> if
-     * {@link UpdateMutationOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate Update mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the Update mutations. Returns {@code true} if
+     * {@link UpdateMutationOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate Update mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingUpdateMutation() {
@@ -230,9 +230,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Update mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link UpdateMutationOptions#isGeneratingFor(String)} is set to <code>true</code> or the specified type
+     * Returns {@code true} if {@link UpdateMutationOptions#isGeneratingFor(String)} is set to {@code true} or the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Update mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Update mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingUpdateMutationFor(String name) {
@@ -240,9 +240,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Delete mutations. Returns <code>true</code> if
-     * {@link DeleteMutationOptions#isGenerating} is set to <code>true</code> or
-     * @return <code>true</code> if the Generator should generate Delete mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the Delete mutations. Returns {@code true} if
+     * {@link DeleteMutationOptions#isGenerating} is set to {@code true} or
+     * @return {@code true} if the Generator should generate Delete mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingDeleteMutation() {
@@ -251,9 +251,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Delete mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link DeleteMutationOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link DeleteMutationOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Delete mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Delete mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingDeleteMutationFor(String name) {
@@ -262,7 +262,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the built-in GraphQLID type should be used for IDs instead of GraphQLString
-     * @return <code>true</code> if the built-in GraphQLID type should be used for IDs instead of GraphQLString, <code>false</code> otherwise
+     * @return {@code true} if the built-in GraphQLID type should be used for IDs instead of GraphQLString, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isUsingIDType() {
@@ -373,7 +373,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * Gets if the possible types of a 'OneOf' type are merged into a single type.
      *
      * @param type the BrAPIClass
-     * @return <code>true</code> if the possible types of a 'OneOf' type are merged into a single type.
+     * @return {@code true} if the possible types of a 'OneOf' type are merged into a single type.
      */
     public boolean isMergingOneOfType(BrAPIClass type) {
         return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
@@ -383,8 +383,8 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * Sets if the possible types of a 'OneOf' type are merged into a single type.
      *
      * @param name the name of the type
-     * @param isMergingOneOfType <code>true</code> if the possible types of a 'OneOf' type are merged into a single type,
-     *                 <code>false</code> otherwise
+     * @param isMergingOneOfType {@code true} if the possible types of a 'OneOf' type are merged into a single type,
+     *                 {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore

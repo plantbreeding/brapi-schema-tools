@@ -3,6 +3,8 @@ package org.brapi.schematools.core.openapi.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
@@ -203,7 +205,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate a separate specification per module.
-     * @return <code>true</code> if the Generator should generate a separate specification per module, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a separate specification per module, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isSeparatingByModule() {
@@ -211,9 +213,9 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Endpoints without an ID parameter. Returns <code>true</code> if
-     * {@link ListGetOptions#isGenerating()} or {@link PostOptions#isGenerating()} or {@link PutOptions#isGenerating()}  is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Endpoints without an ID parameter, <code>false</code> otherwise
+     * Determines if the Generator should generate any Endpoints without an ID parameter. Returns {@code true} if
+     * {@link ListGetOptions#isGenerating()} or {@link PostOptions#isGenerating()} or {@link PutOptions#isGenerating()}  is set to {@code true}
+     * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpoint() {
@@ -221,10 +223,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointFor(@NonNull String name) {
@@ -232,10 +234,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointFor(@NonNull BrAPIType type) {
@@ -243,10 +245,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Endpoints with an ID parameter. Returns <code>true</code> if
+     * Determines if the Generator should generate any Endpoints with an ID parameter. Returns {@code true} if
      * {@link SingleGetOptions#isGenerating()} or {@link PutOptions#isGenerating()} or
-     * {@link DeleteOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Endpoints without an ID parameter, <code>false</code> otherwise
+     * {@link DeleteOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointWithId() {
@@ -254,11 +256,11 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
+     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
      * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
+     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
@@ -266,11 +268,11 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
+     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
      * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
+     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull BrAPIType type) {
@@ -279,10 +281,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model.
-     * For example if set to <code>true</code> for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
-     * whereas if set <code>false</code> generator will create only create the 'Study' schema
+     * For example if set to {@code true} for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
+     * whereas if set {@code false} generator will create only create the 'Study' schema
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingNewRequestFor(@NonNull String name) {
@@ -291,10 +293,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model.
-     * For example if set to <code>true</code> for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
-     * whereas if set <code>false</code> generator will create only create the 'Study' schema
+     * For example if set to {@code true} for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
+     * whereas if set {@code false} generator will create only create the 'Study' schema
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingNewRequestFor(@NonNull BrAPIType type) {
@@ -451,5 +453,25 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
         tagFor.put(name, tagName) ;
 
         return this ;
+    }
+
+    /**
+     * Determines if a specific property should be exposed as a separate Endpoint
+     * @param type the Object type
+     * @param property the Object type property
+     * @return {@code true} generator will create  a separate Endpoint for the property, {@code false} otherwise
+     */
+    public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+        return LinkType.SUB_PATH.equals(properties.getLinkTypeFor(type, property)) ;
+    }
+
+    /**
+     * Gets the name of the Sub-path endpoint for a property
+     * @param pathItemName the path prefix
+     * @param property the Object type property
+     * @return the name of the Sub-path endpoint for a property
+     */
+    public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
+        return String.format("%s/%s", pathItemName, property.getName()) ;
     }
 }

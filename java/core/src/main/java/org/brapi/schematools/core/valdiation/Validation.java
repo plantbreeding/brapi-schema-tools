@@ -6,6 +6,7 @@ import org.brapi.schematools.core.response.Response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,7 @@ public class Validation {
 
     /**
      * Was the validation successful,
-     * @return <code>true</code> if the validation was successful, <code>false</code> otherwise
+     * @return {@code true} if the validation was successful, {@code false} otherwise
      */
     public boolean isValid() {
         return errors.isEmpty();
@@ -103,6 +104,21 @@ public class Validation {
     public Validation merge(Validatable validatable) {
         if (validatable != null) {
             addAllErrors(validatable.validate().getErrors());
+        } else {
+            addError("Can not merge null Validatable!");
+        }
+
+        return this ;
+    }
+
+    /**
+     * Merge the Response to Validation, by adding any errors to this Validation
+     * @param response the object to be validated
+     * @return this Validation
+     */
+    public Validation merge(Response<?> response) {
+        if (response != null) {
+            addAllErrors(response.getAllErrors());
         } else {
             addError("Can not merge null Validatable!");
         }
@@ -130,7 +146,7 @@ public class Validation {
     /**
      * If the condition is true, merge the objects to Validation, by calling the {@link Validatable#validate()} method
      * and adding any errors to this Validation
-     * @param condition if <code>true</code> merge, otherwise don't
+     * @param condition if {@code true} merge, otherwise don't
      * @param validatable the object to be validated
      * @return this Validation
      */
@@ -149,7 +165,7 @@ public class Validation {
     /**
      * If the condition is true, merge the objects to Validation, by calling the {@link Validatable#validate()} method
      * and adding any errors to this Validation
-     * @param condition if <code>true</code> merge, otherwise don't
+     * @param condition if {@code true} merge, otherwise don't
      * @param validatable the object to be validated
      * @param prefixMessage prefix any errors with this message
      * @return this Validation
@@ -232,11 +248,11 @@ public class Validation {
         errors.add(Response.Error.of("", e.getMessage(), Response.ErrorType.VALIDATION));
     }
 
-    private void addAllErrors(List<Response.Error> errors) {
+    private void addAllErrors(Collection<Response.Error> errors) {
         this.errors.addAll(errors);
     }
 
-    private void addAllErrors(List<Response.Error> errors, String prefixMessage) {
+    private void addAllErrors(Collection<Response.Error> errors, String prefixMessage) {
         errors.forEach(error ->
             this.errors.add(Response.Error.of(error.getCode(), String.format("%s %s", prefixMessage, error.getMessage()), error.getType()))
         );

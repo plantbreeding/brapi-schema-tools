@@ -58,7 +58,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Get if this property is used as a foreign key link between entities
-     * @return <code>true</code> if this property is used as a foreign key link between entities, <code>false</code> otherwise
+     * @return {@code true} if this property is used as a foreign key link between entities, {@code false} otherwise
      */
     public boolean isLink() {
         return link != null && link ;
@@ -66,7 +66,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setPropertyNameFor(String, String)}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setPropertyNameFor(String, String)}
      * to override this value.
      * @param name the name of the primary model
      * @return property name for a specific primary model
@@ -78,7 +78,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setPropertyNameFor(String, String)}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setPropertyNameFor(String, String)}
      * to override this value.
      * @param type the primary model
      * @return property name for a specific primary model
@@ -89,7 +89,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Sets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default.
+     * name of Study, would be 'studyDbId' by default.
      * @param name the name of the primary model
      * @param parameterName the property name for a specific primary model.
      * @return the options for chaining
@@ -103,7 +103,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Sets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default.
+     * name of Study, would be 'studyDbId' by default.
      * @param type the primary model
      * @param parameterName the property name for a specific primary model.
      * @return the options for chaining
@@ -115,7 +115,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the plural property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setPluralPropertyNameFor} to
+     * name of Study, would be 'studyDbId' by default. Use {@link #setPluralPropertyNameFor} to
      * override this value.
      * @param name the name of the primary model
      * @return property name for a specific primary model
@@ -127,7 +127,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the plural property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbiId' by default. Use {@link #setPluralPropertyNameFor}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setPluralPropertyNameFor}
      * to override this value.
      * @param type the primary model
      * @return property name for a specific primary model

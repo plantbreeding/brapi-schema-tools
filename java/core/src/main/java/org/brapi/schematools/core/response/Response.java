@@ -287,7 +287,7 @@ public class Response<T> {
 
     /**
      * Determines if this response has any errors.
-     * @return <code>true</code> if this response has any errors, <code>false</code> otherwise
+     * @return {@code true} if this response has any errors, {@code false} otherwise
      */
     public boolean hasErrors() {
         return !this.getValidationErrors().isEmpty() || !this.getPermissionErrors().isEmpty() || !this.getOtherErrors().isEmpty();
@@ -295,7 +295,7 @@ public class Response<T> {
 
     /**
      * Determines if this response has no errors.
-     * @return <code>true</code> if this response has no errors, <code>false</code> otherwise
+     * @return {@code true} if this response has no errors, {@code false} otherwise
      */
     public boolean hasNoErrors() {
         return this.getValidationErrors().isEmpty() && this.getPermissionErrors().isEmpty() && this.getOtherErrors().isEmpty();
@@ -341,9 +341,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> merges any errors from this response into response obtained
+     * If the condition is {@code true} merges any errors from this response into response obtained
      * from the provided supplier, the result from this response is lost.
-     * @param condition set to <code>true</code> to perform the merge, <code>false</code> not to perform the merge
+     * @param condition set to {@code true} to perform the merge, {@code false} not to perform the merge
      * @param supplier a supplier of the provided response
      * @return the provided response from the supplier
      * @param <U> the result type of the provided response
@@ -354,12 +354,12 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and there are no errors from this response
+     * If the condition is {@code true} and there are no errors from this response
      * merge the response obtained from the provided function, otherwise create a new response and merge in the errors
      * from this response. In either case the result from this response is lost.
-     * @param condition set to <code>true</code> to perform the mapping, <code>false</code> not to perform the mapping
+     * @param condition set to {@code true} to perform the mapping, {@code false} not to perform the mapping
      * @param function a function that takes this response and provides a new response
-     * @return the provided response from the function if the condition is <code>true</code> and there are no errors
+     * @return the provided response from the function if the condition is {@code true} and there are no errors
      * from this response or a new response
      * @param <U> the result type of the provided response
      */
@@ -369,11 +369,11 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and there are no errors from this response
+     * If the condition is {@code true} and there are no errors from this response
      * merge any errors from this response into response obtained from the provided supplier,
      * otherwise create a new response and merge in the errors
      * from this response. In either case the result from this response is lost.
-     * @param condition set to <code>true</code> to perform the merge, <code>false</code> not to perform the merge
+     * @param condition set to {@code true} to perform the merge, {@code false} not to perform the merge
      * @param supplier a supplier that provides a new response
      * @return the provided response from the supplier
      * @param <U> the result type of the provided response
@@ -384,10 +384,10 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> merges any errors from this response into response obtained from the
+     * If the condition is {@code true} merges any errors from this response into response obtained from the
      * provided function, otherwise create a new response and merges in the errors
      * from this response. In either case the result from this response is lost.
-     * @param condition set to <code>true</code> to perform the merge, <code>false</code> not to perform the merge
+     * @param condition set to {@code true} to perform the merge, {@code false} not to perform the merge
      * @param function a function that takes this response and provides a new response
      * @return the provided response from the function
      * @param <U> the result type of the provided response
@@ -442,6 +442,7 @@ public class Response<T> {
      * result of provided function that takes the result of this resource as an input,
      * otherwise create a new response and merges in the errors
      * from this response.
+     * 
      * @param function a function that takes the result of this response as an input
      * @return a new response with result of the function, or with any merged errors
      * @param <U> the result type of the new response
@@ -454,6 +455,24 @@ public class Response<T> {
         }
     }
 
+    /**
+     * If condition is {@code true} and this response has no errors returns a new response that takes the
+     * result of provided function that takes the result of this resource as an input,
+     * otherwise create a new response and merges in the errors
+     * from this response.
+     * @param condition set to {@code true} to perform the merge, {@code false} not to perform the merge
+     * @param function a function that takes the result of this response as an input
+     * @return a new response with result of the function, or with any merged errors
+     * @param <U> the result type of the new response
+     */
+    public <U> Response<U> mapResultOnCondition(boolean condition, Function<T, U> function) {
+        if (condition && this.hasNoErrors()) {
+            return new Response<>(function.apply(this.getResult()));
+        } else {
+            return new Response<U>().mergeErrors(this);
+        }
+    }
+    
     /**
      * If this response has no errors creates a new Response with the provided result, otherwise
      * a new Response with the errors from this resource.
@@ -485,9 +504,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and this response has no errors creates a new Response
+     * If the condition is {@code true} and this response has no errors creates a new Response
      * with the result from the function, otherwise a new Response with the errors from this resource.
-     * @param condition <code>true</code> map the result, <code>false</code> do not map the result
+     * @param condition {@code true} map the result, {@code false} do not map the result
      * @param function that takes the result from this response and returns a new result of the same type
      * @return a new Response or returns this
      */
@@ -500,9 +519,9 @@ public class Response<T> {
     }
 
     /**
-     * If the predicate returns <code>true</code> and this response has no errors creates a new Response
+     * If the predicate returns {@code true} and this response has no errors creates a new Response
      * with the result from the function, otherwise a new Response with the errors from this resource.
-     * @param predicate if the predicate returns <code>true</code> map the result, <code>false</code> do not map the result
+     * @param predicate if the predicate returns {@code true} map the result, {@code false} do not map the result
      * @param supplier that provides a new result of the same type
      * @return a new Response or returns this
      */
@@ -515,9 +534,9 @@ public class Response<T> {
     }
 
     /**
-     * If the predicate returns <code>true</code> and this response has no errors creates a new Response
+     * If the predicate returns {@code true} and this response has no errors creates a new Response
      * with the result from the function, otherwise a new Response with the errors from this resource.
-     * @param predicate if the predicate returns <code>true</code> map the result, <code>false</code> do not map the result
+     * @param predicate if the predicate returns {@code true} map the result, {@code false} do not map the result
      * @param function that takes the result from this response and returns a new result of the same type
      * @return a new Response or returns this
      */
@@ -530,9 +549,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and this response has no errors use the supplier to get
+     * If the condition is {@code true} and this response has no errors use the supplier to get
      * the new response
-     * @param condition <code>true</code> map the result, <code>false</code> do not map the result
+     * @param condition {@code true} map the result, {@code false} do not map the result
      * @param supplier that providers a new Response
      * @return a new Response or returns this
      */
@@ -545,9 +564,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and this response has no errors use the function to get
+     * If the condition is {@code true} and this response has no errors use the function to get
      * the new response
-     * @param condition <code>true</code> map the result, <code>false</code> do not map the result
+     * @param condition {@code true} map the result, {@code false} do not map the result
      * @param function a function that providers a new Response taking the result of this response as input
      * @return a new Response or returns this
      */
@@ -584,9 +603,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> call the supplier, otherwise don't call the supplier
-     * @param condition <code>true</code> call the supplier, <code>false</code> don't call the supplier
-     * @param supplier the supplier to be called if the condition is <code>true</code>
+     * If the condition is {@code true} call the supplier, otherwise don't call the supplier
+     * @param condition {@code true} call the supplier, {@code false} don't call the supplier
+     * @param supplier the supplier to be called if the condition is {@code true}
      * @return this response
      */
     public Response<T> justDoOnCondition(boolean condition, Supplier<Void> supplier) {
@@ -633,9 +652,9 @@ public class Response<T> {
     }
 
     /**
-     * If the predicate returns <code>true</code> and this response has no errors call the supplier and return this
-     * @param predicate if the predicate returns <code>true</code> call the supplier, <code>false</code> do not call the supplier
-     * @param supplier the supplier to be called if the predicate returns <code>true</code> and there are no errors
+     * If the predicate returns {@code true} and this response has no errors call the supplier and return this
+     * @param predicate if the predicate returns {@code true} call the supplier, {@code false} do not call the supplier
+     * @param supplier the supplier to be called if the predicate returns {@code true} and there are no errors
      * @return this response
      */
     public Response<T> onSuccessDoOnCondition(Predicate<T> predicate, Supplier<Void> supplier) {
@@ -646,9 +665,9 @@ public class Response<T> {
     }
 
     /**
-     * If the predicate returns <code>true</code> and this response has no errors call run the action and return this
-     * @param predicate if the predicate returns <code>true</code> run the action, <code>false</code> do not run the action
-     * @param action the action to be run if the predicate returns <code>true</code> and there are no errors
+     * If the predicate returns {@code true} and this response has no errors call run the action and return this
+     * @param predicate if the predicate returns {@code true} run the action, {@code false} do not run the action
+     * @param action the action to be run if the predicate returns {@code true} and there are no errors
      * @return this response
      */
     public Response<T> onSuccessDoOnCondition(final Predicate<T> predicate, final Runnable action) {
@@ -659,9 +678,9 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and this response has no errors call run the action and return this
-     * @param condition if is <code>true</code> run the action, <code>false</code> do not run the action
-     * @param action the action to be run if the predicate returns <code>true</code> and there are no errors
+     * If the condition is {@code true} and this response has no errors call run the action and return this
+     * @param condition if is {@code true} run the action, {@code false} do not run the action
+     * @param action the action to be run if the predicate returns {@code true} and there are no errors
      * @return this response
      */
     public Response<T> onSuccessDoOnCondition(final boolean condition, final Runnable action) {
@@ -686,8 +705,8 @@ public class Response<T> {
     }
 
     /**
-     * If the condition is <code>true</code> and this response has no errors pass the result of this response to the provider consumer
-     * @param condition if is <code>true</code> run the action, <code>false</code> do not run the action
+     * If the condition is {@code true} and this response has no errors pass the result of this response to the provider consumer
+     * @param condition if is {@code true} run the action, {@code false} do not run the action
      * @param consumer a consumer for the result of this response
      * @return this response
      */

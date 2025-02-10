@@ -58,7 +58,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Determines if the Query accepts an input object for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull String name) {
@@ -68,7 +68,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Determines if the Query accepts an input object for a specific primary model
      * @param type the primary model
-     * @return <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull BrAPIType type) {
@@ -78,7 +78,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Sets if the Query accepts an input object for a specific primary model
      * @param name the name of the primary model
-     * @param hasInput <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @param hasInput {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore
