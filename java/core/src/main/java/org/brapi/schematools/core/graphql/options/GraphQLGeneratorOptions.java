@@ -107,7 +107,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
             ids.override(overrideOptions.ids) ;
         }
 
-        if (mergeOneOfType != null) {
+        if (overrideOptions.mergeOneOfType != null) {
             setMergeOneOfType(overrideOptions.mergeOneOfType) ;
         }
 

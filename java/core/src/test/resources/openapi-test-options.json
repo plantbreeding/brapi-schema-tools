@@ -24,7 +24,7 @@
         "AlleleMatrix": "AlleleMatrix"
     },
     "pathItemNameFor": {
-        "PedigreeNode": "pedigrees"
+        "PedigreeNode": "/pedigrees"
     },
     "singleGet": {
         "generate": true,

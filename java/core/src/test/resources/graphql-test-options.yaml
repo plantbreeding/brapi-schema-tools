@@ -65,6 +65,7 @@ mutationType:
     createMutation:
         generate: true
         pluralisingName: false
+        multiple: false
         nameFormat: create%s
         descriptionFormat: Create a new %s
         generateFor:
@@ -81,6 +82,7 @@ mutationType:
     updateMutation:
         generate: true
         pluralisingName: false
+        multiple: false
         nameFormat: update%s
         descriptionFormat: Update the details for an existing %s
         generateFor:

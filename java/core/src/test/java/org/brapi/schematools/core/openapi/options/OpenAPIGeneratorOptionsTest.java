@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -82,6 +85,7 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
         assertEquals("pedigree", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
         assertTrue(options.getSingleGet().isGenerating());
         assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
@@ -92,6 +96,18 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
 
         assertTrue(options.getPut().isGeneratingFor("BreedingMethod"));
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     @Test
@@ -122,7 +138,9 @@ class OpenAPIGeneratorOptionsTest {
 
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
-        assertEquals("pedigrees", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigrees", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigrees", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
+
         assertTrue(options.getSingleGet().isGenerating());
         assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
@@ -132,6 +150,17 @@ class OpenAPIGeneratorOptionsTest {
 
         assertFalse(options.getPut().isGeneratingFor("BreedingMethod"));
 
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     private void checkOptions(OpenAPIGeneratorOptions options) {
@@ -173,5 +202,47 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals("studyDbId", options.getSingularForProperty("studyDbIds"));
 
         assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("GermplasmAttribute")) ;
+
+        assertEquals("/trials", options.getPathItemNameFor("Trial"));
+        assertEquals("/trials", options.getPathItemNameFor(BrAPIObjectType.builder().name("Trial").build()));
+
+        assertEquals("/studies", options.getPathItemNameFor("Study"));
+        assertEquals("/studies", options.getPathItemNameFor(BrAPIObjectType.builder().name("Study").build()));
+
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("germplasm").build())
+        );
+
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Variant").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("callSets").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("variants").build())
+        );
     }
 }

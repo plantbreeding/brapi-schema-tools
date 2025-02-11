@@ -21,7 +21,7 @@ searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
-    PedigreeNode: pedigrees
+    PedigreeNode: /pedigrees
 singleGet:
     generate: true
     summaryFormat: Get the details of a specific %s
@@ -133,3 +133,15 @@ properties:
         propertyFor:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
+    linkTypeFor:
+        BreedingMethod:
+            germplasm: none
+            pedigreeNodes: none
+        CallSet:
+            calls: sub-path
+        Variant:
+            calls: sub-path
+        VariantSet:
+            calls: sub-path
+            callSets: sub-path
+            variants: sub-path
