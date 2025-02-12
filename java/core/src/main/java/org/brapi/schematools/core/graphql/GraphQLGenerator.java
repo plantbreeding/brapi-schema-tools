@@ -104,7 +104,8 @@ public class GraphQLGenerator {
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
         private final Map<String, GraphQLNamedInputType> inputTypes;
-        private final Map<String, String> listResponseTypeToBeCreated;
+        private final Map<String, String> listResponseTypesToBeCreated;
+        private final Map<String, String> inputObjectTypeForListQueryToBeCreated;
         private final GraphQLCodeRegistry.Builder codeRegistry = GraphQLCodeRegistry.newCodeRegistry();
 
         public Generator(GraphQLGeneratorOptions options, GraphQLGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas) {
@@ -116,7 +117,8 @@ public class GraphQLGenerator {
             unionTypes = new HashMap<>();
             enumTypes = new HashMap<>();
             inputTypes = new HashMap<>();
-            listResponseTypeToBeCreated = new HashMap<>();
+            listResponseTypesToBeCreated = new HashMap<>();
+            inputObjectTypeForListQueryToBeCreated = new HashMap<>();
         }
 
         public Response<GraphQLSchema> generate() {
@@ -197,7 +199,7 @@ public class GraphQLGenerator {
             inputTypes.values().forEach(builder::additionalType);
             unionTypes.values().forEach(builder::additionalType);
 
-            new HashMap<>(listResponseTypeToBeCreated).forEach((key, value) -> {
+            new HashMap<>(listResponseTypesToBeCreated).forEach((key, value) -> {
                 GraphQLObjectType type = objectOutputTypes.get(value);
 
                 if (type != null) {
@@ -207,7 +209,16 @@ public class GraphQLGenerator {
                 } else {
                     log.warn(String.format("Can not create '%s' no type '%s'", key, value)) ;
                 }
+            });
 
+            new HashMap<>(inputObjectTypeForListQueryToBeCreated).forEach((key, value) -> {
+                BrAPIClass type = brAPISchemas.get(value);
+
+                if (type != null) {
+                    createInputObjectTypeForListQuery(type).onSuccessDoWithResult(builder::additionalType) ;
+                } else {
+                    log.warn(String.format("Can not create '%s' no type '%s'", key, value)) ;
+                }
             });
 
             if (options.isGeneratingListQueries() && options.getQueryType().getListQuery().hasPaging() ) {
@@ -375,8 +386,10 @@ public class GraphQLGenerator {
                         boolean hasInput = options.getQueryType().getListQuery().hasInputFor(type.getName());
 
                         String responseTypeName = options.getQueryType().getListQuery().getResponseTypeNameForType(type.getName());
+                        String inputTypeName = options.getQueryInputTypeNameFor(type.getName()) ;
 
-                        listResponseTypeToBeCreated.put(responseTypeName, type.getName()) ;
+                        listResponseTypesToBeCreated.put(responseTypeName, type.getName()) ;
+                        inputObjectTypeForListQueryToBeCreated.put(inputTypeName, type.getName()) ;
 
                         yield success(GraphQLTypeReference.typeRef(responseTypeName))
                             .onSuccessDoWithResult(builder::type)
@@ -452,9 +465,12 @@ public class GraphQLGenerator {
             if (type instanceof BrAPIObjectType brAPIObjectType) {
                 if (type.getName().endsWith("Request")) {
                     return createInputObjectType(options.getInput().getTypeNameForQuery(
-                        options.getQueryType().getListQuery().getNameFor(options.getPluralFor(type.getName().substring(0, type.getName().length() - 7)))), type) ;
+                            options.getQueryType().getListQuery().getNameFor(options.getPluralFor(type.getName().substring(0, type.getName().length() - 7)))), type)
+                        .onSuccessDoWithResult(inputType -> inputObjectTypeForListQueryToBeCreated.remove(inputType.getName()));
                 } else {
-                    return createInputObjectType(name, brAPIObjectType).mapResult(t -> t);
+                    return createInputObjectType(name, brAPIObjectType)
+                        .onSuccessDoWithResult(inputType -> inputObjectTypeForListQueryToBeCreated.remove(inputType.getName()))
+                        .mapResult(t -> t);
                 }
 
             } else if (type instanceof BrAPIEnumType brAPIEnumType) {
@@ -575,17 +591,23 @@ public class GraphQLGenerator {
         private Response<GraphQLInputType> createInputType(BrAPIType type) {
 
             if (type instanceof BrAPIObjectType brAPIObjectType) {
-                return createInputObjectTypeForModel(brAPIObjectType).mapResult(t -> t);
+                return createInputObjectTypeForModel(brAPIObjectType).mapResult(t -> t)
+                    .mapResult(t -> t);
             } else if (type instanceof BrAPIOneOfType brAPIOneOfType) {
-                return createInputObjectType(options.getInput().getTypeNameFor(brAPIOneOfType), brAPIOneOfType).mapResult(t -> t);
+                return createInputObjectType(options.getInput().getTypeNameFor(brAPIOneOfType), brAPIOneOfType)
+                    .mapResult(t -> t);
             } else if (type instanceof BrAPIArrayType brAPIArrayType) {
-                return createInputListType(brAPIArrayType).mapResult(t -> t);
+                return createInputListType(brAPIArrayType)
+                    .mapResult(t -> t);
             } else if (type instanceof BrAPIReferenceType brAPIReferenceType) {
-                return createInputReferenceType(brAPIReferenceType).mapResult(t -> t);
+                return createInputReferenceType(brAPIReferenceType)
+                    .mapResult(t -> t);
             } else if (type instanceof BrAPIEnumType brAPIEnumType) {
-                return createEnumType(brAPIEnumType).mapResult(t -> t);
+                return createEnumType(brAPIEnumType)
+                    .mapResult(t -> t);
             } else if (type instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                return createScalarType(brAPIPrimitiveType).mapResult(t -> t);
+                return createScalarType(brAPIPrimitiveType)
+                    .mapResult(t -> t);
             }
 
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown input type '%s' for '%s'", type.getClass().getSimpleName(), type.getName()));
@@ -832,7 +854,7 @@ public class GraphQLGenerator {
                     build());
             }
 
-            listResponseTypeToBeCreated.remove(name) ;
+            listResponseTypesToBeCreated.remove(name) ;
 
             return addObjectType(builder.build()).getResult() ;
         }
