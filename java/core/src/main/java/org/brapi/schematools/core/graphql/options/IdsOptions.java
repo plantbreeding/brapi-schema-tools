@@ -2,6 +2,7 @@ package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -112,5 +113,23 @@ public class IdsOptions implements Options {
         fieldFor.put(name, idField) ;
 
         return this ;
+    }
+
+    /**
+     * Gets the converted id link property name for a property
+     * @param property The BrAPI property
+     * @return the converted property name that is used to return an id
+     */
+    public String getIdFieldFor(BrAPIObjectProperty property) {
+        return String.format("%sDbId", StringUtils.toSingular(property.getName())) ;
+    }
+
+    /**
+     * Gets the converted ids link property name for a property
+     * @param property The BrAPI property
+     * @return the converted property name that is used to return an array of ids
+     */
+    public String getIdsFieldFor(BrAPIObjectProperty property) {
+        return String.format("%sDbIds", StringUtils.toSingular(property.getName())) ;
     }
 }

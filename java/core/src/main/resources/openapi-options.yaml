@@ -157,8 +157,75 @@ properties:
             pedigreeNodes: none
         CallSet:
             calls: sub-path
+        Cross:
+            observationUnits: none
+        CrossingProject:
+            crosses: none
+            plannedCrosses: none
+            pedigreeNodes: none
+        GeoJSON:
+            image: none
+            observation: none
+            observationUnit: none
+            germplasmOrigin: none
+        Germplasm:
+            sample: none
+            attributeValues: none
+            progenyPedigreeNodes: none
+            parentPedigreeNodes: none
+            siblingPedigreeNodes: none
+            observations: none
+            observationUnits: none
+            reference: none
+            referenceSet: none
+        Location:
+            seedLots: none
+            observationUnits: none
+            studies: none
+        OntologyTerm:
+            reference: none
+            referenceSet: none
+        Observation:
+            images: none
+        ObservationUnit:
+            samples: none
+            events: none
+            images: none
+            observations: none
+        ObservationVariable:
+            studies: none
+            observations: none
+        Person:
+            lists: none
+            programs: none
+        PlannedCross:
+            crosses: none
+        Program:
+            crossingProjects: none
+            observationUnits: none
+            plates: none
+            samples: none
+            seedLots: none
+            trials: none
+        Plate:
+            samples: none
+        Reference:
+            variant: none
+        SeedLot:
+            observationUnits: none
+        Study:
+            callSets: none
+            events: none
+            observations: none
+            observationUnits: none
+            plates: none
+            samples: none
+            variantSets: none
         Trial:
             contacts: embedded
+            observationUnits: none
+            plates: none
+            samples: none
         Variant:
             calls: sub-path
         VariantSet:

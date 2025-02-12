@@ -1,7 +1,5 @@
 pluralFor:
     AlleleMatrix: AlleleMatrices
-ids:
-    useIDType: false
 input:
     nameFormat: "%sInputX"
     typeNameFormat: "%sInput"
@@ -15,3 +13,11 @@ queryType:
         generate: false
         input:
             BreedingMethod: true
+properties:
+    ids:
+        useIDType: false
+    linkTypeFor:
+        CallSet:
+            calls: id
+        Trial:
+            contacts: id

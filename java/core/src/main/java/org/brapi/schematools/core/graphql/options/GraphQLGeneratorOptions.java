@@ -29,7 +29,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     private InputOptions input ;
     private QueryTypeOptions queryType;
     private MutationTypeOptions mutationType;
-    private IdsOptions ids;
+    private PropertiesOptions properties;
     private Boolean mergeOneOfType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
@@ -75,12 +75,12 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(input, "Input Options are null")
             .assertNotNull(queryType,  "Query Options are null")
             .assertNotNull(mutationType, "Mutation Options are null")
-            .assertNotNull(ids,  "Id Options are null")
+            .assertNotNull(properties,  "Properties Options are null")
             .assertNotNull(mergeOneOfType, "'mergeOneOfType' option on %s is null", this.getClass().getSimpleName())
             .merge(input)
             .merge(queryType)
             .merge(mutationType)
-            .merge(ids) ;
+            .merge(properties) ;
     }
 
     /**
@@ -103,8 +103,8 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
             mutationType.override(overrideOptions.mutationType) ;
         }
 
-        if (overrideOptions.ids != null) {
-            ids.override(overrideOptions.ids) ;
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.properties) ;
         }
 
         if (overrideOptions.mergeOneOfType != null) {
@@ -266,7 +266,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      */
     @JsonIgnore
     public boolean isUsingIDType() {
-        return ids.isUsingIDType();
+        return properties.getIds().isUsingIDType();
     }
 
     /**

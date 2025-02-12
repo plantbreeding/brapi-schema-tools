@@ -46,6 +46,16 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     }
 
     /**
+     * Gets the response type name for a specific primary model
+     * @param typeName the name of the query
+     * @return the response type name for a specific primary model
+     */
+    @JsonIgnore
+    public final String getResponseTypeNameForType(@NonNull String typeName) {
+        return String.format(responseTypeNameFormat, typeName) ;
+    }
+
+    /**
      * Gets the response type name of the query for a specific primary model
      * @param queryName the name of the query
      * @return the response type name of the query for a specific primary model

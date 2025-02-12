@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.valdiation.Validation;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +72,18 @@ class GraphQLGeneratorOptionsTest {
         assertTrue(options.getQueryType().getSingleQuery().isGenerating());
         assertFalse(options.getQueryType().getListQuery().isGenerating());
         assertTrue(options.getQueryType().getSearchQuery().isGenerating());
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     //@Test
@@ -99,6 +113,18 @@ class GraphQLGeneratorOptionsTest {
         assertTrue(options.getQueryType().getSingleQuery().isGenerating());
         assertTrue(options.getQueryType().getListQuery().isGenerating());
         assertTrue(options.getQueryType().getSearchQuery().isGenerating());
+
+        assertEquals(LinkType.SUB_QUERY,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     private void checkOptions(GraphQLGeneratorOptions options) {
@@ -114,7 +140,7 @@ class GraphQLGeneratorOptionsTest {
 
         assertTrue(options.isGeneratingQueryType());
 
-        checkOptions(options.getIds());
+        checkOptions(options.getProperties());
         checkOptions(options.getQueryType());
 
         checkOptions(options.getMutationType());
@@ -127,14 +153,52 @@ class GraphQLGeneratorOptionsTest {
         assertTrue(options.isGeneratingMutationType());
         assertNotNull(options.getMutationType());
         assertEquals("Mutation", options.getMutationType().getName());
-
-        assertNotNull(options.getIds());
-
-        assertEquals("attributeDbId", options.getIds().getIDFieldFor("GermplasmAttribute")) ;
     }
 
+    private void checkOptions(PropertiesOptions options) {
+        assertNotNull(options);
+        checkOptions(options.getIds());
+
+        assertEquals(LinkType.NONE,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("germplasm").build())
+        );
+
+        assertEquals(LinkType.NONE,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build())
+        );
+
+        assertEquals(LinkType.SUB_QUERY,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("Variant").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_QUERY,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_QUERY,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("callSets").build())
+        );
+
+        assertEquals(LinkType.SUB_QUERY,
+            options.getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("variants").build())
+        );
+    }
     private void checkOptions(IdsOptions options) {
         assertNotNull(options);
+
+        assertEquals("attributeDbId", options.getIDFieldFor("GermplasmAttribute")) ;
     }
 
     private void checkOptions(QueryTypeOptions options) {

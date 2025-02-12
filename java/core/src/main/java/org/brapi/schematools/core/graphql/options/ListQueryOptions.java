@@ -23,9 +23,6 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> input = new HashMap<>();
 
     private String pagingInputName;
     private String pageInputTypeName;
@@ -37,7 +34,6 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
             .assertNotNull(dataFieldName, "'dataFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagingInputName, "'pagingInputName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pageInputTypeName, "'pageInputTypeName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pageTypeName, "'pageTypeName' option on %s is null", this.getClass().getSimpleName())
@@ -51,7 +47,6 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     public void override(ListQueryOptions overrideOptions) {
         super.override(overrideOptions);
 
-
         if (overrideOptions.dataFieldName != null) {
             setDataFieldName(overrideOptions.dataFieldName); ;
         }
@@ -61,7 +56,6 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
         }
 
         paged.putAll(overrideOptions.paged);
-        input.putAll(overrideOptions.input);
 
         if (overrideOptions.pagingInputName != null) {
             setPagingInputName(overrideOptions.pagingInputName); ;
