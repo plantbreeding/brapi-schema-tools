@@ -921,7 +921,7 @@ public class GraphQLGenerator {
                 name(String.format(options.getQueryType().getSearchQuery().getResponseTypeNameForQuery(queryName))).
                 field(GraphQLFieldDefinition.newFieldDefinition().
                     name(options.getQueryType().getSearchQuery().getSearchIdFieldName()).
-                    type(GraphQLList.list(GraphQLTypeReference.typeRef(type.getName()))).
+                    type(GraphQLString).
                     build()).
                 field(createListDataField(type));
 
