@@ -3,19 +3,13 @@
         "GermplasmAttributeValueRequest": {
             "allOf": [
                 {
-                    "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
+                    "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
                 },
                 {
                     "$ref": "Parameters/GermplasmParameters.json#/$defs/GermplasmParameters"
                 },
                 {
-                    "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
-                },
-                {
                     "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
-                },
-                {
-                    "$ref": "Parameters/ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
                 },
                 {
                     "type": "object",

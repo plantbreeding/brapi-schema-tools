@@ -1,5 +1,12 @@
 package org.brapi.schematools.core.openapi.options;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +30,9 @@ class OpenAPIGeneratorOptionsTest {
     void load() {
         OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
 
-        checkOptions(options);
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
@@ -36,7 +45,9 @@ class OpenAPIGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
-        checkOptions(options);
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
@@ -49,181 +60,116 @@ class OpenAPIGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkDefaultOptions(options);
+
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+    }
+
+    @Test
+    void overwrite() {
+        OpenAPIGeneratorOptions options = null;
+
+        try {
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-override-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+
         checkOptions(options);
+
+        assertTrue(options.isGeneratingNewRequestFor("AlleleMatrix"));
+
+        assertEquals("TrialNewRequest2", options.getNewRequestNameFor("Trial"));
+
+        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
+
+        assertEquals("pedigree", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
+        assertTrue(options.getSingleGet().isGenerating());
+        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+
+        assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+
+        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
+
+        assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
+
+        assertTrue(options.getPut().isGeneratingFor("BreedingMethod"));
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     @Test
-    void isGeneratingSingleGet() {
+    void compare() {
+        try {
+            OpenAPIGeneratorOptions options1 = OpenAPIGeneratorOptions.load() ;
+            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-no-override-options.yaml").toURI()));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+
+            assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
-    @Test
-    void isGeneratingListGet() {
-    }
+    private void checkDefaultOptions(OpenAPIGeneratorOptions options) {
+        checkOptions(options);
 
-    @Test
-    void isGeneratingSearch() {
-    }
+        assertFalse(options.isGeneratingNewRequestFor("BreedingMethod"));
+        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
-    @Test
-    void isGeneratingPost() {
-    }
+        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
 
-    @Test
-    void isGeneratingPut() {
-    }
+        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
-    @Test
-    void isGeneratingDelete() {
-    }
+        assertEquals("/pedigrees", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigrees", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
 
-    @Test
-    void isGeneratingEndpoint() {
-    }
+        assertTrue(options.getSingleGet().isGenerating());
+        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
-    @Test
-    void isGeneratingEndpointWithId() {
-    }
+        assertEquals("Get a filtered list of PedigreeNode", options.getListGet().getSummaryFor("PedigreeNode"));
 
-    @Test
-    void isGeneratingSearchEndpoint() {
-    }
+        assertEquals("Create new PedigreeNode", options.getPost().getSummaryFor("PedigreeNode"));
 
-    @Test
-    void isGeneratingSingleGetEndpointFor() {
-    }
+        assertFalse(options.getPut().isGeneratingFor("BreedingMethod"));
 
-    @Test
-    void isGeneratingListGetEndpointFor() {
-    }
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
 
-    @Test
-    void isGeneratingPostEndpointFor() {
-    }
-
-    @Test
-    void isGeneratingPutEndpointFor() {
-    }
-
-    @Test
-    void isGeneratingDeleteEndpointFor() {
-    }
-
-    @Test
-    void isGeneratingSearchEndpointFor() {
-    }
-
-    @Test
-    void isGeneratingEndpointFor() {
-    }
-
-    @Test
-    void isGeneratingEndpointNameWithIdFor() {
-    }
-
-    @Test
-    void isGeneratingNewRequestFor() {
-    }
-
-    @Test
-    void getNewRequestNameFor() {
-    }
-
-    @Test
-    void isGeneratingListResponseFor() {
-    }
-
-    @Test
-    void getSingleResponseNameFor() {
-    }
-
-    @Test
-    void getListResponseNameFor() {
-    }
-
-    @Test
-    void isGeneratingSearchRequestFor() {
-    }
-
-    @Test
-    void getSearchRequestNameFor() {
-    }
-
-    @Test
-    void getPluralFor() {
-    }
-
-    @Test
-    void getSingularForProperty() {
-    }
-
-    @Test
-    void isSeparatingByModule() {
-    }
-
-    @Test
-    void getSingleGet() {
-    }
-
-    @Test
-    void getListGet() {
-    }
-
-    @Test
-    void getPost() {
-    }
-
-    @Test
-    void getPut() {
-    }
-
-    @Test
-    void getDelete() {
-    }
-
-    @Test
-    void getSearch() {
-    }
-
-    @Test
-    void getIds() {
-    }
-
-    @Test
-    void isCreatingNewRequest() {
-    }
-
-    @Test
-    void getCreatingNewRequestFor() {
-    }
-
-    @Test
-    void getNewRequestNameFormat() {
-    }
-
-    @Test
-    void getSingleResponseNameFormat() {
-    }
-
-    @Test
-    void getListResponseNameFormat() {
-    }
-
-    @Test
-    void getSearchRequestNameFormat() {
-    }
-
-    @Test
-    void builder() {
-    }
-
-    @Test
-    void toBuilder() {
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build())
+        );
     }
 
     private void checkOptions(OpenAPIGeneratorOptions options) {
+        assertNotNull(options.validate());
+        assertTrue(options.validate().isValid()) ;
+
         assertNotNull(options);
 
-        assertNotNull(options.getIds());
+        assertNotNull(options.getProperties());
         assertNotNull(options.getSingleGet());
         assertNotNull(options.getListGet());
         assertNotNull(options.getPost());
@@ -238,15 +184,11 @@ class OpenAPIGeneratorOptionsTest {
 
         assertTrue(options.isGeneratingEndpointWithId()) ;
         assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
         assertTrue(options.isGeneratingNewRequestFor("Trial"));
-        assertFalse(options.isGeneratingNewRequestFor("BreedingMethod"));
 
         assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
-        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
         assertEquals("TrialSingleResponse", options.getSingleResponseNameFor("Trial"));
         assertEquals("TrialListResponse", options.getListResponseNameFor("Trial"));
         assertEquals("TrialSearchRequest", options.getSearchRequestNameFor("Trial"));
@@ -258,5 +200,49 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals("study", options.getSingularForProperty("studies"));
         assertEquals("trialDbId", options.getSingularForProperty("trialDbIds"));
         assertEquals("studyDbId", options.getSingularForProperty("studyDbIds"));
+
+        assertEquals("attributeDbId", options.getProperties().getIdPropertyNameFor("GermplasmAttribute")) ;
+
+        assertEquals("/trials", options.getPathItemNameFor("Trial"));
+        assertEquals("/trials", options.getPathItemNameFor(BrAPIObjectType.builder().name("Trial").build()));
+
+        assertEquals("/studies", options.getPathItemNameFor("Study"));
+        assertEquals("/studies", options.getPathItemNameFor(BrAPIObjectType.builder().name("Study").build()));
+
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("germplasm").build())
+        );
+
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Variant").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("callSets").build())
+        );
+
+        assertEquals(LinkType.SUB_PATH,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("VariantSet").build(),
+                BrAPIObjectProperty.builder().name("variants").build())
+        );
     }
 }

@@ -8,29 +8,21 @@ Depends on only the [core](../core/README.md) module.
 
 Use Gradle to create and install the CLI in one command
 
-In windows
-
-```powershell
-./gradlew cli:installDist \path\to\installation\directory
 ```
-
-In Linux or macOS
-
-```shell
-./gradle cli:installDist /path/to/installation/directory
+./gradlew cli:installDist \path\to\installation\directory
 ```
 
 Alternatively you can create a Zip or Tar achieve of the CLI including runtime libraries and OS specific scripts.
 
-In windows
+For a Zip file
 
-```powershell
+```
 ./gradlew cli:distZip
 ```
 
-In Linux or macOS
+For a Tar file
 
-```shell
+```
 ./gradle cli:distTar
 ```
 
@@ -40,16 +32,8 @@ This will create the zip or tar archive in the cli/build/distributions directory
 
 To create an Executable JAR use the Gradle command:
 
-In windows
-
-```powershell
-./gradlew cli:jar
 ```
-
-In Linux or macOS
-
-```shell
-./gradle cli:jar
+./gradlew cli:jar
 ```
 
 This will create the executable JAR in the cli/build/libs directory
@@ -70,16 +54,8 @@ docker build .
 When you have access to the source code repository and while developing new features this is
 the quickest way to run the Command Line Interface. Use the Gradle command:
 
-In windows
-
-```shell
-./gradlew cli:run  --args="-h"
 ```
-
-In Linux or macOS
-
-```shell
-./gradle cli:run  --args="-h"
+./gradlew cli:run  --args="-h"
 ```
 
 Remember to replace the '-h' arguments with your required options. The '-h' option will give you a list of the available

@@ -3,19 +3,13 @@
         "TraitRequest": {
             "allOf": [
                 {
-                    "$ref": "Parameters/OntologyParameters.json#/$defs/OntologyParameters"
-                },
-                {
-                    "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
-                },
-                {
                     "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
                 },
                 {
-                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
+                    "$ref": "Parameters/OntologyParameters.json#/$defs/OntologyParameters"
                 },
                 {
-                    "$ref": "Parameters/ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
+                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
                 },
                 {
                     "type": "object",

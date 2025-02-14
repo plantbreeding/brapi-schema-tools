@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
@@ -14,15 +15,38 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Getter(AccessLevel.PRIVATE)
 @Setter
 public class SearchOptions  extends AbstractOpenAPIOptions {
+
+    @Getter(AccessLevel.PUBLIC)
+    private String searchIdFieldName;
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
 
-    public void validate() {
-        super.validate();
-        assert submitDescriptionFormat != null : String.format("'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
-        assert retrieveDescriptionFormat != null : String.format("'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(SearchOptions overrideOptions) {
+        super.override(overrideOptions);
+
+        if (overrideOptions.searchIdFieldName != null) {
+            setSearchIdFieldName(overrideOptions.searchIdFieldName);
+        }
+
+        if (overrideOptions.submitDescriptionFormat != null) {
+            setSubmitDescriptionFormat(overrideOptions.submitDescriptionFormat);
+        }
+
+        if (overrideOptions.retrieveDescriptionFormat != null) {
+            setRetrieveDescriptionFormat(overrideOptions.retrieveDescriptionFormat);
+        }
+    }
 
     /**
      * Gets the submit description for a specific primary model

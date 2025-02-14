@@ -1,17 +1,18 @@
 package org.brapi.schematools.core.openapi.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.valdiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,12 +44,12 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
-    private IdsOptions ids;
+    private PropertiesOptions properties;
 
     @Getter(AccessLevel.PRIVATE)
-    boolean separateByModule;
+    private Boolean separateByModule;
     @Getter(AccessLevel.PRIVATE)
-    private boolean generateNewRequest;
+    private Boolean generateNewRequest;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateNewRequestFor = new HashMap<>();
@@ -63,6 +64,20 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pathItemNameFor = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> tagFor = new HashMap<>();
+    /**
+     * Load the default options
+     * @return The default options
+     */
+    public static OpenAPIGeneratorOptions load() {
+        try {
+            return ConfigurationUtils.load("openapi-options.yaml", OpenAPIGeneratorOptions.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Load the options from an options file in YAML or Json. The options file may have missing
@@ -72,23 +87,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the options file can not be found or is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
-    }
-
-    /**
-     * Load the default options
-     * @return The default options
-     */
-    public static OpenAPIGeneratorOptions load() {
-
-        try {
-            InputStream inputStream = OpenAPIGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("openapi-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
-            throw new RuntimeException(e);
-        }
+        return load().override(ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class)) ;
     }
 
     /**
@@ -99,46 +98,114 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        OpenAPIGeneratorOptions options = mapper.readValue(inputStream, OpenAPIGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return load().override(ConfigurationUtils.load(inputStream, OpenAPIGeneratorOptions.class)) ;
     }
 
-    public void validate() {
-        super.validate() ;
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     * @return this object for method chaining
+     */
+    public OpenAPIGeneratorOptions override(OpenAPIGeneratorOptions overrideOptions) {
+        super.override(overrideOptions) ;
 
-        assert singleGet != null : "Single Get Endpoint Options are null";
-        assert listGet != null : "List Get Endpoint Options are null";
-        assert post != null : "Post Endpoint Options are null";
-        assert put != null : "Put Endpoint Options are null";
-        assert delete != null : "Delete Endpoint Options are null";
-        assert search != null : "Search Endpoint Options are null";
-        assert ids != null : "Id Options are null";
+        if (overrideOptions.singleGet != null) {
+            singleGet.override(overrideOptions.getSingleGet()) ;
+        }
 
-        singleGet.validate() ;
-        listGet.validate() ;
-        post.validate() ;
-        put.validate() ;
-        delete.validate() ;
-        search.validate() ;
-        ids.validate() ;
+        if (overrideOptions.listGet != null) {
+            listGet.override(overrideOptions.getListGet()) ;
+        }
 
-        assert generateNewRequestFor != null : "'generateNewRequestFor' option is null" ;
-        assert newRequestNameFormat != null : "'newRequestNameFormat' option is null" ;
-        assert singleResponseNameFormat != null : "'singleResponseNameFormat' option is null" ;
-        assert listResponseNameFormat != null : "'listResponseNameFormat' option is null" ;
-        assert searchRequestNameFormat != null : "'searchRequestNameFormat' option is null" ;
-        assert pathItemNameFor != null : "'pathItemNameFor' option is null" ;
+        if (overrideOptions.post != null) {
+            post.override(overrideOptions.getPost()) ;
+        }
+
+        if (overrideOptions.put != null) {
+            put.override(overrideOptions.getPut()) ;
+        }
+
+        if (overrideOptions.search != null) {
+            search.override(overrideOptions.getSearch()) ;
+        }
+
+        if (overrideOptions.delete != null) {
+            delete.override(overrideOptions.getDelete()) ;
+        }
+
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.getProperties()) ;
+        }
+
+        if (overrideOptions.separateByModule != null) {
+            separateByModule = overrideOptions.separateByModule ;
+        }
+
+        if (overrideOptions.generateNewRequest != null) {
+            generateNewRequest = overrideOptions.generateNewRequest ;
+        }
+
+        if (overrideOptions.generateNewRequestFor != null) {
+            generateNewRequestFor.putAll(overrideOptions.generateNewRequestFor) ;
+        }
+
+        if (overrideOptions.newRequestNameFormat != null) {
+            newRequestNameFormat = overrideOptions.newRequestNameFormat ;
+        }
+
+        if (overrideOptions.singleResponseNameFormat != null) {
+            singleResponseNameFormat = overrideOptions.singleResponseNameFormat ;
+        }
+
+        if (overrideOptions.listResponseNameFormat != null) {
+            listResponseNameFormat = overrideOptions.listResponseNameFormat ;
+        }
+
+        if (overrideOptions.searchRequestNameFormat != null) {
+            searchRequestNameFormat = overrideOptions.searchRequestNameFormat ;
+        }
+
+        if (overrideOptions.pathItemNameFor != null) {
+            pathItemNameFor.putAll(overrideOptions.pathItemNameFor) ;
+        }
+
+        if (overrideOptions.tagFor != null) {
+            tagFor.putAll(overrideOptions.tagFor) ;
+        }
+
+        return this ;
+    }
+
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
+            .assertNotNull(listGet,  "List Get Endpoint Options are null")
+            .assertNotNull(post, "Post Endpoint Options are null")
+            .assertNotNull(put, "Put Endpoint Options are null")
+            .assertNotNull(delete,  "Delete Endpoint Options are null")
+            .assertNotNull(search,  "Search Endpoint Options are null")
+            .assertNotNull(properties,  "Id Options are null")
+            .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
+            .merge(singleGet)
+            .merge(listGet)
+            .merge(post)
+            .merge(put)
+            .merge(delete)
+            .merge(search)
+            .merge(properties)
+            .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
+            .assertNotNull(newRequestNameFormat,  "'newRequestNameFormat' option is null")
+            .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
+            .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
+            .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
+            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
+            .assertNotNull(tagFor,  "'tagFor' option is null") ;
     }
 
     /**
      * Determines if the Generator should generate a separate specification per module.
-     * @return <code>true</code> if the Generator should generate a separate specification per module, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a separate specification per module, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isSeparatingByModule() {
@@ -146,31 +213,31 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Endpoints without an ID parameter. Returns <code>true</code> if
-     * {@link ListGetOptions#isGenerating()} ()} or {@link PostOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Endpoints without an ID parameter, <code>false</code> otherwise
+     * Determines if the Generator should generate any Endpoints without an ID parameter. Returns {@code true} if
+     * {@link ListGetOptions#isGenerating()} or {@link PostOptions#isGenerating()} or {@link PutOptions#isGenerating()}  is set to {@code true}
+     * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpoint() {
-        return listGet.isGenerating() || post.isGenerating();
+        return listGet.isGenerating() || post.isGenerating() || put.isGenerating() ;
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointFor(@NonNull String name) {
-        return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) ;
+        return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) || put.isGeneratingEndpointFor(name) ;
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointFor(@NonNull BrAPIType type) {
@@ -178,10 +245,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Endpoints with an ID parameter. Returns <code>true</code> if
+     * Determines if the Generator should generate any Endpoints with an ID parameter. Returns {@code true} if
      * {@link SingleGetOptions#isGenerating()} or {@link PutOptions#isGenerating()} or
-     * {@link DeleteOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Endpoints without an ID parameter, <code>false</code> otherwise
+     * {@link DeleteOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointWithId() {
@@ -189,23 +256,23 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
+     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
-        return singleGet.isGeneratingFor(name) || put.isGeneratingFor(name) || delete.isGeneratingFor(name) ;
+        return singleGet.isGeneratingFor(name) || put.isGeneratingEndpointNameWithIdFor(name) || delete.isGeneratingFor(name) ;
     }
 
     /**
-     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns <code>true</code> if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to <code>true</code>
+     * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
+     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
+     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull BrAPIType type) {
@@ -214,10 +281,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model.
-     * For example if set to <code>true</code> for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
-     * whereas if set <code>false</code> generator will create only create the 'Study' schema
+     * For example if set to {@code true} for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
+     * whereas if set {@code false} generator will create only create the 'Study' schema
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingNewRequestFor(@NonNull String name) {
@@ -226,10 +293,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model.
-     * For example if set to <code>true</code> for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
-     * whereas if set <code>false</code> generator will create only create the 'Study' schema
+     * For example if set to {@code true} for the model 'Study' the generator will create the NewStudyRequest schema and the 'Study' schema,
+     * whereas if set {@code false} generator will create only create the 'Study' schema
      * @param type the Primary Model
-     * @return <code>true</code> if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingNewRequestFor(@NonNull BrAPIType type) {
@@ -332,7 +399,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the Pluralised name for a specific Primary Model
      */
     public String getPathItemNameFor(String name) {
-        return String.format("/%s", toParameterCase(getPluralFor(name)));
+        return pathItemNameFor.getOrDefault(name, String.format("/%s", toParameterCase(getPluralFor(name))));
     }
 
     /**
@@ -350,6 +417,61 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for a specific Primary Model
      */
     public String getPathItemWithIdNameFor(BrAPIType type) {
-        return String.format("%s/{%s}", getPathItemNameFor(type), ids.getIDParameterFor(type));
+        return String.format("%s/{%s}", getPathItemNameFor(type), properties.getIdPropertyNameFor(type));
+    }
+
+    /**
+     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
+     * Use {@link #setTagFor(String, String)} to override this value.
+     * @param name the name of the Primary Model
+     * @return the tag name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTagFor(@NonNull String name) {
+        return tagFor.getOrDefault(name, getPluralFor(name)) ;
+    }
+
+    /**
+     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
+     * Use {@link #setTagFor(String, String)} to override this value.
+     * @param type the Primary Model
+     * @return the tag name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTagFor(@NonNull BrAPIType type) {
+        return getTagFor(type.getName()) ;
+    }
+
+    /**
+     * Sets the tag name for a specific primary model.
+     * @param name the name of the primary model
+     * @param tagName the tag name for a specific primary model.
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public AbstractGeneratorOptions setTagFor(String name, String tagName) {
+        tagFor.put(name, tagName) ;
+
+        return this ;
+    }
+
+    /**
+     * Determines if a specific property should be exposed as a separate Endpoint
+     * @param type the Object type
+     * @param property the Object type property
+     * @return {@code true} generator will create  a separate Endpoint for the property, {@code false} otherwise
+     */
+    public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+        return LinkType.SUB_PATH.equals(properties.getLinkTypeFor(type, property)) ;
+    }
+
+    /**
+     * Gets the name of the Sub-path endpoint for a property
+     * @param pathItemName the path prefix
+     * @param property the Object type property
+     * @return the name of the Sub-path endpoint for a property
+     */
+    public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
+        return String.format("%s/%s", pathItemName, property.getName()) ;
     }
 }

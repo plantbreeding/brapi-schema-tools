@@ -1,0 +1,28 @@
+generateNewRequestFor:
+    AlleleMatrix: true
+newRequestNameFormat: "%sNewRequest2"
+pluralFor:
+    AlleleMatrix: AlleleMatrix
+pathItemNameFor:
+    PedigreeNode: pedigree
+singleGet:
+    generate: false
+    generateFor:
+        AlleleMatrix: true
+listGet:
+    summaryFormat: Get a filtered list of %s X
+post:
+    summaryFormat: Create new %s X
+put:
+    generateFor:
+        BreedingMethod: true
+properties:
+    name:
+        link: false
+    pui:
+        nameFormat: "%sPUItest"
+    linkTypeFor:
+        CallSet:
+            calls: id
+        Trial:
+            contacts: id

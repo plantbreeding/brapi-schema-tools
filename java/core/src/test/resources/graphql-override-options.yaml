@@ -1,0 +1,23 @@
+pluralFor:
+    AlleleMatrix: AlleleMatrices
+input:
+    nameFormat: "%sInputX"
+    typeNameFormat: "%sInput"
+queryType:
+    name: Query2
+    partitionedByCrop: false
+    singleQuery:
+        pluralisingName: true
+        nameFormat: "%s"
+    listQuery:
+        generate: false
+        input:
+            BreedingMethod: true
+properties:
+    ids:
+        useIDType: false
+    linkTypeFor:
+        CallSet:
+            calls: id
+        Trial:
+            contacts: id

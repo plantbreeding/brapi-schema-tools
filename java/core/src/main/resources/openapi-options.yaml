@@ -21,7 +21,12 @@ searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
-    PedigreeNode: pedigrees
+    GermplasmAttribute: /attributes
+    GermplasmAttributeValue: /attributevalues
+    PedigreeNode: /pedigrees
+tagFor:
+    BreedingMethod: Germplasm
+    PlannedCross: Crosses
 singleGet:
     generate: true
     summaryFormat: Get the details of a specific %s
@@ -32,6 +37,7 @@ singleGet:
         Cross: false
         Event: false
         MarkerPosition: false
+        Pedigree: false
         PlannedCross: false
 listGet:
     generate: true
@@ -48,6 +54,7 @@ search:
     generate: true
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`t
+    searchIdFieldName: searchResultsDbId
     submitDescriptionFormat:  |-
         Submit a search request for `%s`<br/>
         Search requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. 
@@ -65,10 +72,12 @@ search:
         AlleleMatrix: false
         BreedingMethod: false
         Cross: false
-        CrossProject: false
+        CrossingProject: false
         Method: false
         Ontology: false
+        PlannedCross: false
         Scale: false
+        Season: false
         Trait: false
 post:
     generate: true
@@ -76,12 +85,14 @@ post:
     descriptionFormat: Add new %s to database
     generateFor:
         AlleleMatrix: false
+        BreedingMethod: false
         Call: false
         CallSet: false
         Event: false
         GenomeMap: false
         MarkerPosition: false
         Reference: false
+        ReferenceSet: false
         Variant: false
         VariantSet: false
 put:
@@ -90,14 +101,20 @@ put:
     descriptionFormat: Update the details for an existing %s
     generateFor:
         AlleleMatrix: false
-        Call: false
+        BreedingMethod: false
         CallSet: false
-        Cross: false
         Event: false
         GenomeMap: false
         MarkerPosition: false
         Reference: false
+        ReferenceSet: false
         Variant: false
+        VariantSet: false
+    multiple: false
+    multipleFor:
+        Cross: true
+        PlannedCross: true
+        Pedigree: true
 delete:
     generate: false
     summaryFormat: Delete an existing %s
@@ -112,8 +129,106 @@ delete:
         Reference: false
         Variant: false
         VariantSet: false
-ids:
-    nameFormat: "%sDbId"
-    parameterFor:
-        GermplasmAttribute: attributeDbId
-        GermplasmAttributeValue: attributeValueDbId
+properties:
+    id:
+        nameFormat: "%sDbId"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+            GenomeMap: mapDbId
+    name:
+        nameFormat: "%sName"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeName
+            GermplasmAttributeValue: attributeValueName
+            GenomeMap: mapName
+    pui:
+        nameFormat: "%sPUI"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributePUI
+            GermplasmAttributeValue: attributeValuePUI
+            GenomeMap: mapPUI
+    linkTypeFor:
+        BreedingMethod:
+            germplasm: none
+            pedigreeNodes: none
+        CallSet:
+            calls: sub-path
+        Cross:
+            observationUnits: none
+        CrossingProject:
+            crosses: none
+            plannedCrosses: none
+            pedigreeNodes: none
+        GeoJSON:
+            image: none
+            observation: none
+            observationUnit: none
+            germplasmOrigin: none
+        Germplasm:
+            sample: none
+            attributeValues: none
+            progenyPedigreeNodes: none
+            parentPedigreeNodes: none
+            siblingPedigreeNodes: none
+            observations: none
+            observationUnits: none
+            reference: none
+            referenceSet: none
+        Location:
+            seedLots: none
+            observationUnits: none
+            studies: none
+        OntologyTerm:
+            reference: none
+            referenceSet: none
+        Observation:
+            images: none
+        ObservationUnit:
+            samples: none
+            events: none
+            images: none
+            observations: none
+        ObservationVariable:
+            studies: none
+            observations: none
+        Person:
+            lists: none
+            programs: none
+        PlannedCross:
+            crosses: none
+        Program:
+            crossingProjects: none
+            observationUnits: none
+            plates: none
+            samples: none
+            seedLots: none
+            trials: none
+        Plate:
+            samples: none
+        Reference:
+            variant: none
+        SeedLot:
+            observationUnits: none
+        Study:
+            callSets: none
+            events: none
+            observations: none
+            observationUnits: none
+            plates: none
+            samples: none
+            variantSets: none
+        Trial:
+            contacts: embedded
+            observationUnits: none
+            plates: none
+            samples: none
+        Variant:
+            calls: sub-path
+        VariantSet:
+            calls: sub-path
+            callSets: sub-path
+            variants: sub-path

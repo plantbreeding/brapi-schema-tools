@@ -8,16 +8,9 @@ There is also a basic spring application that allow you to view the BrAPI Specif
 1. Download the Command Line Interface (CLI) from the
    [Releases](https://github.com/plantbreeding/brapi-schema-tools/releases) page
 2. Run the application on your terminal
-    * In windows
 
-    ```powershell
-    BrAPITools
     ```
-
-    * In Linux or macOS
-
-    ```shell
-    BrAPITools 
+    brapi
     ```
 
 ## For developers
