@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * Holds all the information require to query an Entity
+ * Holds all the information require to query a single Endpoint.
  */
 @Value
 @Builder
