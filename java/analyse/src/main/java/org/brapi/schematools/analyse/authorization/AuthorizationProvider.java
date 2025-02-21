@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse;
+package org.brapi.schematools.analyse.authorization;
 
 import org.brapi.schematools.core.response.Response;
 

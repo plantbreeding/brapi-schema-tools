@@ -1,8 +1,7 @@
-package org.brapi.schematools.analyse.query;
+package org.brapi.schematools.analyse.authorization;
 
 import lombok.Builder;
 import lombok.Value;
-import org.brapi.schematools.analyse.AuthorizationProvider;
 import org.brapi.schematools.core.response.Response;
 
 import java.util.Base64;

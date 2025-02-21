@@ -12,6 +12,7 @@ import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
 import org.brapi.schematools.analyse.query.Endpoint;
 import org.brapi.schematools.analyse.query.Endpoints;
 import org.brapi.schematools.core.response.Response;

@@ -1,6 +1,6 @@
 package org.brapi.schematools.cli;
 
-import org.brapi.schematools.analyse.oauth.SingleSignOn;
+import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
 import picocli.CommandLine;
 
 import java.io.PrintStream;

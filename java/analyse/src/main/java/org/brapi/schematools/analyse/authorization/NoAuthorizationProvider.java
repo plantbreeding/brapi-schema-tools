@@ -1,6 +1,6 @@
-package org.brapi.schematools.analyse.query;
+package org.brapi.schematools.analyse.authorization;
 
-import org.brapi.schematools.analyse.AuthorizationProvider;
+import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
 
 /**
  * The case when no Authorisation is required
