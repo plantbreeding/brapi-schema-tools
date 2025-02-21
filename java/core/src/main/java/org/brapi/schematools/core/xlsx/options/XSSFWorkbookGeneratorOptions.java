@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;

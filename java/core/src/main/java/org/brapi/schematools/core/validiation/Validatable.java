@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.valdiation;
+package org.brapi.schematools.core.validiation;
 
 /**
  * Interface that markers a class that can be validated.

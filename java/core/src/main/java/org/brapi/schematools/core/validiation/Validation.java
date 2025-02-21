@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.valdiation;
+package org.brapi.schematools.core.validiation;
 
 import lombok.Getter;
 import org.apache.commons.beanutils.PropertyUtils;

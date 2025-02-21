@@ -8,7 +8,7 @@ import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;

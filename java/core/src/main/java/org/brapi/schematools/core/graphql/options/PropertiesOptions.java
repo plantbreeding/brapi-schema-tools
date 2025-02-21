@@ -1,21 +1,19 @@
 package org.brapi.schematools.core.graphql.options;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIRelationshipType;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPITypeUtils;
-import org.brapi.schematools.core.utils.StringUtils;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.brapi.schematools.core.response.Response.fail;
 
 /**
  * Provides options for the generation of properties and their usage

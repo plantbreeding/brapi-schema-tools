@@ -1,0 +1,47 @@
+plugins {
+    id 'brapi.schema-tools.java-conventions'
+    id 'java-library'
+    id "signing"
+    id 'maven-publish'
+}
+
+dependencies {
+    api project(':core')
+
+    implementation 'com.atlassian.oai:swagger-request-validator-core'
+    implementation 'ch.qos.logback:logback-classic'
+    implementation "org.dflib:dflib-csv"
+
+    testImplementation('org.mockito:mockito-core')
+    testImplementation('org.mockito:mockito-junit-jupiter')
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'brapi-schema-tools-cli'
+
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            } else {
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            }
+
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}

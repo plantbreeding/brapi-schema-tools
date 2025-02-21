@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.brapi.schematools.core.options.Options;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 /**
  * Provides options for the generation of the Mutation Type

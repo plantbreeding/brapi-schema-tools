@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.isPrimaryModel;
-import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 /**
  * Generates a OpenAPI Specification from a BrAPI Json Schema.

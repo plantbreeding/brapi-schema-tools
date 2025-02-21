@@ -13,7 +13,7 @@ import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 import org.brapi.schematools.core.utils.StringUtils;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

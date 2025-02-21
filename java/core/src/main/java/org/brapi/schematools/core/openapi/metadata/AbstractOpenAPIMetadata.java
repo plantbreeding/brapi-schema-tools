@@ -7,7 +7,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.metadata.Metadata;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 
 import java.util.HashMap;
 import java.util.Map;

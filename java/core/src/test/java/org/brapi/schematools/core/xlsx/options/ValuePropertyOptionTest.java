@@ -1,7 +1,7 @@
 package org.brapi.schematools.core.xlsx.options;
 
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

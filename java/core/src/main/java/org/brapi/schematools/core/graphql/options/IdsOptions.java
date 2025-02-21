@@ -6,7 +6,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.StringUtils;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;

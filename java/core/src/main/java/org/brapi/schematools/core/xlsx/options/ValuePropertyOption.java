@@ -3,7 +3,7 @@ package org.brapi.schematools.core.xlsx.options;
 import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.options.Options;
-import org.brapi.schematools.core.valdiation.Validation;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.Arrays;
 import java.util.Map;
