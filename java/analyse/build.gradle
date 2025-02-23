@@ -19,7 +19,7 @@ dependencies {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId = 'brapi-schema-tools-cli'
+            artifactId = 'brapi-schema-tools-analyse'
 
             from components.java
         }
