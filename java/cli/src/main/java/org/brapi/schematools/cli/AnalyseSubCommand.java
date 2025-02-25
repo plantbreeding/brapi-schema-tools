@@ -3,6 +3,7 @@ package org.brapi.schematools.cli;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import org.apache.commons.math3.analysis.function.Identity;
 import org.brapi.schematools.analyse.AnalysisReport;
 import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
 import org.brapi.schematools.analyse.OpenAPISpecificationAnalyser;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.dflib.excel.Excel;
+
+import static java.util.function.UnaryOperator.identity;
 
 /**
  * Analyse Command
@@ -62,6 +65,8 @@ public class AnalyseSubCommand implements Runnable {
     private String clientSecret;
     @CommandLine.Option(names = {"-v", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
     private boolean verbose;
+    @CommandLine.Option(names = {"-m", "--separateReportsByEntity"}, description = "Separate reports by entity")
+    private boolean separateReportsByEntity;
 
     @Override
     public void run() {
@@ -154,9 +159,16 @@ public class AnalyseSubCommand implements Runnable {
                 return;
             }
 
-            DataFrame report = tabularReportGenerator.generateReport(listResponses);
+            if (separateReportsByEntity) {
+                List<DataFrame> reports = tabularReportGenerator.generateReportByEntity(listResponses);
 
-            Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
+                Excel.save(reports.stream().collect(Collectors.toMap(DataFrame::getName, identity())), reportPath);
+            } else {
+                DataFrame report = tabularReportGenerator.generateReport(listResponses);
+
+                Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
+            }
+
         } else {
             out.println(tabularReportGenerator.generateReportTable(listResponses));
         }

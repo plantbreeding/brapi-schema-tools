@@ -1,10 +1,8 @@
 package org.brapi.schematools.analyse;
 
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
-import com.atlassian.oai.validator.model.Request;
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.atlassian.oai.validator.model.SimpleResponse;
-import io.swagger.models.HttpMethod;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
@@ -13,8 +11,6 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
-import org.brapi.schematools.analyse.query.Endpoint;
-import org.brapi.schematools.analyse.query.Endpoints;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 
@@ -25,10 +21,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,18 +32,42 @@ import java.util.stream.Collectors;
 /**
  * Analyses BrAPI endpoints against an OpenAPI Specification
  */
-@RequiredArgsConstructor
 @Slf4j
 public class OpenAPISpecificationAnalyser {
 
     private final String baseURL;
     private final HttpClient client;
     private final AuthorizationProvider authorizationProvider;
+    private final AnalysisOptions options ;
 
     private final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)/\\{(\\w+)\\}");
     private final Pattern ENTITIES_PATH_PATTERN = Pattern.compile("/(\\w+)");
     private final Pattern SEARCH_PATH_PATTERN = Pattern.compile("/search/(\\w+)");
     private final Pattern SEARCH_RESULTS_PATH_PATTERN = Pattern.compile("/search/(\\w+/)\\{(\\w+)\\}");
+
+    /**
+     * Create an Analyser
+     * @param baseURL the base URl for the BrAPI server
+     * @param client the HTTP client to use for the execution of requests
+     * @param authorizationProvider the authorization provider need for authorization
+     * @param options analysis options ;
+     */
+    public OpenAPISpecificationAnalyser(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider) {
+        this(baseURL, client, authorizationProvider, AnalysisOptions.load()) ;
+    }
+    /**
+     * Create an Analyser
+     * @param baseURL the base URl for the BrAPI server
+     * @param client the HTTP client to use for the execution of requests
+     * @param authorizationProvider the authorization provider need for authorization
+     * @param options analysis options ;
+     */
+    public OpenAPISpecificationAnalyser(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider, AnalysisOptions options) {
+        this.baseURL = baseURL;
+        this.client = client;
+        this.authorizationProvider = authorizationProvider;
+        this.options = options;
+    }
 
     /**
      * Analyse all the endpoints in the specification.
@@ -59,7 +79,8 @@ public class OpenAPISpecificationAnalyser {
 
         Analyser analyser = new Analyser(specification);
 
-        return analyser.analyse();
+        return options.validate().asResponse()
+            .map(() -> analyser.analyse());
     }
 
     /**
@@ -73,14 +94,16 @@ public class OpenAPISpecificationAnalyser {
 
         Analyser analyser = new Analyser(specification);
 
-        return analyser.analyse(entityNames);
+        return options.validate().asResponse()
+            .map(() -> analyser.analyse(entityNames));
     }
 
     private class Analyser {
         private final OpenAPI openAPI;
         private final OpenApiInteractionValidator validator;
-        private final Map<String, Endpoints.EndpointsBuilder> endpointsBuilderMap = new TreeMap<>();
-        private Map<String, Endpoints> endpointsMap = new TreeMap<>();
+        private final List<APIRequest> requests = new LinkedList<>();
+
+        private Map<String, List<APIRequest>> requestsByEntity = new TreeMap<>();
 
         private final List<String> unmatchedEndpoints = new ArrayList<>() ;
 
@@ -94,28 +117,26 @@ public class OpenAPISpecificationAnalyser {
             validator =
                 OpenApiInteractionValidator.createForInlineApiSpecification(specification).build();
 
-
             openAPI = result.getOpenAPI();
 
-            openAPI.getPaths().entrySet().forEach(this::cachePath);
+            openAPI.getPaths().entrySet().forEach(this::cacheRequests);
 
-            endpointsMap = new TreeMap<>(endpointsBuilderMap.values().stream()
-                .map(Endpoints.EndpointsBuilder::build).collect(Collectors.toMap(Endpoints::getEntityName, Function.identity()))) ;
+            requestsByEntity = new TreeMap<>(requests.stream().collect(Collectors.groupingBy(APIRequest::getEntityName))) ;
         }
 
         private Response<List<AnalysisReport>> analyse() {
-            return endpointsMap.values().stream()
-                .map(this::analyseEndpoints).collect(Response.mergeLists());
+            return requestsByEntity.entrySet().stream()
+                .map(this::executeAPIRequests).collect(Response.mergeLists());
         }
 
         public Response<List<AnalysisReport>> analyse(List<String> entityNames) {
             List<String> names = entityNames.stream().map(String::toLowerCase).toList();
-            return endpointsMap.values().stream()
-                .filter(endpoints -> names.contains(endpoints.getEntityName()))
-                .map(this::analyseEndpoints).collect(Response.mergeLists());
+            return requestsByEntity.entrySet().stream()
+                .filter(entry -> names.contains(entry.getKey()))
+                .map(this::executeAPIRequests).collect(Response.mergeLists());
         }
 
-        private void cachePath(Map.Entry<String, PathItem> pathItemEntry) {
+        private void cacheRequests(Map.Entry<String, PathItem> pathItemEntry) {
 
             String endpoint = pathItemEntry.getKey();
             PathItem pathItem = pathItemEntry.getValue();
@@ -123,62 +144,56 @@ public class OpenAPISpecificationAnalyser {
             Matcher matcher = ENTITY_PATH_PATTERN.matcher(endpoint);
 
             if (matcher.matches()) {
-                if (pathItem.getGet() != null) {
-                    getEndpointBuilder(matcher.group(1))
-                        .singleEndpoint(Endpoint.builder()
-                            .path(endpoint)
-                            .method(HttpMethod.GET)
+                if (pathItem.getGet() != null && options.isAnalysingGetEntity(StringUtils.toSingular(matcher.group(1)))) {
+                    addAPIRequest(getAPIRequestBuilder("Get", matcher.group(1))
+                        .validatorRequest(SimpleRequest.Builder
+                            .get(endpoint)
                             .build())
-                        .idParam(matcher.group(2));
+                        .pathParameter(matcher.group(2))) ;
                 }
 
                 if (pathItem.getPost() != null) {
                     log.warn(String.format("Ignored POST '%s' Endpoint", endpoint));
                 }
 
-                if (pathItem.getPut() != null) {
-                    getEndpointBuilder(matcher.group(1))
-                        .updateEndpoint(Endpoint.builder()
-                            .path(endpoint)
-                            .method(HttpMethod.PUT)
+                if (pathItem.getPut() != null && options.isAnalysingUpdateEntity(StringUtils.toSingular(matcher.group(1)))) {
+                    addAPIRequest(getAPIRequestBuilder("Update", matcher.group(1))
+                        .validatorRequest(SimpleRequest.Builder
+                            .put(endpoint)
                             .build())
-                        .idParam(matcher.group(2));
+                        .pathParameter(matcher.group(2))) ;
                 }
 
-                if (pathItem.getDelete() != null) {
-                    getEndpointBuilder(matcher.group(1))
-                        .deleteEndpoint(Endpoint.builder()
-                            .path(endpoint)
-                            .method(HttpMethod.DELETE)
+                if (pathItem.getDelete() != null && options.isAnalysingDeleteEntity(StringUtils.toSingular(matcher.group(1)))) {
+                    addAPIRequest(getAPIRequestBuilder("Delete", matcher.group(1))
+                        .validatorRequest(SimpleRequest.Builder
+                            .delete(endpoint)
                             .build())
-                        .idParam(matcher.group(2));
+                        .pathParameter(matcher.group(2))) ;
                 }
             } else {
                 matcher = ENTITIES_PATH_PATTERN.matcher(endpoint);
 
                 if (matcher.matches()) {
-                    if (pathItem.getGet() != null) {
-                        getEndpointBuilder(matcher.group(1))
-                            .listEndpoint(Endpoint.builder()
-                                .path(endpoint)
-                                .method(HttpMethod.GET)
-                                .build());
+                    if (pathItem.getGet() != null && options.isAnalysingListEntity(StringUtils.toSingular(matcher.group(1)))) {
+                        addAPIRequest(getAPIRequestBuilder("List", matcher.group(1))
+                            .validatorRequest(SimpleRequest.Builder
+                                .get(endpoint)
+                                .build())) ;
                     }
 
-                    if (pathItem.getPost() != null) {
-                        getEndpointBuilder(matcher.group(1))
-                            .createEndpoint(Endpoint.builder()
-                                .path(endpoint)
-                                .method(HttpMethod.POST)
-                                .build());
+                    if (pathItem.getPost() != null && options.isAnalysingCreateEntity(StringUtils.toSingular(matcher.group(1)))) {
+                        addAPIRequest(getAPIRequestBuilder("Create", matcher.group(1))
+                            .validatorRequest(SimpleRequest.Builder
+                                .post(endpoint)
+                                .build())) ;
                     }
 
-                    if (pathItem.getPut() != null) {
-                        getEndpointBuilder(matcher.group(1))
-                            .updateEndpoint(Endpoint.builder()
-                                .path(endpoint)
-                                .method(HttpMethod.PUT)
-                                .build());
+                    if (pathItem.getPut() != null && options.isAnalysingUpdateEntity(StringUtils.toSingular(matcher.group(1)))) {
+                        addAPIRequest(getAPIRequestBuilder("Update(s)", matcher.group(1))
+                            .validatorRequest(SimpleRequest.Builder
+                                .put(endpoint)
+                                .build())) ;
                     }
 
                     if (pathItem.getDelete() != null) {
@@ -192,32 +207,30 @@ public class OpenAPISpecificationAnalyser {
                             log.warn(String.format("Ignored GET '%s' Endpoint", endpoint));
                         }
 
-                        if (pathItem.getPost() != null) {
-                            getEndpointBuilder(matcher.group(1))
-                                .searchEndpoint(Endpoint.builder()
-                                    .path(endpoint)
-                                    .method(HttpMethod.POST)
-                                    .build());
+                        if (pathItem.getPost() != null && options.isAnalysingSearchEntity(StringUtils.toSingular(matcher.group(1)))) {
+                            addAPIRequest(getAPIRequestBuilder("Search", matcher.group(1))
+                                .validatorRequest(SimpleRequest.Builder
+                                    .post(endpoint)
+                                    .build())) ;
                         }
 
                         if (pathItem.getPut() != null) {
-                            log.warn(String.format("Ignored PUT '%s' Endpoint", endpoint));
+                            log.warn(String.format("Ignored Search PUT '%s' Endpoint", endpoint));
                         }
 
                         if (pathItem.getDelete() != null) {
-                            log.warn(String.format("Ignored DELETE '%s' Endpoint", endpoint));
+                            log.warn(String.format("Ignored Search DELETE '%s' Endpoint", endpoint));
                         }
                     } else {
                         matcher = SEARCH_RESULTS_PATH_PATTERN.matcher(endpoint);
 
                         if (matcher.matches()) {
-                            if (pathItem.getGet() != null) {
-                                getEndpointBuilder(matcher.group(1))
-                                    .searchResultEndpoint(Endpoint.builder()
-                                        .path(endpoint)
-                                        .method(HttpMethod.GET)
+                            if (pathItem.getGet() != null && options.isAnalysingSearchEntity(StringUtils.toSingular(matcher.group(1)))) {
+                                addAPIRequest(getAPIRequestBuilder("Get Search Results", matcher.group(1))
+                                    .validatorRequest(SimpleRequest.Builder
+                                        .get(endpoint)
                                         .build())
-                                    .idParam(matcher.group(2));
+                                    .pathParameter(matcher.group(2))) ;
                             }
 
                             if (pathItem.getPost() != null) {
@@ -240,53 +253,32 @@ public class OpenAPISpecificationAnalyser {
             }
         }
 
-        private Endpoints.EndpointsBuilder getEndpointBuilder(String pluralName) {
+        private void addAPIRequest(APIRequest.APIRequestBuilder builder) {
+            requests.add(builder.build()) ;
+        }
+
+        private APIRequest.APIRequestBuilder getAPIRequestBuilder(String name, String pluralName) {
 
             String entityName = StringUtils.toSingular(pluralName);
 
-            Endpoints.EndpointsBuilder builder = this.endpointsBuilderMap.get(entityName);
-
-            if (builder == null) {
-                builder = Endpoints.builder().entityName(entityName);
-                this.endpointsBuilderMap.put(entityName, builder);
-            }
-
-            return builder;
+            return APIRequest.builder()
+                .name(name)
+                .entityName(entityName) ;
         }
 
-        private Response<List<AnalysisReport>> analyseEndpoints(Endpoints endpoints) {
+        private Response<List<AnalysisReport>> executeAPIRequests(Map.Entry<String, List<APIRequest>> entry) {
+            log.debug("Executing requests for {}", entry.getKey());
 
-            List<AnalysisReport> reports = new ArrayList<>();
+            // TODO order and filter
 
-            if (endpoints.getListEndpoint() != null) {
-                return executeEndpoint(endpoints.getListEndpoint())
-                    .onSuccessDoWithResult(reports::add)
-                    .map(() -> Response.success(reports));
-
-            }
-
-            return Response.success(reports);
+            return entry.getValue().stream().map(this::executeAPIRequest).collect(Response.toList()) ;
         }
 
-        private Request createRequest(Endpoint endpoint) {
-            SimpleRequest.Builder builder = switch (endpoint.getMethod()) {
-                case DELETE -> SimpleRequest.Builder.delete(endpoint.getPath());
-                case GET -> SimpleRequest.Builder.get(endpoint.getPath());
-                case HEAD -> SimpleRequest.Builder.head(endpoint.getPath());
-                case OPTIONS -> SimpleRequest.Builder.options(endpoint.getPath());
-                case PATCH -> SimpleRequest.Builder.patch(endpoint.getPath());
-                case POST -> SimpleRequest.Builder.post(endpoint.getPath());
-                case PUT -> SimpleRequest.Builder.put(endpoint.getPath());
-            };
-
-            return builder.build();
-        }
-
-        private Response<AnalysisReport> executeEndpoint(Endpoint endpoint) {
-
+        private Response<AnalysisReport> executeAPIRequest(APIRequest request) {
+            log.debug("Executing request {} for {}", request.getName(), request.getEntityName());
             HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(String.format("%s%s", baseURL, endpoint.getPath())))
-                .method(endpoint.getMethod().name(), HttpRequest.BodyPublishers.noBody()) ;
+                .uri(URI.create(String.format("%s%s", baseURL, createPath(request))))
+                .method(request.getValidatorRequest().getMethod().name(), HttpRequest.BodyPublishers.noBody()) ;
 
             LocalDateTime startTime = LocalDateTime.now() ;
 
@@ -294,21 +286,26 @@ public class OpenAPISpecificationAnalyser {
                 .mapResult(authorization -> builder.header("Authorization", authorization))
                 .mapResult(HttpRequest.Builder::build)
                 .mapResultToResponse(this::send)
-                .mapResult(response -> analyse(endpoint, startTime, response)) ;
+                .mapResult(response -> analyse(request, startTime, response)) ;
         }
 
-        private AnalysisReport analyse(Endpoint endpoint, LocalDateTime startTime, HttpResponse<String> response) {
+        private String createPath(APIRequest request) {
+            return request.getValidatorRequest().getPath() ;
+        }
+
+        private AnalysisReport analyse(APIRequest request, LocalDateTime startTime, HttpResponse<String> response) {
             return AnalysisReport.builder()
-                .endpoint(endpoint)
+                .request(request)
                 .startTime(startTime)
                 .statusCode(response.statusCode())
-                .validationReport(validator.validate(createRequest(endpoint), createResponse(response)))
+                .validationReport(validator.validate(request.getValidatorRequest(), createResponse(response)))
                 .endTime(LocalDateTime.now())
                 .build() ;
         }
 
         private Response<HttpResponse<String>> send(HttpRequest request) {
             log.debug(String.format("Sending %s %s", request.method(), request.uri()));
+            log.debug(String.format("Response body publisher %s", request.bodyPublisher()));
             try {
                 return Response.success(client.send(request, HttpResponse.BodyHandlers.ofString())) ;
             } catch (IOException | InterruptedException e) {
@@ -318,6 +315,7 @@ public class OpenAPISpecificationAnalyser {
 
         private com.atlassian.oai.validator.model.Response createResponse(HttpResponse<String> response) {
             log.debug(String.format("Response was %s for %s", response.statusCode(), response.uri()));
+            log.debug(String.format("Response body %s", response.body()));
             // TODO cache some results
             return SimpleResponse.Builder
                 .status(response.statusCode())

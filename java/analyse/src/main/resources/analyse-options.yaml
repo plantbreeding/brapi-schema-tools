@@ -1,0 +1,6 @@
+analyseGetEntity: false
+analyseListEntity: true
+analyseCreateEntity: false
+analyseUpdateEntity: false
+analyseDeleteEntity: false
+analyseSearchEntity: false

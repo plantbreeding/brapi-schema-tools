@@ -3,7 +3,6 @@ package org.brapi.schematools.analyse;
 import com.atlassian.oai.validator.report.ValidationReport;
 import lombok.Builder;
 import lombok.Value;
-import org.brapi.schematools.analyse.query.Endpoint;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -14,7 +13,7 @@ import java.time.ZoneId;
 @Value
 @Builder
 public class AnalysisReport {
-    Endpoint endpoint;
+    APIRequest request;
     LocalDateTime startTime;
     LocalDateTime endTime;
     int statusCode;
@@ -29,5 +28,21 @@ public class AnalysisReport {
             .toInstant().toEpochMilli() -
             startTime.atZone(ZoneId.systemDefault())
                 .toInstant().toEpochMilli() ;
+    }
+
+    /**
+     * Gets the name of the report
+     * @return the name of the report
+     */
+    public String getName() {
+        return request.getName() ;
+    }
+
+    /**
+     * Gets the entity name of the report
+     * @return the entity name of the report
+     */
+    public String getEntityName() {
+        return request.getEntityName() ;
     }
 }
