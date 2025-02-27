@@ -14,6 +14,7 @@ import java.time.ZoneId;
 @Builder
 public class AnalysisReport {
     APIRequest request;
+    String uri;
     LocalDateTime startTime;
     LocalDateTime endTime;
     int statusCode;

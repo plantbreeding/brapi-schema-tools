@@ -65,7 +65,7 @@ public class QueryTypeOptions implements Options {
 
     /**
      * Determines if the query is partition by crop, so that queries are not across crops
-     * @return {@code true} if the query is partition by crop, so that queries are not across crops, <code>false </code> otherwise
+     * @return {@code true} if the query is partition by crop, so that queries are not across crops, {@code false} otherwise
      */
     public boolean isPartitionedByCrop() {
         return partitionedByCrop != null && partitionedByCrop ;

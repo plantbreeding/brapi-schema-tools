@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -22,7 +23,6 @@ import java.nio.file.Path;
 @Accessors(chain = true)
 public class AnalysisOptions implements Options {
 
-
     @Getter(AccessLevel.PRIVATE)
     private Boolean analyseGetEntity;
     @Getter(AccessLevel.PRIVATE)
@@ -35,6 +35,9 @@ public class AnalysisOptions implements Options {
     private Boolean analyseDeleteEntity;
     @Getter(AccessLevel.PRIVATE)
     private Boolean analyseSearchEntity;
+    @Setter(AccessLevel.PRIVATE)
+    private Boolean partitionedByCrop;
+    private PropertiesOptions properties;
 
     /**
      * Load the default options
@@ -85,13 +88,44 @@ public class AnalysisOptions implements Options {
             analyseListEntity = overrideOptions.analyseListEntity;
         }
 
+        if (overrideOptions.analyseCreateEntity != null) {
+            analyseCreateEntity = overrideOptions.analyseCreateEntity;
+        }
+
+        if (overrideOptions.analyseUpdateEntity != null) {
+            analyseUpdateEntity = overrideOptions.analyseUpdateEntity;
+        }
+
+        if (overrideOptions.analyseDeleteEntity != null) {
+            analyseDeleteEntity = overrideOptions.analyseDeleteEntity;
+        }
+
+        if (overrideOptions.analyseSearchEntity != null) {
+            analyseSearchEntity = overrideOptions.analyseSearchEntity;
+        }
+
+        if (overrideOptions.partitionedByCrop != null) {
+            partitionedByCrop = overrideOptions.partitionedByCrop;
+        }
+
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.getProperties()) ;
+        }
+
         return this ;
     }
 
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(analyseGetEntity, "'analyseGetEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseListEntity, "'analyseListEntity' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(analyseListEntity, "'analyseListEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(analyseCreateEntity, "'analyseCreateEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(analyseUpdateEntity, "'analyseUpdateEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(analyseDeleteEntity, "'analyseDeleteEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(analyseSearchEntity, "'analyseSearchEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(partitionedByCrop, "'partitionedByCrop' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(properties,  "Properties Options are null")
+            .merge(properties) ;
     }
 
     /**
@@ -152,5 +186,13 @@ public class AnalysisOptions implements Options {
     @JsonIgnore
     public boolean isAnalysingSearchEntity(String entityName) {
         return analyseSearchEntity;
+    }
+
+    /**
+     * Determines if the request is partition by crop, so that queries are not across crops
+     * @return {@code true} if the request is partition by crop, so that requests are not across crops, {@code false} otherwise
+     */
+    public boolean isPartitionedByCrop() {
+        return partitionedByCrop != null && partitionedByCrop ;
     }
 }

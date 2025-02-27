@@ -1,6 +1,29 @@
-analyseGetEntity: false
+analyseGetEntity: true
 analyseListEntity: true
 analyseCreateEntity: false
 analyseUpdateEntity: false
 analyseDeleteEntity: false
-analyseSearchEntity: false
+analyseSearchEntity: true
+partitionedByCrop : true
+properties:
+    id:
+        nameFormat: "%sDbId"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+            GenomeMap: mapDbId
+    name:
+        nameFormat: "%sName"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeName
+            GermplasmAttributeValue: attributeValueName
+            GenomeMap: mapName
+    pui:
+        nameFormat: "%sPUI"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributePUI
+            GermplasmAttributeValue: attributeValuePUI
+            GenomeMap: mapPUI

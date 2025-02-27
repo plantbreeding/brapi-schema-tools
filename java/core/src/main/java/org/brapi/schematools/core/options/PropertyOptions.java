@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.openapi.options;
+package org.brapi.schematools.core.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;

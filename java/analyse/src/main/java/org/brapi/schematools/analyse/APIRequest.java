@@ -14,8 +14,14 @@ import java.util.List;
 @Builder
 public class APIRequest {
     String name;
+    int index ;
     String entityName;
     @Singular
-    List<String> pathParameters;
+    List<Parameter> pathParameters ;
+    @Singular
+    List<Parameter> queryParameters ;
     Request validatorRequest;
+    @Singular
+    List<Variable> cacheVariables ;
+    Object body ;
 }

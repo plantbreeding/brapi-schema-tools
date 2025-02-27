@@ -8,6 +8,7 @@ import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -184,7 +185,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(put, "Put Endpoint Options are null")
             .assertNotNull(delete,  "Delete Endpoint Options are null")
             .assertNotNull(search,  "Search Endpoint Options are null")
-            .assertNotNull(properties,  "Id Options are null")
+            .assertNotNull(properties,  "Properties Options are null")
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
             .merge(singleGet)
