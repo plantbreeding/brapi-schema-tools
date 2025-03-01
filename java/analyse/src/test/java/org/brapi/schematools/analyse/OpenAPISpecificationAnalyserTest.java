@@ -18,11 +18,11 @@ class OpenAPISpecificationAnalyserTest {
     private NoAuthorizationProvider authorizationProvider;
     @Mock
     private HttpResponse<String> response ;
-    private OpenAPISpecificationAnalyser subject;
+    private OpenAPISpecificationAnalyserFactory subject;
 
     @BeforeEach
     void setUp() {
-        subject = new OpenAPISpecificationAnalyser("https://brapi.org/brapi/v2", client, authorizationProvider) ;
+        subject = new OpenAPISpecificationAnalyserFactory("https://brapi.org/brapi/v2", client, authorizationProvider) ;
     }
 
     /*@Test

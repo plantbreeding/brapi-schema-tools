@@ -24,7 +24,7 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
     public Validation validate() {
         return super.validate()
             .assertNotNull(pluralisingName, "'pluralisingName' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**

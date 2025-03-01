@@ -3,6 +3,7 @@ package org.brapi.schematools.analyse;
 import com.atlassian.oai.validator.OpenApiInteractionValidator;
 import com.atlassian.oai.validator.model.SimpleRequest;
 import com.atlassian.oai.validator.model.SimpleResponse;
+import com.atlassian.oai.validator.report.ValidationReport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
@@ -11,9 +12,11 @@ import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +36,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.brapi.schematools.core.response.Response.success;
+
 
 /**
  * Analyses BrAPI endpoints against an OpenAPI Specification
  */
 @Slf4j
-public class OpenAPISpecificationAnalyser {
+public class OpenAPISpecificationAnalyserFactory {
 
     private static final int SPECIAL_CASE_ENDPOINTS_INDEX = 0;
     private static final int LIST_ENTITY_INDEX = 10;
@@ -68,13 +73,13 @@ public class OpenAPISpecificationAnalyser {
     private final List<String> SPECIAL_CASE_ENDPOINTS = List.of(COMMON_CROP_NAMES_ENDPOINT);
 
     /**
-     * Create an Analyser
+     * Create an Analyser Factory
      *
      * @param baseURL               the base URl for the BrAPI server
      * @param client                the HTTP client to use for the execution of requests
      * @param authorizationProvider the authorization provider need for authorization
      */
-    public OpenAPISpecificationAnalyser(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider) {
+    public OpenAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider) {
         this(baseURL, client, authorizationProvider, AnalysisOptions.load());
     }
 
@@ -86,7 +91,7 @@ public class OpenAPISpecificationAnalyser {
      * @param authorizationProvider the authorization provider need for authorization
      * @param options               analysis options ;
      */
-    public OpenAPISpecificationAnalyser(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider, AnalysisOptions options) {
+    public OpenAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider, AnalysisOptions options) {
         this.baseURL = baseURL;
         this.client = client;
         this.authorizationProvider = authorizationProvider;
@@ -95,7 +100,8 @@ public class OpenAPISpecificationAnalyser {
     }
 
     /**
-     * Analyse all the endpoints in the specification.
+     * Creates a new analyser and analyses all the endpoints in the specification.
+     * Shortcut for {@link AnalysisOptions#validate()}, {@link Analyser#analyseSpecial()} and {@link Analyser#analyseAll()}.
      *
      * @param specification the OpenAPI specification to br analysed.
      * @return A response containing a list of AnalysisReports or failure explaining why it failed.
@@ -105,11 +111,12 @@ public class OpenAPISpecificationAnalyser {
         Analyser analyser = new Analyser(specification);
 
         return options.validate().asResponse()
-            .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyse()).collect(Response.mergeLists()));
+            .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseAll()).collect(Response.mergeLists()));
     }
 
     /**
-     * Analyse the endpoints for specific entities in the specification.
+     * Creates a new analyser and analyses the endpoints for specific entities in the specification.
+     * Shortcut for {@link AnalysisOptions#validate()}, {@link Analyser#analyseSpecial()} and {@link Analyser#analyseEntities(List)}.
      *
      * @param specification the OpenAPI specification to br analysed.
      * @param entityNames   a list of entities to be analysed
@@ -120,10 +127,26 @@ public class OpenAPISpecificationAnalyser {
         Analyser analyser = new Analyser(specification);
 
         return options.validate().asResponse()
-            .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyse(entityNames)).collect(Response.mergeLists()));
+            .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseEntities(entityNames)).collect(Response.mergeLists()));
     }
 
-    private class Analyser {
+    /**
+     * Creates a new analyser for a specification. Used for fine control over the analysis.
+     * It is recommended to use the factory directly {@link OpenAPISpecificationAnalyserFactory#analyse(String)} or
+     * {@link OpenAPISpecificationAnalyserFactory#analyse(String, List)} which handles option validation
+     * and the pre-processing steps, like calling {@link Analyser#analyseSpecial()}
+     *
+     * @param specification the OpenAPI specification to br analysed.
+     * @return A response containing a list of AnalysisReports or failure explaining why it failed.
+     */
+    public Analyser analyser(String specification) {
+        return new Analyser(specification) ;
+    }
+
+    /**
+     * Analyser provides direct access to the analysis functions.
+     */
+    public class Analyser {
 
         private final OpenAPI openAPI;
         private final OpenApiInteractionValidator validator;
@@ -131,12 +154,16 @@ public class OpenAPISpecificationAnalyser {
 
         private final Set<APIRequest> specialRequests = new TreeSet<>(Comparator.comparingInt(APIRequest::getIndex));
 
-        private final Map<String, List<APIRequest>> requestsByEntity;
+        private final Map<String, List<APIRequest>> requestsByEntity ;
 
         private final List<String> unmatchedEndpoints = new ArrayList<>();
         private final Map<String, VariableValue> variableValues = new HashMap<>();
 
-        public Analyser(String specification) {
+        /**
+         * Create an Analysis based on a OpenAPI specification
+         * @param specification on a OpenAPI specification
+         */
+        private Analyser(String specification) {
             ParseOptions parseOptions = new ParseOptions();
 
             parseOptions.setResolve(true);
@@ -154,6 +181,14 @@ public class OpenAPISpecificationAnalyser {
         }
 
         /**
+         * Get the list of entities available on the server
+         * @return list of entities available on the server
+         */
+        public List<String> getEntityNames() {
+            return new ArrayList<>(requestsByEntity.keySet())  ;
+        }
+
+        /**
          * Gets a list of endpoints that are not tested under any situation
          *
          * @return a list of endpoints that are not tested under any situation
@@ -162,21 +197,50 @@ public class OpenAPISpecificationAnalyser {
             return unmatchedEndpoints;
         }
 
-        private Response<List<AnalysisReport>> analyseSpecial() {
+        /**
+         * Analyse all the endpoints in the specification.
+         * Does not call {@link AnalysisOptions#validate()} or {@link #analyseSpecial()}.
+         *
+         * @return A response containing a list of AnalysisReports or failure explaining why it failed.
+         */
+        public Response<List<AnalysisReport>> analyseAll() {
+            return requestsByEntity.entrySet().stream()
+                .map(this::executeAPIRequests).collect(Response.mergeLists());
+        }
+
+        /**
+         * Analyse the endpoints for specific entities in the specification.
+         * Does not call {@link AnalysisOptions#validate()} or {@link #analyseSpecial()}.
+         *
+         * @param entityNames a list of entities to be analysed
+         * @return A response containing a list of AnalysisReports or failure explaining why it failed.
+         */
+        public Response<List<AnalysisReport>> analyseEntities(List<String> entityNames) {
+            return requestsByEntity.entrySet().stream()
+                .filter(entry -> entityNames.contains(entry.getKey()))
+                .map(this::executeAPIRequests).collect(Response.mergeLists());
+        }
+
+        /**
+         * Analyse the endpoints for specific entity in the specification. Does not call {@link #analyseSpecial()}.
+         *
+         * @param entityName an entity to be analysed
+         * @return A response containing a list of AnalysisReports or failure explaining why it failed.
+         */
+        public Response<List<AnalysisReport>> analyseEntity(String entityName) {
+            return requestsByEntity.entrySet().stream()
+                .filter(entry -> entityName.equals(entry.getKey()))
+                .map(this::executeAPIRequests).collect(Response.mergeLists());
+        }
+
+        /**
+         * Analyse the special endpoints that do not fit the regular entity endpoints. For example the /commoncropnames endpoint.
+         *
+         * @return A response containing a list of AnalysisReports or failure explaining why it failed.
+         */
+        public Response<List<AnalysisReport>> analyseSpecial() {
             return specialRequests.stream()
                 .map(this::executeAPIRequest).collect(Response.toList());
-        }
-
-        private Response<List<AnalysisReport>> analyse() {
-            return requestsByEntity.entrySet().stream()
-                .map(this::executeAPIRequests).collect(Response.mergeLists());
-        }
-
-        private Response<List<AnalysisReport>> analyse(List<String> entityNames) {
-            List<String> names = entityNames.stream().map(String::toLowerCase).toList();
-            return requestsByEntity.entrySet().stream()
-                .filter(entry -> names.contains(entry.getKey()))
-                .map(this::executeAPIRequests).collect(Response.mergeLists());
         }
 
         private void cacheRequests(Map.Entry<String, PathItem> pathItemEntry) {
@@ -212,90 +276,128 @@ public class OpenAPISpecificationAnalyser {
             }
 
             if (matcher.matches()) {
-                String entityName = StringUtils.capitalise(StringUtils.toSingular(matcher.group(1)));
-                String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                if (pathItem.getGet() != null && options.isAnalysingGetEntity(entityName)) {
-                    addAPIRequest(getAPIRequestBuilder("Get Entity", GET_ENTITY_INDEX, matcher.group(1), pathItem.getGet())
-                        .validatorRequest(SimpleRequest.Builder
-                            .get(endpoint)
-                            .build())
-                        .pathParameter(Parameter.builder()
-                            .parameterName(entityIdPropertyName)
-                            .variableName(entityIdPropertyName + "1")
-                            .build()));
+                if (pathItem.getGet() != null) {
+
+                    String entityName = findEntityName(pathItem.getGet(), matcher.group(1)) ;
+                    String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
+
+                    if (options.isAnalysingGetForEntity(entityName)) {
+                        addAPIRequest(getAPIRequestBuilder("Get Entity", GET_ENTITY_INDEX, entityName, pathItem.getGet())
+                            .validatorRequest(SimpleRequest.Builder
+                                .get(endpoint)
+                                .build())
+                            .pathParameter(Parameter.builder()
+                                .parameterName(entityIdPropertyName)
+                                .variableName(entityIdPropertyName + "1")
+                                .build()));
+                    } else {
+                        log.debug(String.format("Ignored GET '%s' Endpoint", endpoint));
+                    }
                 }
 
                 if (pathItem.getPost() != null) {
                     log.warn(String.format("Ignored POST '%s' Endpoint", endpoint));
                 }
 
-                if (pathItem.getPut() != null && options.isAnalysingUpdateEntity(StringUtils.toSingular(matcher.group(1)))) {
-                    addAPIRequest(buildUpdateEntityBody(pathItem.getPut().getRequestBody(),
-                        getAPIRequestBuilder("Update Entity", UPDATE_ENTITY_INDEX, matcher.group(1), pathItem.getPut())
+                if (pathItem.getPut() != null) {
+
+                    String entityName = findEntityName(pathItem.getPut(), matcher.group(1)) ;
+                    String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
+
+                    if (options.isAnalysingUpdateForEntity(entityName)) {
+
+                        addAPIRequest(buildUpdateEntityBody(pathItem.getPut().getRequestBody(),
+                            getAPIRequestBuilder("Update Entity", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut())
+                                .validatorRequest(SimpleRequest.Builder
+                                    .put(endpoint)
+                                    .build())
+                                .pathParameter(Parameter.builder()
+                                    .parameterName(entityIdPropertyName)
+                                    .variableName(entityIdPropertyName + "1")
+                                    .build())));
+                    } else {
+                        log.debug(String.format("Ignored PUT '%s' Endpoint", endpoint));
+                    }
+                }
+
+                if (pathItem.getDelete() != null) {
+
+                    String entityName = findEntityName(pathItem.getDelete(), matcher.group(1)) ;
+                    String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
+
+                    if (options.isAnalysingDeleteForEntity(entityName)) {
+                        addAPIRequest(getAPIRequestBuilder("Delete", DELETE_ENTITY_INDEX, entityName, pathItem.getDelete())
                             .validatorRequest(SimpleRequest.Builder
-                                .put(endpoint)
+                                .delete(endpoint)
                                 .build())
                             .pathParameter(Parameter.builder()
                                 .parameterName(entityIdPropertyName)
                                 .variableName(entityIdPropertyName + "1")
-                                .build())));
-                }
-
-                if (pathItem.getDelete() != null && options.isAnalysingDeleteEntity(StringUtils.toSingular(matcher.group(1)))) {
-                    addAPIRequest(getAPIRequestBuilder("Delete", DELETE_ENTITY_INDEX, matcher.group(1), pathItem.getDelete())
-                        .validatorRequest(SimpleRequest.Builder
-                            .delete(endpoint)
-                            .build())
-                        .pathParameter(Parameter.builder()
-                            .parameterName(entityIdPropertyName)
-                            .variableName(entityIdPropertyName + "1")
-                            .build()));
+                                .build()));
+                    } else {
+                        log.debug(String.format("Ignored DELETE '%s' Endpoint", endpoint));
+                    }
                 }
             } else {
                 matcher = ENTITIES_PATH_PATTERN.matcher(endpoint);
 
                 if (matcher.matches()) {
-                    String entityName = StringUtils.capitalise(StringUtils.toSingular(matcher.group(1)));
+                    if (pathItem.getGet() != null) {
 
-                    if (pathItem.getGet() != null && options.isAnalysingListEntity(StringUtils.toSingular(matcher.group(1)))) {
-
+                        String entityName = findEntityName(pathItem.getGet(), matcher.group(1));
                         String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                        addAPIRequest(getAPIRequestBuilder("List", LIST_ENTITY_INDEX, matcher.group(1), pathItem.getGet())
-                            .validatorRequest(SimpleRequest.Builder
-                                .get(endpoint)
-                                .build())
-                            .cacheVariable(Variable.builder()
-                                .variableName(entityIdPropertyName + "1")
-                                .parameterName(entityIdPropertyName)
-                                .jsonPath("$.result.data[0]." + entityIdPropertyName)
-                                .build()));
+                        if (options.isAnalysingListForEntity(entityName)) {
+
+                            addAPIRequest(getAPIRequestBuilder("List", LIST_ENTITY_INDEX, entityName, pathItem.getGet())
+                                .validatorRequest(SimpleRequest.Builder
+                                    .get(endpoint)
+                                    .build())
+                                .cacheVariable(Variable.builder()
+                                    .variableName(entityIdPropertyName + "1")
+                                    .parameterName(entityIdPropertyName)
+                                    .jsonPath("$.result.data[0]." + entityIdPropertyName)
+                                    .build()));
+                        } else {
+                            log.debug(String.format("Ignored GET '%s' Endpoint", endpoint));
+                        }
 
                         // TODO get from options other likely parameters, and extract variables for them
                     }
 
-                    if (pathItem.getPost() != null && options.isAnalysingCreateEntity(StringUtils.toSingular(matcher.group(1)))) {
+                    if (pathItem.getPost() != null) {
 
-                        String createEntityName = StringUtils.capitalise(StringUtils.toSingular(matcher.group(1)));
+                        String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
-                        addAPIRequest(buildCreateEntitiesBody(pathItem.getPost().getRequestBody(),
-                            getAPIRequestBuilder("Create", CREATE_ENTITY_INDEX, matcher.group(1), pathItem.getPost())
-                                .validatorRequest(SimpleRequest.Builder
-                                    .post(endpoint)
-                                    .build()))
-                            .cacheVariable(Variable.builder()
-                                .variableName("new" + createEntityName)
-                                .jsonPath("$.result.data[0]")
-                                .build()));
+                        if (options.isAnalysingCreateForEntity(StringUtils.toSingular(entityName))) {
+                            addAPIRequest(buildCreateEntitiesBody(pathItem.getPost().getRequestBody(),
+                                getAPIRequestBuilder("Create", CREATE_ENTITY_INDEX, entityName, pathItem.getPost())
+                                    .validatorRequest(SimpleRequest.Builder
+                                        .post(endpoint)
+                                        .build()))
+                                .cacheVariable(Variable.builder()
+                                    .variableName("new" + entityName)
+                                    .jsonPath("$.result.data[0]")
+                                    .build()));
+                        } else {
+                            log.debug(String.format("Ignored POST '%s' Endpoint", endpoint));
+                        }
                     }
 
-                    if (pathItem.getPut() != null && options.isAnalysingUpdateEntity(StringUtils.toSingular(matcher.group(1)))) {
-                        addAPIRequest(buildUpdateEntitiesBody(pathItem.getPut().getRequestBody(),
-                            getAPIRequestBuilder("Update(s)", UPDATE_ENTITY_INDEX, matcher.group(1), pathItem.getPut())
-                                .validatorRequest(SimpleRequest.Builder
-                                    .put(endpoint)
-                                    .build())));
+                    if (pathItem.getPut() != null && options.isAnalysingUpdateForEntity(StringUtils.toSingular(matcher.group(1)))) {
+
+                        String entityName = findEntityName(pathItem.getPut(), matcher.group(1));
+
+                        if (options.isAnalysingUpdateForEntity(StringUtils.toSingular(entityName))) {
+                            addAPIRequest(buildUpdateEntitiesBody(pathItem.getPut().getRequestBody(),
+                                getAPIRequestBuilder("Update(s)", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut())
+                                    .validatorRequest(SimpleRequest.Builder
+                                        .put(endpoint)
+                                        .build())));
+                        } else {
+                            log.debug(String.format("Ignored PUT '%s' Endpoint", endpoint));
+                        }
                     }
 
                     if (pathItem.getDelete() != null) {
@@ -305,16 +407,22 @@ public class OpenAPISpecificationAnalyser {
                     matcher = SEARCH_PATH_PATTERN.matcher(endpoint);
 
                     if (matcher.matches()) {
+
                         if (pathItem.getGet() != null) {
                             log.warn(String.format("Ignored GET '%s' Endpoint", endpoint));
                         }
 
-                        if (pathItem.getPost() != null && options.isAnalysingSearchEntity(StringUtils.toSingular(matcher.group(1)))) {
-                            addAPIRequest(buildSearchBody(pathItem.getPost().getRequestBody(),
-                                getAPIRequestBuilder("Search", SEARCH_INDEX, matcher.group(1), pathItem.getPost())
-                                    .validatorRequest(SimpleRequest.Builder
-                                        .post(endpoint)
-                                        .build())));
+                        if (pathItem.getPost() != null) {
+
+                            String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
+
+                            if (options.isAnalysingSearchForEntity(entityName)) {
+                                addAPIRequest(buildSearchBody(pathItem.getPost().getRequestBody(),
+                                    getAPIRequestBuilder("Search", SEARCH_INDEX, entityName, pathItem.getPost())
+                                        .validatorRequest(SimpleRequest.Builder
+                                            .post(endpoint)
+                                            .build())));
+                            }
                         }
 
                         if (pathItem.getPut() != null) {
@@ -328,9 +436,11 @@ public class OpenAPISpecificationAnalyser {
                         matcher = SEARCH_RESULTS_PATH_PATTERN.matcher(endpoint);
 
                         if (matcher.matches()) {
-                            if (pathItem.getGet() != null && options.isAnalysingSearchEntity(StringUtils.toSingular(matcher.group(1)))) {
+                            String entityName = findEntityName(pathItem.getGet(), matcher.group(1));
 
-                                addAPIRequest(getAPIRequestBuilder("Get Search Results", SEARCH_RESULTS_INDEX, matcher.group(1), pathItem.getGet())
+                            if (pathItem.getGet() != null && options.isAnalysingSearchResultForEntity(StringUtils.toSingular(matcher.group(1)))) {
+
+                                addAPIRequest(getAPIRequestBuilder("Get Search Results", SEARCH_RESULTS_INDEX, entityName, pathItem.getGet())
                                     .validatorRequest(SimpleRequest.Builder
                                         .get(endpoint)
                                         .build())
@@ -338,6 +448,8 @@ public class OpenAPISpecificationAnalyser {
                                         .parameterName("searchResultsDbId")
                                         .variableName("searchResultsDbId1")
                                         .build()));
+                            } else {
+                                log.debug(String.format("Ignored POST '%s' Endpoint", endpoint));
                             }
 
                             if (pathItem.getPost() != null) {
@@ -358,6 +470,43 @@ public class OpenAPISpecificationAnalyser {
                     }
                 }
             }
+        }
+
+        private String findEntityName(Operation operation, String pathName) {
+
+            if (operation != null && operation.getResponses() != null) {
+                ApiResponse response = operation.getResponses().get("200");
+
+                if (response != null) {
+                    MediaType content = response.getContent().get("application/json");
+
+                    if (content != null && content.getSchema() != null) {
+                        Schema schema = content.getSchema();
+
+                        if (schema.get$ref() != null) {
+                            schema = findSchema(schema.get$ref()).orElseResult(null);
+                        }
+
+                        if (schema != null && schema.getTitle() != null) {
+                            String entityName = schema.getTitle() ;
+
+                            if (entityName.endsWith("ListResponse")) {
+                                entityName = schema.getTitle().substring(0, entityName.length() - 12);
+                            } else if (entityName.endsWith("SingleResponse")) {
+                                entityName = entityName.substring(0, entityName.length() - 14);
+                            } else if (entityName.endsWith("Response")) {
+                                entityName = entityName.substring(0, entityName.length() - 8);
+                            }
+
+                            return StringUtils.capitalise(StringUtils.toSingular(entityName)) ;
+                        }
+                    }
+                }
+            }
+
+            System.out.println(StringUtils.capitalise(StringUtils.toSingular(pathName)));
+
+            return StringUtils.capitalise(StringUtils.toSingular(pathName));
         }
 
         private APIRequest.APIRequestBuilder buildUpdateEntityBody(RequestBody body, APIRequest.APIRequestBuilder builder) {
@@ -401,7 +550,7 @@ public class OpenAPISpecificationAnalyser {
 
                 });
 
-                return Response.success(map);
+                return success(map);
 
             } else {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Schema must be object %s", schema));
@@ -418,7 +567,7 @@ public class OpenAPISpecificationAnalyser {
                     if (schema != null && schema.get$ref() != null) {
                         return findSchema(schema.get$ref());
                     } else {
-                        return Response.success(schema);
+                        return success(schema);
                     }
                 }
             }
@@ -434,7 +583,7 @@ public class OpenAPISpecificationAnalyser {
                 Schema schema = openAPI.getComponents().getSchemas().get(matcher.group(1));
 
                 if (schema != null) {
-                    return Response.success(schema);
+                    return success(schema);
                 }
             }
 
@@ -445,8 +594,7 @@ public class OpenAPISpecificationAnalyser {
             requests.add(builder.build());
         }
 
-        private APIRequest.APIRequestBuilder getAPIRequestBuilder(String name, int index, String pluralName, Operation operation) {
-            String entityName = StringUtils.toSingular(pluralName);
+        private APIRequest.APIRequestBuilder getAPIRequestBuilder(String name, int index, String entityName, Operation operation) {
 
             APIRequest.APIRequestBuilder builder = APIRequest.builder()
                 .name(name)
@@ -502,7 +650,16 @@ public class OpenAPISpecificationAnalyser {
                     .merge(() -> createURI(builder, request))
                     .mapResult(HttpRequest.Builder::build)
                     .mapResultToResponse(this::send)
-                    .mapResultToResponse(httpResponse -> analyse(request, startTime, httpResponse));
+                    .mapResultToResponse(httpResponse -> analyse(request, startTime, httpResponse))
+                    .or(response -> success(AnalysisReport.builder()
+                        .request(request)
+                        .startTime(startTime)
+                        .endTime(LocalDateTime.now())
+                        .errorKey("Pre-Execution")
+                        .errorLevel(ValidationReport.Level.WARN)
+                        .errorMessage(response.getMessagesCombined(", "))
+                        .build())) ;
+
             } catch (Exception e) {
                 return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
@@ -510,7 +667,7 @@ public class OpenAPISpecificationAnalyser {
 
         private Response<HttpRequest.Builder> createURI(HttpRequest.Builder builder, APIRequest request) {
             if (request.getPathParameters().isEmpty()) {
-                return Response.success(builder.uri(URI.create(String.format("%s%s", baseURL, request.getValidatorRequest().getPath()))));
+                return success(builder.uri(URI.create(String.format("%s%s", baseURL, request.getValidatorRequest().getPath()))));
             } else {
                 return request.getPathParameters().stream()
                     .map(this::getVariableValue).collect(Response.toList())
@@ -523,7 +680,7 @@ public class OpenAPISpecificationAnalyser {
             VariableValue value = variableValues.get(parameter.getVariableName());
 
             if (value != null) {
-                return Response.success(value);
+                return success(value);
             } else {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find variable '%s' for '%s", parameter.getVariableName(), parameter.getParameterName()));
             }
@@ -536,7 +693,7 @@ public class OpenAPISpecificationAnalyser {
                         variableValue.getParameterName() != null ? variableValue.getParameterName() : variableValue.getVariableName()),
                         writeValueAsString(variableValue.getValue()));
                 }
-                return Response.success(path);
+                return success(path);
             } catch (JsonProcessingException e) {
                 return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
@@ -555,13 +712,13 @@ public class OpenAPISpecificationAnalyser {
                 return replaceBodyWithVariableValues(request.getBody())
                     .mapResultToResponse(this::writeBody);
             } else {
-                return Response.success(HttpRequest.BodyPublishers.noBody());
+                return success(HttpRequest.BodyPublishers.noBody());
             }
         }
 
         private Response<Object> replaceBodyWithVariableValues(Object body) {
             try {
-                return Response.success(replaceWithVariableValues(body)) ;
+                return success(replaceWithVariableValues(body)) ;
             } catch (RuntimeException runtimeException) {
                 return Response.fail(Response.ErrorType.VALIDATION, runtimeException.getMessage()) ;
             }
@@ -589,12 +746,12 @@ public class OpenAPISpecificationAnalyser {
                 }
             }
 
-            return Response.success(body);
+            return success(body);
         }
 
         private Response<HttpRequest.BodyPublisher> writeBody(Object body) {
             try {
-                return Response.success(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)));
+                return success(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)));
             } catch (JsonProcessingException e) {
                 return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
@@ -603,6 +760,13 @@ public class OpenAPISpecificationAnalyser {
 
         private Response<AnalysisReport> analyse(APIRequest request, LocalDateTime startTime, HttpResponse<String> httpResponse) {
 
+            AnalysisReport.AnalysisReportBuilder builder = AnalysisReport.builder()
+                .request(request)
+                .uri(httpResponse.request().uri().toString())
+                .startTime(startTime)
+                .statusCode(httpResponse.statusCode())
+                .endTime(LocalDateTime.now());
+
             if (!request.getCacheVariables().isEmpty()) {
                 if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
 
@@ -610,7 +774,9 @@ public class OpenAPISpecificationAnalyser {
                         DocumentContext documentContext = JsonPath.parse(httpResponse.body());
                         request.getCacheVariables().forEach(variable -> cacheVariableValue(documentContext, variable));
                     } catch (Exception e) {
-                        return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
+                        builder.errorKey(e.getClass().getSimpleName());
+                        builder.errorLevel(ValidationReport.Level.WARN) ;
+                        builder.errorMessage(e.getMessage());
                     }
                 } else {
                     Response.fail(Response.ErrorType.VALIDATION, String.format("Can not cache value for variables '%s', return code was '%s'",
@@ -618,11 +784,8 @@ public class OpenAPISpecificationAnalyser {
                 }
             }
 
-            return Response.success(AnalysisReport.builder()
+            return success(builder
                 .request(request)
-                .uri(httpResponse.request().uri().toString())
-                .startTime(startTime)
-                .statusCode(httpResponse.statusCode())
                 .validationReport(validator.validate(request.getValidatorRequest(), createResponse(httpResponse)))
                 .endTime(LocalDateTime.now())
                 .build());
@@ -646,7 +809,7 @@ public class OpenAPISpecificationAnalyser {
             log.debug(String.format("Sending %s %s", request.method(), request.uri()));
             log.debug(String.format("Response body publisher %s", request.bodyPublisher()));
             try {
-                return Response.success(client.send(request, HttpResponse.BodyHandlers.ofString()));
+                return success(client.send(request, HttpResponse.BodyHandlers.ofString()));
             } catch (IOException | InterruptedException e) {
                 return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
             }

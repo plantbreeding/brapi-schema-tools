@@ -33,9 +33,10 @@ public class PropertyOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
-            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(link, "'link' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pluralPropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**

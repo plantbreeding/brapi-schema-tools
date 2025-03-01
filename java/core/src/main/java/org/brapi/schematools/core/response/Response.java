@@ -429,6 +429,17 @@ public class Response<T> {
     }
 
     /**
+     * Returns this response if this response has no errors, otherwise create a new response and merges in the errors
+     * from this response. In either case the result from this response is lost.
+     * @param function a function that takes this response and provides a new response
+     * @return the provided response from the function
+     * @param <U> the result type of the provided response
+     */
+    public Response<T> or(Function<Response<T>, Response<T>> function) {
+        return this.hasErrors() ? function.apply(this) : this;
+    }
+
+    /**
      * Returns this response if it has no errors, otherwise returns the provided response
      * @param response a new response
      * @return this response if it has no errors, otherwise returns the provided response

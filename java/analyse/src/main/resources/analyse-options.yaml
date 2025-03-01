@@ -1,9 +1,17 @@
-analyseGetEntity: true
-analyseListEntity: true
-analyseCreateEntity: false
-analyseUpdateEntity: false
-analyseDeleteEntity: false
-analyseSearchEntity: true
+getEntity:
+    analyse: true
+listEntity:
+    analyse: true
+createEntity:
+    analyse: false
+updateEntity:
+    analyse: false
+deleteEntity:
+    analyse: false
+search:
+    analyse: true
+searchResult:
+    analyse: false
 partitionedByCrop : true
 properties:
     id:

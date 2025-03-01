@@ -19,6 +19,9 @@ public class AnalysisReport {
     LocalDateTime endTime;
     int statusCode;
     ValidationReport validationReport ;
+    String errorKey ;
+    ValidationReport.Level errorLevel ;
+    String errorMessage ;
 
     /**
      * Get the time elapsed from the start of the analysis to it completion in milliseconds

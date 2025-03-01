@@ -1,7 +1,11 @@
 package org.brapi.schematools.analyse;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.options.PropertiesOptions;
@@ -14,7 +18,7 @@ import java.nio.file.Path;
 
 
 /**
- * Options for the {@link OpenAPISpecificationAnalyser}.
+ * Options for the {@link OpenAPISpecificationAnalyserFactory}.
  */
 @Getter
 @Setter
@@ -24,17 +28,19 @@ import java.nio.file.Path;
 public class AnalysisOptions implements Options {
 
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseGetEntity;
+    private APIRequestOptions getEntity;
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseListEntity;
+    private APIRequestOptions listEntity;
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseCreateEntity;
+    private APIRequestOptions createEntity;
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseUpdateEntity;
+    private APIRequestOptions updateEntity;
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseDeleteEntity;
+    private APIRequestOptions deleteEntity;
     @Getter(AccessLevel.PRIVATE)
-    private Boolean analyseSearchEntity;
+    private APIRequestOptions search;
+    @Getter(AccessLevel.PRIVATE)
+    private APIRequestOptions searchResult;
     @Setter(AccessLevel.PRIVATE)
     private Boolean partitionedByCrop;
     private PropertiesOptions properties;
@@ -80,28 +86,32 @@ public class AnalysisOptions implements Options {
      */
     public AnalysisOptions override(AnalysisOptions overrideOptions) {
 
-        if (overrideOptions.analyseGetEntity != null) {
-            analyseGetEntity = overrideOptions.analyseListEntity;
+        if (overrideOptions.getEntity != null) {
+            getEntity.override(overrideOptions.listEntity);
         }
 
-        if (overrideOptions.analyseListEntity != null) {
-            analyseListEntity = overrideOptions.analyseListEntity;
+        if (overrideOptions.listEntity != null) {
+            listEntity.override(overrideOptions.listEntity);
         }
 
-        if (overrideOptions.analyseCreateEntity != null) {
-            analyseCreateEntity = overrideOptions.analyseCreateEntity;
+        if (overrideOptions.createEntity != null) {
+            createEntity.override(overrideOptions.createEntity);
         }
 
-        if (overrideOptions.analyseUpdateEntity != null) {
-            analyseUpdateEntity = overrideOptions.analyseUpdateEntity;
+        if (overrideOptions.updateEntity != null) {
+            updateEntity.override(overrideOptions.updateEntity);
         }
 
-        if (overrideOptions.analyseDeleteEntity != null) {
-            analyseDeleteEntity = overrideOptions.analyseDeleteEntity;
+        if (overrideOptions.deleteEntity != null) {
+            deleteEntity.override(overrideOptions.deleteEntity);
         }
 
-        if (overrideOptions.analyseSearchEntity != null) {
-            analyseSearchEntity = overrideOptions.analyseSearchEntity;
+        if (overrideOptions.search != null) {
+            search.override(overrideOptions.search);
+        }
+
+        if (overrideOptions.searchResult != null) {
+            searchResult.override(overrideOptions.searchResult);
         }
 
         if (overrideOptions.partitionedByCrop != null) {
@@ -117,12 +127,13 @@ public class AnalysisOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
-            .assertNotNull(analyseGetEntity, "'analyseGetEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseListEntity, "'analyseListEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseCreateEntity, "'analyseCreateEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseUpdateEntity, "'analyseUpdateEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseDeleteEntity, "'analyseDeleteEntity' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(analyseSearchEntity, "'analyseSearchEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(getEntity, "'getEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(listEntity, "'listEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(createEntity, "'createEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(updateEntity, "'updateEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(deleteEntity, "'deleteEntity' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(search, "'search' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(searchResult, "'searchResult' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(partitionedByCrop, "'partitionedByCrop' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(properties,  "Properties Options are null")
             .merge(properties) ;
@@ -134,8 +145,8 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the get API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingGetEntity(String entityName) {
-        return analyseGetEntity ;
+    public boolean isAnalysingGetForEntity(String entityName) {
+        return getEntity.isAnalysingEntity(entityName);
     }
 
     /**
@@ -144,8 +155,8 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the list API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingListEntity(String entityName) {
-        return analyseListEntity;
+    public boolean isAnalysingListForEntity(String entityName) {
+        return listEntity.isAnalysingEntity(entityName);
     }
 
     /**
@@ -154,8 +165,8 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the get API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingCreateEntity(String entityName) {
-        return analyseCreateEntity ;
+    public boolean isAnalysingCreateForEntity(String entityName) {
+        return createEntity.isAnalysingEntity(entityName);
     }
 
     /**
@@ -164,8 +175,8 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the list API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingUpdateEntity(String entityName) {
-        return analyseUpdateEntity;
+    public boolean isAnalysingUpdateForEntity(String entityName) {
+        return updateEntity.isAnalysingEntity(entityName);
     }
 
     /**
@@ -174,8 +185,8 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the get API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingDeleteEntity(String entityName) {
-        return analyseDeleteEntity ;
+    public boolean isAnalysingDeleteForEntity(String entityName) {
+        return deleteEntity.isAnalysingEntity(entityName);
     }
 
     /**
@@ -184,8 +195,18 @@ public class AnalysisOptions implements Options {
      * @return {@code true} if the Analyser should analyse the list API for an Entity, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAnalysingSearchEntity(String entityName) {
-        return analyseSearchEntity;
+    public boolean isAnalysingSearchForEntity(String entityName) {
+        return search.isAnalysingEntity(entityName);
+    }
+
+    /**
+     * Determines if the Analyser should analyse the result from Search API for an Entity.
+     * @param entityName the name of the entity
+     * @return {@code true} if the Analyser should analyse the list API for an Entity, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAnalysingSearchResultForEntity(String entityName) {
+        return searchResult.isAnalysingEntity(entityName);
     }
 
     /**

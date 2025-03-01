@@ -63,7 +63,7 @@ public class TabularReportGenerator {
         DataFrameArrayAppender appender = DataFrame.byArrayRow(COLUMN_NAMES).appender();
 
         reports.forEach(analysisReport -> {
-            if (analysisReport.getValidationReport().getMessages().isEmpty()) {
+            if (analysisReport.getValidationReport() == null || analysisReport.getValidationReport().getMessages().isEmpty()) {
                 appender.append(
                     analysisReport.getName(),
                     analysisReport.getEntityName(),
@@ -71,9 +71,9 @@ public class TabularReportGenerator {
                     analysisReport.getUri(),
                     analysisReport.getStatusCode(),
                     DurationFormatUtils.formatDurationHMS(analysisReport.getTimeElapsed()),
-                    null,
-                    null,
-                    null) ;
+                    analysisReport.getErrorKey(),
+                    analysisReport.getErrorLevel(),
+                    analysisReport.getErrorMessage()) ;
             } else {
                 analysisReport.getValidationReport().getMessages().forEach(message -> {
                     appender.append(

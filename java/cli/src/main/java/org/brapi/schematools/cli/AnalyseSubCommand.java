@@ -3,17 +3,20 @@ package org.brapi.schematools.cli;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.commons.math3.analysis.function.Identity;
+import org.brapi.schematools.analyse.AnalysisOptions;
 import org.brapi.schematools.analyse.AnalysisReport;
 import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
-import org.brapi.schematools.analyse.OpenAPISpecificationAnalyser;
+import org.brapi.schematools.analyse.OpenAPISpecificationAnalyserFactory;
 import org.brapi.schematools.analyse.TabularReportGenerator;
 import org.brapi.schematools.analyse.authorization.BasicAuthorizationProvider;
 import org.brapi.schematools.analyse.authorization.oauth.OpenIDToken;
 import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
 import org.brapi.schematools.analyse.authorization.NoAuthorizationProvider;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.validiation.Validation;
 import org.dflib.DataFrame;
+import org.dflib.excel.Excel;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
@@ -23,10 +26,10 @@ import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.dflib.excel.Excel;
 
 import static java.util.function.UnaryOperator.identity;
 
@@ -51,8 +54,8 @@ public class AnalyseSubCommand implements Runnable {
     private List<String> entityNames;
     @CommandLine.Option(names = {"-a", "--oauth"}, description = "The URL of the OAuth access token if used")
     private String oauthURL;
-    @CommandLine.Option(names = {"-o", "--output"}, description = "The path to the directory where the output is sent.")
-    private Path outputPath;
+    @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
+    private Path optionsPath;
     @CommandLine.Option(names = {"-r", "--report"}, description = "The path to Excel workbook where the report is sent. If not provided, the standard out is used.")
     private Path reportPath;
     @CommandLine.Option(names = {"-u", "--username"}, description = "The username for authentication if required. If not provided the current system username is used.")
@@ -65,8 +68,10 @@ public class AnalyseSubCommand implements Runnable {
     private String clientSecret;
     @CommandLine.Option(names = {"-v", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
     private boolean verbose;
-    @CommandLine.Option(names = {"-m", "--separateReportsByEntity"}, description = "Separate reports by entity")
-    private boolean separateReportsByEntity;
+    @CommandLine.Option(names = {"-i", "--individualReportsByEntity"}, description = "Create an individual report for entity")
+    private boolean individualReportsByEntity;
+    @CommandLine.Option(names = {"-b", "--batchProcess"}, description = "Process the API requests in batches per entity. Use only with the -i option.")
+    private boolean batchProcess;
 
     @Override
     public void run() {
@@ -79,38 +84,113 @@ public class AnalyseSubCommand implements Runnable {
             }
         }
 
-        execute()
-            .onFailDoWithResponse(this::outputError)
-            .onSuccessDoWithResult(this::outputResult);
+        try {
+            AnalysisOptions options = optionsPath != null ?
+                AnalysisOptions.load(optionsPath) : AnalysisOptions.load() ;
+
+            if (batchProcess) {
+                if (!individualReportsByEntity) {
+                    err.println("Batch process can only be used in conjunction with 'individualReportsByEntity'");
+                }
+
+                validateOptions(options)
+                    .map(() -> createAnalyser(options))
+                    .mapResultToResponse(this::batchAnalyse)
+                    .onFailDoWithResponse(this::outputError) ;
+
+            } else {
+                validateOptions(options)
+                    .map(() -> createAnalyser(options))
+                    .mapResultToResponse(this::analyse)
+                    .onFailDoWithResponse(this::outputError)
+                    .onSuccessDoWithResult(this::outputReports);
+            }
+
+        } catch (Exception exception) {
+
+            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
+            err.println(message) ;
+        }
     }
 
-    private Response<List<AnalysisReport>> execute() {
+    private Response<Validation> validateOptions(AnalysisOptions options) {
+       return options.validate().asResponse() ;
+    }
+
+    private Response<OpenAPISpecificationAnalyserFactory.Analyser> createAnalyser(AnalysisOptions options) {
         if (Files.isRegularFile(specificationPath)) {
+            Stream<String> lines ;
+
+            try {
+                lines = Files.lines(specificationPath);
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not read path '%s'", specificationPath.toFile()));
+            }
+
+            String specification = lines.collect(Collectors.joining("\n"));
+            lines.close();
+
             return authorisation()
-                .mapResult(sso -> new OpenAPISpecificationAnalyser(baseURL, HttpClient.newBuilder().build(), sso))
-                .mapResultToResponse(this::analyse);
+                .mapResult(sso -> new OpenAPISpecificationAnalyserFactory(baseURL, HttpClient.newBuilder().build(), sso, options))
+                .mapResult(provider -> provider.analyser(specification)) ;
         }
 
         return Response.fail(Response.ErrorType.VALIDATION, String.format("Path '%s' is not regular file", specificationPath.toFile()));
     }
 
-    private Response<List<AnalysisReport>> analyse(OpenAPISpecificationAnalyser analyser) {
-        Stream<String> lines ;
-
-        try {
-            lines = Files.lines(specificationPath);
-        } catch (IOException e) {
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not read path '%s'", specificationPath.toFile()));
-        }
-        String specification = lines.collect(Collectors.joining("\n"));
-        lines.close();
-
+    private Response<List<AnalysisReport>> analyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
         if (entityNames != null) {
-            // TODO check if a file
-            return analyser.analyse(specification, entityNames) ;
+            // TODO check if a file containing entity names
+            return Stream.of(
+                    analyser.analyseSpecial(),
+                    analyser.analyseEntities(entityNames))
+                .collect(Response.mergeLists());
         } else {
-            return analyser.analyse(specification) ;
+            return Stream.of(
+                    analyser.analyseSpecial(),
+                    analyser.analyseAll())
+                .collect(Response.mergeLists());
         }
+    }
+
+    private Response<List<AnalysisReport>> batchAnalyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+
+        List<AnalysisReport> completedReports = new LinkedList<>();
+
+        TabularReportGenerator tabularReportGenerator = new TabularReportGenerator();
+
+        if (reportPath != null) {
+            if (Files.isDirectory(reportPath)) {
+                err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Report file '%s' is directory", reportPath));
+            }
+
+            analyser.analyseSpecial().onFailDoWithResponse(this::outputError)
+                .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                .onSuccessDoWithResult(completedReports::addAll);
+
+            analyser.getEntityNames().forEach(entityName -> {
+                analyser.analyseEntity(entityName)
+                    .onFailDoWithResponse(this::outputError)
+                    .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                    .onSuccessDoWithResult(completedReports::addAll);
+            });
+
+        } else {
+            analyser.analyseSpecial()
+                .onFailDoWithResponse(this::outputError)
+                .onSuccessDoWithResult(reports -> outputReportsToOut(tabularReportGenerator, reports))
+                .onSuccessDoWithResult(completedReports::addAll);
+
+            analyser.getEntityNames().forEach(entityName -> {
+                analyser.analyseEntity(entityName)
+                    .onFailDoWithResponse(this::outputError)
+                    .onSuccessDoWithResult(reports -> outputReportsToOut(tabularReportGenerator, reports))
+                    .onSuccessDoWithResult(completedReports::addAll);
+            });
+        }
+
+        return Response.success(completedReports) ;
     }
 
     private Response<AuthorizationProvider> authorisation() {
@@ -144,14 +224,9 @@ public class AnalyseSubCommand implements Runnable {
         response.getMessages().forEach(err::println);
     }
 
-    private void outputResult(List<AnalysisReport> listResponses) {
+    private void outputReports(List<AnalysisReport> listResponses) {
 
         TabularReportGenerator tabularReportGenerator = new TabularReportGenerator();
-
-        if (outputPath != null && !Files.isDirectory(outputPath)) {
-            err.printf("Output path '%s' is not directory!%n", outputPath.toFile().getAbsolutePath());
-            return;
-        }
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
@@ -159,18 +234,26 @@ public class AnalyseSubCommand implements Runnable {
                 return;
             }
 
-            if (separateReportsByEntity) {
-                List<DataFrame> reports = tabularReportGenerator.generateReportByEntity(listResponses);
-
-                Excel.save(reports.stream().collect(Collectors.toMap(DataFrame::getName, identity())), reportPath);
-            } else {
-                DataFrame report = tabularReportGenerator.generateReport(listResponses);
-
-                Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
-            }
-
+            outputReportsToFile(tabularReportGenerator, listResponses) ;
         } else {
-            out.println(tabularReportGenerator.generateReportTable(listResponses));
+            outputReportsToOut(tabularReportGenerator, listResponses) ;
+
+        }
+    }
+
+    private void outputReportsToOut(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
+        out.println(tabularReportGenerator.generateReportTable(listResponses));
+    }
+
+    private void outputReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
+        if (individualReportsByEntity) {
+            List<DataFrame> reports = tabularReportGenerator.generateReportByEntity(listResponses);
+
+            Excel.save(reports.stream().collect(Collectors.toMap(DataFrame::getName, identity())), reportPath);
+        } else {
+            DataFrame report = tabularReportGenerator.generateReport(listResponses);
+
+            Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
         }
     }
 }

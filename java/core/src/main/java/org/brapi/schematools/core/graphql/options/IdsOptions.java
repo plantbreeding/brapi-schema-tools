@@ -30,7 +30,7 @@ public class IdsOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
-            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(useIDType, "'useIDType' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(fieldFor, "'fieldFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
