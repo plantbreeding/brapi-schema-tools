@@ -616,13 +616,13 @@ public class OpenAPISpecificationAnalyserFactory {
 
                 String entityName = findEntityName(pathItem.getGet(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                String entityIdPropertyName = matcher.group(2) ;
+                String entityIdPropertyName = matcher.group(3) ;
 
                 if (options.isAnalysingListForEntity(entityName)) {
                     return getAPIRequestBuilder("List Sub Entities", LIST_ENTITY_INDEX, entityName, pathItem.getGet(), options.getListEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
-                                .delete(endpoint)
+                                .get(endpoint)
                                 .build())
                             .pathParameter(Parameter.builder()
                                 .parameterName(entityIdPropertyName)
@@ -865,6 +865,8 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private Response<AnalysisReport> executeAPIRequest(APIRequest request) {
             log.debug("Executing request {} for {}", request.getName(), request.getEntityName());
+
+            log.debug("Full request {}", request);
 
             try {
                 HttpRequest.Builder builder = HttpRequest.newBuilder();

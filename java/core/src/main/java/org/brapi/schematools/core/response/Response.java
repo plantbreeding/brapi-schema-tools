@@ -433,7 +433,6 @@ public class Response<T> {
      * from this response. In either case the result from this response is lost.
      * @param function a function that takes this response and provides a new response
      * @return the provided response from the function
-     * @param <U> the result type of the provided response
      */
     public Response<T> or(Function<Response<T>, Response<T>> function) {
         return this.hasErrors() ? function.apply(this) : this;
