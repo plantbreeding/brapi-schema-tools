@@ -27,21 +27,14 @@ import java.nio.file.Path;
 @Accessors(chain = true)
 public class AnalysisOptions implements Options {
 
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions getEntity;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions listEntity;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions createEntity;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions updateEntity;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions deleteEntity;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions search;
-    @Getter(AccessLevel.PRIVATE)
     private APIRequestOptions searchResult;
-    @Setter(AccessLevel.PRIVATE)
+    private APIRequestOptions table;
     private Boolean partitionedByCrop;
     private PropertiesOptions properties;
 
@@ -207,6 +200,16 @@ public class AnalysisOptions implements Options {
     @JsonIgnore
     public boolean isAnalysingSearchResultForEntity(String entityName) {
         return searchResult.isAnalysingEntity(entityName);
+    }
+
+    /**
+     * Determines if the Analyser should analyse the get or post table API for an Entity.
+     * @param entityName the name of the entity
+     * @return {@code true} if the Analyser should analyse the get or post table API for an Entity, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAnalysingTableForEntity(String entityName) {
+        return table.isAnalysingEntity(entityName);
     }
 
     /**

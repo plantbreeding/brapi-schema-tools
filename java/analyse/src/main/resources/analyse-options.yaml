@@ -10,8 +10,13 @@ deleteEntity:
     analyse: false
 search:
     analyse: true
+    requiredParametersFor:
+        Pedigree:
+            - germplasmDbIds
 searchResult:
     analyse: false
+table:
+    analyse: true
 partitionedByCrop : true
 properties:
     id:

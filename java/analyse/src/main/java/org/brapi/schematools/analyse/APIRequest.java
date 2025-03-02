@@ -24,4 +24,6 @@ public class APIRequest {
     @Singular
     List<Variable> cacheVariables ;
     Object body ;
+    @Singular
+    List<String> prerequisites;
 }

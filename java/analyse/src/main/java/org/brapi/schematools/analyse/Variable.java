@@ -13,4 +13,5 @@ public class Variable {
     String variableName ;
     String parameterName;
     String jsonPath ;
+    boolean convertToList ;
 }

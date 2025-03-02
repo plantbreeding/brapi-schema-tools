@@ -72,6 +72,8 @@ public class AnalyseSubCommand implements Runnable {
     private boolean individualReportsByEntity;
     @CommandLine.Option(names = {"-b", "--batchProcess"}, description = "Process the API requests in batches per entity. Use only with the -i option.")
     private boolean batchProcess;
+    @CommandLine.Option(names = {"-d", "--validate"}, description = "Does a dry run on the analyse, validating the options")
+    private boolean validate;
 
     @Override
     public void run() {
@@ -88,7 +90,12 @@ public class AnalyseSubCommand implements Runnable {
             AnalysisOptions options = optionsPath != null ?
                 AnalysisOptions.load(optionsPath) : AnalysisOptions.load() ;
 
-            if (batchProcess) {
+            if (validate) {
+                validateOptions(options)
+                    .onFailDoWithResponse(this::outputValidation)
+                    .map(() -> createAnalyser(options))
+                    .onSuccessDoWithResult(this::outputDryRun);
+            } else if (batchProcess) {
                 if (!individualReportsByEntity) {
                     err.println("Batch process can only be used in conjunction with 'individualReportsByEntity'");
                 }
@@ -139,19 +146,21 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private Response<List<AnalysisReport>> analyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
-        if (entityNames != null) {
-            // TODO check if a file containing entity names
+        List<String> entityNames = getEntityNames() ;
+
+        if (entityNames.isEmpty()) {
+            return Stream.of(
+                analyser.analyseSpecial(),
+                analyser.analyseAll())
+            .collect(Response.mergeLists());
+        } else {
             return Stream.of(
                     analyser.analyseSpecial(),
                     analyser.analyseEntities(entityNames))
                 .collect(Response.mergeLists());
-        } else {
-            return Stream.of(
-                    analyser.analyseSpecial(),
-                    analyser.analyseAll())
-                .collect(Response.mergeLists());
         }
     }
+
 
     private Response<List<AnalysisReport>> batchAnalyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
 
@@ -169,13 +178,23 @@ public class AnalyseSubCommand implements Runnable {
                 .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
                 .onSuccessDoWithResult(completedReports::addAll);
 
-            analyser.getEntityNames().forEach(entityName -> {
-                analyser.analyseEntity(entityName)
-                    .onFailDoWithResponse(this::outputError)
-                    .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
-                    .onSuccessDoWithResult(completedReports::addAll);
-            });
+            List<String> entityNames = getEntityNames() ;
 
+            if (entityNames.isEmpty()) {
+                analyser.getEntityNames().forEach(entityName -> {
+                    analyser.analyseEntity(entityName)
+                        .onFailDoWithResponse(this::outputError)
+                        .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                        .onSuccessDoWithResult(completedReports::addAll);
+                });
+            } else {
+                entityNames.forEach(entityName -> {
+                    analyser.analyseEntity(entityName)
+                        .onFailDoWithResponse(this::outputError)
+                        .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                        .onSuccessDoWithResult(completedReports::addAll);
+                });
+            }
         } else {
             analyser.analyseSpecial()
                 .onFailDoWithResponse(this::outputError)
@@ -191,6 +210,15 @@ public class AnalyseSubCommand implements Runnable {
         }
 
         return Response.success(completedReports) ;
+    }
+
+    private List<String> getEntityNames() {
+        if (entityNames != null) {
+            // TODO check if a file containing entity names
+            return entityNames ;
+        }  else {
+            return new LinkedList<>() ;
+        }
     }
 
     private Response<AuthorizationProvider> authorisation() {
@@ -220,7 +248,7 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private void outputError(Response<List<AnalysisReport>> response) {
-        err.println("Analysis failed due to");
+        err.println("Analysis failed due to: ");
         response.getMessages().forEach(err::println);
     }
 
@@ -255,5 +283,18 @@ public class AnalyseSubCommand implements Runnable {
 
             Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
         }
+    }
+
+    private void outputValidation(Response<Validation> response) {
+        err.println("Validation Errors:");
+        response.getMessages().forEach(err::println);
+    }
+
+    private void outputDryRun(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+        out.println("Skipping Endpoints:");
+        analyser.getSkippedEndpoints().forEach(out::println);
+        out.println();
+        out.println("Ignored Endpoints:");
+        analyser.getUnmatchedEndpoints().forEach(out::println);
     }
 }
