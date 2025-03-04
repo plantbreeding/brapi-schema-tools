@@ -5,18 +5,16 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.brapi.schematools.analyse.AnalysisOptions;
 import org.brapi.schematools.analyse.AnalysisReport;
-import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
 import org.brapi.schematools.analyse.OpenAPISpecificationAnalyserFactory;
 import org.brapi.schematools.analyse.TabularReportGenerator;
+import org.brapi.schematools.analyse.TabularReportWriter;
+import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
 import org.brapi.schematools.analyse.authorization.BasicAuthorizationProvider;
+import org.brapi.schematools.analyse.authorization.NoAuthorizationProvider;
 import org.brapi.schematools.analyse.authorization.oauth.OpenIDToken;
 import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
-import org.brapi.schematools.analyse.authorization.NoAuthorizationProvider;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
-import org.dflib.DataFrame;
-import org.dflib.excel.Excel;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
@@ -25,13 +23,10 @@ import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.function.UnaryOperator.identity;
 
 /**
  * Analyse Command
@@ -94,6 +89,7 @@ public class AnalyseSubCommand implements Runnable {
                 validateOptions(options)
                     .onFailDoWithResponse(this::outputValidation)
                     .map(() -> createAnalyser(options))
+                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
                     .onSuccessDoWithResult(this::outputDryRun);
             } else if (batchProcess) {
                 if (!individualReportsByEntity) {
@@ -102,21 +98,21 @@ public class AnalyseSubCommand implements Runnable {
 
                 validateOptions(options)
                     .map(() -> createAnalyser(options))
+                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::batchAnalyse)
                     .onFailDoWithResponse(this::outputError) ;
 
             } else {
                 validateOptions(options)
                     .map(() -> createAnalyser(options))
+                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::analyse)
                     .onFailDoWithResponse(this::outputError)
                     .onSuccessDoWithResult(this::outputReports);
             }
 
         } catch (Exception exception) {
-
-            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
-            err.println(message) ;
+            outputException(exception) ;
         }
     }
 
@@ -139,7 +135,7 @@ public class AnalyseSubCommand implements Runnable {
 
             return authorisation()
                 .mapResult(sso -> new OpenAPISpecificationAnalyserFactory(baseURL, HttpClient.newBuilder().build(), sso, options))
-                .mapResult(provider -> provider.analyser(specification)) ;
+                .mapResult(factory -> factory.analyser(specification)) ;
         }
 
         return Response.fail(Response.ErrorType.VALIDATION, String.format("Path '%s' is not regular file", specificationPath.toFile()));
@@ -265,7 +261,6 @@ public class AnalyseSubCommand implements Runnable {
             outputReportsToFile(tabularReportGenerator, listResponses) ;
         } else {
             outputReportsToOut(tabularReportGenerator, listResponses) ;
-
         }
     }
 
@@ -274,14 +269,20 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private void outputReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
-        if (individualReportsByEntity) {
-            List<DataFrame> reports = tabularReportGenerator.generateReportByEntity(listResponses);
+        TabularReportWriter writer = TabularReportWriter
+            .writer()
+            .autoFilterColumns()
+            .autoSizeColumns()
+            .freezePane() ;
 
-            Excel.save(reports.stream().collect(Collectors.toMap(DataFrame::getName, identity())), reportPath);
-        } else {
-            DataFrame report = tabularReportGenerator.generateReport(listResponses);
-
-            Excel.save(Collections.singletonMap(report.getName(), report), reportPath);
+        try {
+            if (individualReportsByEntity) {
+                writer.writeToExcel(tabularReportGenerator.generateReportByEntity(listResponses), reportPath);
+            } else {
+                writer.writeToExcel(tabularReportGenerator.generateReport(listResponses), reportPath);
+            }
+        } catch (IOException e) {
+            outputException(e);
         }
     }
 
@@ -296,5 +297,10 @@ public class AnalyseSubCommand implements Runnable {
         out.println();
         out.println("Ignored Endpoints:");
         analyser.getUnmatchedEndpoints().forEach(out::println);
+    }
+
+    private void outputException(Exception exception) {
+        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
+        err.println(message) ;
     }
 }

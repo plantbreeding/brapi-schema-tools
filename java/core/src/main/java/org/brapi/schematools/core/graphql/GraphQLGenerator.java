@@ -839,7 +839,7 @@ public class GraphQLGenerator {
             String name = String.format(options.getQueryType().getListQuery().getResponseTypeNameForType(graphQLObjectType.getName())) ;
 
             if (objectOutputTypes.containsKey(name)) {
-                // TODO possible that the cache version is page and this is not, and vise versa.
+                // TODO possible that the cache version is paged and this is not, and vise versa.
                 return objectOutputTypes.get(name);
             }
 

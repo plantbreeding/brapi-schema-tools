@@ -1,14 +1,15 @@
 package org.brapi.schematools.analyse;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Defines a Parameter, which links a parameter in a query, path or body to a variable.
+ * Defines defines a parameter
  */
-@Value
-@Builder
+@Getter
+@Setter
 public class Parameter {
-    String variableName ;
     String parameterName;
+    String variableName ;
+    String in;
 }

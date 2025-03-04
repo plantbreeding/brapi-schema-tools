@@ -121,7 +121,7 @@ public class StringUtils {
         return string.
             replace("-", "_").
             replace("/", "_").
-            replace(".", "_"); // TODO other replacements
+            replace(".", "_");
     }
 
     /**

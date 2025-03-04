@@ -26,13 +26,16 @@ public class APIRequestOptions implements Options {
     @Getter(AccessLevel.PRIVATE)
     private Map<String, Boolean> analyseFor = new HashMap<>();
     @Getter(AccessLevel.PRIVATE)
-    private Map<String, List<String>> requiredParametersFor = new HashMap<>();
+    private Map<String, List<Parameter>> requiredParametersFor = new HashMap<>();
+    @Getter(AccessLevel.PRIVATE)
+    private Map<String, List<String>> prerequisitesFor = new HashMap<>();
 
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(analyse, "'analyse' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(analyseFor, "'analyseFor' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(requiredParametersFor, "'requiredParametersFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(requiredParametersFor, "'requiredParametersFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(prerequisitesFor, "'prerequisitesFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -50,6 +53,10 @@ public class APIRequestOptions implements Options {
 
         if (overrideOptions.requiredParametersFor != null) {
             requiredParametersFor.putAll(overrideOptions.requiredParametersFor);
+        }
+
+        if (overrideOptions.prerequisitesFor != null) {
+            prerequisitesFor.putAll(overrideOptions.prerequisitesFor);
         }
     }
 
@@ -78,25 +85,49 @@ public class APIRequestOptions implements Options {
     }
 
     /**
-     * Gets the required parameters a specific primary model. Use {@link #setAnalysingEntityFor(String, Boolean)}
+     * Gets the required parameters for a specific primary model. Use {@link #setRequiredParametersFor(String, List)}
+     * to override this value.
+     * @param name the name of the primary model
+     * @return the required parameters for a specific primary model
+     */
+    @JsonIgnore
+    public List<Parameter> getRequiredParametersFor(String name) {
+        return requiredParametersFor.getOrDefault(name, new LinkedList<>()) ;
+    }
+
+    /**
+     * Sets the required parameters for a specific primary model.
+     * @param name the name of the primary model
+     * @param requiredParameters the required parameters for a specific primary model
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public APIRequestOptions setRequiredParametersFor(String name, List<Parameter> requiredParameters) {
+        requiredParametersFor.put(name, requiredParameters) ;
+
+        return this ;
+    }
+
+    /**
+     * Gets the prerequisites for a specific primary model. Use {@link #setPrerequisitesFor(String, List)}
      * to override this value.
      * @param name the name of the primary model
      * @return the required parameters a specific primary model
      */
     @JsonIgnore
-    public List<String> getRequiredParametersFor(String name) {
-        return requiredParametersFor.getOrDefault(name, new LinkedList<>()) ;
+    public List<String> getPrerequisitesFor(String name) {
+        return prerequisitesFor.getOrDefault(name, new LinkedList<>()) ;
     }
 
     /**
-     * Sets the required parameters a specific primary model.
+     * Sets the prerequisites for a specific primary model.
      * @param name the name of the primary model
-     * @param requiredParameters the required parameters a specific primary model
+     * @param requiredParameters the prerequisites for a specific primary model
      * @return the options for chaining
      */
     @JsonIgnore
-    public APIRequestOptions setRequiredParametersFor(String name, List<String> requiredParameters) {
-        requiredParametersFor.put(name, requiredParameters) ;
+    public APIRequestOptions setPrerequisitesFor(String name, List<String> requiredParameters) {
+        prerequisitesFor.put(name, requiredParameters) ;
 
         return this ;
     }

@@ -1,6 +1,5 @@
 package org.brapi.schematools.analyse;
 
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.dflib.DataFrame;
 import org.dflib.Printers;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 /**
  * Generates a tabular report from a list of AnalysisReports
  */
-@NoArgsConstructor
 public class TabularReportGenerator {
     private static final String[] COLUMN_NAMES = new String[]{
         "Name",

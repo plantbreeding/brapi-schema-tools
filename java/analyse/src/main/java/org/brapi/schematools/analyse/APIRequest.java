@@ -19,9 +19,9 @@ public class APIRequest {
     int index ;
     String entityName;
     @Singular
-    List<Parameter> pathParameters ;
+    List<ParameterLink> pathParameters ;
     @Singular
-    List<Parameter> queryParameters ;
+    List<ParameterLink> queryParameters ;
     Request validatorRequest;
     @Singular
     List<Variable> cacheVariables ;

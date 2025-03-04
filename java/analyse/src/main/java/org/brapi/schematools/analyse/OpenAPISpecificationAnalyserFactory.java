@@ -112,7 +112,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
         Analyser analyser = new Analyser(specification);
 
-        return options.validate().asResponse()
+        return analyser.getErrors().merge(options.validate().asResponse())
             .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseAll()).collect(Response.mergeLists()));
     }
 
@@ -128,12 +128,12 @@ public class OpenAPISpecificationAnalyserFactory {
 
         Analyser analyser = new Analyser(specification);
 
-        return options.validate().asResponse()
+        return analyser.getErrors().merge(options.validate().asResponse())
             .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseEntities(entityNames)).collect(Response.mergeLists()));
     }
 
     /**
-     * Creates a new analyser and validates the options.
+     * Creates a new analyser and validates the options against the specification.
      * Shortcut for {@link AnalysisOptions#validate()}
      *
      * @param specification the OpenAPI specification to br analysed.
@@ -143,7 +143,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
         Analyser analyser = new Analyser(specification);
 
-        return options.validate().asResponse() ;
+        return analyser.getErrors().merge(options.validate().asResponse());
     }
 
     /**
@@ -156,7 +156,7 @@ public class OpenAPISpecificationAnalyserFactory {
      * @return A response containing a list of AnalysisReports or failure explaining why it failed.
      */
     public Analyser analyser(String specification) {
-        return new Analyser(specification) ;
+        return new Analyser(specification);
     }
 
     /**
@@ -170,32 +170,35 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private final Set<APIRequest> specialRequests = new TreeSet<>(Comparator.comparingInt(APIRequest::getIndex));
 
-        private final Map<String, List<APIRequest>> requestsByEntity ;
+        private final Map<String, List<APIRequest>> requestsByEntity;
 
         private final List<Endpoint> unmatchedEndpoints = new ArrayList<>();
 
         private final List<Endpoint> skippedEndpoints = new ArrayList<>();
         private final Map<String, VariableValue> variableValues = new HashMap<>();
 
-        private final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}"); // 3 groups
-        private final Pattern ENTITIES_PATH_PATTERN = Pattern.compile(	"/(\\w+)(?:/)?(\\w+)?(?:/)?(\\w+)?"); // 3 groups, ignore last
-        private final Pattern SEARCH_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?"); // 2 groups
-        private final Pattern SEARCH_RESULTS_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?/\\{(\\w+)\\}"); // 3 groups, ignore last
-        private final Pattern TABLE_PATH_PATTERN = Pattern.compile("/(\\w+)/table"); // 1 group
-        private final Pattern ENTITY_SUB_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}/(\\w+)"); // 3 groups, ignore 3rd
-        private final List<PatternMatcher> PATH_PATTERN_MATCHERS = Arrays.asList(
-            new PatternMatcher(SEARCH_PATH_PATTERN, this::cacheSearchPath),
-            new PatternMatcher(SEARCH_RESULTS_PATH_PATTERN, this::cacheSearchResultPath),
-            new PatternMatcher(ENTITIES_PATH_PATTERN, this::cacheEntitiesPath),
-            new PatternMatcher(ENTITY_PATH_PATTERN, this::cacheEntityPath),
-            new PatternMatcher(TABLE_PATH_PATTERN, this::cacheTablePath),
-            new PatternMatcher(ENTITY_SUB_PATH_PATTERN, this::cacheSubPath)) ;
+        private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}"); // 3 groups
+        private static final Pattern ENTITIES_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?(?:/)?(\\w+)?"); // 3 groups, ignore last
+        private static final Pattern SEARCH_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?"); // 2 groups
+        private static final Pattern SEARCH_RESULTS_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?/\\{(\\w+)\\}"); // 3 groups, ignore last
+        private static final Pattern TABLE_PATH_PATTERN = Pattern.compile("/(\\w+)/table"); // 1 group
+        private static final Pattern ENTITY_SUB_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}/(\\w+)"); // 3 groups, ignore 3rd
+        private final List<PathMatcher> PATH_PATTERN_MATCHERS = Arrays.asList(
+            new PathMatcher(SEARCH_PATH_PATTERN, this::cacheSearchPath),
+            new PathMatcher(SEARCH_RESULTS_PATH_PATTERN, this::cacheSearchResultPath),
+            new PathMatcher(ENTITIES_PATH_PATTERN, this::cacheEntitiesPath),
+            new PathMatcher(ENTITY_PATH_PATTERN, this::cacheEntityPath),
+            new PathMatcher(TABLE_PATH_PATTERN, this::cacheTablePath),
+            new PathMatcher(ENTITY_SUB_PATH_PATTERN, this::cacheSubPath));
 
-        private final Pattern PARAMETER_PATTERN = Pattern.compile(	"\\{(\\w+)\\}") ;
+        private final Pattern PARAMETER_PATTERN = Pattern.compile("\\{(\\w+)\\}");
         private final Response<List<APIRequest>> errors;
+
+        private static final List<String> PRIMITIVES = Arrays.asList("String", "Boolean");
 
         /**
          * Create an Analysis based on a OpenAPI specification
+         *
          * @param specification on a OpenAPI specification
          */
         private Analyser(String specification) {
@@ -213,17 +216,18 @@ public class OpenAPISpecificationAnalyserFactory {
             errors = openAPI.getPaths().entrySet().stream()
                 .map(this::cacheRequest)
                 .collect(Response.toList())
-                .onFailDoWithResponse(Response::getAllErrors) ;
+                .onFailDoWithResponse(Response::getAllErrors);
 
             requestsByEntity = new TreeMap<>(requests.values().stream().collect(Collectors.groupingBy(APIRequest::getEntityName)));
         }
 
         /**
          * Get the list of entities available on the server
+         *
          * @return list of entities available on the server
          */
         public List<String> getEntityNames() {
-            return new ArrayList<>(requestsByEntity.keySet())  ;
+            return new ArrayList<>(requestsByEntity.keySet());
         }
 
         /**
@@ -251,6 +255,10 @@ public class OpenAPISpecificationAnalyserFactory {
          * @return A response containing a list of AnalysisReports or failure explaining why it failed.
          */
         public Response<List<AnalysisReport>> analyseAll() {
+            if (errors.hasErrors()) {
+                return errors.merge(Response.empty());
+            }
+
             return requestsByEntity.entrySet().stream()
                 .map(this::executeAPIRequests).collect(Response.mergeLists());
         }
@@ -263,6 +271,10 @@ public class OpenAPISpecificationAnalyserFactory {
          * @return A response containing a list of AnalysisReports or failure explaining why it failed.
          */
         public Response<List<AnalysisReport>> analyseEntities(List<String> entityNames) {
+            if (errors.hasErrors()) {
+                return errors.merge(Response.empty());
+            }
+
             return requestsByEntity.entrySet().stream()
                 .filter(entry -> entityNames.contains(entry.getKey()))
                 .map(this::executeAPIRequests).collect(Response.mergeLists());
@@ -275,6 +287,10 @@ public class OpenAPISpecificationAnalyserFactory {
          * @return A response containing a list of AnalysisReports or failure explaining why it failed.
          */
         public Response<List<AnalysisReport>> analyseEntity(String entityName) {
+            if (errors.hasErrors()) {
+                return errors.merge(Response.empty());
+            }
+
             return requestsByEntity.entrySet().stream()
                 .filter(entry -> entityName.equals(entry.getKey()))
                 .map(this::executeAPIRequests).collect(Response.mergeLists());
@@ -286,12 +302,29 @@ public class OpenAPISpecificationAnalyserFactory {
          * @return A response containing a list of AnalysisReports or failure explaining why it failed.
          */
         public Response<List<AnalysisReport>> analyseSpecial() {
+            if (errors.hasErrors()) {
+                return errors.merge(Response.empty());
+            }
+
             return specialRequests.stream()
                 .map(this::executeAPIRequest).collect(Response.toList());
         }
 
         /**
+         * Validates the options against the specification.
+         *
+         * @return A response containing this Analyser or failure explaining why it failed.
+         */
+        public Response<Analyser> validate() {
+            if (errors.hasErrors()) {
+                return errors.merge(Response.empty());
+            }
+            return success(this);
+        }
+
+        /**
          * Get any errors found in the specification
+         *
          * @return any errors found in the specification
          */
         public Response<List<APIRequest>> getErrors() {
@@ -330,30 +363,30 @@ public class OpenAPISpecificationAnalyserFactory {
             }
 
             return PATH_PATTERN_MATCHERS.stream()
-                .map(patternMatcher -> patternMatcher.match(endpoint))
-                .filter(PatternMatcher::matches)
+                .map(pathMatcher -> pathMatcher.match(endpoint))
+                .filter(PathMatcher::matches)
                 .findFirst()
-                .map(patternMatcher -> patternMatcher.execute(pathItem))
-                .orElse(null) ;
+                .map(pathMatcher -> pathMatcher.createRequest(pathItem))
+                .orElse(null);
         }
 
         private Response<APIRequest> cacheEntityPath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getGet(), matcher.group(1), matcher.group(2));
-                String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
+                String entityIdPropertyName = getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingGetForEntity(entityName)) {
+                if (options.isAnalysingGetForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
                     return getAPIRequestBuilder("Get Entity", GET_ENTITY_INDEX, entityName, pathItem.getGet(), options.getGetEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .get(endpoint)
-                                .build())
-                            .pathParameter(Parameter.builder()
-                                .parameterName(entityIdPropertyName)
-                                .variableName(entityIdPropertyName + "1")
                                 .build()))
+                        .mapResultToResponse(builder -> enrichWithParameter(builder,
+                            entityIdPropertyName,
+                            entityIdPropertyName + "1",
+                            pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
@@ -362,87 +395,91 @@ public class OpenAPISpecificationAnalyserFactory {
             }
 
             if (pathItem.getPost() != null) {
-                unmatchedEndpoint(Request.Method.POST, endpoint, "Entity") ;
+                unmatchedEndpoint(Request.Method.POST, endpoint, "Entity");
             }
 
             if (pathItem.getPut() != null) {
-                String entityName = findEntityName(pathItem.getPut(), matcher.group(1), matcher.group(2)) ;
+                String entityName = findEntityName(pathItem.getPut(), matcher.group(1), matcher.group(2));
                 String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingUpdateForEntity(entityName)) {
+                if (options.isAnalysingUpdateForEntity(entityName) && isNotDeprecated(pathItem.getPut())) {
                     return getAPIRequestBuilder("Update Entity", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut(), options.getUpdateEntity())
                         .onSuccessDoWithResult(builder -> builder
-                        .validatorRequest(SimpleRequest.Builder
-                            .put(endpoint)
-                            .build())
-                        .pathParameter(Parameter.builder()
-                            .parameterName(entityIdPropertyName)
-                            .variableName(entityIdPropertyName + "1")
-                            .build()))
+                            .validatorRequest(SimpleRequest.Builder
+                                .put(endpoint)
+                                .build()))
+                        .mapResultToResponse(builder -> enrichWithParameter(builder,
+                            entityIdPropertyName,
+                            entityIdPropertyName + "1",
+                            pathItem.getGet().getParameters()))
                         .mapResult(builder -> buildUpdateEntityBody(builder, pathItem.getPut().getRequestBody(), options.getUpdateEntity()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entity") ;
+                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entity");
                 }
             }
 
             if (pathItem.getDelete() != null) {
-                String entityName = findEntityName(pathItem.getDelete(), matcher.group(1), matcher.group(2)) ;
+                String entityName = findEntityName(pathItem.getDelete(), matcher.group(1), matcher.group(2));
                 String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingDeleteForEntity(entityName)) {
+                if (options.isAnalysingDeleteForEntity(entityName) && isNotDeprecated(pathItem.getDelete())) {
                     return getAPIRequestBuilder("Delete Entity", DELETE_ENTITY_INDEX, entityName, pathItem.getDelete(), options.getDeleteEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .delete(endpoint)
-                                .build())
-                            .pathParameter(Parameter.builder()
-                                .parameterName(entityIdPropertyName)
-                                .variableName(entityIdPropertyName + "1")
                                 .build()))
+                        .mapResultToResponse(builder -> enrichWithParameter(builder,
+                            entityIdPropertyName,
+                            entityIdPropertyName + "1",
+                            pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.DELETE, endpoint, "Delete Entity") ;
+                    skippedEndpoint(Request.Method.DELETE, endpoint, "Delete Entity");
                 }
             }
 
-            return success(null);
+            return Response.empty();
         }
 
         private Response<APIRequest> cacheEntitiesPath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getGet(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
+                String entityIdPropertyName = getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingListForEntity(entityName)) {
+                if (options.isAnalysingListForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
                     return getAPIRequestBuilder("List Entities", LIST_ENTITY_INDEX, entityName, pathItem.getGet(), options.getListEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .get(endpoint)
-                                .build())
+                                .build()))
+                        .onSuccessDoWithResultOnCondition(entityIdPropertyName != null, builder -> builder
                             .cacheVariable(Variable.builder()
                                 .variableName(entityIdPropertyName + "1")
                                 .parameterName(entityIdPropertyName)
                                 .jsonPath("$.result.data[0]." + entityIdPropertyName)
+                                .build())
+                            .cacheVariable(Variable.builder()
+                                .variableName(entityIdPropertyName + "s1")
+                                .parameterName(entityIdPropertyName + "s")
+                                .jsonPath("$.result.data[0:10]." + entityIdPropertyName)
                                 .build()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "List Entities") ;
+                    skippedEndpoint(Request.Method.GET, endpoint, "List Entities");
                 }
-
-                // TODO get from options other likely parameters, and extract variables for them
             }
 
-            if (pathItem.getPost() != null) {
+            if (pathItem.getPost() != null)) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                if (options.isAnalysingCreateForEntity(StringUtils.toSingular(entityName))) {
+                if (options.isAnalysingCreateForEntity(entityName) && isNotDeprecated(pathItem.getPost()) {
                     return getAPIRequestBuilder("Create Entities", CREATE_ENTITY_INDEX, entityName, pathItem.getPost(), options.getCreateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -463,7 +500,7 @@ public class OpenAPISpecificationAnalyserFactory {
             if (pathItem.getPut() != null) {
                 String entityName = findEntityName(pathItem.getPut(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                if (options.isAnalysingUpdateForEntity(StringUtils.toSingular(entityName))) {
+                if (options.isAnalysingUpdateForEntity(entityName) && isNotDeprecated(pathItem.getPut())) {
                     return getAPIRequestBuilder("Update Entities", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut(), options.getUpdateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -477,7 +514,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entities") ;
+                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entities");
                 }
             }
 
@@ -485,11 +522,11 @@ public class OpenAPISpecificationAnalyserFactory {
                 unmatchedEndpoint(Request.Method.DELETE, endpoint, "Entities");
             }
 
-            return success(null);
+            return Response.empty();
         }
 
         private Response<APIRequest> cacheSearchPath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
                 unmatchedEndpoint(Request.Method.GET, endpoint, "Search Entities");
@@ -498,13 +535,13 @@ public class OpenAPISpecificationAnalyserFactory {
             if (pathItem.getPost() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2));
 
-                if (options.isAnalysingSearchForEntity(entityName)) {
+                if (options.isAnalysingSearchForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
                     return getAPIRequestBuilder("Search", SEARCH_INDEX, entityName, pathItem.getPost(), options.getSearch())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .post(endpoint)
                                 .build()))
-                        .mapResult(builder -> buildSearchBody(builder, pathItem.getPost().getRequestBody(), options.getSearch()))
+                        .mapResult(builder -> buildSearchBody(builder, entityName, pathItem.getPost().getRequestBody(), options.getSearch()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
@@ -520,29 +557,29 @@ public class OpenAPISpecificationAnalyserFactory {
                 unmatchedEndpoint(Request.Method.DELETE, endpoint, "Search Entities");
             }
 
-            return success(null);
+            return Response.empty();
         }
 
         private Response<APIRequest> cacheSearchResultPath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2));
 
-                if (options.isAnalysingSearchResultForEntity(entityName)) {
+                if (options.isAnalysingSearchResultForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
                     return getAPIRequestBuilder("Search Results", SEARCH_RESULTS_INDEX, entityName, pathItem.getGet(), options.getSearchResult())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .get(endpoint)
-                                .build())
-                            .pathParameter(Parameter.builder()
-                                .parameterName("searchResultsDbId")
-                                .variableName("searchResultsDbId1")
                                 .build()))
+                        .mapResultToResponse(builder -> enrichWithParameter(builder,
+                            "searchResultsDbId",
+                            "searchResultsDbId1",
+                            pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "Search Results") ;
+                    skippedEndpoint(Request.Method.GET, endpoint, "Search Results");
                 }
             }
 
@@ -558,16 +595,16 @@ public class OpenAPISpecificationAnalyserFactory {
                 unmatchedEndpoint(Request.Method.DELETE, endpoint, "Search Results");
             }
 
-            return success(null);
+            return Response.empty();
         }
 
         private Response<APIRequest> cacheTablePath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
-                if (options.isAnalysingTableForEntity(entityName)) {
+                if (options.isAnalysingTableForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
                     return getAPIRequestBuilder("Get Table", TABLE_INDEX, entityName, pathItem.getGet(), options.getTable())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -584,13 +621,13 @@ public class OpenAPISpecificationAnalyserFactory {
 
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
-                if (options.isAnalysingTableForEntity(entityName)) {
+                if (options.isAnalysingTableForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
                     return getAPIRequestBuilder("Search Table", TABLE_INDEX, entityName, pathItem.getPost(), options.getTable())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .post(endpoint)
                                 .build()))
-                        .mapResult(builder -> buildTableBody(builder, pathItem.getPost().getRequestBody(), options.getTable()))
+                        .mapResult(builder -> buildTableBody(builder, entityName, pathItem.getPost().getRequestBody(), options.getTable()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
@@ -606,33 +643,33 @@ public class OpenAPISpecificationAnalyserFactory {
                 unmatchedEndpoint(Request.Method.DELETE, endpoint, "Table");
             }
 
-            return success(null);
+            return Response.empty();
         }
 
         private Response<APIRequest> cacheSubPath(PathItem pathItem, Matcher matcher) {
-            String endpoint = matcher.group() ;
+            String endpoint = matcher.group();
 
             if (pathItem.getGet() != null) {
 
                 String entityName = findEntityName(pathItem.getGet(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                String entityIdPropertyName = matcher.group(3) ;
+                String entityIdPropertyName = matcher.group(3);
 
-                if (options.isAnalysingListForEntity(entityName)) {
+                if (options.isAnalysingListForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
                     return getAPIRequestBuilder("List Sub Entities", LIST_ENTITY_INDEX, entityName, pathItem.getGet(), options.getListEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .get(endpoint)
                                 .build())
-                            .pathParameter(Parameter.builder()
-                                .parameterName(entityIdPropertyName)
-                                .variableName(entityIdPropertyName + "1")
-                                .build())
-                            .prerequisite("/"+matcher.group(1)))
+                            .prerequisite("/" + matcher.group(1)))
+                        .mapResultToResponse(builder -> enrichWithParameter(builder,
+                            entityIdPropertyName,
+                            entityIdPropertyName + "1",
+                            pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "List Sub Entities") ;
+                    skippedEndpoint(Request.Method.GET, endpoint, "List Sub Entities");
                 }
             }
 
@@ -648,13 +685,35 @@ public class OpenAPISpecificationAnalyserFactory {
                 unmatchedEndpoint(Request.Method.DELETE, endpoint, "Sub Entities");
             }
 
-            return success(null);
+            return Response.empty();
+        }
+
+        private boolean isNotDeprecated(Operation operation) {
+            return operation.getDeprecated() == null || !operation.getDeprecated();
+        }
+
+        private Response<APIRequest.APIRequestBuilder> enrichWithParameter(APIRequest.APIRequestBuilder builder, String parameterName, String variableName,
+                                                                           List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
+            if (parameterName != null) {
+                return findParameterLinkAsResponse(parameterName, variableName, parameters)
+                    .onSuccessDoWithResult(builder::pathParameter)
+                    .map(() -> success(builder));
+            } else {
+                return success(builder);
+            }
+        }
+
+        private String getIdPropertyNameFor(String entityName) {
+            if (PRIMITIVES.contains(entityName)) {
+                return null;
+            } else {
+                return options.getProperties().getIdPropertyNameFor(entityName);
+            }
         }
 
         private void addRequest(APIRequest request) {
-            requests.put(request.getValidatorRequest().getPath(), request) ;
+            requests.put(request.getValidatorRequest().getPath(), request);
         }
-
 
         private void unmatchedEndpoint(Request.Method method, String path, String category) {
             unmatchedEndpoints.add(Endpoint.builder()
@@ -686,21 +745,28 @@ public class OpenAPISpecificationAnalyserFactory {
                         Schema schema = content.getSchema();
 
                         if (schema.get$ref() != null) {
-                            schema = findSchema(schema.get$ref()).orElseResult(null);
+                            schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
                         }
 
                         if (schema != null && schema.getTitle() != null) {
-                            String entityName = schema.getTitle() ;
+                            String entityName = schema.getTitle() != null ? schema.getTitle() : schema.getName();
 
                             if (entityName.endsWith("ListResponse")) {
-                                entityName = schema.getTitle().substring(0, entityName.length() - 12);
+                                return findChildSchema(schema, "result")
+                                    .mapResultToResponse(s -> findChildSchema(s, "data"))
+                                    .mapResultToResponse(this::findName)
+                                    .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 12));
                             } else if (entityName.endsWith("SingleResponse")) {
-                                entityName = entityName.substring(0, entityName.length() - 14);
+                                return findChildSchema(schema, "result")
+                                    .mapResultToResponse(this::findName)
+                                    .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 14));
                             } else if (entityName.endsWith("Response")) {
-                                entityName = entityName.substring(0, entityName.length() - 8);
+                                return findChildSchema(schema, "result")
+                                    .mapResultToResponse(this::findName)
+                                    .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 8));
+                            } else {
+                                return StringUtils.capitalise(StringUtils.toSingular(entityName));
                             }
-
-                            return StringUtils.capitalise(StringUtils.toSingular(entityName)) ;
                         }
                     }
                 }
@@ -709,10 +775,88 @@ public class OpenAPISpecificationAnalyserFactory {
             return StringUtils.capitalise(StringUtils.toSingular(String.join("", pathElements)));
         }
 
-        private String guessEntityName(String pathElement) {
-            return StringUtils.capitalise(StringUtils.toSingular(pathElement));
+        private Response<String> findName(Schema schema) {
+            if (schema instanceof ObjectSchema) {
+                if (schema.getName() != null) {
+                    return success(schema.getName());
+                } else if (schema.getTitle() != null) {
+                    return success(schema.getTitle().replace(" ", ""));
+                }
+                if (schema.getExtensions() != null // fall back on x-brapi-metadata
+                    && schema.getExtensions().containsKey("x-brapi-metadata")
+                    && ((Map<String, String>) schema.getExtensions().get("x-brapi-metadata")).containsKey("title")) {
+                    return success(((Map<String, String>) schema.getExtensions().get("x-brapi-metadata")).get("title").replace(" ", ""));
+                } else {
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find name in '%s'", schema));
+                }
+            } else {
+                return success(schema.getType());
+            }
         }
-        
+
+        private Response<Schema> findChildSchema(Schema schema, String propertyName) {
+            if (schema != null && schema.get$ref() != null) {
+                schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
+            }
+
+            if (schema != null) {
+                if (schema.getProperties() != null) {
+                    schema = (Schema) schema.getProperties().get(propertyName);
+
+                    if (schema == null) {
+                        return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find child schema in property '%s'", propertyName));
+                    }
+
+                    return findChildSchema(schema);
+                } else {
+                    return success(schema);
+                }
+            }
+
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find child schema in property '%s'", propertyName));
+        }
+
+        private Response<Schema> findChildSchema(Schema schema) {
+            if (schema != null && schema.get$ref() != null) {
+                schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
+            }
+
+            if (schema != null) {
+                if (schema.getItems() != null) {
+                    return findChildSchema(schema.getItems());
+                } else {
+                    return success(schema);
+                }
+            }
+
+            return Response.fail(Response.ErrorType.VALIDATION, "Can not find child schema");
+        }
+
+        private Response<Schema> derefSchema(Schema schema) {
+            if (schema.get$ref() != null) {
+                return findSchemaFromRef(schema.get$ref());
+            }
+            return success(schema);
+        }
+
+        private Response<Schema> findSchemaFromRef(String ref) {
+            Matcher matcher = REF_PATTERN.matcher(ref);
+
+            if (matcher.matches()) {
+
+                Schema schema = openAPI.getComponents().getSchemas().get(matcher.group(1));
+
+                if (schema != null) {
+                    if (schema.getName() == null) {
+                        schema.setName(matcher.group(1)); // make sure the name is set
+                    }
+                    return success(schema);
+                }
+            }
+
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find schema '%s'", ref));
+        }
+
         private APIRequest.APIRequestBuilder buildUpdateEntityBody(APIRequest.APIRequestBuilder builder, RequestBody requestBody, APIRequestOptions apiRequestOptions) {
             // TODO
             return builder;
@@ -728,57 +872,71 @@ public class OpenAPISpecificationAnalyserFactory {
             return builder;
         }
 
-        private APIRequest.APIRequestBuilder buildSearchBody(APIRequest.APIRequestBuilder builder, RequestBody requestBody, APIRequestOptions apiRequestOptions) {
+        private APIRequest.APIRequestBuilder buildSearchBody(APIRequest.APIRequestBuilder builder, String entityName, RequestBody requestBody, APIRequestOptions apiRequestOptions) {
             getSchema(requestBody)
                 .onFailDoWithResponse(response -> log.warn(response.getMessagesCombined(", ")))
-                .mapResultToResponse(this::createBody)
+                .mapResultToResponse(schema -> buildBody(entityName, schema, apiRequestOptions))
                 .onSuccessDoWithResult(builder::body);
 
             return builder;
         }
 
-        private APIRequest.APIRequestBuilder buildTableBody(APIRequest.APIRequestBuilder builder, RequestBody requestBody, APIRequestOptions apiRequestOptions) {
+        private APIRequest.APIRequestBuilder buildTableBody(APIRequest.APIRequestBuilder builder, String entityName, RequestBody requestBody, APIRequestOptions apiRequestOptions) {
             getSchema(requestBody)
                 .onFailDoWithResponse(response -> log.warn(response.getMessagesCombined(", ")))
-                .mapResultToResponse(this::createBody)
+                .mapResultToResponse(schema -> buildBody(entityName, schema, apiRequestOptions))
                 .onSuccessDoWithResult(builder::body);
 
             return builder;
         }
 
-        private Response<Object> createBody(Schema schema) {
+        private Response<Object> buildBody(String entityName, Schema schema, APIRequestOptions apiRequestOptions) {
             if (schema instanceof ObjectSchema objectSchema) {
                 Map<String, Object> map = new HashMap<>();
 
-                objectSchema.getProperties().forEach((key, value) -> {
-                    if (options.isPartitionedByCrop() && key.equals("commonCropNames")) {
-                        map.put("commonCropNames",
-                            Parameter.builder()
-                                .parameterName("commonCropNames")
+                return apiRequestOptions.getRequiredParametersFor(entityName).stream()
+                    .filter(parameter -> parameter.getIn().equals("body"))
+                    .map(parameter -> findSchemaProperty(objectSchema, parameter.getParameterName())
+                        .onSuccessDoWithResult(propertySchema -> map.put(parameter.getParameterName(),
+                            PropertyLink.builder()
+                                .propertyName(parameter.getParameterName())
+                                .schema(propertySchema)
+                                .variableName(parameter.getVariableName())
+                                .build())))
+                    .collect(Response.toList())
+                    .mapOnCondition(options.isPartitionedByCrop(), () -> findSchemaProperty(objectSchema, "commonCropNames")
+                        .onSuccessDoWithResult(propertySchema -> map.put("commonCropNames",
+                            PropertyLink.builder()
+                                .propertyName("commonCropNames")
+                                .schema(propertySchema)
                                 .variableName("commonCropNames")
-                                .build());
-                    }
-
-                    // TODO get from options other likely parameters
-
-                });
-
-                return success(map);
+                                .build())))
+                    .map(() -> success(map));
 
             } else {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Schema must be object %s", schema));
             }
         }
 
+        private Response<Schema> findSchemaProperty(ObjectSchema objectSchema, String propertyName) {
+            Schema schema = objectSchema.getProperties().get(propertyName);
+
+            if (schema != null) {
+                return success(schema) ;
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find schema for property %s", propertyName));
+            }
+        }
+
         private Response<Schema> getSchema(RequestBody body) {
             if (body.get$ref() != null) {
-                return findSchema(body.get$ref());
+                return findSchemaFromRef(body.get$ref());
             } else {
                 if (body.getContent().containsKey("application/json")) {
                     Schema schema = body.getContent().get("application/json").getSchema();
 
                     if (schema != null && schema.get$ref() != null) {
-                        return findSchema(schema.get$ref());
+                        return findSchemaFromRef(schema.get$ref());
                     } else {
                         return success(schema);
                     }
@@ -786,21 +944,6 @@ public class OpenAPISpecificationAnalyserFactory {
             }
 
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find schema for %s", body));
-        }
-
-        private Response<Schema> findSchema(String ref) {
-            Matcher matcher = REF_PATTERN.matcher(ref);
-
-            if (matcher.matches()) {
-
-                Schema schema = openAPI.getComponents().getSchemas().get(matcher.group(1));
-
-                if (schema != null) {
-                    return success(schema);
-                }
-            }
-
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find schema '%s'", ref));
         }
 
         private Response<APIRequest.APIRequestBuilder> getAPIRequestBuilder(String name, int index, String entityName, Operation operation, APIRequestOptions apiRequestOptions) {
@@ -812,49 +955,57 @@ public class OpenAPISpecificationAnalyserFactory {
 
             if (options.isPartitionedByCrop()) {
                 findParameter("commonCropName", operation.getParameters()).ifPresent(
-                    parameter -> addParameter(builder, parameter, "commonCropName")
-                );
+                    parameter -> addParameterLink(builder, ParameterLink.builder()
+                        .parameter(parameter)
+                        .variableName("commonCropName")
+                        .build())) ;
             }
 
-            return findQueryParametersFor(operation.getParameters(), entityName, apiRequestOptions)
-                .onSuccessDoWithResult(p -> addParameters(builder, p))
+            apiRequestOptions.getPrerequisitesFor(entityName).forEach(builder::prerequisite);
+
+            return findQueryParameterLinksFor(operation.getParameters(), entityName, apiRequestOptions)
+                .onSuccessDoWithResult(p -> addParameterLinks(builder, p))
                 .map(() -> success(builder));
         }
 
-        private Response<List<io.swagger.v3.oas.models.parameters.Parameter>> findQueryParametersFor(List<io.swagger.v3.oas.models.parameters.Parameter> parameters, String entityName,
-                                                                 APIRequestOptions apiRequestOptions) {
+        private Response<List<ParameterLink>> findQueryParameterLinksFor(List<io.swagger.v3.oas.models.parameters.Parameter> parameters, String entityName,
+                                                                                                     APIRequestOptions apiRequestOptions) {
             return apiRequestOptions.getRequiredParametersFor(entityName).stream()
-                .map(parameterName -> findParameterAsResponse(parameterName, parameters))
+                .filter(parameter -> parameter.getIn().equals("query"))
+                .map(parameter -> findParameterLinkAsResponse(parameter, parameters))
                 .collect(Response.toList());
+        }
+
+        private Response<ParameterLink> findParameterLinkAsResponse(Parameter parameter, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
+            return findParameterLinkAsResponse(parameter.getParameterName(), parameter.getVariableName(), parameters) ;
+        }
+
+        private Response<ParameterLink> findParameterLinkAsResponse(String parameterName, String variableName, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
+            return findParameter(parameterName, parameters)
+                .map(p -> ParameterLink.builder()
+                    .parameter(p)
+                    .variableName(variableName)
+                    .build())
+                .map(Response::success)
+                .orElse(fail(Response.ErrorType.VALIDATION, String.format("Can not find parameter '%s' for variable '%s' in '%s'", parameterName, variableName, parameters)));
         }
 
         private Optional<io.swagger.v3.oas.models.parameters.Parameter> findParameter(String name, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
             return parameters.stream().filter(parameter -> parameter.getName().equals(name)).findFirst();
         }
 
-        private Response<io.swagger.v3.oas.models.parameters.Parameter> findParameterAsResponse(String name, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
-            return findParameter(name, parameters)
-                .map(Response::success)
-                .orElse(fail(Response.ErrorType.VALIDATION, String.format("Can not find parameter '%s", name))) ;
-        }
-
-        private void addParameter(APIRequest.APIRequestBuilder builder, io.swagger.v3.oas.models.parameters.Parameter parameter, String variableName) {
-
-            Parameter.ParameterBuilder parameterBuilder = Parameter.builder()
-                .parameterName(parameter.getName())
-                .variableName(variableName);
-
-            if (parameter.getIn().equals("path")) {
-                builder.pathParameter(parameterBuilder.build());
+        private void addParameterLink(APIRequest.APIRequestBuilder builder, ParameterLink parameterLink) {
+            if (parameterLink.getParameter().getIn().equals("path")) {
+                builder.pathParameter(parameterLink);
             } else {
-                if (parameter.getIn().equals("query")) {
-                    builder.queryParameter(parameterBuilder.build());
+                if (parameterLink.getParameter().getIn().equals("query")) {
+                    builder.queryParameter(parameterLink);
                 }
             }
         }
 
-        private void addParameters(APIRequest.APIRequestBuilder builder, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
-            parameters.forEach(parameter -> addParameter(builder, parameter, parameter.getName()));
+        private void addParameterLinks(APIRequest.APIRequestBuilder builder, List<ParameterLink> parameterLinks) {
+            parameterLinks.forEach(parameterLink -> addParameterLink(builder, parameterLink));
         }
 
         private Response<List<AnalysisReport>> executeAPIRequests(Map.Entry<String, List<APIRequest>> entry) {
@@ -901,21 +1052,26 @@ public class OpenAPISpecificationAnalyserFactory {
             APIRequest request = requests.get(prerequisite);
 
             if (request != null) {
-                return executeAPIRequest(request) ;
+                return executeAPIRequest(request);
             } else {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find prerequisite '%s'", prerequisite));
             }
         }
 
         private Response<HttpRequest.Builder> createURI(HttpRequest.Builder builder, APIRequest request) {
-            String path = request.getValidatorRequest().getPath() ;
+            return createPath(request)
+                .mapResult(path -> builder.uri(URI.create(path)));
+        }
+
+        private Response<String> createPath(APIRequest request) {
+            String path = String.format("%s%s", baseURL, request.getValidatorRequest().getPath());
 
             if (request.getPathParameters().isEmpty()) {
-                Matcher matcher = PARAMETER_PATTERN.matcher(path) ;
+                Matcher matcher = PARAMETER_PATTERN.matcher(path);
 
                 // check to make sure there is no missing parameters
                 if (matcher.find()) {
-                    Response<HttpRequest.Builder> response = fail(Response.ErrorType.VALIDATION,
+                    Response<String> response = fail(Response.ErrorType.VALIDATION,
                         String.format("Did not replace parameter '%s' in URI '%s'", matcher.group(1), path));
 
                     while (matcher.find()) {
@@ -923,25 +1079,43 @@ public class OpenAPISpecificationAnalyserFactory {
                             String.format("Did not replace parameter '%s' in URI '%s'", matcher.group(1), path));
                     }
 
-                    return response ;
+                    return response;
                 }
 
-                return success(builder.uri(URI.create(String.format("%s%s", baseURL, path))));
+                return appendQuery(path, request) ;
             } else {
                 return request.getPathParameters().stream()
                     .map(this::getVariableValue).collect(Response.toList())
                     .mapResultToResponse(variableValues -> replaceParametersWithVariableValues(path, variableValues))
-                    .mapResult(p -> builder.uri(URI.create(String.format("%s%s", baseURL, p))));
+                    .mapResultToResponse(p -> appendQuery(p, request));
             }
         }
 
-        private Response<VariableValue> getVariableValue(Parameter parameter) {
+        private Response<String> appendQuery(String path, APIRequest request) {
+            if (request.getQueryParameters().isEmpty()) {
+                return success(path) ;
+            } else {
+                return request.getQueryParameters().stream()
+                    .map(this::createQueryParam)
+                    .collect(Response.toList())
+                    .mapResult(params -> String.join("&", params))
+                    .mapResult(p -> String.format("%s?%s", path, p));
+            }
+        }
+
+        private Response<String> createQueryParam(ParameterLink parameterLink) {
+            return getVariableValue(parameterLink)
+                .mapResultToResponse(variableValue -> writeValueAsStringAsResource(variableValue.getValue()))
+                .mapResult(value -> parameterLink.getParameterName() + "=" + value);
+        }
+
+        private Response<VariableValue> getVariableValue(ParameterLink parameter) {
             VariableValue value = variableValues.get(parameter.getVariableName());
 
             if (value != null) {
                 return success(value);
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find variable '%s' for '%s", parameter.getVariableName(), parameter.getParameterName()));
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find variable '%s' for '%s", parameter.getVariableName(), parameter.getParameter().getName()));
             }
         }
 
@@ -949,7 +1123,7 @@ public class OpenAPISpecificationAnalyserFactory {
             try {
                 for (VariableValue variableValue : variableValues) {
                     path = path.replace(String.format("{%s}",
-                        variableValue.getParameterName() != null ? variableValue.getParameterName() : variableValue.getVariableName()),
+                            variableValue.getParameterName() != null ? variableValue.getParameterName() : variableValue.getVariableName()),
                         writeValueAsString(variableValue.getValue()));
                 }
 
@@ -959,11 +1133,19 @@ public class OpenAPISpecificationAnalyserFactory {
             }
         }
 
-        private CharSequence writeValueAsString(Object value) throws JsonProcessingException {
+        private String writeValueAsString(Object value) throws JsonProcessingException {
             if (value instanceof String stringValue) {
                 return stringValue;
             } else {
                 return objectMapper.writeValueAsString(value);
+            }
+        }
+
+        private Response<String> writeValueAsStringAsResource(Object value) {
+            try {
+                return success(writeValueAsString(value));
+            } catch (JsonProcessingException e) {
+                return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
         }
 
@@ -978,35 +1160,35 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private Response<Object> replaceBodyWithVariableValues(Object body) {
             try {
-                return success(replaceWithVariableValues(body)) ;
+                return success(replaceWithVariableValues(body));
             } catch (RuntimeException runtimeException) {
-                return Response.fail(Response.ErrorType.VALIDATION, runtimeException.getMessage()) ;
+                return Response.fail(Response.ErrorType.VALIDATION, runtimeException.getMessage());
             }
         }
 
         private Object replaceWithVariableValues(Object body) throws RuntimeException {
             if (body instanceof List<?> list) {
-                return list.stream().map(this::replaceBodyWithVariableValues).toList() ;
+                return list.stream().map(this::replaceBodyWithVariableValues).toList();
             } else if (body instanceof Map map) {
 
-                HashMap newMap = new HashMap<>();
+                HashMap<Object, Object> newMap = new HashMap<>();
 
-                map.forEach((key, value) -> newMap.put(key, replaceWithVariableValues(value))) ;
+                map.forEach((key, value) -> newMap.put(key, replaceWithVariableValues(value)));
 
-                return newMap ;
+                return newMap;
 
-            } else if (body instanceof Parameter parameter) {
-                VariableValue value = variableValues.get(parameter.getVariableName());
+            } else if (body instanceof PropertyLink propertyLink) {
+                VariableValue value = variableValues.get(propertyLink.getVariableName());
 
                 if (value != null) {
-                    return value.getValue() ;
+                    return value.getValue();
                 } else {
                     throw new RuntimeException(
-                        String.format("Can not find value for variable '%s in parameter '%s;", parameter.getVariableName(), parameter.getParameterName()));
+                        String.format("Can not find value for variable '%s in property '%s;", propertyLink.getVariableName(), propertyLink.getPropertyName()));
                 }
             }
 
-            return success(body);
+            return body;
         }
 
         private Response<HttpRequest.BodyPublisher> writeBody(Object body) {
@@ -1035,7 +1217,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         request.getCacheVariables().forEach(variable -> cacheVariableValue(documentContext, variable));
                     } catch (Exception e) {
                         builder.errorKey(e.getClass().getSimpleName());
-                        builder.errorLevel(ValidationReport.Level.WARN) ;
+                        builder.errorLevel(ValidationReport.Level.WARN);
                         builder.errorMessage(e.getMessage());
                     }
                 } else {
@@ -1095,27 +1277,27 @@ public class OpenAPISpecificationAnalyserFactory {
     }
 
 
-    private static class PatternMatcher {
-        private final Pattern pattern ;
-        private final BiFunction<PathItem, Matcher, Response<APIRequest>> function ;
+    private static class PathMatcher {
+        private final Pattern pattern;
+        private final BiFunction<PathItem, Matcher, Response<APIRequest>> function;
 
-        private Matcher matcher ;
+        private Matcher matcher;
 
-        private PatternMatcher(Pattern pattern, BiFunction<PathItem, Matcher, Response<APIRequest>> function) {
+        private PathMatcher(Pattern pattern, BiFunction<PathItem, Matcher, Response<APIRequest>> function) {
             this.pattern = pattern;
             this.function = function;
         }
 
-        public PatternMatcher match(String input) {
-            matcher = pattern.matcher(input) ;
-            return this ;
+        public PathMatcher match(String input) {
+            matcher = pattern.matcher(input);
+            return this;
         }
 
         public boolean matches() {
-            return matcher.matches() ;
+            return matcher.matches();
         }
 
-        public Response<APIRequest> execute(PathItem pathItem) {
+        public Response<APIRequest> createRequest(PathItem pathItem) {
             return function.apply(pathItem, matcher);
         }
     }
