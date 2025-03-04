@@ -69,6 +69,21 @@ public class AnalyseSubCommand implements Runnable {
     private boolean batchProcess;
     @CommandLine.Option(names = {"-d", "--validate"}, description = "Does a dry run on the analyse, validating the options")
     private boolean validate;
+    @CommandLine.Option(names = {"-x", "--summariseAcrossReports"}, description = "Add a summary to any reporting")
+    private boolean summariseAcrossReports;
+
+    private TabularReportWriter writer;
+
+    /**
+     * Creates the command
+     */
+    public AnalyseSubCommand() {
+        writer = TabularReportWriter
+            .writer()
+            .autoFilterColumns()
+            .autoSizeColumns()
+            .freezePane();
+    }
 
     @Override
     public void run() {
@@ -83,7 +98,7 @@ public class AnalyseSubCommand implements Runnable {
 
         try {
             AnalysisOptions options = optionsPath != null ?
-                AnalysisOptions.load(optionsPath) : AnalysisOptions.load() ;
+                AnalysisOptions.load(optionsPath) : AnalysisOptions.load();
 
             if (validate) {
                 validateOptions(options)
@@ -100,7 +115,7 @@ public class AnalyseSubCommand implements Runnable {
                     .map(() -> createAnalyser(options))
                     .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::batchAnalyse)
-                    .onFailDoWithResponse(this::outputError) ;
+                    .onFailDoWithResponse(this::outputError);
 
             } else {
                 validateOptions(options)
@@ -112,17 +127,17 @@ public class AnalyseSubCommand implements Runnable {
             }
 
         } catch (Exception exception) {
-            outputException(exception) ;
+            outputException(exception);
         }
     }
 
     private Response<Validation> validateOptions(AnalysisOptions options) {
-       return options.validate().asResponse() ;
+        return options.validate().asResponse();
     }
 
     private Response<OpenAPISpecificationAnalyserFactory.Analyser> createAnalyser(AnalysisOptions options) {
         if (Files.isRegularFile(specificationPath)) {
-            Stream<String> lines ;
+            Stream<String> lines;
 
             try {
                 lines = Files.lines(specificationPath);
@@ -135,20 +150,20 @@ public class AnalyseSubCommand implements Runnable {
 
             return authorisation()
                 .mapResult(sso -> new OpenAPISpecificationAnalyserFactory(baseURL, HttpClient.newBuilder().build(), sso, options))
-                .mapResult(factory -> factory.analyser(specification)) ;
+                .mapResult(factory -> factory.analyser(specification));
         }
 
         return Response.fail(Response.ErrorType.VALIDATION, String.format("Path '%s' is not regular file", specificationPath.toFile()));
     }
 
     private Response<List<AnalysisReport>> analyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
-        List<String> entityNames = getEntityNames() ;
+        List<String> entityNames = getEntityNames();
 
         if (entityNames.isEmpty()) {
             return Stream.of(
-                analyser.analyseSpecial(),
-                analyser.analyseAll())
-            .collect(Response.mergeLists());
+                    analyser.analyseSpecial(),
+                    analyser.analyseAll())
+                .collect(Response.mergeLists());
         } else {
             return Stream.of(
                     analyser.analyseSpecial(),
@@ -162,7 +177,9 @@ public class AnalyseSubCommand implements Runnable {
 
         List<AnalysisReport> completedReports = new LinkedList<>();
 
-        TabularReportGenerator tabularReportGenerator = new TabularReportGenerator();
+        final TabularReportGenerator tabularReportGenerator = summariseAcrossReports ?
+            TabularReportGenerator.generator().summariseAcrossReports()  :
+            TabularReportGenerator.generator();
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
@@ -174,7 +191,7 @@ public class AnalyseSubCommand implements Runnable {
                 .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
                 .onSuccessDoWithResult(completedReports::addAll);
 
-            List<String> entityNames = getEntityNames() ;
+            List<String> entityNames = getEntityNames();
 
             if (entityNames.isEmpty()) {
                 analyser.getEntityNames().forEach(entityName -> {
@@ -191,29 +208,31 @@ public class AnalyseSubCommand implements Runnable {
                         .onSuccessDoWithResult(completedReports::addAll);
                 });
             }
+
+            outputSummaryToFile(tabularReportGenerator);
         } else {
             analyser.analyseSpecial()
                 .onFailDoWithResponse(this::outputError)
                 .onSuccessDoWithResult(reports -> outputReportsToOut(tabularReportGenerator, reports))
                 .onSuccessDoWithResult(completedReports::addAll);
 
-            analyser.getEntityNames().forEach(entityName -> {
-                analyser.analyseEntity(entityName)
-                    .onFailDoWithResponse(this::outputError)
-                    .onSuccessDoWithResult(reports -> outputReportsToOut(tabularReportGenerator, reports))
-                    .onSuccessDoWithResult(completedReports::addAll);
-            });
+            analyser.getEntityNames().forEach(entityName -> analyser.analyseEntity(entityName)
+                .onFailDoWithResponse(this::outputError)
+                .onSuccessDoWithResult(reports -> outputReportsToOut(tabularReportGenerator, reports))
+                .onSuccessDoWithResult(completedReports::addAll));
+
+            outputSummaryToOut(tabularReportGenerator);
         }
 
-        return Response.success(completedReports) ;
+        return Response.success(completedReports);
     }
 
     private List<String> getEntityNames() {
         if (entityNames != null) {
             // TODO check if a file containing entity names
-            return entityNames ;
-        }  else {
-            return new LinkedList<>() ;
+            return entityNames;
+        } else {
+            return new LinkedList<>();
         }
     }
 
@@ -229,9 +248,9 @@ public class AnalyseSubCommand implements Runnable {
                 .or(() -> login(sso))
                 .merge(() -> Response.success(sso));
         } else if (password != null) {
-            return Response.success(BasicAuthorizationProvider.builder().username(username).password(password).build()) ;
+            return Response.success(BasicAuthorizationProvider.builder().username(username).password(password).build());
         } else {
-            return Response.success(new NoAuthorizationProvider()) ;
+            return Response.success(new NoAuthorizationProvider());
         }
     }
 
@@ -250,7 +269,11 @@ public class AnalyseSubCommand implements Runnable {
 
     private void outputReports(List<AnalysisReport> listResponses) {
 
-        TabularReportGenerator tabularReportGenerator = new TabularReportGenerator();
+        TabularReportGenerator tabularReportGenerator = TabularReportGenerator.generator();
+
+        if (summariseAcrossReports) {
+            tabularReportGenerator = tabularReportGenerator.summariseAcrossReports() ;
+        }
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
@@ -258,9 +281,11 @@ public class AnalyseSubCommand implements Runnable {
                 return;
             }
 
-            outputReportsToFile(tabularReportGenerator, listResponses) ;
+            outputReportsToFile(tabularReportGenerator, listResponses);
+            outputSummaryToFile(tabularReportGenerator);
         } else {
-            outputReportsToOut(tabularReportGenerator, listResponses) ;
+            outputReportsToOut(tabularReportGenerator, listResponses);
+            outputSummaryToOut(tabularReportGenerator);
         }
     }
 
@@ -268,13 +293,13 @@ public class AnalyseSubCommand implements Runnable {
         out.println(tabularReportGenerator.generateReportTable(listResponses));
     }
 
-    private void outputReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
-        TabularReportWriter writer = TabularReportWriter
-            .writer()
-            .autoFilterColumns()
-            .autoSizeColumns()
-            .freezePane() ;
+    private void outputSummaryToOut(TabularReportGenerator tabularReportGenerator) {
+        if (summariseAcrossReports) {
+            out.println(tabularReportGenerator.getSummary());
+        }
+    }
 
+    private void outputReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
         try {
             if (individualReportsByEntity) {
                 writer.writeToExcel(tabularReportGenerator.generateReportByEntity(listResponses), reportPath);
@@ -286,12 +311,26 @@ public class AnalyseSubCommand implements Runnable {
         }
     }
 
+    private void outputSummaryToFile(TabularReportGenerator tabularReportGenerator) {
+        if (summariseAcrossReports) {
+            try {
+                writer.writeToExcel(tabularReportGenerator.getSummary(), reportPath);
+            } catch (IOException e) {
+                outputException(e);
+            }
+        }
+    }
+
+
     private void outputValidation(Response<Validation> response) {
         err.println("Validation Errors:");
         response.getMessages().forEach(err::println);
     }
 
     private void outputDryRun(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+        out.println("Analysing Endpoints:");
+        analyser.getEndpoints().forEach(out::println);
+        out.println();
         out.println("Skipping Endpoints:");
         analyser.getSkippedEndpoints().forEach(out::println);
         out.println();
@@ -300,7 +339,7 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private void outputException(Exception exception) {
-        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
-        err.println(message) ;
+        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage());
+        err.println(message);
     }
 }

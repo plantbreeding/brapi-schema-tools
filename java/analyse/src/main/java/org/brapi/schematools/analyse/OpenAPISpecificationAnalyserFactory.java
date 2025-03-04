@@ -172,8 +172,8 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private final Map<String, List<APIRequest>> requestsByEntity;
 
+        private final List<Endpoint> endpoints = new ArrayList<>();
         private final List<Endpoint> unmatchedEndpoints = new ArrayList<>();
-
         private final List<Endpoint> skippedEndpoints = new ArrayList<>();
         private final Map<String, VariableValue> variableValues = new HashMap<>();
 
@@ -184,17 +184,17 @@ public class OpenAPISpecificationAnalyserFactory {
         private static final Pattern TABLE_PATH_PATTERN = Pattern.compile("/(\\w+)/table"); // 1 group
         private static final Pattern ENTITY_SUB_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}/(\\w+)"); // 3 groups, ignore 3rd
         private final List<PathMatcher> PATH_PATTERN_MATCHERS = Arrays.asList(
+            new PathMatcher(TABLE_PATH_PATTERN, this::cacheTablePath),
             new PathMatcher(SEARCH_PATH_PATTERN, this::cacheSearchPath),
             new PathMatcher(SEARCH_RESULTS_PATH_PATTERN, this::cacheSearchResultPath),
             new PathMatcher(ENTITIES_PATH_PATTERN, this::cacheEntitiesPath),
             new PathMatcher(ENTITY_PATH_PATTERN, this::cacheEntityPath),
-            new PathMatcher(TABLE_PATH_PATTERN, this::cacheTablePath),
             new PathMatcher(ENTITY_SUB_PATH_PATTERN, this::cacheSubPath));
 
         private final Pattern PARAMETER_PATTERN = Pattern.compile("\\{(\\w+)\\}");
         private final Response<List<APIRequest>> errors;
 
-        private static final List<String> PRIMITIVES = Arrays.asList("String", "Boolean");
+        private static final List<String> PRIMITIVES = Arrays.asList("string", "boolean");
 
         /**
          * Create an Analysis based on a OpenAPI specification
@@ -228,6 +228,15 @@ public class OpenAPISpecificationAnalyserFactory {
          */
         public List<String> getEntityNames() {
             return new ArrayList<>(requestsByEntity.keySet());
+        }
+
+        /**
+         * Gets a list of endpoints that are to be tested.
+         *
+         * @return a list of endpoints that are to be tested.
+         */
+        public List<Endpoint> getEndpoints() {
+            return endpoints;
         }
 
         /**
@@ -689,7 +698,7 @@ public class OpenAPISpecificationAnalyserFactory {
         }
 
         private boolean isNotDeprecated(Operation operation) {
-            return operation.getDeprecated() == null || !operation.getDeprecated();
+            return options.isAnalysingDepreciated() || operation.getDeprecated() == null || !operation.getDeprecated() ;
         }
 
         private Response<APIRequest.APIRequestBuilder> enrichWithParameter(APIRequest.APIRequestBuilder builder, String parameterName, String variableName,
@@ -704,7 +713,7 @@ public class OpenAPISpecificationAnalyserFactory {
         }
 
         private String getIdPropertyNameFor(String entityName) {
-            if (PRIMITIVES.contains(entityName)) {
+            if (entityName == null || PRIMITIVES.contains(entityName.toLowerCase())) {
                 return null;
             } else {
                 return options.getProperties().getIdPropertyNameFor(entityName);
@@ -713,6 +722,12 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private void addRequest(APIRequest request) {
             requests.put(request.getValidatorRequest().getPath(), request);
+
+            endpoints.add(Endpoint.builder()
+                .path(request.getValidatorRequest().getPath())
+                .method(request.getValidatorRequest().getMethod())
+                .category(request.getName())
+                .build());
         }
 
         private void unmatchedEndpoint(Request.Method method, String path, String category) {
@@ -751,18 +766,23 @@ public class OpenAPISpecificationAnalyserFactory {
                         if (schema != null && schema.getTitle() != null) {
                             String entityName = schema.getTitle() != null ? schema.getTitle() : schema.getName();
 
-                            if (entityName.endsWith("ListResponse")) {
+                            if (entityName.startsWith("200")) {
+                                return Stream.of(pathElements)
+                                    .filter(Objects::nonNull)
+                                    .map(pathElement -> StringUtils.capitalise(StringUtils.toSingular(pathElement)))
+                                    .collect(Collectors.joining());
+                            } else if (entityName.endsWith("ListResponse")) {
                                 return findChildSchema(schema, "result")
                                     .mapResultToResponse(s -> findChildSchema(s, "data"))
-                                    .mapResultToResponse(this::findName)
+                                    .mapResultToResponse(this::findEntityName)
                                     .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 12));
                             } else if (entityName.endsWith("SingleResponse")) {
                                 return findChildSchema(schema, "result")
-                                    .mapResultToResponse(this::findName)
+                                    .mapResultToResponse(this::findEntityName)
                                     .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 14));
                             } else if (entityName.endsWith("Response")) {
                                 return findChildSchema(schema, "result")
-                                    .mapResultToResponse(this::findName)
+                                    .mapResultToResponse(this::findEntityName)
                                     .getResultIfPresentOrElseResult(entityName.substring(0, entityName.length() - 8));
                             } else {
                                 return StringUtils.capitalise(StringUtils.toSingular(entityName));
@@ -772,10 +792,17 @@ public class OpenAPISpecificationAnalyserFactory {
                 }
             }
 
-            return StringUtils.capitalise(StringUtils.toSingular(String.join("", pathElements)));
+            return Stream.of(pathElements)
+                .filter(Objects::nonNull)
+                .map(pathElement -> StringUtils.capitalise(StringUtils.toSingular(pathElement)))
+                .collect(Collectors.joining());
         }
 
-        private Response<String> findName(Schema schema) {
+        private Response<String> findEntityName(Schema schema) {
+            if (schema.getType() != null && PRIMITIVES.contains(schema.getType().toLowerCase())) {
+                return Response.empty() ;
+            }
+
             if (schema instanceof ObjectSchema) {
                 if (schema.getName() != null) {
                     return success(schema.getName());

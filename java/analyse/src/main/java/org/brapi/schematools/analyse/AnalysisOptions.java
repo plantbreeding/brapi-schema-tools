@@ -27,6 +27,7 @@ import java.nio.file.Path;
 @Accessors(chain = true)
 public class AnalysisOptions implements Options {
 
+    private Boolean analyseDepreciated;
     private APIRequestOptions getEntity;
     private APIRequestOptions listEntity;
     private APIRequestOptions createEntity;
@@ -79,6 +80,10 @@ public class AnalysisOptions implements Options {
      */
     public AnalysisOptions override(AnalysisOptions overrideOptions) {
 
+        if (overrideOptions.analyseDepreciated != null) {
+            analyseDepreciated = overrideOptions.analyseDepreciated;
+        }
+
         if (overrideOptions.getEntity != null) {
             getEntity.override(overrideOptions.listEntity);
         }
@@ -120,6 +125,7 @@ public class AnalysisOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(analyseDepreciated, "'analyseDepreciated' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(getEntity, "'getEntity' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(listEntity, "'listEntity' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(createEntity, "'createEntity' option on %s is null", this.getClass().getSimpleName())
@@ -130,6 +136,15 @@ public class AnalysisOptions implements Options {
             .assertNotNull(partitionedByCrop, "'partitionedByCrop' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(properties,  "Properties Options are null")
             .merge(properties) ;
+    }
+
+    /**
+     * Determines if the Analyser should analyse depreciated endpoints
+     * @return {@code true} if the Analyser should analyse depreciated endpoints, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAnalysingDepreciated() {
+        return analyseDepreciated != null && analyseDepreciated;
     }
 
     /**

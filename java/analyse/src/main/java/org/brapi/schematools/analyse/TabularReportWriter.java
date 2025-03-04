@@ -1,6 +1,5 @@
 package org.brapi.schematools.analyse;
 
-import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -16,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -112,7 +110,6 @@ public class TabularReportWriter {
     }
 
     private void addHeaders(Sheet sheet) {
-
         if (autoFilterColumns) {
             sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, 8));
         }

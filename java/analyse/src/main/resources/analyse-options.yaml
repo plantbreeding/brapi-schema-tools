@@ -1,3 +1,4 @@
+analyseDepreciated: true
 getEntity:
     analyse: true
     analyseFor:
