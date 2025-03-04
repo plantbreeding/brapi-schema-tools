@@ -476,10 +476,10 @@ public class OpenAPISpecificationAnalyserFactory {
                 }
             }
 
-            if (pathItem.getPost() != null)) {
+            if (pathItem.getPost() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                if (options.isAnalysingCreateForEntity(entityName) && isNotDeprecated(pathItem.getPost()) {
+                if (options.isAnalysingCreateForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
                     return getAPIRequestBuilder("Create Entities", CREATE_ENTITY_INDEX, entityName, pathItem.getPost(), options.getCreateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
