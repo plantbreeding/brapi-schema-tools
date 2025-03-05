@@ -336,6 +336,9 @@ public class AnalyseSubCommand implements Runnable {
         out.println();
         out.println("Ignored Endpoints:");
         analyser.getUnmatchedEndpoints().forEach(out::println);
+        out.println();
+        out.println("Deprecated Endpoints:");
+        analyser.getDeprecatedEndpoints().forEach(out::println);
     }
 
     private void outputException(Exception exception) {

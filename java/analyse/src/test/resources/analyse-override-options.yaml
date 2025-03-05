@@ -1,0 +1,89 @@
+partitionedByCrop : true
+getEntity:
+    analyseFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        GenomeMap: false
+        Image: false
+        LinkageGroup: false
+        MarkerPosition: false
+        Plate: false
+        Reference: false
+        ReferenceBases: false
+        ReferenceSet: false
+        Sample: false
+        Variant: false
+        VariantSet: false
+        VendorPlateSubmission: true
+listEntity:
+    analyseFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        GenomeMap: false
+        Image: false
+        LinkageGroup: false
+        MarkerPosition: false
+        Plate: false
+        Reference: false
+        ReferenceBases: false
+        ReferenceSet: false
+        Sample: false
+        Variant: false
+        VariantSet: false
+        VendorPlateSubmission: true
+search:
+    analyseFor:
+        AlleleMatrix: false
+        Call: false
+        CallSet: false
+        GenomeMap: false
+        Image: false
+        LinkageGroup: false
+        MarkerPosition: false
+        Plate: false
+        Reference: false
+        ReferenceBases: false
+        ReferenceSet: false
+        Sample: false
+        Variant: false
+        VariantSet: false
+        VendorPlateSubmission: true
+properties:
+    id:
+        propertyFor:
+            CultivarAttribute: attributeDbId
+            CultivarAttributeValue: attributeValueDbId
+            LocaleAttribute: attributeDbId
+            LocaleAttributeValue: attributeValueDbId
+            ObservationUnitAttribute: attributeDbId
+            ObservationUnitAttributeValue: attributeValueDbId
+            SeedLotAttribute: attributeDbId
+            SeedLotAttributeValue: attributeValueDbId
+            VarietyAttribute: attributeDbId
+            VarietyAttributeValue: attributeValueDbId
+    name:
+        propertyFor:
+            CultivarAttribute: attributeName
+            CultivarAttributeValue: attributeValueName
+            LocaleAttribute: attributeName
+            LocaleAttributeValue: attributeValueName
+            ObservationUnitAttribute: attributeName
+            ObservationUnitAttributeValue: attributeValueName
+            SeedLotAttribute: attributeName
+            SeedLotAttributeValue: attributeValueName
+            VarietyAttribute: attributeName
+            VarietyAttributeValue: attributeValueName
+    pui:
+        propertyFor:
+            CultivarAttribute: attributePUI
+            CultivarAttributeValue: attributeValuePUI
+            LocaleAttribute: attributePUI
+            LocaleAttributeValue: attributeValuePUI
+            ObservationUnitAttribute: attributePUI
+            ObservationUnitAttributeValue: attributeValuePUI
+            SeedLotAttribute: attributePUI
+            SeedLotAttributeValue: attributeValuePUI
+            VarietyAttribute: attributePUI
+            VarietyAttributeValue: attributeValuePUI

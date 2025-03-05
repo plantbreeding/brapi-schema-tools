@@ -175,6 +175,7 @@ public class OpenAPISpecificationAnalyserFactory {
         private final List<Endpoint> endpoints = new ArrayList<>();
         private final List<Endpoint> unmatchedEndpoints = new ArrayList<>();
         private final List<Endpoint> skippedEndpoints = new ArrayList<>();
+        private final List<Endpoint> deprecatedEndpoints = new ArrayList<>();
         private final Map<String, VariableValue> variableValues = new HashMap<>();
 
         private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}"); // 3 groups
@@ -256,6 +257,16 @@ public class OpenAPISpecificationAnalyserFactory {
         public List<Endpoint> getSkippedEndpoints() {
             return skippedEndpoints;
         }
+
+        /**
+         * Gets a list of deprecated endpoints that will be skipped.
+         *
+         * @return a list of deprecated endpoints that will be skipped.
+         */
+        public List<Endpoint> getDeprecatedEndpoints() {
+            return deprecatedEndpoints;
+        }
+
 
         /**
          * Analyse all the endpoints in the specification.
@@ -386,7 +397,7 @@ public class OpenAPISpecificationAnalyserFactory {
                 String entityName = findEntityName(pathItem.getGet(), matcher.group(1), matcher.group(2));
                 String entityIdPropertyName = getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingGetForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
+                if (options.isAnalysingGetForEntity(entityName) && isAnalysingOperation(pathItem.getGet())) {
                     return getAPIRequestBuilder("Get Entity", GET_ENTITY_INDEX, entityName, pathItem.getGet(), options.getGetEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -399,7 +410,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "Get Entity");
+                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "Get Entity");
                 }
             }
 
@@ -411,7 +422,7 @@ public class OpenAPISpecificationAnalyserFactory {
                 String entityName = findEntityName(pathItem.getPut(), matcher.group(1), matcher.group(2));
                 String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingUpdateForEntity(entityName) && isNotDeprecated(pathItem.getPut())) {
+                if (options.isAnalysingUpdateForEntity(entityName) && isAnalysingOperation(pathItem.getPut())) {
                     return getAPIRequestBuilder("Update Entity", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut(), options.getUpdateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -425,7 +436,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entity");
+                    skippedEndpoint(Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entity");
                 }
             }
 
@@ -433,7 +444,7 @@ public class OpenAPISpecificationAnalyserFactory {
                 String entityName = findEntityName(pathItem.getDelete(), matcher.group(1), matcher.group(2));
                 String entityIdPropertyName = options.getProperties().getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingDeleteForEntity(entityName) && isNotDeprecated(pathItem.getDelete())) {
+                if (options.isAnalysingDeleteForEntity(entityName) && isAnalysingOperation(pathItem.getDelete())) {
                     return getAPIRequestBuilder("Delete Entity", DELETE_ENTITY_INDEX, entityName, pathItem.getDelete(), options.getDeleteEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -446,7 +457,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.DELETE, endpoint, "Delete Entity");
+                    skippedEndpoint(Request.Method.DELETE, pathItem.getDelete(), endpoint, "Delete Entity");
                 }
             }
 
@@ -461,7 +472,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
                 String entityIdPropertyName = getIdPropertyNameFor(entityName);
 
-                if (options.isAnalysingListForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
+                if (options.isAnalysingListForEntity(entityName) && isAnalysingOperation(pathItem.getGet())) {
                     return getAPIRequestBuilder("List Entities", LIST_ENTITY_INDEX, entityName, pathItem.getGet(), options.getListEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -481,14 +492,14 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "List Entities");
+                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "List Entities");
                 }
             }
 
             if (pathItem.getPost() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                if (options.isAnalysingCreateForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
+                if (options.isAnalysingCreateForEntity(entityName) && isAnalysingOperation(pathItem.getPost())) {
                     return getAPIRequestBuilder("Create Entities", CREATE_ENTITY_INDEX, entityName, pathItem.getPost(), options.getCreateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -502,14 +513,14 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, endpoint, "Create Entities");
+                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Create Entities");
                 }
             }
 
             if (pathItem.getPut() != null) {
                 String entityName = findEntityName(pathItem.getPut(), matcher.group(1), matcher.group(2), matcher.group(3));
 
-                if (options.isAnalysingUpdateForEntity(entityName) && isNotDeprecated(pathItem.getPut())) {
+                if (options.isAnalysingUpdateForEntity(entityName) && isAnalysingOperation(pathItem.getPut())) {
                     return getAPIRequestBuilder("Update Entities", UPDATE_ENTITY_INDEX, entityName, pathItem.getPut(), options.getUpdateEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -523,7 +534,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, endpoint, "Update Entities");
+                    skippedEndpoint(Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entities");
                 }
             }
 
@@ -544,8 +555,8 @@ public class OpenAPISpecificationAnalyserFactory {
             if (pathItem.getPost() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2));
 
-                if (options.isAnalysingSearchForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
-                    return getAPIRequestBuilder("Search", SEARCH_INDEX, entityName, pathItem.getPost(), options.getSearch())
+                if (options.isAnalysingSearchForEntity(entityName) && isAnalysingOperation(pathItem.getPost())) {
+                    return getAPIRequestBuilder("Search Entities", SEARCH_INDEX, entityName, pathItem.getPost(), options.getSearch())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
                                 .post(endpoint)
@@ -554,12 +565,12 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, endpoint, "Search Entities");
+                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Search Entities");
                 }
             }
 
             if (pathItem.getPut() != null) {
-                unmatchedEndpoint(Request.Method.PUT, endpoint, "Search Entities");
+                unmatchedEndpoint(Request.Method.PUT,  endpoint, "Search Entities");
             }
 
             if (pathItem.getDelete() != null) {
@@ -575,7 +586,7 @@ public class OpenAPISpecificationAnalyserFactory {
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1), matcher.group(2));
 
-                if (options.isAnalysingSearchResultForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
+                if (options.isAnalysingSearchResultForEntity(entityName) && isAnalysingOperation(pathItem.getGet())) {
                     return getAPIRequestBuilder("Search Results", SEARCH_RESULTS_INDEX, entityName, pathItem.getGet(), options.getSearchResult())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -588,7 +599,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "Search Results");
+                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "Search Results");
                 }
             }
 
@@ -613,7 +624,7 @@ public class OpenAPISpecificationAnalyserFactory {
             if (pathItem.getGet() != null) {
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
-                if (options.isAnalysingTableForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
+                if (options.isAnalysingTableForEntity(entityName) && isAnalysingOperation(pathItem.getGet())) {
                     return getAPIRequestBuilder("Get Table", TABLE_INDEX, entityName, pathItem.getGet(), options.getTable())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -622,7 +633,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "Get Table");
+                    skippedEndpoint(Request.Method.GET, pathItem.getPost(), endpoint, "Get Table");
                 }
             }
 
@@ -630,7 +641,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
-                if (options.isAnalysingTableForEntity(entityName) && isNotDeprecated(pathItem.getPost())) {
+                if (options.isAnalysingTableForEntity(entityName) && isAnalysingOperation(pathItem.getPost())) {
                     return getAPIRequestBuilder("Search Table", TABLE_INDEX, entityName, pathItem.getPost(), options.getTable())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -640,7 +651,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, endpoint, "Search Table");
+                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Search Table");
                 }
             }
 
@@ -664,7 +675,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
                 String entityIdPropertyName = matcher.group(3);
 
-                if (options.isAnalysingListForEntity(entityName) && isNotDeprecated(pathItem.getGet())) {
+                if (options.isAnalysingListForEntity(entityName) && isAnalysingOperation(pathItem.getGet())) {
                     return getAPIRequestBuilder("List Sub Entities", LIST_ENTITY_INDEX, entityName, pathItem.getGet(), options.getListEntity())
                         .onSuccessDoWithResult(builder -> builder
                             .validatorRequest(SimpleRequest.Builder
@@ -678,7 +689,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, endpoint, "List Sub Entities");
+                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "List Sub Entities");
                 }
             }
 
@@ -697,8 +708,15 @@ public class OpenAPISpecificationAnalyserFactory {
             return Response.empty();
         }
 
-        private boolean isNotDeprecated(Operation operation) {
-            return options.isAnalysingDepreciated() || operation.getDeprecated() == null || !operation.getDeprecated() ;
+        private boolean isAnalysingOperation(Operation operation) {
+            if (isDeprecated(operation)) {
+                return options.isAnalysingDepreciated() ;
+            }
+            return true ;
+        }
+
+        private boolean isDeprecated(Operation operation) {
+            return operation.getDeprecated() != null && operation.getDeprecated() ;
         }
 
         private Response<APIRequest.APIRequestBuilder> enrichWithParameter(APIRequest.APIRequestBuilder builder, String parameterName, String variableName,
@@ -739,6 +757,14 @@ public class OpenAPISpecificationAnalyserFactory {
             log.warn(String.format("Unmatched endpoint %s '%s'", method, path));
         }
 
+        private void skippedEndpoint(Request.Method method, Operation operation, String path, String category) {
+            if (isDeprecated(operation)) {
+                deprecatedEndpoint(method, path, category) ;
+            } else {
+                skippedEndpoint(method, path, category);
+            }
+        }
+
         private void skippedEndpoint(Request.Method method, String path, String category) {
             skippedEndpoints.add(Endpoint.builder()
                 .path(path)
@@ -746,6 +772,15 @@ public class OpenAPISpecificationAnalyserFactory {
                 .category(category)
                 .build());
             log.debug(String.format("Skipped endpoint %s '%s'", method, path));
+        }
+
+        private void deprecatedEndpoint(Request.Method method, String path, String category) {
+            deprecatedEndpoints.add(Endpoint.builder()
+                .path(path)
+                .method(method)
+                .category(category)
+                .build());
+            log.debug(String.format("Skipped deprecated endpoint %s '%s'", method, path));
         }
 
         private String findEntityName(Operation operation, String... pathElements) {

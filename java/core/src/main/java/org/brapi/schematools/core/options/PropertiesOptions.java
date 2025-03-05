@@ -25,14 +25,15 @@ import static org.brapi.schematools.core.response.Response.fail;
 /**
  * Provides options for the generation of ID, Name and PUI property and their usage
  */
-@Getter(AccessLevel.PRIVATE)
-@Setter
+@Getter
+@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertiesOptions implements Options {
     private PropertyOptions id ;
     private PropertyOptions name ;
     private PropertyOptions pui ;
+    @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> linkTypeFor = new HashMap<>();
 
