@@ -33,6 +33,12 @@ listEntity:
         Variant: false
         VariantSet: false
         VendorPlateSubmission: true
+    requiredParametersFor:
+        Attribute:
+            - parameterName: attributeEntityClass
+              variableName: attributeEntityClass
+              exampleValue: Germplasm
+              in: query
 search:
     analyseFor:
         AlleleMatrix: false

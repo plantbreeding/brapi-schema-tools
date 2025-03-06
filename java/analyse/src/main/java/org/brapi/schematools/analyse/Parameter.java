@@ -12,4 +12,5 @@ public class Parameter {
     String parameterName;
     String variableName ;
     String in;
+    Object exampleValue;
 }

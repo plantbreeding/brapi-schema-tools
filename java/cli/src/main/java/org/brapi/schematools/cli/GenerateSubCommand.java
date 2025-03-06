@@ -35,7 +35,7 @@ import java.util.List;
  */
 @CommandLine.Command(
     name = "generate", mixinStandardHelpOptions = true,
-    description = "Generates the OpenAPI Specification or GraphQL Schema from a BrAPI JSON schema"
+    description = "Generates Various outputs from a BrAPI JSON schema, including OpenAPI Specification or GraphQL Schema"
 )
 public class GenerateSubCommand implements Runnable {
     private PrintWriter out ;

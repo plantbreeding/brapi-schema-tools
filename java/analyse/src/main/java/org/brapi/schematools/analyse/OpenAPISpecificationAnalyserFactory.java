@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import io.swagger.models.properties.Property;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -39,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.function.UnaryOperator.identity;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 
@@ -405,7 +407,7 @@ public class OpenAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityIdPropertyName + "1",
+                            entityName + "DbId1",
                             pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
@@ -430,7 +432,7 @@ public class OpenAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityIdPropertyName + "1",
+                            entityName + "DbId1",
                             pathItem.getGet().getParameters()))
                         .mapResult(builder -> buildUpdateEntityBody(builder, pathItem.getPut().getRequestBody(), options.getUpdateEntity()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
@@ -452,7 +454,7 @@ public class OpenAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityIdPropertyName + "1",
+                            entityName + "DbId1",
                             pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
@@ -480,12 +482,12 @@ public class OpenAPISpecificationAnalyserFactory {
                                 .build()))
                         .onSuccessDoWithResultOnCondition(entityIdPropertyName != null, builder -> builder
                             .cacheVariable(Variable.builder()
-                                .variableName(entityIdPropertyName + "1")
+                                .variableName(entityName + "DbId1")
                                 .parameterName(entityIdPropertyName)
                                 .jsonPath("$.result.data[0]." + entityIdPropertyName)
                                 .build())
                             .cacheVariable(Variable.builder()
-                                .variableName(entityIdPropertyName + "s1")
+                                .variableName(entityName + "DbIds1")
                                 .parameterName(entityIdPropertyName + "s")
                                 .jsonPath("$.result.data[0:10]." + entityIdPropertyName)
                                 .build()))
@@ -594,7 +596,7 @@ public class OpenAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             "searchResultsDbId",
-                            "searchResultsDbId1",
+                            entityName + "searchResultsDbId1",
                             pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
@@ -722,7 +724,7 @@ public class OpenAPISpecificationAnalyserFactory {
         private Response<APIRequest.APIRequestBuilder> enrichWithParameter(APIRequest.APIRequestBuilder builder, String parameterName, String variableName,
                                                                            List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
             if (parameterName != null) {
-                return findParameterLinkAsResponse(parameterName, variableName, parameters)
+                return findParameterLinkAsResponse(parameterName, variableName, null, parameters)
                     .onSuccessDoWithResult(builder::pathParameter)
                     .map(() -> success(builder));
             } else {
@@ -956,7 +958,22 @@ public class OpenAPISpecificationAnalyserFactory {
             if (schema instanceof ObjectSchema objectSchema) {
                 Map<String, Object> map = new HashMap<>();
 
-                return apiRequestOptions.getRequiredParametersFor(entityName).stream()
+                Map<String, Parameter> requiredParametersMap = apiRequestOptions.getRequiredParametersFor(entityName)
+                    .stream()
+                    .filter(parameter -> parameter.getIn().equals("body"))
+                    .collect(Collectors.toMap(Parameter::getParameterName, identity()));
+
+                List<String> required = schema.getRequired() != null ? schema.getRequired() : new LinkedList<>();
+
+                objectSchema.getProperties().entrySet().stream()
+                    .filter(entry -> required.contains(entry.getKey()))
+                    .forEach(entry -> {
+                    if (!requiredParametersMap.containsKey(entry.getKey())) {
+                        requiredParametersMap.put(entry.getKey(), createProperty(entry.getKey(), entry.getValue())) ;
+                    }
+                });
+
+                return requiredParametersMap.values().stream()
                     .filter(parameter -> parameter.getIn().equals("body"))
                     .map(parameter -> findSchemaProperty(objectSchema, parameter.getParameterName())
                         .onSuccessDoWithResult(propertySchema -> map.put(parameter.getParameterName(),
@@ -1025,31 +1042,102 @@ public class OpenAPISpecificationAnalyserFactory {
 
             apiRequestOptions.getPrerequisitesFor(entityName).forEach(builder::prerequisite);
 
-            return findQueryParameterLinksFor(operation.getParameters(), entityName, apiRequestOptions)
+            return findRequiredQueryParametersFor(operation.getParameters(), apiRequestOptions, entityName)
                 .onSuccessDoWithResult(p -> addParameterLinks(builder, p))
                 .map(() -> success(builder));
         }
 
-        private Response<List<ParameterLink>> findQueryParameterLinksFor(List<io.swagger.v3.oas.models.parameters.Parameter> parameters, String entityName,
-                                                                                                     APIRequestOptions apiRequestOptions) {
-            return apiRequestOptions.getRequiredParametersFor(entityName).stream()
+        private Response<List<ParameterLink>> findRequiredQueryParametersFor(List<io.swagger.v3.oas.models.parameters.Parameter> parameters,
+                                                      APIRequestOptions apiRequestOptions, String entityName) {
+
+            Map<String, Parameter> requiredParametersMap = apiRequestOptions.getRequiredParametersFor(entityName)
+                .stream()
                 .filter(parameter -> parameter.getIn().equals("query"))
+                .collect(Collectors.toMap(Parameter::getParameterName, identity()));
+
+            parameters.stream()
+                .filter(parameter -> isTrue(parameter.getRequired()))
+                .filter(parameter -> parameter.getIn().equals("query"))
+                .forEach(parameter -> {
+                    if (!requiredParametersMap.containsKey(parameter.getName())) {
+                        requiredParametersMap.put(parameter.getName(), createParameter(parameter));
+                    }
+                });
+
+            return requiredParametersMap.values().stream()
                 .map(parameter -> findParameterLinkAsResponse(parameter, parameters))
                 .collect(Response.toList());
         }
 
-        private Response<ParameterLink> findParameterLinkAsResponse(Parameter parameter, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
-            return findParameterLinkAsResponse(parameter.getParameterName(), parameter.getVariableName(), parameters) ;
+        private Parameter createParameter(io.swagger.v3.oas.models.parameters.Parameter parameter) {
+            Parameter newParameter = new Parameter() ;
+
+            newParameter.setParameterName(parameter.getName());
+            newParameter.setVariableName(parameter.getName());
+            newParameter.setIn(parameter.getIn());
+            newParameter.setExampleValue(parameter.getExample());
+
+            Object example = null ;
+
+            if (parameter.getExample() != null) {
+                example = parameter.getExample() ;
+            } else {
+                if (parameter.getExamples() != null && !parameter.getExamples().isEmpty()) {
+                    example = parameter.getExamples().get(0) ;
+                }
+            }
+
+            if (example != null) {
+                variableValues.put(parameter.getName(),
+                    createVariableValue(parameter.getName(), parameter.getName(), example));
+            }
+
+            return newParameter ;
         }
 
-        private Response<ParameterLink> findParameterLinkAsResponse(String parameterName, String variableName, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
+        private Parameter createProperty(String name, Schema schema) {
+            Parameter newParameter = new Parameter() ;
+
+            newParameter.setParameterName(name);
+            newParameter.setIn("body");
+            newParameter.setExampleValue(schema.getExample());
+
+            Object example = null ;
+
+            if (schema.getExample() != null) {
+                example = schema.getExample() ;
+            } else {
+                if (schema.getExamples() != null && !schema.getExamples().isEmpty()) {
+                    example = schema.getExamples().get(0) ;
+                }
+            }
+
+            if (example != null) {
+                variableValues.put(name,
+                    createVariableValue(name, name, example));
+            }
+
+            return newParameter ;
+        }
+
+        private boolean isTrue(Boolean required) {
+            return required != null && required ;
+        }
+
+        private Response<ParameterLink> findParameterLinkAsResponse(Parameter parameter, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
+            return findParameterLinkAsResponse(parameter.getParameterName(), parameter.getVariableName(), parameter.getExampleValue(), parameters) ;
+        }
+
+        private Response<ParameterLink> findParameterLinkAsResponse(String parameterName, String variableName, Object exampleValue, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
             return findParameter(parameterName, parameters)
                 .map(p -> ParameterLink.builder()
                     .parameter(p)
                     .variableName(variableName)
                     .build())
                 .map(Response::success)
-                .orElse(fail(Response.ErrorType.VALIDATION, String.format("Can not find parameter '%s' for variable '%s' in '%s'", parameterName, variableName, parameters)));
+                .orElseGet(() -> fail(Response.ErrorType.VALIDATION, String.format("Can not find parameter '%s' for variable '%s' in '%s'", parameterName, variableName, parameters)))
+                .onSuccessDoWithResultOnCondition(exampleValue != null, parameterLink ->
+                    variableValues.put(variableName, createVariableValue(parameterName, variableName, exampleValue)));
         }
 
         private Optional<io.swagger.v3.oas.models.parameters.Parameter> findParameter(String name, List<io.swagger.v3.oas.models.parameters.Parameter> parameters) {
@@ -1177,7 +1265,7 @@ public class OpenAPISpecificationAnalyserFactory {
             if (value != null) {
                 return success(value);
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find variable '%s' for '%s", parameter.getVariableName(), parameter.getParameter().getName()));
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find variable '%s' for '%s'", parameter.getVariableName(), parameter.getParameter().getName()));
             }
         }
 
@@ -1315,6 +1403,14 @@ public class OpenAPISpecificationAnalyserFactory {
                     .value(value)
                     .build();
             }
+        }
+
+        private VariableValue createVariableValue(String variableName, String parameterName, Object value) {
+            return VariableValue.builder()
+                    .variableName(variableName)
+                    .parameterName(parameterName)
+                    .value(value)
+                    .build();
         }
 
         private Response<HttpResponse<String>> send(HttpRequest request) {

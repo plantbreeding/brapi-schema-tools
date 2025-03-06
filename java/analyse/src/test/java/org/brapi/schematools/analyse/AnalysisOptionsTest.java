@@ -75,6 +75,9 @@ class AnalysisOptionsTest {
         assertTrue(options.isAnalysingGetForEntity("VendorPlateSubmission"));
         assertTrue(options.isAnalysingListForEntity("VendorPlateSubmission"));
         assertTrue(options.isAnalysingListForEntity("VendorPlateSubmission"));
+
+        assertEquals(0, options.getGetEntity().getRequiredParametersFor("Attribute").size()) ;
+        assertEquals(1, options.getListEntity().getRequiredParametersFor("Attribute").size()) ;
     }
 
     //@Test
@@ -106,6 +109,9 @@ class AnalysisOptionsTest {
         assertFalse(options.isAnalysingGetForEntity("VendorPlateSubmission"));
         assertFalse(options.isAnalysingListForEntity("VendorPlateSubmission"));
         assertFalse(options.isAnalysingListForEntity("VendorPlateSubmission"));
+
+        assertEquals(0, options.getGetEntity().getRequiredParametersFor("Attribute").size()) ;
+        assertEquals(0, options.getListEntity().getRequiredParametersFor("Attribute").size()) ;
     }
 
     private void checkOptions(AnalysisOptions options) {

@@ -1,0 +1,180 @@
+package org.brapi.schematools.cli;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import graphql.ExecutionResult;
+import graphql.GraphQL;
+import graphql.introspection.IntrospectionQuery;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.SchemaPrinter;
+import io.swagger.v3.core.util.Json31;
+import io.swagger.v3.oas.models.OpenAPI;
+import org.apache.jena.ontapi.model.OntModel;
+import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.graphql.GraphQLMarkdownGenerator;
+import org.brapi.schematools.core.graphql.GraphQLSchemaParser;
+import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
+import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
+import org.brapi.schematools.core.markdown.MarkdownGenerator;
+import org.brapi.schematools.core.ontmodel.OntModelGenerator;
+import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
+import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
+import org.brapi.schematools.core.openapi.OpenAPIGenerator;
+import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
+import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
+import picocli.CommandLine;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * The Generate Sub-command
+ */
+@CommandLine.Command(
+    name = "markdown", mixinStandardHelpOptions = true,
+    description = "Generates Markdown descriptions from a GraphQL Schema"
+)
+public class MarkdownSubCommand implements Runnable {
+    private PrintWriter out ;
+    private PrintWriter err ;
+
+    private static final InputFormat DEFAULT_FORMAT = InputFormat.GRAPHQL;
+
+    @CommandLine.Parameters(index = "0", description = "The path of the schema or specification")
+    private Path schemaPath;
+
+    @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Input. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
+    private InputFormat inputFormat = DEFAULT_FORMAT;
+
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file or directory for the generated result. If omitted the output will be written to the standard out")
+    private Path outputPath;
+
+    @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
+    private Path optionsPath;
+
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
+    private boolean overwrite = true;
+
+    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
+    private boolean throwExceptionOnFail = false;
+
+    @CommandLine.Option(names = {"-s", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
+    private boolean stackTrace = false;
+
+    @Override
+    public void run() {
+        try {
+            err = new PrintWriter(System.err) ;
+
+            if (Objects.requireNonNull(inputFormat) == InputFormat.GRAPHQL) {
+                generateMarkdown();
+            }
+        } catch (Exception exception) {
+
+            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
+            err.println(message);
+
+            if (stackTrace) {
+                exception.printStackTrace(err);
+            }
+
+            if (throwExceptionOnFail) {
+                throw new BrAPICommandException(message, exception) ;
+            }
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            err.close();
+        }
+    }
+
+    private void generateMarkdown() {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    err.println("For Markdown generation the output path must be a directory");
+                }
+
+                Files.createDirectories(outputPath);
+
+                GraphQLMarkdownGenerator markdownGenerator = GraphQLMarkdownGenerator.generator(outputPath) ;
+                
+                if (overwrite) {
+                    markdownGenerator = markdownGenerator.overwrite() ;
+                }
+
+                GraphQLSchemaParser parser = new GraphQLSchemaParser() ;
+                
+                GraphQLSchema schema = parser.parseJsonSchema(readFromFile(schemaPath)) ;
+
+                Response<List<Path>> response = markdownGenerator.generate(schema);
+
+                response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
+            } else {
+                err.println("For Markdown generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            err.println(exception.getMessage());
+        }
+    }
+
+    private String readFromFile(Path path) throws IOException {
+
+        Stream<String> lines = Files.lines(path);
+        String data = lines.collect(Collectors.joining("\n"));
+        lines.close();
+
+        return data ;
+    }
+
+    private void outputMarkdownPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any markdown files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' markdown file:");
+            System.out.println(paths.get(0).toString());
+        } else {
+            System.out.printf("Generated '%s' markdown files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printMarkdownErrors(Response<List<Path>> response) {
+        String message ;
+        if (response.getAllErrors().size() == 1) {
+            err.println(message = "There was 1 error generating the Markdown");
+        } else {
+            err.println(message = String.format("There were %d errors generating the Markdown", response.getAllErrors().size())); ;
+        }
+
+        response.getAllErrors().forEach(this::printError);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
+    }
+
+    private void printError(Response.Error error) {
+        switch (error.getType()) {
+
+            case VALIDATION -> {
+                err.print("Validation Error :");
+            }
+            case PERMISSION, OTHER -> {
+                err.print("Error :");
+            }
+        }
+        err.print('\t');
+
+        err.println(error.getMessage());
+    }
+}

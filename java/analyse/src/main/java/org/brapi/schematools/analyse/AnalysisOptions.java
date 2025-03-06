@@ -85,7 +85,7 @@ public class AnalysisOptions implements Options {
         }
 
         if (overrideOptions.getEntity != null) {
-            getEntity.override(overrideOptions.listEntity);
+            getEntity.override(overrideOptions.getEntity);
         }
 
         if (overrideOptions.listEntity != null) {
