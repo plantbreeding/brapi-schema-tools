@@ -1,31 +1,12 @@
 package org.brapi.schematools.cli;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.SchemaPrinter;
-import io.swagger.v3.core.util.Json31;
-import io.swagger.v3.oas.models.OpenAPI;
-import org.apache.jena.ontapi.model.OntModel;
-import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.graphql.GraphQLMarkdownGenerator;
+import org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator;
 import org.brapi.schematools.core.graphql.GraphQLSchemaParser;
-import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
-import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
-import org.brapi.schematools.core.markdown.MarkdownGenerator;
-import org.brapi.schematools.core.ontmodel.OntModelGenerator;
-import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
-import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
-import org.brapi.schematools.core.openapi.OpenAPIGenerator;
-import org.brapi.schematools.core.openapi.metadata.OpenAPIGeneratorMetadata;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
+import org.brapi.schematools.core.markdown.GraphQLMarkdownGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
 import picocli.CommandLine;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -106,11 +87,10 @@ public class MarkdownSubCommand implements Runnable {
 
                 Files.createDirectories(outputPath);
 
-                GraphQLMarkdownGenerator markdownGenerator = GraphQLMarkdownGenerator.generator(outputPath) ;
-                
-                if (overwrite) {
-                    markdownGenerator = markdownGenerator.overwrite() ;
-                }
+                GraphQLMarkdownGeneratorOptions options = GraphQLMarkdownGeneratorOptions.load().setOverwrite(overwrite) ;
+
+                GraphQLMarkdownGenerator markdownGenerator = GraphQLMarkdownGenerator
+                    .generator(outputPath).options(options) ;
 
                 GraphQLSchemaParser parser = new GraphQLSchemaParser() ;
                 

@@ -1,0 +1,8 @@
+overwrite: false
+queryDefinitionsDirectory: queries
+typeDefinitionsDirectory: dataTypes
+descriptionsDirectory: descriptions
+fieldsDirectory: fields
+argumentsDirectory: arguments
+createTopLevelFieldDefinitions: true
+createTopLeveArgumentDefinitions: true
