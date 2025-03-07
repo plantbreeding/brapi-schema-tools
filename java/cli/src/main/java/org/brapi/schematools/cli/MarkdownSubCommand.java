@@ -1,8 +1,8 @@
 package org.brapi.schematools.cli;
 
 import graphql.schema.GraphQLSchema;
-import org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator;
 import org.brapi.schematools.core.graphql.GraphQLSchemaParser;
+import org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator;
 import org.brapi.schematools.core.markdown.GraphQLMarkdownGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;

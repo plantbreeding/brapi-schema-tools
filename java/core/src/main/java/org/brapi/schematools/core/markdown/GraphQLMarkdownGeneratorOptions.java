@@ -2,13 +2,13 @@ package org.brapi.schematools.core.markdown;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
-import org.brapi.schematools.core.graphql.options.*;
-import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -16,8 +16,6 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Options for the {@link GraphQLGenerator}.
