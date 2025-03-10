@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -43,12 +44,11 @@ import static java.util.function.UnaryOperator.identity;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 
-
 /**
  * Analyses BrAPI endpoints against an OpenAPI Specification
  */
 @Slf4j
-public class OpenAPISpecificationAnalyserFactory {
+public class BrAPISpecificationAnalyserFactory {
 
     private static final int SPECIAL_CASE_ENDPOINTS_INDEX = 0;
     private static final int LIST_ENTITY_INDEX = 10;
@@ -82,7 +82,7 @@ public class OpenAPISpecificationAnalyserFactory {
      * @param client                the HTTP client to use for the execution of requests
      * @param authorizationProvider the authorization provider need for authorization
      */
-    public OpenAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider) {
+    public BrAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider) {
         this(baseURL, client, authorizationProvider, AnalysisOptions.load());
     }
 
@@ -94,7 +94,7 @@ public class OpenAPISpecificationAnalyserFactory {
      * @param authorizationProvider the authorization provider need for authorization
      * @param options               analysis options ;
      */
-    public OpenAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider, AnalysisOptions options) {
+    public BrAPISpecificationAnalyserFactory(String baseURL, HttpClient client, AuthorizationProvider authorizationProvider, AnalysisOptions options) {
         this.baseURL = baseURL;
         this.client = client;
         this.authorizationProvider = authorizationProvider;
@@ -109,9 +109,9 @@ public class OpenAPISpecificationAnalyserFactory {
      * @param specification the OpenAPI specification to br analysed.
      * @return A response containing a list of AnalysisReports or failure explaining why it failed.
      */
-    public Response<List<AnalysisReport>> analyse(String specification) {
+    public Response<List<AnalysisReport>> analyse(String specification, Path schema) {
 
-        Analyser analyser = new Analyser(specification);
+        Analyser analyser = new Analyser(specification, schema);
 
         return analyser.getErrors().merge(options.validate().asResponse())
             .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseAll()).collect(Response.mergeLists()));
@@ -127,7 +127,7 @@ public class OpenAPISpecificationAnalyserFactory {
      */
     public Response<List<AnalysisReport>> analyse(String specification, List<String> entityNames) {
 
-        Analyser analyser = new Analyser(specification);
+        Analyser analyser = new Analyser(specification, null);
 
         return analyser.getErrors().merge(options.validate().asResponse())
             .map(() -> Stream.of(analyser.analyseSpecial(), analyser.analyseEntities(entityNames)).collect(Response.mergeLists()));
@@ -142,22 +142,22 @@ public class OpenAPISpecificationAnalyserFactory {
      */
     public Response<Validation> validate(String specification) {
 
-        Analyser analyser = new Analyser(specification);
+        Analyser analyser = new Analyser(specification, null);
 
         return analyser.getErrors().merge(options.validate().asResponse());
     }
 
     /**
      * Creates a new analyser for a specification. Used for fine control over the analysis.
-     * It is recommended to use the factory directly {@link OpenAPISpecificationAnalyserFactory#analyse(String)} or
-     * {@link OpenAPISpecificationAnalyserFactory#analyse(String, List)} which handles option validation
+     * It is recommended to use the factory directly {@link BrAPISpecificationAnalyserFactory#analyse(String)} or
+     * {@link BrAPISpecificationAnalyserFactory#analyse(String, List)} which handles option validation
      * and the pre-processing steps, like calling {@link Analyser#analyseSpecial()}
      *
      * @param specification the OpenAPI specification to br analysed.
      * @return A response containing a list of AnalysisReports or failure explaining why it failed.
      */
     public Analyser analyser(String specification) {
-        return new Analyser(specification);
+        return new Analyser(specification, null);
     }
 
     /**
@@ -167,6 +167,7 @@ public class OpenAPISpecificationAnalyserFactory {
 
         private final OpenAPI openAPI;
         private final OpenApiInteractionValidator validator;
+
         private final Map<String, APIRequest> requests = new HashMap<>();
 
         private final Set<APIRequest> specialRequests = new TreeSet<>(Comparator.comparingInt(APIRequest::getIndex));
@@ -203,7 +204,7 @@ public class OpenAPISpecificationAnalyserFactory {
          *
          * @param specification on a OpenAPI specification
          */
-        private Analyser(String specification) {
+        private Analyser(String specification, Path schemaPath) {
             ParseOptions parseOptions = new ParseOptions();
 
             parseOptions.setResolve(true);
@@ -1370,7 +1371,7 @@ public class OpenAPISpecificationAnalyserFactory {
                         builder.errorMessage(e.getMessage());
                     }
                 } else {
-                    Response.fail(Response.ErrorType.VALIDATION, String.format("Can not cache value for variables '%s', return code was '%s'",
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not cache value for variables '%s', return code was '%s'",
                         request.getCacheVariables().stream().map(Variable::getVariableName).collect(Collectors.joining(", ")), httpResponse.statusCode()));
                 }
             }

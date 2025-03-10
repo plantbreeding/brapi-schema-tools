@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.brapi.schematools.analyse.AnalysisOptions;
 import org.brapi.schematools.analyse.AnalysisReport;
-import org.brapi.schematools.analyse.OpenAPISpecificationAnalyserFactory;
+import org.brapi.schematools.analyse.BrAPISpecificationAnalyserFactory;
 import org.brapi.schematools.analyse.TabularReportGenerator;
 import org.brapi.schematools.analyse.TabularReportWriter;
 import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
@@ -104,7 +104,7 @@ public class AnalyseSubCommand implements Runnable {
                 validateOptions(options)
                     .onFailDoWithResponse(this::outputValidation)
                     .map(() -> createAnalyser(options))
-                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
+                    .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
                     .onSuccessDoWithResult(this::outputDryRun);
             } else if (batchProcess) {
                 if (!individualReportsByEntity) {
@@ -113,14 +113,14 @@ public class AnalyseSubCommand implements Runnable {
 
                 validateOptions(options)
                     .map(() -> createAnalyser(options))
-                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
+                    .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::batchAnalyse)
                     .onFailDoWithResponse(this::outputError);
 
             } else {
                 validateOptions(options)
                     .map(() -> createAnalyser(options))
-                    .mapResultToResponse(OpenAPISpecificationAnalyserFactory.Analyser::validate)
+                    .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::analyse)
                     .onFailDoWithResponse(this::outputError)
                     .onSuccessDoWithResult(this::outputReports);
@@ -135,7 +135,7 @@ public class AnalyseSubCommand implements Runnable {
         return options.validate().asResponse();
     }
 
-    private Response<OpenAPISpecificationAnalyserFactory.Analyser> createAnalyser(AnalysisOptions options) {
+    private Response<BrAPISpecificationAnalyserFactory.Analyser> createAnalyser(AnalysisOptions options) {
         if (Files.isRegularFile(specificationPath)) {
             Stream<String> lines;
 
@@ -149,14 +149,14 @@ public class AnalyseSubCommand implements Runnable {
             lines.close();
 
             return authorisation()
-                .mapResult(sso -> new OpenAPISpecificationAnalyserFactory(baseURL, HttpClient.newBuilder().build(), sso, options))
+                .mapResult(sso -> new BrAPISpecificationAnalyserFactory(baseURL, HttpClient.newBuilder().build(), sso, options))
                 .mapResult(factory -> factory.analyser(specification));
         }
 
         return Response.fail(Response.ErrorType.VALIDATION, String.format("Path '%s' is not regular file", specificationPath.toFile()));
     }
 
-    private Response<List<AnalysisReport>> analyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+    private Response<List<AnalysisReport>> analyse(BrAPISpecificationAnalyserFactory.Analyser analyser) {
         List<String> entityNames = getEntityNames();
 
         if (entityNames.isEmpty()) {
@@ -173,7 +173,7 @@ public class AnalyseSubCommand implements Runnable {
     }
 
 
-    private Response<List<AnalysisReport>> batchAnalyse(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+    private Response<List<AnalysisReport>> batchAnalyse(BrAPISpecificationAnalyserFactory.Analyser analyser) {
 
         List<AnalysisReport> completedReports = new LinkedList<>();
 
@@ -327,7 +327,7 @@ public class AnalyseSubCommand implements Runnable {
         response.getMessages().forEach(err::println);
     }
 
-    private void outputDryRun(OpenAPISpecificationAnalyserFactory.Analyser analyser) {
+    private void outputDryRun(BrAPISpecificationAnalyserFactory.Analyser analyser) {
         out.println("Analysing Endpoints:");
         analyser.getEndpoints().forEach(out::println);
         out.println();

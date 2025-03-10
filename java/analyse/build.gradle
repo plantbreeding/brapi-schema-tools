@@ -10,7 +10,7 @@ dependencies {
 
     implementation 'com.atlassian.oai:swagger-request-validator-core'
     implementation 'ch.qos.logback:logback-classic'
-    implementation "org.dflib:dflib-csv"
+    implementation 'org.dflib:dflib-csv'
     implementation 'com.jayway.jsonpath:json-path:2.9.0'
     implementation 'org.apache.poi:poi:5.4.0'
 

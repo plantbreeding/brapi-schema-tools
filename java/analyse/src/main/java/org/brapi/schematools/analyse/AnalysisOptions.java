@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 
 /**
- * Options for the {@link OpenAPISpecificationAnalyserFactory}.
+ * Options for the {@link BrAPISpecificationAnalyserFactory}.
  */
 @Getter
 @Setter

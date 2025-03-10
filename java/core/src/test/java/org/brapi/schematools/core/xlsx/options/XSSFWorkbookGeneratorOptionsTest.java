@@ -35,7 +35,7 @@ class XSSFWorkbookGeneratorOptionsTest {
     void loadJson() {
         XSSFWorkbookGeneratorOptions options = null;
         try {
-            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-test-options.json").toURI()));
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/xlsx-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -48,7 +48,7 @@ class XSSFWorkbookGeneratorOptionsTest {
     void loadYaml() {
         XSSFWorkbookGeneratorOptions options = null;
         try {
-            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-test-options.yaml").toURI()));
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/xlsx-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -61,7 +61,7 @@ class XSSFWorkbookGeneratorOptionsTest {
     void overwrite() {
         XSSFWorkbookGeneratorOptions options = null;
         try {
-            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-override-options.yaml").toURI()));
+            options = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/xlsx-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -85,7 +85,7 @@ class XSSFWorkbookGeneratorOptionsTest {
     void compare() {
         try {
             XSSFWorkbookGeneratorOptions options1 = XSSFWorkbookGeneratorOptions.load() ;
-            XSSFWorkbookGeneratorOptions options2 = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("xlsx-no-override-options.yaml").toURI()));
+            XSSFWorkbookGeneratorOptions options2 = XSSFWorkbookGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/xlsx-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

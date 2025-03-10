@@ -27,7 +27,7 @@ class OntModelGeneratorMetadataTest {
     void loadJson() {
         OntModelGeneratorMetadata metadata = null;
         try {
-            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("ont-model-test-metadata.json").toURI()));
+            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/ont-model-test-metadata.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -40,7 +40,7 @@ class OntModelGeneratorMetadataTest {
     void loadYaml() {
         OntModelGeneratorMetadata metadata = null;
         try {
-            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("ont-model-test-metadata.yaml").toURI()));
+            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/ont-model-test-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -53,7 +53,7 @@ class OntModelGeneratorMetadataTest {
     void overwrite() {
         OntModelGeneratorMetadata metadata = null;
         try {
-            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("ont-model-override-metadata.yaml").toURI()));
+            metadata = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/ont-model-override-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -68,7 +68,7 @@ class OntModelGeneratorMetadataTest {
     void compare() {
         try {
             OntModelGeneratorMetadata options1 = OntModelGeneratorMetadata.load() ;
-            OntModelGeneratorMetadata options2 = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("ont-model-no-override-metadata.yaml").toURI()));
+            OntModelGeneratorMetadata options2 = OntModelGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/ont-model-no-override-metadata.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

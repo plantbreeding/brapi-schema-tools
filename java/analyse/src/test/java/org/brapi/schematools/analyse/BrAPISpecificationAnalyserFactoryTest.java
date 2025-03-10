@@ -10,7 +10,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 
 @ExtendWith(MockitoExtension.class)
-class OpenAPISpecificationAnalyserTest {
+class BrAPISpecificationAnalyserFactoryTest {
 
     @Mock
     private HttpClient client;
@@ -18,11 +18,11 @@ class OpenAPISpecificationAnalyserTest {
     private NoAuthorizationProvider authorizationProvider;
     @Mock
     private HttpResponse<String> response ;
-    private OpenAPISpecificationAnalyserFactory subject;
+    private BrAPISpecificationAnalyserFactory subject;
 
     @BeforeEach
     void setUp() {
-        subject = new OpenAPISpecificationAnalyserFactory("https://brapi.org/brapi/v2", client, authorizationProvider) ;
+        subject = new BrAPISpecificationAnalyserFactory("https://brapi.org/brapi/v2", client, authorizationProvider) ;
     }
 
     /*@Test

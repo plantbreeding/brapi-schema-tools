@@ -34,7 +34,7 @@ class OntModelGeneratorOptionsTest {
     void loadJson() {
         OntModelGeneratorOptions options = null;
         try {
-            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("ont-model-test-options.json").toURI()));
+            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/ont-model-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -47,7 +47,7 @@ class OntModelGeneratorOptionsTest {
     void loadYaml() {
         OntModelGeneratorOptions options = null;
         try {
-            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("ont-model-test-options.yaml").toURI()));
+            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/ont-model-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -60,7 +60,7 @@ class OntModelGeneratorOptionsTest {
     void overwrite() {
         OntModelGeneratorOptions options = null;
         try {
-            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("ont-model-override-options.yaml").toURI()));
+            options = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/ont-model-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -75,7 +75,7 @@ class OntModelGeneratorOptionsTest {
     void compare() {
         try {
             OntModelGeneratorOptions options1 = OntModelGeneratorOptions.load() ;
-            OntModelGeneratorOptions options2 = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("ont-model-no-override-options.yaml").toURI()));
+            OntModelGeneratorOptions options2 = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/ont-model-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

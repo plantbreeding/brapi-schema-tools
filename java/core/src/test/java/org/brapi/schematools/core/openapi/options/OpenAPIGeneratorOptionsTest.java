@@ -38,7 +38,7 @@ class OpenAPIGeneratorOptionsTest {
     void loadJson() {
         OpenAPIGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-test-options.json").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -53,7 +53,7 @@ class OpenAPIGeneratorOptionsTest {
     void loadYaml() {
         OpenAPIGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-test-options.yaml").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -69,7 +69,7 @@ class OpenAPIGeneratorOptionsTest {
         OpenAPIGeneratorOptions options = null;
 
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-override-options.yaml").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -113,7 +113,7 @@ class OpenAPIGeneratorOptionsTest {
     void compare() {
         try {
             OpenAPIGeneratorOptions options1 = OpenAPIGeneratorOptions.load() ;
-            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("openapi-no-override-options.yaml").toURI()));
+            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

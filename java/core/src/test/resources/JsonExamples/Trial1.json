@@ -1,0 +1,22 @@
+{
+    "commonCropName": "Crop",
+    "randomizationType": "randomizationType",
+    "trialDbId": "e4423a3e-f7ea-44ba-9924-c128cc8060e8",
+    "publications": null,
+    "externalReferences": null,
+    "contacts": null,
+    "stage": "Stage X",
+    "trialPUI": "Trial1",
+    "documentationURL": null,
+    "programName": "Program1",
+    "programDbId": "3f45538e-6bc9-41a8-be46-aeaecf16ec42",
+    "locationDbId": null,
+    "trialDescription": null,
+    "active": null,
+    "datasetAuthorships": null,
+    "startDate": null,
+    "endDate": null,
+    "programPUI": "Program1",
+    "trialCode": "Code1",
+    "trialName": "Trial1"
+}
