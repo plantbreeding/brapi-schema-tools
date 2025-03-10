@@ -1,5 +1,0 @@
-{
-    "$ref": "Trial.json#/$defs/Trial",
-    "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Core/TrialExample.json",
-    "$schema": "http://json-schema.org/draft/2020-12/schema"
-}
