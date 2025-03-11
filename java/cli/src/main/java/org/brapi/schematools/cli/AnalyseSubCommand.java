@@ -65,7 +65,7 @@ public class AnalyseSubCommand implements Runnable {
     private boolean verbose;
     @CommandLine.Option(names = {"-i", "--individualReportsByEntity"}, description = "Create an individual report for entity")
     private boolean individualReportsByEntity;
-    @CommandLine.Option(names = {"-b", "--batchProcess"}, description = "Process the API requests in batches per entity. Use only with the -i option.")
+    @CommandLine.Option(names = {"-b", "--batchProcess"}, description = "Process the API requests in batches per entity. Use only with the -i option. WARNING the output file will be deleted prior to starting the batch process.")
     private boolean batchProcess;
     @CommandLine.Option(names = {"-d", "--validate"}, description = "Does a dry run on the analyse, validating the options")
     private boolean validate;
@@ -109,13 +109,18 @@ public class AnalyseSubCommand implements Runnable {
             } else if (batchProcess) {
                 if (!individualReportsByEntity) {
                     err.println("Batch process can only be used in conjunction with 'individualReportsByEntity'");
-                }
+                } else {
+                    if (Files.exists(reportPath)) {
+                        out.printf("Deleting Report file '%s'!%n", reportPath.toFile().getAbsolutePath());
+                        Files.delete(reportPath);
+                    }
 
-                validateOptions(options)
-                    .map(() -> createAnalyser(options))
-                    .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
-                    .mapResultToResponse(this::batchAnalyse)
-                    .onFailDoWithResponse(this::outputError);
+                    validateOptions(options)
+                        .map(() -> createAnalyser(options))
+                        .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
+                        .mapResultToResponse(this::batchAnalyse)
+                        .onFailDoWithResponse(this::outputError);
+                }
 
             } else {
                 validateOptions(options)
