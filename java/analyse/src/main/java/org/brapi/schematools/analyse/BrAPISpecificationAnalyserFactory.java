@@ -407,7 +407,7 @@ public class BrAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityName + "DbId1",
+                            entityIdPropertyName + "1",
                             pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
@@ -432,7 +432,7 @@ public class BrAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityName + "DbId1",
+                            entityIdPropertyName + "1",
                             pathItem.getGet().getParameters()))
                         .mapResult(builder -> buildUpdateEntityBody(builder, pathItem.getPut().getRequestBody(), options.getUpdateEntity()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
@@ -454,7 +454,7 @@ public class BrAPISpecificationAnalyserFactory {
                                 .build()))
                         .mapResultToResponse(builder -> enrichWithParameter(builder,
                             entityIdPropertyName,
-                            entityName + "DbId1",
+                            entityIdPropertyName + "1",
                             pathItem.getGet().getParameters()))
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
@@ -482,12 +482,12 @@ public class BrAPISpecificationAnalyserFactory {
                                 .build()))
                         .onSuccessDoWithResultOnCondition(entityIdPropertyName != null, builder -> builder
                             .cacheVariable(Variable.builder()
-                                .variableName(entityName + "DbId1")
+                                .variableName(entityIdPropertyName + "1")
                                 .parameterName(entityIdPropertyName)
                                 .jsonPath("$.result.data[0]." + entityIdPropertyName)
                                 .build())
                             .cacheVariable(Variable.builder()
-                                .variableName(entityName + "DbIds1")
+                                .variableName(entityIdPropertyName + "s1")
                                 .parameterName(entityIdPropertyName + "s")
                                 .jsonPath("$.result.data[0:10]." + entityIdPropertyName)
                                 .build()))
