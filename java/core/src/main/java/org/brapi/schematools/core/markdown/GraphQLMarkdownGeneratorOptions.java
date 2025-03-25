@@ -35,6 +35,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String argumentsDirectory;
     private Boolean createTopLevelFieldDefinitions ;
     private Boolean createTopLeveArgumentDefinitions ;
+    private String introspectionQuery ;
 
     /**
      * Load the default options
@@ -79,7 +80,8 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             .assertNotNull(fieldsDirectory, "'fieldsDirectory' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(argumentsDirectory, "'argumentsDirectory' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(createTopLevelFieldDefinitions, "'createTopLevelFieldDefinitions' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(createTopLeveArgumentDefinitions, "'createTopLeveArgumentDefinitions' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(createTopLeveArgumentDefinitions, "'createTopLeveArgumentDefinitions' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(introspectionQuery, "'introspectionQuery' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -120,6 +122,9 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             createTopLeveArgumentDefinitions = overrideOptions.createTopLeveArgumentDefinitions ;
         }
 
+        if (overrideOptions.introspectionQuery != null) {
+            introspectionQuery = overrideOptions.introspectionQuery ;
+        }
 
         return this ;
     }
