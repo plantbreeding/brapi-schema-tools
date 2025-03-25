@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.brapi.schematools.analyse.AnalysisOptions;
 import org.brapi.schematools.analyse.AnalysisReport;
+import org.brapi.schematools.analyse.Endpoint;
 import org.brapi.schematools.analyse.BrAPISpecificationAnalyserFactory;
 import org.brapi.schematools.analyse.TabularReportGenerator;
 import org.brapi.schematools.analyse.TabularReportWriter;
@@ -15,6 +16,8 @@ import org.brapi.schematools.analyse.authorization.oauth.OpenIDToken;
 import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
+import org.dflib.DataFrame;
+import org.dflib.Extractor;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
@@ -23,6 +26,7 @@ import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,7 +109,7 @@ public class AnalyseSubCommand implements Runnable {
                     .onFailDoWithResponse(this::outputValidation)
                     .map(() -> createAnalyser(options))
                     .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
-                    .onSuccessDoWithResult(this::outputDryRun);
+                    .onSuccessDoWithResult(this::outputEndpointsToOut);
             } else if (batchProcess) {
                 if (!individualReportsByEntity) {
                     err.println("Batch process can only be used in conjunction with 'individualReportsByEntity'");
@@ -127,8 +131,7 @@ public class AnalyseSubCommand implements Runnable {
                     .map(() -> createAnalyser(options))
                     .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
                     .mapResultToResponse(this::analyse)
-                    .onFailDoWithResponse(this::outputError)
-                    .onSuccessDoWithResult(this::outputReports);
+                    .onFailDoWithResponse(this::outputError);
             }
 
         } catch (Exception exception) {
@@ -168,12 +171,16 @@ public class AnalyseSubCommand implements Runnable {
             return Stream.of(
                     analyser.analyseSpecial(),
                     analyser.analyseAll())
-                .collect(Response.mergeLists());
+                .collect(Response.mergeLists())
+                .onSuccessDoWithResult(this::outputReports)
+                .onSuccessDo(() -> outputEndpoints(analyser)) ;
         } else {
             return Stream.of(
                     analyser.analyseSpecial(),
                     analyser.analyseEntities(entityNames))
-                .collect(Response.mergeLists());
+                .collect(Response.mergeLists())
+                .onSuccessDoWithResult(this::outputReports)
+                .onSuccessDo(() -> outputEndpoints(analyser)) ;
         }
     }
 
@@ -193,7 +200,7 @@ public class AnalyseSubCommand implements Runnable {
             }
 
             analyser.analyseSpecial().onFailDoWithResponse(this::outputError)
-                .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                .onSuccessDoWithResult(reports -> writeReportsToFile(tabularReportGenerator, reports))
                 .onSuccessDoWithResult(completedReports::addAll);
 
             List<String> entityNames = getEntityNames();
@@ -202,19 +209,20 @@ public class AnalyseSubCommand implements Runnable {
                 analyser.getEntityNames().forEach(entityName -> {
                     analyser.analyseEntity(entityName)
                         .onFailDoWithResponse(this::outputError)
-                        .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                        .onSuccessDoWithResult(reports -> writeReportsToFile(tabularReportGenerator, reports))
                         .onSuccessDoWithResult(completedReports::addAll);
                 });
             } else {
                 entityNames.forEach(entityName -> {
                     analyser.analyseEntity(entityName)
                         .onFailDoWithResponse(this::outputError)
-                        .onSuccessDoWithResult(reports -> outputReportsToFile(tabularReportGenerator, reports))
+                        .onSuccessDoWithResult(reports -> writeReportsToFile(tabularReportGenerator, reports))
                         .onSuccessDoWithResult(completedReports::addAll);
                 });
             }
 
-            outputSummaryToFile(tabularReportGenerator);
+            writeSummaryToFile(tabularReportGenerator);
+            writeEndpointsToFile(analyser); ;
         } else {
             analyser.analyseSpecial()
                 .onFailDoWithResponse(this::outputError)
@@ -227,6 +235,7 @@ public class AnalyseSubCommand implements Runnable {
                 .onSuccessDoWithResult(completedReports::addAll));
 
             outputSummaryToOut(tabularReportGenerator);
+            outputEndpointsToOut(analyser);
         }
 
         return Response.success(completedReports);
@@ -286,8 +295,8 @@ public class AnalyseSubCommand implements Runnable {
                 return;
             }
 
-            outputReportsToFile(tabularReportGenerator, listResponses);
-            outputSummaryToFile(tabularReportGenerator);
+            writeReportsToFile(tabularReportGenerator, listResponses);
+            writeSummaryToFile(tabularReportGenerator);
         } else {
             outputReportsToOut(tabularReportGenerator, listResponses);
             outputSummaryToOut(tabularReportGenerator);
@@ -304,7 +313,7 @@ public class AnalyseSubCommand implements Runnable {
         }
     }
 
-    private void outputReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
+    private void writeReportsToFile(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
         try {
             if (individualReportsByEntity) {
                 writer.writeToExcel(tabularReportGenerator.generateReportByEntity(listResponses), reportPath);
@@ -316,7 +325,7 @@ public class AnalyseSubCommand implements Runnable {
         }
     }
 
-    private void outputSummaryToFile(TabularReportGenerator tabularReportGenerator) {
+    private void writeSummaryToFile(TabularReportGenerator tabularReportGenerator) {
         if (summariseAcrossReports) {
             try {
                 writer.writeToExcel(tabularReportGenerator.getSummary(), reportPath);
@@ -326,13 +335,121 @@ public class AnalyseSubCommand implements Runnable {
         }
     }
 
+    private void outputEndpoints(BrAPISpecificationAnalyserFactory.Analyser analyser) {
 
-    private void outputValidation(Response<Validation> response) {
-        err.println("Validation Errors:");
-        response.getMessages().forEach(err::println);
+        if (reportPath != null) {
+            if (Files.isDirectory(reportPath)) {
+                err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
+                return;
+            }
+
+            writeEndpointsToFile(analyser);
+        } else {
+            outputEndpointsToOut(analyser);
+        }
     }
 
-    private void outputDryRun(BrAPISpecificationAnalyserFactory.Analyser analyser) {
+    private void writeEndpointsToFile(BrAPISpecificationAnalyserFactory.Analyser analyser) {
+
+        DataFrame analysed ;
+        DataFrame notAnalysed ;
+
+        if (this.entityNames != null && !this.entityNames.isEmpty()) {
+            analysed = DataFrame
+                .byRow(
+                    Extractor.$col(Endpoint::getEntityName),
+                    Extractor.$col(Endpoint::getPath),
+                    Extractor.$col(Endpoint::getMethod),
+                    Extractor.$col(Endpoint::getCategory),
+                    Extractor.$val("Analysed"))
+                .columnNames("Entity", "Path", "Method", "Category", "Class")
+                .appender()
+                .append(analyser.getEndpoints().stream().filter(endpoint -> this.entityNames.contains(endpoint.getEntityName())).toList())
+                .toDataFrame();
+
+            notAnalysed = DataFrame
+                .byRow(
+                    Extractor.$col(Endpoint::getEntityName),
+                    Extractor.$col(Endpoint::getPath),
+                    Extractor.$col(Endpoint::getMethod),
+                    Extractor.$col(Endpoint::getCategory),
+                    Extractor.$val("Not Analysed"))
+                .columnNames("Entity", "Path", "Method", "Category", "Class")
+                .appender()
+                .append(analyser.getEndpoints().stream().filter(endpoint -> !this.entityNames.contains(endpoint.getEntityName())).toList())
+                .toDataFrame();
+        } else {
+            analysed = DataFrame
+                .byRow(
+                    Extractor.$col(Endpoint::getEntityName),
+                    Extractor.$col(Endpoint::getPath),
+                    Extractor.$col(Endpoint::getMethod),
+                    Extractor.$col(Endpoint::getCategory),
+                    Extractor.$val("Analysed"))
+                .columnNames("Entity", "Path", "Method", "Category", "Class")
+                .appender()
+                .append(analyser.getEndpoints())
+                .toDataFrame();
+
+            notAnalysed = DataFrame
+                .byRow(
+                    Extractor.$col(Endpoint::getEntityName),
+                    Extractor.$col(Endpoint::getPath),
+                    Extractor.$col(Endpoint::getMethod),
+                    Extractor.$col(Endpoint::getCategory),
+                    Extractor.$val("Not Analysed"))
+                .columnNames("Entity", "Path", "Method", "Category", "Class")
+                .appender()
+                .append(new ArrayList<>())
+                .toDataFrame();
+        }
+
+        DataFrame unmatched = DataFrame
+            .byRow(
+                Extractor.$col(Endpoint::getEntityName),
+                Extractor.$col(Endpoint::getPath),
+                Extractor.$col(Endpoint::getMethod),
+                Extractor.$col(Endpoint::getCategory),
+                Extractor.$val("Unmatched"))
+            .columnNames("Entity", "Path", "Method", "Category", "Class")
+            .appender()
+            .append(analyser.getUnmatchedEndpoints())
+            .toDataFrame();
+
+        DataFrame skipped = DataFrame
+            .byRow(
+                Extractor.$col(Endpoint::getEntityName),
+                Extractor.$col(Endpoint::getPath),
+                Extractor.$col(Endpoint::getMethod),
+                Extractor.$col(Endpoint::getCategory),
+                Extractor.$val("Skipped"))
+            .columnNames("Entity", "Path", "Method", "Category", "Class")
+            .appender()
+            .append(analyser.getSkippedEndpoints())
+            .toDataFrame();
+
+        DataFrame depreciated = DataFrame
+            .byRow(
+                Extractor.$col(Endpoint::getEntityName),
+                Extractor.$col(Endpoint::getPath),
+                Extractor.$col(Endpoint::getMethod),
+                Extractor.$col(Endpoint::getCategory),
+                Extractor.$val("Depreciated"))
+            .columnNames("Entity", "Path", "Method", "Category", "Class")
+            .appender()
+            .append(analyser.getDeprecatedEndpoints())
+            .toDataFrame();
+
+        DataFrame endpoints = analysed.vConcat(notAnalysed, unmatched, skipped, depreciated).as("Endpoints") ;
+
+        try {
+            writer.writeToExcel(endpoints, reportPath);
+        } catch (IOException e) {
+            outputException(e);
+        }
+    }
+
+    private void outputEndpointsToOut(BrAPISpecificationAnalyserFactory.Analyser analyser) {
         out.println("Analysing Endpoints:");
         analyser.getEndpoints().forEach(out::println);
         out.println();
@@ -344,6 +461,12 @@ public class AnalyseSubCommand implements Runnable {
         out.println();
         out.println("Deprecated Endpoints:");
         analyser.getDeprecatedEndpoints().forEach(out::println);
+    }
+
+
+    private void outputValidation(Response<Validation> response) {
+        err.println("Validation Errors:");
+        response.getMessages().forEach(err::println);
     }
 
     private void outputException(Exception exception) {

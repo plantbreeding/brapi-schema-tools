@@ -12,10 +12,11 @@ import lombok.Value;
 public class Endpoint {
     String path;
     Request.Method method;
+    String entityName;
     String category;
 
     @Override
     public String toString() {
-        return String.format("%s %s : %s" , category, method.name(), path) ;
+        return String.format("%s %s %s : %s" , entityName, category, method.name(), path) ;
     }
 }

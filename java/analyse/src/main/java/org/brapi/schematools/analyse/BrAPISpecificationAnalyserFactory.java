@@ -180,12 +180,12 @@ public class BrAPISpecificationAnalyserFactory {
         private final List<Endpoint> deprecatedEndpoints = new ArrayList<>();
         private final Map<String, VariableValue> variableValues = new HashMap<>();
 
-        private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}"); // 3 groups
-        private static final Pattern ENTITIES_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?(?:/)?(\\w+)?"); // 3 groups, ignore last
+        private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(\\w+)/?(\\w+)?/\\{(\\w+)}"); // 3 groups
+        private static final Pattern ENTITIES_PATH_PATTERN = Pattern.compile("/(\\w+)/?(\\w+)?/?(\\w+)?"); // 3 groups, ignore last
         private static final Pattern SEARCH_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?"); // 2 groups
-        private static final Pattern SEARCH_RESULTS_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?/\\{(\\w+)\\}"); // 3 groups, ignore last
-        private static final Pattern TABLE_PATH_PATTERN = Pattern.compile("/(\\w+)/table"); // 1 group
-        private static final Pattern ENTITY_SUB_PATH_PATTERN = Pattern.compile("/(\\w+)(?:/)?(\\w+)?/\\{(\\w+)\\}/(\\w+)"); // 3 groups, ignore 3rd
+        private static final Pattern SEARCH_RESULTS_PATH_PATTERN = Pattern.compile("/search/(\\w+)(/attributes|/attributevalues)?/\\{(\\w+)}"); // 3 groups, ignore last
+        private static final Pattern TABLE_PATH_PATTERN = Pattern.compile("(?:/search)?/(\\w+)/table"); // 1 group
+        private static final Pattern ENTITY_SUB_PATH_PATTERN = Pattern.compile("/(\\w+)/?(\\w+)?/\\{(\\w+)}/(\\w+)"); // 3 groups, ignore 3rd
         private final List<PathMatcher> PATH_PATTERN_MATCHERS = Arrays.asList(
             new PathMatcher(TABLE_PATH_PATTERN, this::cacheTablePath),
             new PathMatcher(SEARCH_PATH_PATTERN, this::cacheSearchPath),
@@ -268,7 +268,6 @@ public class BrAPISpecificationAnalyserFactory {
         public List<Endpoint> getDeprecatedEndpoints() {
             return deprecatedEndpoints;
         }
-
 
         /**
          * Analyse all the endpoints in the specification.
@@ -412,7 +411,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "Get Entity");
+                    skippedEndpoint(entityName, Request.Method.GET, pathItem.getGet(), endpoint, "Get Entity");
                 }
             }
 
@@ -438,7 +437,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entity");
+                    skippedEndpoint(entityName, Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entity");
                 }
             }
 
@@ -459,7 +458,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.DELETE, pathItem.getDelete(), endpoint, "Delete Entity");
+                    skippedEndpoint(entityName, Request.Method.DELETE, pathItem.getDelete(), endpoint, "Delete Entity");
                 }
             }
 
@@ -494,7 +493,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "List Entities");
+                    skippedEndpoint(entityName, Request.Method.GET, pathItem.getGet(), endpoint, "List Entities");
                 }
             }
 
@@ -515,7 +514,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Create Entities");
+                    skippedEndpoint(entityName, Request.Method.POST, pathItem.getPost(), endpoint, "Create Entities");
                 }
             }
 
@@ -536,7 +535,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entities");
+                    skippedEndpoint(entityName, Request.Method.PUT, pathItem.getPut(), endpoint, "Update Entities");
                 }
             }
 
@@ -567,7 +566,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Search Entities");
+                    skippedEndpoint(entityName, Request.Method.POST, pathItem.getPost(), endpoint, "Search Entities");
                 }
             }
 
@@ -601,7 +600,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "Search Results");
+                    skippedEndpoint(entityName, Request.Method.GET, pathItem.getGet(), endpoint, "Search Results");
                 }
             }
 
@@ -635,12 +634,11 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, pathItem.getPost(), endpoint, "Get Table");
+                    skippedEndpoint(entityName, Request.Method.GET, pathItem.getPost(), endpoint, "Get Table");
                 }
             }
 
             if (pathItem.getPost() != null) {
-
                 String entityName = findEntityName(pathItem.getPost(), matcher.group(1));
 
                 if (options.isAnalysingTableForEntity(entityName) && isAnalysingOperation(pathItem.getPost())) {
@@ -653,7 +651,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.POST, pathItem.getPost(), endpoint, "Search Table");
+                    skippedEndpoint(entityName, Request.Method.POST, pathItem.getPost(), endpoint, "Search Table");
                 }
             }
 
@@ -691,7 +689,7 @@ public class BrAPISpecificationAnalyserFactory {
                         .mapResult(APIRequest.APIRequestBuilder::build)
                         .onSuccessDoWithResult(this::addRequest);
                 } else {
-                    skippedEndpoint(Request.Method.GET, pathItem.getGet(), endpoint, "List Sub Entities");
+                    skippedEndpoint(entityName, Request.Method.GET, pathItem.getGet(), endpoint, "List Sub Entities");
                 }
             }
 
@@ -744,6 +742,7 @@ public class BrAPISpecificationAnalyserFactory {
             requests.put(request.getValidatorRequest().getPath(), request);
 
             endpoints.add(Endpoint.builder()
+                .entityName(request.getEntityName())
                 .path(request.getValidatorRequest().getPath())
                 .method(request.getValidatorRequest().getMethod())
                 .category(request.getName())
@@ -752,6 +751,7 @@ public class BrAPISpecificationAnalyserFactory {
 
         private void unmatchedEndpoint(Request.Method method, String path, String category) {
             unmatchedEndpoints.add(Endpoint.builder()
+                .entityName("Unmatched")
                 .path(path)
                 .method(method)
                 .category(category)
@@ -759,16 +759,17 @@ public class BrAPISpecificationAnalyserFactory {
             log.warn(String.format("Unmatched endpoint %s '%s'", method, path));
         }
 
-        private void skippedEndpoint(Request.Method method, Operation operation, String path, String category) {
+        private void skippedEndpoint(String entityName, Request.Method method, Operation operation, String path, String category) {
             if (isDeprecated(operation)) {
-                deprecatedEndpoint(method, path, category) ;
+                deprecatedEndpoint(entityName, method, path, category) ;
             } else {
-                skippedEndpoint(method, path, category);
+                skippedEndpoint(entityName, method, path, category);
             }
         }
 
-        private void skippedEndpoint(Request.Method method, String path, String category) {
+        private void skippedEndpoint(String entityName, Request.Method method, String path, String category) {
             skippedEndpoints.add(Endpoint.builder()
+                .entityName(entityName)
                 .path(path)
                 .method(method)
                 .category(category)
@@ -776,8 +777,9 @@ public class BrAPISpecificationAnalyserFactory {
             log.debug(String.format("Skipped endpoint %s '%s'", method, path));
         }
 
-        private void deprecatedEndpoint(Request.Method method, String path, String category) {
+        private void deprecatedEndpoint(String entityName, Request.Method method, String path, String category) {
             deprecatedEndpoints.add(Endpoint.builder()
+                .entityName(entityName)
                 .path(path)
                 .method(method)
                 .category(category)
