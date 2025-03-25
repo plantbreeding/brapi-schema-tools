@@ -141,19 +141,31 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     /**
      * Creates the description for a GraphQLObjectType
      * @param type the GraphQLObjectType
+     * @param dataType if the type is a Response with a data field, then this is the type of that field
      * @return the description for a GraphQLObjectType
      */
-    public String getDescriptionForObjectType(GraphQLObjectType type) {
-        return String.format("TODO  %s is an Object Type.", type.getName()) ;
+    public String getDescriptionForObjectType(GraphQLObjectType type, GraphQLOutputType dataType) {
+        if (dataType != null) {
+            return String.format("TODO %s is an Response Object Type, which returns %s.", type.getName(), getMarkdownLink(dataType, "")) ;
+        } else {
+            return String.format("TODO %s is an Object Type.", type.getName());
+        }
     }
 
     /**
      * Creates the description for a GraphQLInputObjectType
-     * @param type the GraphQLInputObjectType
+     *
+     * @param type            the GraphQLInputObjectType
+     * @param queryDefinition the query associated with the input field type
      * @return the description for a GraphQLInputObjectType
      */
-    public String getDescriptionForInputObjectType(GraphQLInputObjectType type) {
-        return String.format("TODO  %s is an Object Type.", type.getName()) ;
+    public String getDescriptionForInputObjectType(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition) {
+        if (queryDefinition != null) {
+            return String.format("TODO %s is an Input Type. It is used in the %s query.", type.getName(), getMarkdownLink(queryDefinition, "../../"+queryDefinitionsDirectory+"/"+descriptionsDirectory+"/")) ;
+        } else {
+            return String.format("TODO %s is an Input Type.", type.getName()) ;
+        }
+
     }
 
     /**
@@ -190,22 +202,49 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return the description for a GraphQLFieldDefinition
      */
     public String getDescriptionForField(GraphQLNamedType type, GraphQLFieldDefinition field) {
-        if (type != null) {
-            return String.format("TODO %s is a field in type type [%s](../../descriptions/%s.md).", field.getName(), type.getName(), type.getName()) ;
+        if (field.getArguments().isEmpty()) {
+            if (type != null) {
+                return String.format("TODO %s is a field in type %s that returns %s.",
+                    field.getName(),
+                    getMarkdownLink(type, "../../"+descriptionsDirectory+"/"),
+                    getMarkdownLink(field.getType(), "../../"+descriptionsDirectory+"/"));
+            } else {
+                return String.format("TODO %s is a field.", field.getName());
+            }
         } else {
-            return String.format("TODO %s is a field.", field.getName()) ;
+            if (type != null) {
+                return String.format("TODO %s is a sub-query in type %s that returns %s.",
+                    field.getName(),
+                    getMarkdownLink(type, "../../"+descriptionsDirectory+"/"),
+                    getMarkdownLink(field.getType(), "../../"+descriptionsDirectory+"/"));
+            } else {
+                return String.format("TODO %s is a sub-query.", field.getName());
+            }
         }
     }
 
     /**
      * Creates the description for a GraphQLInputObjectField
-     * @param type the type to which this field belongs
-     * @param field the GraphQLInputObjectField
+     *
+     * @param type            the type to which this field belongs
+     * @param queryDefinition the query associated with the input field type
+     * @param field           the GraphQLInputObjectField
      * @return the description for a GraphQLInputObjectField
      */
-    public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLInputObjectField field) {
+    public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
         if (type != null) {
-            return String.format("TODO %s is a field in type [%s](../../descriptions/%s.md).", field.getName(), type.getName(), type.getName()) ;
+            if (queryDefinition != null) {
+                return String.format("TODO %s is a field in type %s that returns %s. It is used in the %s query.",
+                    field.getName(),
+                    getMarkdownLink(type, "../../"+descriptionsDirectory+"/"),
+                    getMarkdownLink(field.getType(), "../../"+descriptionsDirectory+"/"),
+                    getMarkdownLink(queryDefinition, "../../../"+queryDefinitionsDirectory+"/"+descriptionsDirectory+"/")) ;
+            } else {
+                return String.format("TODO %s is a field in type %s that returns %s.",
+                    field.getName(),
+                    getMarkdownLink(type, "../../"+descriptionsDirectory+"/"),
+                    getMarkdownLink(field.getType(), "../../"+descriptionsDirectory+"/")) ;
+            }
         } else {
             return String.format("TODO %s is a field.", field.getName()) ;
         }
@@ -219,7 +258,10 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      */
     public String getDescriptionForArgument(GraphQLFieldDefinition queryDefinition, GraphQLArgument argument) {
         if (queryDefinition != null) {
-            return String.format("TODO %s is an argument in query [%s](../../descriptions/%s.md).", argument.getName(), queryDefinition.getName(), queryDefinition.getName()) ;
+            return String.format("TODO %s is an argument in query %s that returns %s.",
+                argument.getName(),
+                getMarkdownLink(queryDefinition, "../../"+descriptionsDirectory+"/"),
+                getMarkdownLink(argument.getType(), "../../../"+typeDefinitionsDirectory+"/"+descriptionsDirectory+"/")) ;
         } else {
             return String.format("TODO %s is a argument.", argument.getName()) ;
         }
@@ -241,5 +283,25 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      */
     public boolean isCreatingTopLevelArgumentDefinitions() {
         return createTopLeveArgumentDefinitions != null && createTopLeveArgumentDefinitions ;
+    }
+
+    private String getMarkdownLink(GraphQLType type, String prefix) {
+        if (type instanceof GraphQLNamedType graphQLNamedType) {
+            if (type instanceof GraphQLScalarType) {
+                return graphQLNamedType.getName();
+            } else {
+                return String.format("[%s](%s%s.md)", graphQLNamedType.getName(), prefix, graphQLNamedType.getName());
+            }
+        } else if (type instanceof GraphQLList graphQLList) {
+            return String.format("[%s]", getMarkdownLink(graphQLList.getWrappedType(), prefix)) ;
+        } else if (type instanceof GraphQLNonNull graphQLNonNull) {
+            return String.format("%s", getMarkdownLink(graphQLNonNull.getWrappedType(), prefix));
+        } else {
+            return type.toString() ;
+        }
+    }
+
+    private String getMarkdownLink(GraphQLFieldDefinition queryDefinition, String prefix) {
+        return String.format("[%s](%s%s.md)", queryDefinition.getName(), prefix, queryDefinition.getName());
     }
 }

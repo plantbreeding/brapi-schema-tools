@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.function.UnaryOperator.identity;
@@ -34,6 +36,9 @@ public class GraphQLMarkdownGenerator {
 
     private Path outputPath;
     private GraphQLMarkdownGeneratorOptions options;
+
+    private static final Pattern RESPONSE_PATTERN = Pattern.compile("(\\w+)Response") ;
+    private static final Pattern INPUT_PATTERN = Pattern.compile("(\\w+)Input") ;
 
     private GraphQLMarkdownGenerator(Path outputPath) {
         this.outputPath = outputPath;
@@ -91,6 +96,8 @@ public class GraphQLMarkdownGenerator {
         private final Path queryArgumentsPath;
 
         private final GraphQLSchema graphQLSchema;
+
+        private final Map<String, GraphQLFieldDefinition> queryDefinitions ;
         private final Map<String, GraphQLFieldDefinition> duplicateObjectFieldDefinitions;
         private final Map<String, GraphQLInputObjectField> duplicateInputObjectFieldDefinitions;
         private final Map<String, GraphQLArgument> duplicateQueryArgumentDefinitions;
@@ -138,6 +145,9 @@ public class GraphQLMarkdownGenerator {
                 .filter(fields -> fields.size() > 1)
                 .map(fields -> fields.get(0))
                 .collect(Collectors.toMap(GraphQLInputObjectField::getName, identity())));
+
+            queryDefinitions = new TreeMap<>(graphQLSchema.getQueryType().getFields().stream()
+                .collect(Collectors.toMap(queryDefinition -> queryDefinition.getName().toLowerCase(), identity())));
 
             Map<String, List<GraphQLArgument>> queryArgumentDefinitions = new TreeMap<>(graphQLSchema.getQueryType().getFields().stream()
                 .flatMap(queryDefinition -> queryDefinition.getArguments().stream())
@@ -211,10 +221,15 @@ public class GraphQLMarkdownGenerator {
         }
 
         private Response<List<Path>> generateMarkdownForObjectType(GraphQLObjectType objectType) {
+
+            Matcher matcher = RESPONSE_PATTERN.matcher(objectType.getName());
+
+            GraphQLOutputType dataType = matcher.matches() && objectType.getField("data") != null ? objectType.getField("data").getType() : null;
+
             List<Path> paths = new ArrayList<>();
             Path descriptionPath = typeDescriptionsPath.resolve(String.format("%s.md", objectType.getName()));
 
-            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForObjectType(objectType))
+            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForObjectType(objectType, dataType))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> generateMarkdownForFields(objectType, objectType.getFields()))
                 .onSuccessDoWithResult(paths::addAll)
@@ -222,12 +237,16 @@ public class GraphQLMarkdownGenerator {
         }
 
         private Response<List<Path>> generateMarkdownForInputObjectType(GraphQLInputObjectType objectType) {
-            List<Path> paths = new ArrayList<>();
+            Matcher matcher = INPUT_PATTERN.matcher(objectType.getName());
+
+            GraphQLFieldDefinition queryDefinition = matcher.matches() ? queryDefinitions.get(matcher.group(1).toLowerCase()) : null ;
+
+            List < Path > paths = new ArrayList<>();
             Path descriptionPath = typeDescriptionsPath.resolve(String.format("%s.md", objectType.getName()));
 
-            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForInputObjectType(objectType))
+            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForInputObjectType(objectType, queryDefinition))
                 .onSuccessDoWithResult(paths::addAll)
-                .map(() -> generateMarkdownForInputFields(objectType, objectType.getFields()))
+                .map(() -> generateMarkdownForInputFields(objectType, queryDefinition, objectType.getFields()))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> success(paths));
         }
@@ -252,7 +271,7 @@ public class GraphQLMarkdownGenerator {
         private Response<List<Path>> generateMarkdownForTopLevelField(GraphQLInputObjectField field) {
             Path fieldPath = typeFieldsPath.resolve(String.format("%s.md", field.getName()));
 
-            return writeToFile(fieldPath, field.getDescription(), () -> options.getDescriptionForInputField(null, field));
+            return writeToFile(fieldPath, field.getDescription(), () -> options.getDescriptionForInputField(null, null, field));
         }
 
         private Response<List<Path>> generateMarkdownForFields(GraphQLNamedType type, List<GraphQLFieldDefinition> fields) {
@@ -279,14 +298,14 @@ public class GraphQLMarkdownGenerator {
             }
         }
 
-        private Response<List<Path>> generateMarkdownForInputFields(GraphQLInputObjectType type, List<GraphQLInputObjectField> fields) {
-            return fields.stream().map(field -> generateMarkdownForInputField(type, field)).collect(Response.mergeLists());
+        private Response<List<Path>> generateMarkdownForInputFields(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, List<GraphQLInputObjectField> fields) {
+            return fields.stream().map(field -> generateMarkdownForInputField(type, queryDefinition, field)).collect(Response.mergeLists());
         }
 
-        private Response<List<Path>> generateMarkdownForInputField(GraphQLInputObjectType type, GraphQLInputObjectField field) {
+        private Response<List<Path>> generateMarkdownForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
             if (!options.isCreatingTopLevelFieldDefinitions() || !duplicateInputObjectFieldDefinitions.containsKey(field.getName())) {
                 return createPath(this.typeFieldsPath, type.getName(), String.format("%s.md", field.getName()))
-                    .mapResultToResponse(filePath -> writeToFile(filePath, field.getDescription(), () -> options.getDescriptionForInputField(type, field)));
+                    .mapResultToResponse(filePath -> writeToFile(filePath, field.getDescription(), () -> options.getDescriptionForInputField(type, queryDefinition, field)));
             } else {
                 log.warn("Skipping duplicate field '{}' in type '{}', it was created in top level", type.getName(), field.getName());
                 return success(Collections.emptyList());
