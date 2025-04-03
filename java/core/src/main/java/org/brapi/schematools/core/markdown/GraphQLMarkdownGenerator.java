@@ -37,8 +37,25 @@ public class GraphQLMarkdownGenerator {
     private Path outputPath;
     private GraphQLMarkdownGeneratorOptions options;
 
-    private static final Pattern RESPONSE_PATTERN = Pattern.compile("(\\w+)Response") ;
-    private static final Pattern INPUT_PATTERN = Pattern.compile("(\\w+)Input") ;
+    /**
+     * Pattern for List Response names
+     */
+    public static final Pattern LIST_RESPONSE_PATTERN = Pattern.compile("(\\w+)ListResponse") ;
+
+    /**
+     * Pattern for Search Response names
+     */
+    public static final Pattern SEARCH_RESPONSE_PATTERN = Pattern.compile("(\\w+)SearchResponse") ;
+
+    /**
+     * Pattern for other Response names
+     */
+    public static final Pattern RESPONSE_PATTERN = Pattern.compile("(\\w+)Response") ;
+
+    /**
+     * Pattern for Input names
+     */
+    public static final Pattern INPUT_PATTERN = Pattern.compile("(\\w+)Input") ;
 
     private GraphQLMarkdownGenerator(Path outputPath) {
         this.outputPath = outputPath;
@@ -222,14 +239,28 @@ public class GraphQLMarkdownGenerator {
 
         private Response<List<Path>> generateMarkdownForObjectType(GraphQLObjectType objectType) {
 
-            Matcher matcher = RESPONSE_PATTERN.matcher(objectType.getName());
+            Matcher matcher = LIST_RESPONSE_PATTERN.matcher(objectType.getName());
 
-            GraphQLOutputType dataType = matcher.matches() && objectType.getField("data") != null ? objectType.getField("data").getType() : null;
+            String queryName = null ;
+
+            if (matcher.matches()) {
+                queryName = matcher.group(1) ;
+            } else if (matcher.matches()) {
+                matcher = SEARCH_RESPONSE_PATTERN.matcher(objectType.getName());
+
+                queryName = matcher.group(1) + "Search" ;
+            } else {
+                matcher = RESPONSE_PATTERN.matcher(objectType.getName());
+            }
+
+            GraphQLFieldDefinition queryDefinition = queryName != null ? queryDefinitions.get(queryName.toLowerCase()) : null ;
+
+            GraphQLOutputType dataType = matcher.matches() ? findEntityFromResponse(objectType) : null ;
 
             List<Path> paths = new ArrayList<>();
             Path descriptionPath = typeDescriptionsPath.resolve(String.format("%s.md", objectType.getName()));
 
-            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForObjectType(objectType, dataType))
+            return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForObjectType(objectType, dataType, queryDefinition))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> generateMarkdownForFields(objectType, objectType.getFields()))
                 .onSuccessDoWithResult(paths::addAll)
@@ -255,11 +286,26 @@ public class GraphQLMarkdownGenerator {
             List<Path> paths = new ArrayList<>();
             Path descriptionPath = queryDescriptionsPath.resolve(String.format("%s.md", queryDefinition.getName()));
 
-            return writeToFile(descriptionPath, graphQLSchema.getDescription(), () -> options.getDescriptionForQuery(queryDefinition))
+            GraphQLOutputType dataType = findEntityFromResponse(queryDefinition.getType()) ;
+            GraphQLInputType inputType = queryDefinition.getArgument("input") != null ? queryDefinition.getArgument("input").getType() : null;
+
+            return writeToFile(descriptionPath, graphQLSchema.getDescription(), () -> options.getDescriptionForQuery(queryDefinition, dataType, inputType))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> generateMarkdownForArguments(queryDefinition, queryDefinition.getArguments()))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> success(paths));
+        }
+
+        private GraphQLOutputType findEntityFromResponse(GraphQLType type) {
+            if (type instanceof GraphQLObjectType graphQLObjectType) {
+                return graphQLObjectType.getField("data") != null ? graphQLObjectType.getField("data").getType() : null;
+            } else if (type instanceof GraphQLList graphQLList) {
+                return findEntityFromResponse(graphQLList.getWrappedType()) ;
+            } else if (type instanceof GraphQLNonNull graphQLNonNull) {
+                return findEntityFromResponse(graphQLNonNull.getWrappedType()) ;
+            }
+
+            return null;
         }
 
         private Response<List<Path>> generateMarkdownForTopLevelField(GraphQLFieldDefinition field) {
