@@ -149,7 +149,7 @@ public class BrAPISpecificationAnalyserFactory {
 
     /**
      * Creates a new analyser for a specification. Used for fine control over the analysis.
-     * It is recommended to use the factory directly {@link BrAPISpecificationAnalyserFactory#analyse(String)} or
+     * It is recommended to use the factory directly {@link BrAPISpecificationAnalyserFactory#analyse(String, List)} (String)} or
      * {@link BrAPISpecificationAnalyserFactory#analyse(String, List)} which handles option validation
      * and the pre-processing steps, like calling {@link Analyser#analyseSpecial()}
      *
