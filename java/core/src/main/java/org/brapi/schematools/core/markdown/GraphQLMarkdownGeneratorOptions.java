@@ -310,7 +310,9 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
                     getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
                     getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
             } else {
-                return String.format("%s is a field.", field.getName());
+                return String.format("The %s field returns %s value.",
+                    field.getName(),
+                    getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
             }
         } else {
             if (type != null) {
@@ -319,7 +321,9 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
                     getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
                     getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
             } else {
-                return String.format("%s is a sub-query.", field.getName());
+                return String.format("The %s sub-query returns %s value.",
+                    field.getName(),
+                    getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
             }
         }
     }
@@ -335,19 +339,19 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
         if (type != null) {
             if (queryDefinition != null) {
-                return String.format("The %s field in type %s returns %s value. It is used in the %s query.",
+                return String.format("The %s field in type %s is used in the %s query to filter the returned results",
                     field.getName(),
                     getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
-                    getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"),
                     getMarkdownLink(queryDefinition, "../../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
             } else {
-                return String.format("The %s field in type %s returns %s value.",
+                return String.format("The %s field in type %s is used to filter query results.",
                     field.getName(),
-                    getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
-                    getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
+                    getMarkdownLink(type, "../../" + descriptionsDirectory + "/"));
             }
         } else {
-            return String.format("%s is a field.", field.getName());
+            return String.format("The %s field returns %s value.",
+                field.getName(),
+                getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
         }
     }
 
@@ -365,7 +369,9 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
                 getMarkdownLink(queryDefinition, "../../" + descriptionsDirectory + "/"),
                 getMarkdownLink(argument.getType(), "../../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
         } else {
-            return String.format("%s is a argument.", argument.getName());
+            return String.format("The %s argument accepts a value of %s.",
+                argument.getName(),
+                getMarkdownLink(argument.getType(), "../../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
         }
     }
 
