@@ -199,6 +199,12 @@ public class AnalyseSubCommand implements Runnable {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Report file '%s' is directory", reportPath));
             }
 
+            try {
+                Files.createDirectories(reportPath.getParent()) ;
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not create report file directory '%s' ", reportPath.getParent()));
+            }
+
             analyser.analyseSpecial().onFailDoWithResponse(this::outputError)
                 .onSuccessDoWithResult(reports -> writeReportsToFile(tabularReportGenerator, reports))
                 .onSuccessDoWithResult(completedReports::addAll);
@@ -292,6 +298,13 @@ public class AnalyseSubCommand implements Runnable {
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
                 err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
+                return;
+            }
+
+            try {
+                Files.createDirectories(reportPath.getParent()) ;
+            } catch (IOException e) {
+                err.printf("Can not create report file directory '%s' %n", reportPath.getParent());
                 return;
             }
 
