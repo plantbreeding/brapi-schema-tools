@@ -109,10 +109,31 @@ public class OpenAPIGenerator {
             this.options = options;
             this.metadata = metadata ;
             this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
-            this.parameters = new HashMap<>(components.getParameters());
-            this.responses = new HashMap<>(components.getResponses());
-            this.schemas = new HashMap<>(components.getSchemas());
-            this.securitySchemes = new HashMap<>(components.getSecuritySchemes());
+
+            if (components.getParameters() != null) {
+                this.parameters = new HashMap<>(components.getParameters());
+            } else {
+                this.parameters = new HashMap<>();
+            }
+
+            if (components.getResponses() != null) {
+                this.responses = new HashMap<>(components.getResponses());
+            } else {
+                this.responses = new HashMap<>();
+            }
+
+            if (components.getSchemas() != null) {
+                this.schemas = new HashMap<>(components.getSchemas());
+            } else {
+                this.schemas = new HashMap<>();
+            }
+
+            if (components.getSecuritySchemes() != null) {
+                this.securitySchemes = new HashMap<>(components.getSecuritySchemes());
+            } else {
+                this.securitySchemes = new HashMap<>();
+            }
+
             this.referencedSchemas = new TreeSet<>() ;
         }
 
