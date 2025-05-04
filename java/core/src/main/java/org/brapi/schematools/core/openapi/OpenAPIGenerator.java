@@ -31,7 +31,7 @@ import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 
 /**
- * Generates a OpenAPI Specification from a BrAPI Json Schema.
+ * Generates an OpenAPI Specification from a BrAPI Json Schema.
  */
 @AllArgsConstructor
 public class OpenAPIGenerator {

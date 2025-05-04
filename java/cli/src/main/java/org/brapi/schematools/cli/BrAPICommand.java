@@ -16,7 +16,8 @@ import picocli.CommandLine;
         LoginSubCommand.class,
         LogoutSubCommand.class,
         AnalyseSubCommand.class,
-        MarkdownSubCommand.class
+        MarkdownSubCommand.class,
+        CompareSubCommand.class
     },
     mixinStandardHelpOptions = true
 )

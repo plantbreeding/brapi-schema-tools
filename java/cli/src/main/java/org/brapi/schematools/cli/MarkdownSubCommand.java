@@ -21,8 +21,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static org.brapi.schematools.core.utils.StringUtils.readStringFromPath;
 
 /**
  * The Generate Sub-command
@@ -128,7 +128,7 @@ public class MarkdownSubCommand implements Runnable {
         } else {
             Path path = Path.of(schema);
             if (Files.isRegularFile(path)) {
-                return readFromFile(path);
+                return readStringFromPath(path);
             } else {
                 return Response.success(schema);
             }
@@ -155,19 +155,6 @@ public class MarkdownSubCommand implements Runnable {
             }
 
         } catch (IOException | URISyntaxException | InterruptedException exception) {
-            err.println(exception.getMessage());
-            return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
-        }
-    }
-
-    private Response<String> readFromFile(Path path) {
-        try {
-            Stream<String> lines = Files.lines(path);
-            String data = lines.collect(Collectors.joining("\n"));
-            lines.close();
-
-            return Response.success(data);
-        } catch (IOException exception) {
             err.println(exception.getMessage());
             return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
         }

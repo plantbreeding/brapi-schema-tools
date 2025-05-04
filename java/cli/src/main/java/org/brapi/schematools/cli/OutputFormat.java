@@ -10,7 +10,7 @@ public enum OutputFormat {
      */
     OPEN_API,
     /**
-     * Use this format to generate an GraphQL schema
+     * Use this format to generate a GraphQL schema
      */
     GRAPHQL,
     /**

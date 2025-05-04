@@ -3,11 +3,17 @@ package org.brapi.schematools.core.utils;
 import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
 import org.atteo.evo.inflector.English;
+import org.brapi.schematools.core.response.Response;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class for working with Strings
@@ -172,6 +178,23 @@ public class StringUtils {
      */
     public static String toLabel(String propertyName) {
         return capitalise(propertyName).replaceAll("([A-Z])", " $1").trim() ;
+    }
+
+    /**
+     * Reads a string from a file path
+     * @param path the path of the file
+     * @return a string read from a file path
+     */
+    public static Response<String> readStringFromPath(Path path) {
+        try {
+            Stream<String> lines = Files.lines(path);
+            String data = lines.collect(Collectors.joining("\n"));
+            lines.close();
+
+            return Response.success(data);
+        } catch (IOException exception) {
+            return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
+        }
     }
 
     static class Replacer {
