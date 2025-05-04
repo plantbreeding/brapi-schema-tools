@@ -211,10 +211,10 @@ class OpenAPIComparatorTest {
 
             assertEquals(outputPath, response.getResult());
             assertFileEquals(
-                Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi-comparison0.text").toURI()),
+                Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi-comparison0.html").toURI()),
                 outputPath);
 
-            outputPath = Path.of("build/test-output/brapi-comparison1.text") ;
+            outputPath = Path.of("build/test-output/brapi-comparison1.html") ;
             response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1.json").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1_0.json").toURI()),
@@ -227,7 +227,7 @@ class OpenAPIComparatorTest {
 
             assertEquals(outputPath, response.getResult());
             assertFileEquals(
-                Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi-comparison0.text").toURI()),
+                Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi-comparison1.html").toURI()),
                 outputPath);
 
         } catch (Exception e) {
