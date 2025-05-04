@@ -96,7 +96,7 @@ public class OpenAPIGenerator {
         private final OpenAPIGeneratorOptions options;
 
         private final OpenAPIGeneratorMetadata metadata;
-        private final Map<String, BrAPIClass> brAPISchemas;
+        private final Map<String, BrAPIClass> brAPIClassMap;
 
         private final Map<String, Parameter> parameters;
         private final Map<String, ApiResponse> responses;
@@ -105,11 +105,13 @@ public class OpenAPIGenerator {
 
         private final Set<String> referencedSchemas ;
 
-        public Generator(OpenAPIGeneratorOptions options, OpenAPIGeneratorMetadata metadata, List<BrAPIClass> brAPISchemas, Components components) {
+        public Generator(OpenAPIGeneratorOptions options, OpenAPIGeneratorMetadata metadata, List<BrAPIClass> brAPIClasses, Components components) {
             this.options = options;
             this.metadata = metadata ;
-            this.brAPISchemas = brAPISchemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+            // cache all the BrAPI classes
+            this.brAPIClassMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
+            // Cache all the generic components (TODO generate these instead of reading from a directory)
             if (components.getParameters() != null) {
                 this.parameters = new HashMap<>(components.getParameters());
             } else {
@@ -134,11 +136,12 @@ public class OpenAPIGenerator {
                 this.securitySchemes = new HashMap<>();
             }
 
+            // maintain a list of schemas that have been referenced elsewhere, but not yet generated
             this.referencedSchemas = new TreeSet<>() ;
         }
 
         public Response<List<OpenAPI>> generate() {
-            Collection<BrAPIClass> values = brAPISchemas.values();
+            Collection<BrAPIClass> values = brAPIClassMap.values();
 
             if (options.isSeparatingByModule()) {
                 return values.stream().
@@ -152,7 +155,7 @@ public class OpenAPIGenerator {
             }
         }
 
-        private Response<OpenAPI> generate(String title, Collection<BrAPIClass> types) {
+        private Response<OpenAPI> generate(String title, Collection<BrAPIClass> classes) {
 
             OpenAPI openAPI = new OpenAPI();
 
@@ -165,23 +168,28 @@ public class OpenAPIGenerator {
 
             // TODO merge in openAPIMetadata
 
-            List<BrAPIClass> nonPrimaryTypes = new ArrayList<>(types.stream().filter(BrAPITypeUtils::isNonPrimaryModel).toList());
+            // get a list of non-primary classes (those with 'primaryModel=false' in their BrAPI metadata or has no metadata)
+            List<BrAPIClass> nonPrimaryClasses = new ArrayList<>(classes.stream().filter(BrAPITypeUtils::isNonPrimaryModel).toList());
 
-            List<BrAPIObjectType> primaryTypes = types.stream().
+            // get a list of primary classes (those with 'primaryModel=true' in their BrAPI metadata) sorted by name
+            List<BrAPIObjectType> primaryClasses = classes.stream().
                 filter(type -> type instanceof BrAPIObjectType).
                 filter(BrAPITypeUtils::isPrimaryModel).
                 sorted(Comparator.comparing(BrAPIType::getName)).
                 map(type -> (BrAPIObjectType)type).
                 toList();
 
-            types.stream().map(BrAPIClass::getName).toList().forEach(referencedSchemas::remove) ;
+            // remove any classes that will be generated from the list of referenced schemas,
+            // since these will be generated separately
+            classes.stream().map(BrAPIClass::getName).toList().forEach(referencedSchemas::remove) ;
             schemas.keySet().forEach(referencedSchemas::remove) ;
             securitySchemes.keySet().forEach(referencedSchemas::remove) ;
 
-            return referencedSchemas.stream().map(this::checkReferencedType).collect(Response.toList())
-                .onSuccessDoWithResult(nonPrimaryTypes::addAll)
+            return referencedSchemas.stream().map(this::findReferencedClass).collect(Response.toList())
+                .onSuccessDoWithResult(nonPrimaryClasses::addAll) // add any referenced classes to the list of non-primary classes,
+                // these are most likely those from other domains if generating separately
                 .mergeOnCondition(options.isGeneratingEndpoint(), // these are GET, POST or PUT endpoints with the pattern /<entity-plural> e.g. /locations
-                    () -> primaryTypes.stream()
+                    () -> primaryClasses.stream()
                         .filter(options::isGeneratingEndpointFor)
                         .map(type -> generatePathItem(type)
                             .onSuccessDoWithResult(
@@ -190,12 +198,12 @@ public class OpenAPIGenerator {
                                 }))
                         .collect(Response.toList()))
                 .mergeOnCondition(options.isGeneratingEndpointWithId(),  // these are GET, PUT and DELETE endpoints with the pattern /<entity-plural>/{<entity-id>} e.g. /locations/{locationDbId}
-                    () -> primaryTypes.stream()
+                    () -> primaryClasses.stream()
                         .filter(options::isGeneratingEndpointNameWithIdFor)
                         .map(type -> createPathItemsWithId(openAPI, type))
                         .collect(Response.toList()))
                 .mergeOnCondition(options.getSearch().isGenerating(),  // this is a POST endpoint with the pattern /search/<entity-plural> e.g. /search/locations
-                    () -> primaryTypes.stream()
+                    () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
                         .map(type -> createSearchPathItem(type)
                             .onSuccessDoWithResult(
@@ -204,7 +212,7 @@ public class OpenAPIGenerator {
                                 }))
                         .collect(Response.toList()))
                 .mergeOnCondition(options.getSearch().isGenerating(), // this is a GET endpoint are endpoints with the pattern /search/<entity-plural>/{searchResultsDbId} e.g. /search/locations/{searchResultsDbId}
-                    () -> primaryTypes.stream().
+                    () -> primaryClasses.stream().
                         filter(type -> options.getSearch().isGeneratingFor(type)).
                         map(type -> createSearchPathItemWithId(type)
                             .onSuccessDoWithResult(
@@ -212,13 +220,13 @@ public class OpenAPIGenerator {
                                     openAPI.path(createSearchPathItemWithIdName(type), pathItem);
                                 }))
                         .collect(Response.toList())
-                        .merge(() -> generateComponents(primaryTypes, nonPrimaryTypes).onSuccessDoWithResult(openAPI::components))
+                        .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses).onSuccessDoWithResult(openAPI::components))
                         .map(() -> success(openAPI)));
 
         }
 
-        private Response<BrAPIClass> checkReferencedType(String typeName) {
-            BrAPIClass brAPISchema = brAPISchemas.get(typeName);
+        private Response<BrAPIClass> findReferencedClass(String typeName) {
+            BrAPIClass brAPISchema = brAPIClassMap.get(typeName);
 
             if (brAPISchema != null) {
                 return success(brAPISchema) ;
@@ -312,7 +320,7 @@ public class OpenAPIGenerator {
 
         private Response<ApiResponse> generateSingleResponse(BrAPIObjectType type) {
 
-            String name = options.getListResponseNameFor(type);
+            String name = options.getSingleResponseNameFor(type);
 
             ApiResponse apiResponse = new ApiResponse().description("OK").content(
                 new Content().addMediaType("application/json",
@@ -333,14 +341,14 @@ public class OpenAPIGenerator {
         }
 
         private Response<ApiResponse> generateListResponse(BrAPIObjectType type) {
-            String name = options.getSingleResponseNameFor(type);
+            String name = options.getListResponseNameFor(type);
 
             ApiResponse apiResponse = new ApiResponse().description("OK").content(
                 new Content().addMediaType("application/json",
                     new MediaType().schema(
                         new ObjectSchema().title(name).
                             addProperty("'@context'", new ObjectSchema().$ref(createSchemaRef("Context"))).
-                            addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("Context"))).
+                            addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata"))).
                             addProperty("result", new ObjectSchema().
                                 addProperty("data", new ArraySchema().items(new ObjectSchema().$ref(createSchemaRef(type.getName())))).
                                 addRequiredItem("data")
@@ -387,7 +395,7 @@ public class OpenAPIGenerator {
             }
 
             if (options.getListGet().hasInputFor(type)) {
-                BrAPIClass requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
+                BrAPIClass requestSchema = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
 
                 if (requestSchema == null) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", type.getName(), createPathItemName(type))) ;
@@ -686,7 +694,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {
-            BrAPIClass requestSchema = this.brAPISchemas.get(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
 
             String name = options.getSearchRequestNameFor(type) ;
 
@@ -839,7 +847,7 @@ public class OpenAPIGenerator {
 
         private BrAPIType dereferenceType(BrAPIType type) {
             if (type instanceof BrAPIReferenceType) {
-                return brAPISchemas.get(type.getName()) ;
+                return brAPIClassMap.get(type.getName()) ;
             } else {
                 return type ;
             }
