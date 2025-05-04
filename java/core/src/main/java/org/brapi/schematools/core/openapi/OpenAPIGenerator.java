@@ -179,15 +179,7 @@ public class OpenAPIGenerator {
                 map(type -> (BrAPIObjectType)type).
                 toList();
 
-            // remove any classes that will be generated from the list of referenced schemas,
-            // since these will be generated separately
-            classes.stream().map(BrAPIClass::getName).toList().forEach(referencedSchemas::remove) ;
-            schemas.keySet().forEach(referencedSchemas::remove) ;
-            securitySchemes.keySet().forEach(referencedSchemas::remove) ;
-
-            return referencedSchemas.stream().map(this::findReferencedClass).collect(Response.toList())
-                .onSuccessDoWithResult(nonPrimaryClasses::addAll) // add any referenced classes to the list of non-primary classes,
-                // these are most likely those from other domains if generating separately
+            return Response.empty()
                 .mergeOnCondition(options.isGeneratingEndpoint(), // these are GET, POST or PUT endpoints with the pattern /<entity-plural> e.g. /locations
                     () -> primaryClasses.stream()
                         .filter(options::isGeneratingEndpointFor)
@@ -219,10 +211,21 @@ public class OpenAPIGenerator {
                                 pathItem -> {
                                     openAPI.path(createSearchPathItemWithIdName(type), pathItem);
                                 }))
-                        .collect(Response.toList())
-                        .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses).onSuccessDoWithResult(openAPI::components))
-                        .map(() -> success(openAPI)));
+                        .collect(Response.toList()))
+                .merge(() -> processReferencedSchemas(classes)
+                    .onSuccessDoWithResult(nonPrimaryClasses::addAll))
+                .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses).onSuccessDoWithResult(openAPI::components))
+                .map(() -> success(openAPI));
+        }
 
+        private Response<List<BrAPIClass>> processReferencedSchemas(Collection<BrAPIClass> classes) {
+
+            // remove any classes that will be created elsewhere
+            classes.stream().map(BrAPIClass::getName).toList().forEach(referencedSchemas::remove) ;
+            schemas.keySet().forEach(referencedSchemas::remove) ;
+            securitySchemes.keySet().forEach(referencedSchemas::remove) ;
+
+            return referencedSchemas.stream().map(this::findReferencedClass).collect(Response.toList()) ;
         }
 
         private Response<BrAPIClass> findReferencedClass(String typeName) {
@@ -350,7 +353,7 @@ public class OpenAPIGenerator {
                             addProperty("'@context'", new ObjectSchema().$ref(createSchemaRef("Context"))).
                             addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata"))).
                             addProperty("result", new ObjectSchema().
-                                addProperty("data", new ArraySchema().items(new ObjectSchema().$ref(createSchemaRef(type.getName())))).
+                                addProperty("data", new ArraySchema().items(new Schema().$ref(createSchemaRef(type.getName())))).
                                 addRequiredItem("data")
                             ).
                             addRequiredItem("metadata").
@@ -479,7 +482,7 @@ public class OpenAPIGenerator {
                 new RequestBody().content(
                     new Content().addMediaType("application/json",
                         new MediaType().schema(
-                            new ObjectSchema().$ref(String.format("#/components/schemas/%s", requestBodyName))))));
+                            new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName))))));
 
 
             operation.responses(createSingleApiResponses(type)) ;
@@ -872,7 +875,7 @@ public class OpenAPIGenerator {
 
         private Response<Schema> createOneOfType(BrAPIOneOfType type) {
             return type.getPossibleTypes().stream().map(this::createSchemaForType).collect(Response.toList()).mapResult(
-                schema -> new ObjectSchema().oneOf(schema).name(type.getName()).description(type.getDescription())) ;
+                schema -> new Schema().oneOf(schema).name(type.getName()).description(type.getDescription())) ;
         }
 
         private Response<Schema> createArraySchema(BrAPIArrayType type) {
@@ -884,7 +887,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createReferenceSchema(BrAPIReferenceType type) {
-            return success(new ObjectSchema().$ref(createSchemaRef(type.getName()))) ;
+            return success(new Schema().$ref(createSchemaRef(type.getName()))) ;
         }
 
         private String createSchemaRef(String name) {
