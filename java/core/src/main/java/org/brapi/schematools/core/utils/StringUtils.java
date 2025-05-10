@@ -26,7 +26,7 @@ public class StringUtils {
      * @return a capitalised version of a string value, where the first character is converted to upper case
      */
     public static String capitalise(String value) {
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
+        return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null ;
     }
     private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
@@ -70,6 +70,9 @@ public class StringUtils {
      * @return singular form of a plural noun
      */
     public static String toSingular(String value) {
+        if (value == null) {
+            return null;
+        }
 
         if (unpluralisables.contains(value.toLowerCase())) {
             return value;
@@ -91,6 +94,10 @@ public class StringUtils {
      * @return plural form of a singular noun
      */
     public static String toPlural(String value) {
+        if (value == null) {
+            return null;
+        }
+
         if (unpluralisables.contains(value.toLowerCase())) {
             return value;
         }
@@ -138,7 +145,7 @@ public class StringUtils {
      */
 
     public static String toSentenceCase(String value) {
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
+        return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null ;
     }
 
     /**
@@ -148,7 +155,17 @@ public class StringUtils {
      * @return the converted string
      */
     public static String toParameterCase(String value) {
-        return value.substring(0, 1).toLowerCase() + value.substring(1);
+        return value != null ? value.substring(0, 1).toLowerCase() + value.substring(1) : null ;
+    }
+
+    /**
+     * Makes the whole string lower case
+     *
+     * @param value the string to be converted
+     * @return the converted string
+     */
+    public static String toLowerCase(String value) {
+        return value != null ? value.substring(0, 1).toLowerCase() + value.substring(1) : null ;
     }
 
     /**
@@ -158,7 +175,7 @@ public class StringUtils {
      * @return {@code true} if the string starts with an lower case character, {@code false} otherwise
      */
     public static boolean startsWithLowerCase(String value) {
-        return value.matches("^[a-z].*$");
+        return value != null && value.matches("^[a-z].*$");
     }
 
     /**
@@ -168,7 +185,7 @@ public class StringUtils {
      * @return {@code true} if the string starts with an upper case character, {@code false} otherwise
      */
     public static boolean startsWithUpperCase(String value) {
-        return value.matches("^[A-Z].*$");
+        return value != null && value.matches("^[A-Z].*$");
     }
 
     /**
