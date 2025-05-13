@@ -165,7 +165,7 @@ public class StringUtils {
      * @return the converted string
      */
     public static String toLowerCase(String value) {
-        return value != null ? value.substring(0, 1).toLowerCase() + value.substring(1) : null ;
+        return value != null ? value.toLowerCase() : null ;
     }
 
     /**

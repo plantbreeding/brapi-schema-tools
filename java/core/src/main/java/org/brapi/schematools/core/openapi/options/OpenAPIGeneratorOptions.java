@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
+import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
@@ -400,7 +400,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the Pluralised name for a specific Primary Model
      */
     public String getPathItemNameFor(String name) {
-        return pathItemNameFor.getOrDefault(name, String.format("/%s", toParameterCase(getPluralFor(name))));
+        return pathItemNameFor.getOrDefault(name, String.format("/%s", toLowerCase(getPluralFor(name))));
     }
 
     /**
@@ -409,7 +409,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for a specific Primary Model
      */
     public String getPathItemNameFor(BrAPIType type) {
-        return pathItemNameFor.getOrDefault(type.getName(), String.format("/%s", toParameterCase(getPluralFor(type))));
+        return getPathItemNameFor(type.getName()) ;
     }
 
     /**
@@ -473,6 +473,6 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the name of the Sub-path endpoint for a property
      */
     public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
-        return String.format("%s/%s", pathItemName, property.getName()) ;
+        return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
     }
 }

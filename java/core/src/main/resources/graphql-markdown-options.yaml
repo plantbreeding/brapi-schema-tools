@@ -5,6 +5,7 @@ descriptionsDirectory: descriptions
 fieldsDirectory: fields
 argumentsDirectory: arguments
 createTopLevelFieldDefinitions: true
+createTopLevelInputFieldDefinitions: false
 createTopLeveArgumentDefinitions: true
 introspectionQuery: |
     query schema {

@@ -21,9 +21,12 @@ searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
+    AlleleMatrix: /allelematrix
+    GenomeMap: /maps
     GermplasmAttribute: /attributes
     GermplasmAttributeValue: /attributevalues
-    PedigreeNode: /pedigrees
+    ObservationVariable: /variables
+    PedigreeNode: /pedigree
 tagFor:
     BreedingMethod: Germplasm
     PlannedCross: Crosses
@@ -37,7 +40,7 @@ singleGet:
         Cross: false
         Event: false
         MarkerPosition: false
-        Pedigree: false
+        PedigreeNode: false
         PlannedCross: false
 listGet:
     generate: true
@@ -50,6 +53,23 @@ listGet:
         BreedingMethod: false
     inputFor:
         BreedingMethod: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        GermplasmAttribute:
+            germplasmNames: false
+            programNames: false
+            studyDbId: false
+            studyDbIds: false
+            studyNames: false
+            trialDbIds: false
+            trialNames: false
+            ontologyDbIds: false
+            dataTypes: false
+            traitClasses: false
+            traitAttributes: false
+            traitAttributePUIs: false
+            traitEntities: false
+            traitEntityPUIs: false
 search:
     generate: true
     summaryFormat: Submit a search request for `%s`
@@ -69,15 +89,17 @@ search:
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
     generateFor:
-        AlleleMatrix: false
         BreedingMethod: false
         Cross: false
         CrossingProject: false
+        Event: false
+        GenomeMap: false
         Method: false
         Ontology: false
         PlannedCross: false
         Scale: false
         Season: false
+        SeedLot: false
         Trait: false
 post:
     generate: true
@@ -102,19 +124,27 @@ put:
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
+        Call: false
         CallSet: false
         Event: false
         GenomeMap: false
         MarkerPosition: false
         Reference: false
         ReferenceSet: false
+        PedigreeNode: false
+        Plate: false
         Variant: false
         VariantSet: false
     multiple: false
     multipleFor:
+        Call: true
         Cross: true
+        Observation: true
+        ObservationUnit: true
         PlannedCross: true
-        Pedigree: true
+        PedigreeNode: true
+        Plate: true
+        Sample: true
 delete:
     generate: false
     summaryFormat: Delete an existing %s

@@ -199,7 +199,7 @@ public class GraphQLMarkdownGenerator {
                     () -> duplicateObjectFieldDefinitions.values().stream()
                         .map(this::generateMarkdownForTopLevelField).collect(Response.mergeLists())
                         .mapResult(generatedPaths::addAll))
-                .mapOnCondition(options.isCreatingTopLevelFieldDefinitions(),
+                .mapOnCondition(options.isCreatingTopLevelInputFieldDefinitions(),
                     () -> duplicateInputObjectFieldDefinitions.values().stream()
                         .map(this::generateMarkdownForTopLevelField).collect(Response.mergeLists())
                         .mapResult(generatedPaths::addAll))
@@ -349,7 +349,7 @@ public class GraphQLMarkdownGenerator {
         }
 
         private Response<List<Path>> generateMarkdownForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
-            if (!options.isCreatingTopLevelFieldDefinitions() || !duplicateInputObjectFieldDefinitions.containsKey(field.getName())) {
+            if (!options.isCreatingTopLevelInputFieldDefinitions() || !duplicateInputObjectFieldDefinitions.containsKey(field.getName())) {
                 return createPath(this.typeFieldsPath, type.getName(), String.format("%s.md", field.getName()))
                     .mapResultToResponse(filePath -> writeToFile(filePath, field.getDescription(), () -> options.getDescriptionForInputField(type, queryDefinition, field)));
             } else {

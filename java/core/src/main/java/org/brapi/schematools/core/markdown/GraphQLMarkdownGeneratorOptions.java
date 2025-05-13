@@ -34,6 +34,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String fieldsDirectory;
     private String argumentsDirectory;
     private Boolean createTopLevelFieldDefinitions;
+    private Boolean createTopLevelInputFieldDefinitions;
     private Boolean createTopLeveArgumentDefinitions;
     private String introspectionQuery;
 
@@ -339,7 +340,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
         if (type != null) {
             if (queryDefinition != null) {
-                return String.format("The %s field in type %s is used in the %s query to filter the returned results",
+                return String.format("The %s field in type %s is used in the %s query to filter the returned results.",
                     field.getName(),
                     getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
                     getMarkdownLink(queryDefinition, "../../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
@@ -383,6 +384,16 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      */
     public boolean isCreatingTopLevelFieldDefinitions() {
         return createTopLevelFieldDefinitions != null && createTopLevelFieldDefinitions;
+    }
+
+    /**
+     * Determines if the Generator should create top level input object field descriptions when there is more than one field with the same name.
+     *
+     * @return {@code true} if the Generator should create top level input object field descriptions when there is more than one field with the same name,
+     * {@code false} otherwise
+     */
+    public boolean isCreatingTopLevelInputFieldDefinitions() {
+        return createTopLevelInputFieldDefinitions != null && createTopLevelInputFieldDefinitions;
     }
 
     /**

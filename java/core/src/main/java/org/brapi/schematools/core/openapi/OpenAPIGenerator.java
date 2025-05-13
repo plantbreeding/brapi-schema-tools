@@ -329,7 +329,7 @@ public class OpenAPIGenerator {
                 new Content().addMediaType("application/json",
                     new MediaType().schema(
                         new ObjectSchema().title(name).
-                            addProperty("'@context'", new ObjectSchema().$ref(createSchemaRef("Context"))).
+                            addProperty("@context", new ObjectSchema().$ref(createSchemaRef("Context"))).
                             addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata"))).
                             addProperty("result", new ObjectSchema().$ref(createSchemaRef(type.getName()))).
                             addRequiredItem("metadata").
@@ -346,11 +346,15 @@ public class OpenAPIGenerator {
         private Response<ApiResponse> generateListResponse(BrAPIObjectType type) {
             String name = options.getListResponseNameFor(type);
 
+            if (responses.containsKey(name)) {
+                return success(responses.get(name));
+            }
+
             ApiResponse apiResponse = new ApiResponse().description("OK").content(
                 new Content().addMediaType("application/json",
                     new MediaType().schema(
                         new ObjectSchema().title(name).
-                            addProperty("'@context'", new ObjectSchema().$ref(createSchemaRef("Context"))).
+                            addProperty("@context", new ObjectSchema().$ref(createSchemaRef("Context"))).
                             addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata"))).
                             addProperty("result", new ObjectSchema().
                                 addProperty("data", new ArraySchema().items(new Schema().$ref(createSchemaRef(type.getName())))).
@@ -398,16 +402,19 @@ public class OpenAPIGenerator {
             }
 
             if (options.getListGet().hasInputFor(type)) {
-                BrAPIClass requestSchema = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
+                BrAPIClass requestClass = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
 
-                if (requestSchema == null) {
+                if (requestClass == null) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", type.getName(), createPathItemName(type))) ;
                 }
 
-                if (requestSchema instanceof BrAPIObjectType brAPIObjectType) {
-                    return brAPIObjectType.getProperties().stream().map(this::createListGetParameter).collect(Response.toList()).
-                        onSuccessDoWithResult(result -> parameters.addAll(0, result)).
-                        map(() -> success(parameters));
+                if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                    return brAPIObjectType.getProperties().stream()
+                        .filter(property -> options.getListGet().isUsingPropertyFromRequestFor(type, property))
+                        .map(this::createListGetParameter)
+                        .collect(Response.toList())
+                        .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                        .map(() -> success(parameters));
                 } else {
                     return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
                 }
@@ -590,7 +597,7 @@ public class OpenAPIGenerator {
 
             pathItem.setPost(operation);
 
-            return success(pathItem);
+            return generateListResponse(type).map(() -> success(pathItem));
         }
 
         private ApiResponses createSearchPostResponseRefs(BrAPIObjectType type) {
@@ -612,7 +619,7 @@ public class OpenAPIGenerator {
 
             pathItem.setGet(operation);
 
-            return success(pathItem);
+            return generateListResponse(type).map(() -> success(pathItem));
         }
 
         private ApiResponses createSearchGetResponseRefs(BrAPIObjectType type) {
