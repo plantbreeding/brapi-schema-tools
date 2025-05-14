@@ -84,19 +84,18 @@ public class BrAPISchemaReader {
     }
 
     /**
-     * Reads a single object type from an JSON schema string. If the JSON schema
-     * contain more than one type definition only the first is returned. There is
+     * Reads a single object type from an JSON schema string. There is
      * no validation of referenced schemas
      *
-     * @param path   the path of the schema is used to check references, if not supplied then validation is not performed
+     * @param path the path of the schema is used to check references, if not supplied then validation is not performed
      * @param schema a JSON schema string
      * @param module the module in which the object resides
      * @return a response containing the BrAPIClass for this schema or validation errors
      * @throws BrAPISchemaReaderException if there is a problem reading the JSON schema
      */
-    public Response<BrAPIClass> readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
+    public Response<List<BrAPIClass>> readSchema(Path path, String schema, String module) throws BrAPISchemaReaderException {
         try {
-            return new Reader().createBrAPISchemas(path, objectMapper.readTree(schema), module).mapResult(list -> list.get(0));
+            return new Reader().createBrAPISchemas(path, objectMapper.readTree(schema), module) ;
         } catch (RuntimeException | JsonProcessingException e) {
             throw new BrAPISchemaReaderException(String.format("Can not read schema at '%s' in module '%s' from '%s', due to '%s'", path, module, schema, e.getMessage()), e);
         }
