@@ -414,14 +414,20 @@ public class GraphQLMarkdownGenerator {
             return description.toString();
         }
 
-        private Response<List<Path>> writeToFile(Path path, String text, Supplier<String> descriptionProvider) {
+        private Response<List<Path>> writeToFile(Path path, String implementationText, Supplier<String> descriptionProvider) {
             try {
                 if (options.isOverwritingExistingFiles() && Files.exists(path)) {
                     log.warn("Output file '{}' already exists and was not overwritten", path);
                     return success(Collections.emptyList());
                 } else {
                     PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(path, Charset.defaultCharset()));
-                    printWriter.println(text != null ? text : descriptionProvider.get());
+                    printWriter.println(descriptionProvider.get());
+
+                    if (implementationText != null) {
+                        printWriter.println();
+                        printWriter.println("# Implementation");
+                        printWriter.println(implementationText);
+                    }
                     printWriter.close();
                     return success(Collections.singletonList(path));
                 }
