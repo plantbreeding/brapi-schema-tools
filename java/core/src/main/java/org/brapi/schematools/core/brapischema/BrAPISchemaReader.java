@@ -255,7 +255,7 @@ public class BrAPISchemaReader {
     }
 
     private boolean schemaPathMatcher(Path path, BasicFileAttributes basicFileAttributes) {
-        return basicFileAttributes.isRegularFile();
+        return basicFileAttributes.isRegularFile() && path.getFileName().toString().endsWith(".json");
     }
 
     private Response<BrAPIType> createType(Path path, JsonNode jsonNode, String fallbackName, String module) {

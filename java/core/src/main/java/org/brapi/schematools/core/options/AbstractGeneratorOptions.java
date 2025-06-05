@@ -21,7 +21,7 @@ public class AbstractGeneratorOptions {
 
     /**
      * Gets the Pluralised name for a specific Primary Model. For example plural
-     * name of Study, would be 'Studies' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'Studies' by default. Use {@link # setIDParameterFor} to override this value.
      * @param name the name of the Primary Model
      * @return the pluralised name for a specific Primary Model
      */
@@ -32,7 +32,7 @@ public class AbstractGeneratorOptions {
 
     /**
      * Gets the pluralised name for a specific Primary Model. For example plural
-     * name of Study, would be 'Studies' by default. Use {@link #setIDParameterFor} to override this value.
+     * name of Study, would be 'Studies' by default. Use {@link # setIDParameterFor} to override this value.
      * @param type the Primary Model
      * @return the pluralised name for a specific Primary Model
      */

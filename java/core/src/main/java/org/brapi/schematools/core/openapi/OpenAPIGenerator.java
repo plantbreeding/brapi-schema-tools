@@ -78,7 +78,7 @@ public class OpenAPIGenerator {
      * the BrAPI Json schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
-     * for each module. See {@link OpenAPIGeneratorOptions#separatingByModule}.
+     * for each module. See {OpenAPIGeneratorOptions#separatingByModule}.
      * @param schemaDirectory the path to the complete BrAPI Specification
      * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
      * @param metadata additional metadata that is used in the generation
@@ -408,7 +408,7 @@ public class OpenAPIGenerator {
         }
 
         private String createSearchPathItemWithIdName(BrAPIObjectType type) {
-            return String.format("/search/%s/{%s}", toParameterCase(options.getPluralFor(type)), options.getIds().getIDParameterFor(type));
+            return String.format("/search/%s/{searchResultsDbId}", toParameterCase(options.getPluralFor(type)));
         }
 
         public Response<PathItem> createSearchPathItem(BrAPIObjectType type) {

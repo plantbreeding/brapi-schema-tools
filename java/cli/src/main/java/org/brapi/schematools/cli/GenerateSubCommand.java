@@ -41,20 +41,32 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components")
     private Path componentsDirectory;
 
+    @CommandLine.Option(names = {"-o", "--options-file"}, description = "The file path for the options file (openapi-options.yaml or graphql-options.yaml)")
+    private Path optionsFile;
+
     @Override
     public void run() {
-        switch (outputFormat) {
+        try {
+            switch (outputFormat) {
 
-            case OPEN_API -> {
-                OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
-                generateOpenAPISpecification(options);
+                case OPEN_API -> {
+                    OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
+                    if (optionsFile != null) {
+                        options = OpenAPIGeneratorOptions.load(optionsFile);
+                    }
+                    generateOpenAPISpecification(options);
+                }
+                case GRAPHQL -> {
+                    GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
+                    if (optionsFile != null) {
+                        options = GraphQLGeneratorOptions.load(optionsFile);
+                    }
+                    generateGraphQLSchema(options);
+                }
             }
-            case GRAPHQL -> {
-                GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
-                generateGraphQLSchema(options);
-            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
     private void generateGraphQLSchema(GraphQLGeneratorOptions options) {

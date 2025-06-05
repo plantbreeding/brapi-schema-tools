@@ -61,6 +61,6 @@ public class OpenAPIComponentsReader {
     }
 
     private boolean schemaPathMatcher(Path path, BasicFileAttributes basicFileAttributes) {
-        return basicFileAttributes.isRegularFile();
+        return basicFileAttributes.isRegularFile() && path.getFileName().toString().endsWith(".yaml");
     }
 }
