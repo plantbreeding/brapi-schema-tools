@@ -90,7 +90,7 @@ public class CompareSubCommand implements Runnable {
     }
 
     private void outputResponse(Path path) {
-        out.print(String.format("Comparison generated in '%s'", path));
+        out.print(String.format("Comparison generated in '%s'", path.toAbsolutePath()));
         out.close();
     }
 
