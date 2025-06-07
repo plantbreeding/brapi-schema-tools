@@ -1,12 +1,13 @@
 package org.brapi.schematools.core.openapi;
 
+import lombok.AllArgsConstructor;
+import org.brapi.schematools.core.openapi.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
 
 import org.openapitools.openapidiff.core.OpenApiCompare;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.openapitools.openapidiff.core.output.AsciidocRender;
 import org.openapitools.openapidiff.core.output.HtmlRender;
-import org.openapitools.openapidiff.core.output.JsonRender;
 import org.openapitools.openapidiff.core.output.MarkdownRender;
 
 import java.io.FileNotFoundException;
@@ -19,7 +20,17 @@ import java.nio.file.Path;
 /**
  * Compares two OpenAPI Specifications
  */
+@AllArgsConstructor
 public class OpenAPIComparator {
+
+    private final OpenAPIComparatorOptions options;
+
+    /**
+     * Creates a Comparator with default options
+     */
+    public OpenAPIComparator() {
+        this(OpenAPIComparatorOptions.load()) ;
+    }
 
     /**
      * Compares the OpenAPI Specification in files on a file path and outputs
@@ -96,7 +107,7 @@ public class OpenAPIComparator {
 
     private Response<Path> renderJson(ChangedOpenApi diff, Path outputPath) {
         try {
-            JsonRender jsonRender = new JsonRender();
+            JsonRender jsonRender = new JsonRender(options.isPrettyPrinting());
             FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
             jsonRender.render(diff, outputStreamWriter);

@@ -91,7 +91,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setPagingFor(String name, boolean generate) {
+    public ListGetOptions setPagingFor(String name, boolean generate) {
         paged.put(name, generate) ;
 
         return this ;
@@ -104,7 +104,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setPagingFor(BrAPIType type, boolean generate) {
+    public ListGetOptions setPagingFor(BrAPIType type, boolean generate) {
         return setPagingFor(type.getName(), generate) ;
     }
 
@@ -136,7 +136,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setInputFor(String name, boolean generate) {
+    public ListGetOptions setInputFor(String name, boolean generate) {
         inputFor.put(name, generate) ;
 
         return this ;
@@ -149,7 +149,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setInputFor(BrAPIType type, boolean generate) {
+    public ListGetOptions setInputFor(BrAPIType type, boolean generate) {
         return setInputFor(type.getName(), generate) ;
     }
 

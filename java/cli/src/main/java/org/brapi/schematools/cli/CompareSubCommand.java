@@ -2,6 +2,8 @@ package org.brapi.schematools.cli;
 
 import org.brapi.schematools.core.openapi.ComparisonOutputFormat;
 import org.brapi.schematools.core.openapi.OpenAPIComparator;
+import org.brapi.schematools.core.openapi.options.OpenAPIComparatorOptions;
+import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
@@ -37,6 +39,9 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file or directory for the generated result. If omitted the output will be written to the standard out")
     private Path outputPath;
 
+    @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
+    private Path optionsPath;
+
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
     private boolean overwrite = true;
 
@@ -46,6 +51,9 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-s", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
     private boolean stackTrace = false;
 
+    @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")
+    private boolean prettyprint = true;
+
     @Override
     public void run() {
         try {
@@ -54,7 +62,10 @@ public class CompareSubCommand implements Runnable {
 
             switch (inputFormat) {
                 case OPEN_API -> {
-                    OpenAPIComparator openAPIComparator = new OpenAPIComparator();
+
+                    OpenAPIComparatorOptions options = optionsPath != null ?
+                        OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
+                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options);
 
                     Response<Path> response = openAPIComparator.compare(firstPath, secondPath, outputPath, outputFormat);
 

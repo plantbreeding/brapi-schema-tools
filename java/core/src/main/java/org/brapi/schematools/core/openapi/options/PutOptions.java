@@ -68,7 +68,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setMultipleFor(String name, boolean multiple) {
+    public PutOptions setMultipleFor(String name, boolean multiple) {
         multipleFor.put(name, multiple) ;
 
         return this ;
@@ -82,7 +82,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractOptions setMultipleFor(BrAPIType type, boolean multiple) {
+    public PutOptions setMultipleFor(BrAPIType type, boolean multiple) {
         return setMultipleFor(type.getName(), multiple) ;
     }
 
