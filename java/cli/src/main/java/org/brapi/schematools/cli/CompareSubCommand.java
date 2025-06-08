@@ -1,9 +1,8 @@
 package org.brapi.schematools.cli;
 
-import org.brapi.schematools.core.openapi.ComparisonOutputFormat;
-import org.brapi.schematools.core.openapi.OpenAPIComparator;
-import org.brapi.schematools.core.openapi.options.OpenAPIComparatorOptions;
-import org.brapi.schematools.core.openapi.options.OpenAPIGeneratorOptions;
+import org.brapi.schematools.core.openapi.comparator.ComparisonOutputFormat;
+import org.brapi.schematools.core.openapi.comparator.OpenAPIComparator;
+import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 

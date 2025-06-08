@@ -9,7 +9,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIRelationshipType;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.options.LinkType;
+import org.brapi.schematools.core.openapi.generator.LinkType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 import org.brapi.schematools.core.utils.StringUtils;

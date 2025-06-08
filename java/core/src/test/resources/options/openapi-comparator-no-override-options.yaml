@@ -1,1 +1,2 @@
-prettyPrint: true
+json:
+    prettyPrint: true

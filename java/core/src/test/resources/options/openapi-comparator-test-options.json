@@ -1,3 +1,13 @@
 {
-    "prettyPrint": true
+    "html": {
+        "title": "Changelog",
+        "linkCss": "http://deepoove.com/swagger-diff/stylesheets/demo.css",
+        "showAllChanges": false
+    },
+    "json": {
+        "prettyPrint": true
+    },
+    "markdown": {
+        "showChangedMetadata": false
+    }
 }

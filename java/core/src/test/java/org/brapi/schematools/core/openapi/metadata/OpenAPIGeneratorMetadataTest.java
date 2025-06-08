@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,1 +1,8 @@
-prettyPrint: false
+html:
+    title: Changelog2
+    linkCss: other_demo.css
+    showAllChanges: true
+json:
+    prettyPrint: false
+markdown:
+    showChangedMetadata: true
