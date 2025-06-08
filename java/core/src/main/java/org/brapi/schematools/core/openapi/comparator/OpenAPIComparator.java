@@ -3,7 +3,6 @@ package org.brapi.schematools.core.openapi.comparator;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
-
 import org.openapitools.openapidiff.core.OpenApiCompare;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.openapitools.openapidiff.core.output.AsciidocRender;

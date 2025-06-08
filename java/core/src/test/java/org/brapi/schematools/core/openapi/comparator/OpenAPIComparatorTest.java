@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 
 import static org.brapi.schematools.core.utils.StringUtils.readStringFromPath;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertLinesMatch;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class OpenAPIComparatorTest {
 

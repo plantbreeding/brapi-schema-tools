@@ -1,13 +1,17 @@
 package org.brapi.schematools.core.openapi.comparator.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.validiation.Validation;
 
 /**
- * Markdown Render Options for the {@link OpenAPIComparator}.
+ * Markdown Render Options for the {@link org.brapi.schematools.core.openapi.comparator.OpenAPIComparator}..
  */
 @Getter
 @Setter

@@ -1,7 +1,10 @@
 package org.brapi.schematools.core.openapi.comparator.options;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -12,7 +15,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
- * Options for the {@link OpenAPIComparator}.
+ * Options for the {@link org.brapi.schematools.core.openapi.comparator.OpenAPIComparator}.
  */
 @Getter
 @Setter

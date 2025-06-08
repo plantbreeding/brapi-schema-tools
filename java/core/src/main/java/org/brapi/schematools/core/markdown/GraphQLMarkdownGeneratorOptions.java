@@ -2,7 +2,11 @@ package org.brapi.schematools.core.markdown;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.options.Options;

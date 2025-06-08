@@ -11,7 +11,7 @@ import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.validiation.Validation;
 
 /**
- * HTML Options for the {@link OpenAPIComparator}.
+ * HTML Options for the {@link org.brapi.schematools.core.openapi.comparator.OpenAPIComparator}.
  */
 @Getter
 @Setter
