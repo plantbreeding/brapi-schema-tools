@@ -43,27 +43,21 @@ public class OpenAPIComparator {
      * @return a response with the path of the created output
      */
     public Response<Path> compare(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
-        if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
-            ChangedOpenApi diff = OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile());
-
-            if (outputPath.getParent() != null) {
-                try {
-                    Files.createDirectories(outputPath.getParent()) ;
-                } catch (IOException e) {
-                    return Response.fail(Response.ErrorType.VALIDATION,
-                        String.format("Parent directory '%s' can not created", outputPath.getParent())) ;
-                }
+        if (outputPath.getParent() != null) {
+            try {
+                Files.createDirectories(outputPath.getParent());
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Parent directory '%s' can not created", outputPath.getParent()));
             }
-            return switch (outputFormat) {
-                case HTML -> renderHtml(diff, outputPath) ;
-                case MARKDOWN -> renderMarkdown(diff, outputPath) ;
-                case ASCIIDOC -> renderAsciidoc(diff, outputPath) ;
-                case JSON -> renderJson(diff, outputPath) ;
-            } ;
-        } else {
-            return Response.fail(Response.ErrorType.VALIDATION,
-                String.format("Both input paths need to be regular files, Path 1: '%s' Path 2: '%s'", firstPath, secondPath)) ;
         }
+
+        return compare(firstPath, secondPath).mapResultToResponse(diff -> switch (outputFormat) {
+            case HTML -> renderHtml(diff, outputPath);
+            case MARKDOWN -> renderMarkdown(diff, outputPath);
+            case ASCIIDOC -> renderAsciidoc(diff, outputPath);
+            case JSON -> renderJson(diff, outputPath);
+        });
     }
 
     /**
@@ -78,8 +72,18 @@ public class OpenAPIComparator {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             return Response.success(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())) ;
         } else {
-            return Response.fail(Response.ErrorType.VALIDATION,
-                String.format("Both input paths need to be regular files, Path 1: '%s' Path 2: '%s'", firstPath, secondPath)) ;
+            if (!Files.isRegularFile(firstPath) && !Files.isRegularFile(secondPath)) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Both input paths need to be regular files, Path 1: '%s' Path 2: '%s'", firstPath, secondPath));
+            } else {
+                if (!Files.isRegularFile(firstPath)) {
+                    return Response.fail(Response.ErrorType.VALIDATION,
+                        String.format("First input path is not a regular file, Path 1: '%s'", firstPath));
+                } else {
+                    return Response.fail(Response.ErrorType.VALIDATION,
+                        String.format("Second input path is not a regular file, Path 1: '%s'", secondPath));
+                }
+            }
         }
     }
 
