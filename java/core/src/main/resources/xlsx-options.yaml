@@ -14,7 +14,9 @@ dataClassProperties:
       childProperty:
           name: interfaceClass
     - name: description
-dataClassFieldHeader: Class Name
+dataClassFieldHeaders:
+    - Class Name
+    - BrAPI Module
 dataClassFieldProperties:
     - name: name
     - name: description

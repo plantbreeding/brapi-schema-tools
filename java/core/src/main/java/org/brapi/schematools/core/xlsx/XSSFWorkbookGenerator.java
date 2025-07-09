@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.xlsx;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -24,9 +25,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -112,12 +115,16 @@ public class XSSFWorkbookGenerator {
 
             sheet = workbook.createSheet("Data Classes Fields");
 
-            createHeaderRow(workbook, sheet, options.getDataClassFieldProperties(), options.getDataClassFieldHeader()) ;
-            createRows(sheet, 1, BrAPIClass::getName, options.getDataClassFieldProperties(), brAPIClasses, this::findFields);
+            createHeaderRow(workbook, sheet, options.getDataClassFieldProperties(), options.getDataClassFieldHeaders()) ;
+            createRows(sheet, 1, this::getHeaders, options.getDataClassFieldProperties(), brAPIClasses, this::findFields);
 
             formatSheet(sheet, brAPIClasses.size()) ;
 
             return saveWorkbook(workbook, outputPath).mapResult(Collections::singletonList) ;
+        }
+
+        private List<String> getHeaders(BrAPIClass brAPIClass) {
+            return Arrays.asList(brAPIClass.getName(), brAPIClass.getModule()) ;
         }
 
         private List<BrAPIObjectProperty> findFields(BrAPIClass brAPIClass) {
@@ -153,27 +160,27 @@ public class XSSFWorkbookGenerator {
             createHeaderRow(workbook, sheet, columns, null);
         }
 
-        private void createHeaderRow(Workbook workbook, Sheet sheet, List<ColumnOption> columns, String header) {
+        private void createHeaderRow(Workbook workbook, Sheet sheet, List<ColumnOption> columns, List<String> headers) {
             Row headerRow = sheet.createRow(0);
 
             CellStyle headerStyle = createHeaderStyle(workbook);
 
-            int columnIndex = 0 ;
+            final AtomicInteger columnIndex = new AtomicInteger(0) ;
 
-            if (header != null) {
-                sheet.setColumnWidth(columnIndex, 6000);
-                Cell headerCell = headerRow.createCell(columnIndex);
-                headerCell.setCellValue(header);
-                headerCell.setCellStyle(headerStyle);
-                ++columnIndex ;
+            if (headers != null) {
+                headers.forEach(header -> {
+                    sheet.setColumnWidth(columnIndex.get(), 6000);
+                    Cell headerCell = headerRow.createCell(columnIndex.getAndIncrement());
+                    headerCell.setCellValue(header);
+                    headerCell.setCellStyle(headerStyle);
+                });
             }
 
             for (ColumnOption column : columns) {
-                sheet.setColumnWidth(columnIndex, 6000);
-                Cell headerCell = headerRow.createCell(columnIndex);
+                sheet.setColumnWidth(columnIndex.get(), 6000);
+                Cell headerCell = headerRow.createCell(columnIndex.getAndIncrement());
                 headerCell.setCellValue(column.getLabel() != null ? column.getLabel() : StringUtils.toLabel(column.getName()));
                 headerCell.setCellStyle(headerStyle);
-                ++columnIndex ;
             }
         }
 
@@ -191,11 +198,11 @@ public class XSSFWorkbookGenerator {
             return headerStyle ;
         }
 
-        private <T> int createRows(Sheet sheet, int startIndex, String header, List<ColumnOption> columns, List<T> values) {
+        private <T> int createRows(Sheet sheet, int startIndex, List<String> headers, List<ColumnOption> columns, List<T> values) {
             int rowIndex = startIndex ;
 
             for (Object value : values) {
-                createRow(sheet, columns, rowIndex, header, value);
+                createRow(sheet, columns, rowIndex, headers, value);
 
                 ++rowIndex ;
             }
@@ -203,7 +210,7 @@ public class XSSFWorkbookGenerator {
             return rowIndex ;
         }
 
-        private <T, V> void createRows(Sheet sheet, int startIndex, Function<T, String> headerFunction, List<ColumnOption> columns, List<T> values, Function<T, List<V>> valuesFunction) {
+        private <T, V> void createRows(Sheet sheet, int startIndex, Function<T, List<String>> headerFunction, List<ColumnOption> columns, List<T> values, Function<T, List<V>> valuesFunction) {
             int rowIndex = startIndex ;
 
             for (T value : values) {
@@ -211,24 +218,24 @@ public class XSSFWorkbookGenerator {
             }
         }
 
-        private <T> void createRow(Sheet sheet, List<ColumnOption> columns, int rowIndex, String header, T bean)  {
+        private <T> void createRow(Sheet sheet, List<ColumnOption> columns, int rowIndex, List<String> headers, T bean)  {
             Row row = sheet.createRow(rowIndex);
 
-            int columnIndex = 0 ;
+            final AtomicInteger columnIndex = new AtomicInteger(0) ;
 
-            if (header != null) {
-                Cell cell = row.createCell(columnIndex);
-                cell.setCellValue(header);
-                ++columnIndex ;
+            if (headers != null) {
+                headers.forEach(header -> {
+                    Cell cell = row.createCell(columnIndex.getAndIncrement());
+                    cell.setCellValue(header);
+                });
             }
 
             for (ColumnOption column : columns) {
                 try {
-                    updateCellValue(row.createCell(columnIndex), column, column.getDefaultValue(), rowIndex, PropertyUtils.getProperty(bean, column.getName())) ;
+                    updateCellValue(row.createCell(columnIndex.getAndIncrement()), column, column.getDefaultValue(), rowIndex, PropertyUtils.getProperty(bean, column.getName())) ;
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     log.warn(String.format("Error parsing bean with property '%s', at index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
                 }
-                ++columnIndex ;
             }
         }
 

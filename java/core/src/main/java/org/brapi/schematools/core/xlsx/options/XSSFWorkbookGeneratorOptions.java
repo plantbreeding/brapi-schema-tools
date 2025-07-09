@@ -25,7 +25,7 @@ import java.util.List;
 public class XSSFWorkbookGeneratorOptions implements Options {
 
     List<ColumnOption> dataClassProperties ;
-    String dataClassFieldHeader ;
+    List<String> dataClassFieldHeaders ;
     List<ColumnOption> dataClassFieldProperties ;
 
     /**
@@ -66,7 +66,7 @@ public class XSSFWorkbookGeneratorOptions implements Options {
 
         return Validation.valid()
             .merge(dataClassProperties)
-            .assertNotNull(dataClassFieldHeader, "'dataClassFieldHeader' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(dataClassFieldHeaders, "'dataClassFieldHeaders' option on %s is null", this.getClass().getSimpleName())
             .merge(dataClassFieldProperties) ;
     }
 
@@ -81,8 +81,8 @@ public class XSSFWorkbookGeneratorOptions implements Options {
             setDataClassProperties(overrideOptions.dataClassProperties) ;
         }
 
-        if (overrideOptions.dataClassFieldHeader != null) {
-            dataClassFieldHeader = overrideOptions.dataClassFieldHeader ;
+        if (overrideOptions.dataClassFieldHeaders != null) {
+            dataClassFieldHeaders = overrideOptions.dataClassFieldHeaders ;
         }
 
         if (overrideOptions.dataClassFieldProperties != null) {
