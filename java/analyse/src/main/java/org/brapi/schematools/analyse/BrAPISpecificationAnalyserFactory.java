@@ -792,7 +792,7 @@ public class BrAPISpecificationAnalyserFactory {
             if (operation != null && operation.getResponses() != null) {
                 ApiResponse response = operation.getResponses().get("200");
 
-                if (response != null) {
+                if (response != null && response.getContent() != null) {
                     MediaType content = response.getContent().get("application/json");
 
                     if (content != null && content.getSchema() != null) {

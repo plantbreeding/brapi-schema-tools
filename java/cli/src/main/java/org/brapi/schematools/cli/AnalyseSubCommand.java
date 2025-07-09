@@ -68,8 +68,14 @@ public class AnalyseSubCommand implements Runnable {
     private boolean batchProcess;
     @CommandLine.Option(names = {"-d", "--validate"}, description = "Does a dry run on the analyse, validating the options")
     private boolean validate;
-    @CommandLine.Option(names = {"-x", "--summariseAcrossReports"}, description = "Add a summary to any reporting")
+    @CommandLine.Option(names = {"-ar", "--summariseAcrossReports"}, description = "Add a summary to any reporting")
     private boolean summariseAcrossReports;
+
+    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
+    private boolean throwExceptionOnFail = false;
+
+    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
+    private boolean stackTrace = false;
 
     private TabularReportWriter writer;
 
@@ -256,7 +262,6 @@ public class AnalyseSubCommand implements Runnable {
             SingleSignOn sso = SingleSignOn.builder()
                 .url(oauthURL)
                 .clientId(clientId)
-                .clientSecret(clientSecret)
                 .username(username).build();
 
             return sso.getToken()
@@ -271,15 +276,23 @@ public class AnalyseSubCommand implements Runnable {
 
     private Response<OpenIDToken> login(SingleSignOn sso) {
         if (password != null) {
-            return sso.login(password);
+            return sso.loginWithPassword(password);
         } else {
-            return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged please provide password using option '-p' for user '%s' ", username));
+            if (clientSecret != null) {
+                return sso.loginWithClientId(clientSecret);
+            } else {
+                return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged please provide password using option '-p' for user '%s' or client secret for client '%s'", username, clientId));
+            }
         }
     }
 
     private void outputError(Response<List<AnalysisReport>> response) {
         err.println("Analysis failed due to: ");
         response.getMessages().forEach(err::println);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(response.getMessagesCombined(", "));
+        }
     }
 
     private void outputReports(List<AnalysisReport> listResponses) {
@@ -477,8 +490,16 @@ public class AnalyseSubCommand implements Runnable {
         response.getMessages().forEach(err::println);
     }
 
-    private void outputException(Exception exception) {
+    private void outputException(Exception exception) throws BrAPICommandException {
         String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage());
         err.println(message);
+
+        if (stackTrace) {
+            exception.printStackTrace(err);
+        }
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, exception);
+        }
     }
 }

@@ -20,20 +20,17 @@ import java.nio.file.Path;
 import static java.net.http.HttpClient.newHttpClient;
 
 /**
- * Handles OAuth login, logout.
+ * Handles OAuth login and logout.
  */
 @Getter
 @Slf4j
 public class SingleSignOn implements AuthorizationProvider {
 
     @NonNull
-    private final String name ;
+    private final String name;
     @NonNull
-    private final String url ;
-    @NonNull
+    private final String url;
     private final String clientId;
-    private final String clientSecret;
-    @NonNull
     private final String username;
 
     @Getter(AccessLevel.PRIVATE)
@@ -42,11 +39,10 @@ public class SingleSignOn implements AuthorizationProvider {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Builder
-    private SingleSignOn(String name, @NonNull final String url, @NonNull String clientId, String clientSecret, String username) {
-        this.name = name != null ?  name : URI.create(url).getHost() ;
+    private SingleSignOn(String name, @NonNull final String url, String clientId, String username) {
+        this.name = name != null ? name : URI.create(url).getHost();
         this.url = url;
         this.clientId = clientId;
-        this.clientSecret = clientSecret;
         this.username = username != null ? username : System.getProperty("user.name");
 
         requestUri = URI.create(url);
@@ -54,34 +50,73 @@ public class SingleSignOn implements AuthorizationProvider {
 
     @Override
     public boolean required() {
-        return true ;
+        return true;
     }
 
     @Override
     public Response<String> getAuthorization() {
         return getToken()
-            .mapResult(openIDToken -> "Bearer " + openIDToken.getAccessToken()) ;
+            .mapResult(openIDToken -> "Bearer " + openIDToken.getAccessToken());
     }
 
     /**
-     * Login the current user
+     * Login the current user and password
+     *
      * @param password the current user's password
      * @return A response containing a valid token or failure explaining why login has failed.
      */
-    public Response<OpenIDToken> login(String password) {
+    public Response<OpenIDToken> loginWithPassword(String password) {
+
+        log.debug("Attempting to login with password.");
+
+        if (username == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Username not provided!");
+        }
+
+        if (password == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Password not provided!");
+        }
 
         return requestToken(TokenRequest.builder()
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .grantType(clientSecret != null ? "password" : "client_credentials")
+            .grantType("password")
             .username(username)
             .password(password)
+            .clientId(clientId)
             .build())
-            .onSuccessDo(() -> log.debug("Logged in!"));
+            .onSuccessDo(() -> log.debug("Logged in!"))
+            .onFailDo(() -> log.debug("Log failed!"));
+    }
+
+    /**
+     * Login with clientId
+     *
+     * @param clientSecret the clientSecret for the provided clientId
+     * @return A response containing a valid token or failure explaining why login has failed.
+     */
+    public Response<OpenIDToken> loginWithClientId(String clientSecret) {
+
+        log.debug("Attempting to login with client secret");
+
+        if (clientId == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Client ID not provided!");
+        }
+
+        if (clientSecret == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Client secret not provided!");
+        }
+
+        return requestToken(TokenRequest.builder()
+            .grantType("client_credentials")
+            .clientId(clientId)
+            .clientSecret(clientSecret)
+            .build())
+            .onSuccessDo(() -> log.debug("Logged in!"))
+            .onFailDo(() -> log.debug("Log failed!"));
     }
 
     /**
      * Logout the current user
+     *
      * @return An empty response or failure explaining why logout has failed.
      */
     public Response<Void> logout() {
@@ -93,8 +128,8 @@ public class SingleSignOn implements AuthorizationProvider {
         }
 
         if (tokenFile.delete()) {
-            log.debug("Logged out!") ;
-            return Response.success(null) ;
+            log.debug("Logged out!");
+            return Response.success(null);
         } else {
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Was not able to logout, try to delete the sso token at %s manually!", tokenFile.getAbsolutePath()));
         }
@@ -103,6 +138,7 @@ public class SingleSignOn implements AuthorizationProvider {
     /**
      * Gets the current token if not expired or fetches a new one, or fails with a message explaining the reason why a
      * valid token can not be obtained.
+     *
      * @return A response containing a valid token or failure.
      */
     public Response<OpenIDToken> getToken() {
@@ -123,8 +159,6 @@ public class SingleSignOn implements AuthorizationProvider {
                 } else {
                     log.debug("Token expired will try to refresh");
                     return requestToken(TokenRequest.builder()
-                        .clientId(clientId)
-                        .clientSecret(clientSecret)
                         .grantType("refresh_token")
                         .refreshToken(token.getRefresh_token())
                         .build());
@@ -138,9 +172,13 @@ public class SingleSignOn implements AuthorizationProvider {
     }
 
     private File getTokenFile() {
-        Path parentPath = Path.of(System.getProperty("user.home"), ".sso", name, clientId);
+        Path parentPath = Path.of(System.getProperty("user.home"), ".sso", name, clientId != null ? clientId : username);
 
-        parentPath.toFile().mkdirs();
+        if (parentPath.toFile().mkdirs()) {
+            log.debug("Created directory at {}", parentPath);
+        } else {
+            log.debug("Used existing directory at {}", parentPath);
+        }
 
         return parentPath.resolve(String.format("%s.token", username)).toFile();
     }

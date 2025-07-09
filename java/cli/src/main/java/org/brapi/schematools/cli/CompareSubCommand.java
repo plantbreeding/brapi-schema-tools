@@ -47,7 +47,7 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
     private boolean throwExceptionOnFail = false;
 
-    @CommandLine.Option(names = {"-s", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
+    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
     private boolean stackTrace = false;
 
     @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")

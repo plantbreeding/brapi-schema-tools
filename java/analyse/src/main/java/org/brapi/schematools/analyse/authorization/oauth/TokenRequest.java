@@ -41,12 +41,14 @@ public class TokenRequest {
 
         if (refreshToken != null) {
             params = params + "&refresh_token=" + refreshToken;
-        } else {
-            params = params +
-                "&username=" +
-                username +
-                "&password=" +
-                password;
+        }
+
+        if (username != null) {
+            params = params + "&username=" + username;
+        }
+
+        if (password != null) {
+            params = params + "&password=" + password;
         }
 
         return params;

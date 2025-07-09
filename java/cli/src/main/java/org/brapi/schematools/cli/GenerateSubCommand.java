@@ -67,7 +67,7 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
     private boolean throwExceptionOnFail = false;
 
-    @CommandLine.Option(names = {"-s", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
+    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
     private boolean stackTrace = false;
 
     @Override
