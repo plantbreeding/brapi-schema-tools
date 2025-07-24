@@ -3,6 +3,7 @@ package org.brapi.schematools.core.openapi.comparator;
 import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.StringUtils;
 import org.openapitools.openapidiff.core.OpenApiCompare;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.openapitools.openapidiff.core.output.AsciidocRender;
@@ -32,36 +33,7 @@ public class OpenAPIComparator {
     }
 
     /**
-     * Compares the OpenAPI Specification in files on a file path and outputs
-     * the result in the provided format. If the output file does not exist it
-     * will be created along with any missing parent directories.
-     *
-     * @param firstPath the path of the first Specification
-     * @param secondPath the path of the second Specification
-     * @param outputPath the path of output file.
-     * @param outputFormat the format of the output
-     * @return a response with the path of the created output
-     */
-    public Response<Path> compare(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
-        if (outputPath.getParent() != null) {
-            try {
-                Files.createDirectories(outputPath.getParent());
-            } catch (IOException e) {
-                return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory '%s' can not created", outputPath.getParent()));
-            }
-        }
-
-        return compare(firstPath, secondPath).mapResultToResponse(diff -> switch (outputFormat) {
-            case HTML -> renderHtml(diff, outputPath);
-            case MARKDOWN -> renderMarkdown(diff, outputPath);
-            case ASCIIDOC -> renderAsciidoc(diff, outputPath);
-            case JSON -> renderJson(diff, outputPath);
-        });
-    }
-
-    /**
-     * Compares the OpenAPI Specification in files on a file path and a diff object
+     * Compares the OpenAPI Specification in files on a file path and returns a diff object
      * for downstream use.
      *
      * @param firstPath the path of the first Specification
@@ -85,6 +57,106 @@ public class OpenAPIComparator {
                 }
             }
         }
+    }
+
+    /**
+     * Compares the OpenAPI Specification in files on a file path and outputs
+     * the result in the provided format.
+     * If the output file does not exist, it
+     * will be created along with any missing parent directories.
+     *
+     * @param firstPath the path of the first Specification
+     * @param secondPath the path of the second Specification
+     * @param outputPath the path of output file.
+     * @param outputFormat the format of the output
+     * @return a response with the path of the created output
+     */
+    public Response<Path> compare(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return findActualOutputPath(outputPath, outputFormat)
+            .mapResultToResponse(actualOutputPath -> compare(firstPath, secondPath)
+                .mapResultToResponse(diff -> renderOutput(diff, actualOutputPath, outputFormat))) ;
+    }
+
+    /**
+     * Compares the OpenAPI Specification in a string on a file path and outputs
+     * the result in the provided format and returns a diff object
+     * for downstream use.
+     *
+     * @param firstContent the content of the first Specification
+     * @param secondContent the content of the second Specification
+     * @return a response with the diff output
+     */
+    public Response<ChangedOpenApi> compare(String firstContent, String secondContent) {
+        if (StringUtils.isNotBlank(firstContent) && StringUtils.isNotBlank(secondContent)) {
+            return Response.success(OpenApiCompare.fromContents(firstContent, secondContent)) ;
+        } else {
+            if (!StringUtils.isNotBlank(firstContent) && !StringUtils.isNotBlank(secondContent)) {
+                return Response.fail(Response.ErrorType.VALIDATION, "Both input content need to be non blank");
+            } else {
+                if (!StringUtils.isNotBlank(firstContent)) {
+                    return Response.fail(Response.ErrorType.VALIDATION, "First input content need to be non blank");
+                } else {
+                    return Response.fail(Response.ErrorType.VALIDATION, "Second input content need to be non blank");
+                }
+            }
+        }
+    }
+
+    /**
+     * Compares the OpenAPI Specification in files on a file path and a diff object
+     * for downstream use.
+     *
+     * @param firstContent the content of the first Specification
+     * @param secondContent the content of the second Specification
+     * @param outputPath the path of output file.
+     * @param outputFormat the format of the output
+     * @return a response with the path of the created output
+     */
+    public Response<Path> compare(String firstContent, String secondContent, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return findActualOutputPath(outputPath, outputFormat)
+            .mapResultToResponse(actualOutputPath -> compare(firstContent, secondContent)
+                .mapResultToResponse(diff -> renderOutput(diff, actualOutputPath, outputFormat)));
+    }
+
+    private Response<Path> findActualOutputPath(Path outputPath, ComparisonOutputFormat outputFormat) {
+        if (outputPath == null) {
+
+            try {
+                outputPath = Files.createTempFile(options.getTempFilePrefix(), getTempFileSuffix(outputFormat)) ;
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Parent directory can not created due to '%s'", e.getMessage()));
+            }
+        }
+
+        if (outputPath.getParent() != null) {
+            try {
+                Files.createDirectories(outputPath.getParent());
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Parent directory '%s' can not created", outputPath.getParent()));
+            }
+        }
+
+        return Response.success(outputPath) ;
+    }
+
+    private String getTempFileSuffix(ComparisonOutputFormat outputFormat) {
+        return switch (outputFormat) {
+            case HTML -> "html";
+            case MARKDOWN -> "md";
+            case ASCIIDOC -> "txt";
+            case JSON -> "json";
+        } ;
+    }
+
+    private Response<Path> renderOutput(ChangedOpenApi diff, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return switch (outputFormat) {
+            case HTML -> renderHtml(diff, outputPath);
+            case MARKDOWN -> renderMarkdown(diff, outputPath);
+            case ASCIIDOC -> renderAsciidoc(diff, outputPath);
+            case JSON -> renderJson(diff, outputPath);
+        } ;
     }
 
     private Response<Path> renderHtml(ChangedOpenApi diff, Path outputPath) {

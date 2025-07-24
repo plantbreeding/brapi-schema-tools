@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -76,9 +77,9 @@ class XSSFWorkbookGeneratorOptionsTest {
 
         assertFalse(options.getDataClassFieldProperties().isEmpty()) ;
         assertEquals(1, options.getDataClassFieldProperties().size()); ;
-        assertEquals("name", options.getDataClassFieldProperties().get(0).getName()) ;
+        assertEquals("name", options.getDataClassFieldProperties().getFirst().getName()) ;
 
-        assertEquals("Class Name2", options.getDataClassFieldHeader()) ;
+        assertEquals(List.of("Class Name2"), options.getDataClassFieldHeaders()) ;
     }
 
     @Test
@@ -111,7 +112,7 @@ class XSSFWorkbookGeneratorOptionsTest {
         assertEquals(2, options.getDataClassFieldProperties().size()); ;
         assertEquals("name", options.getDataClassFieldProperties().get(0).getName()) ;
         assertEquals("description", options.getDataClassFieldProperties().get(1).getName()) ;
-        assertEquals("Class Name", options.getDataClassFieldHeader()) ;
+        assertEquals(List.of("Class Name", "BrAPI Module"), options.getDataClassFieldHeaders()) ;
     }
 
 

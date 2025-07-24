@@ -1,1 +1,3 @@
-dataClassFieldHeader: Class Name
+dataClassFieldProperties:
+    - name: name
+    - name: description

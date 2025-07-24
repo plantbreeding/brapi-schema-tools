@@ -214,6 +214,15 @@ public class StringUtils {
         }
     }
 
+    /**
+     * Check if a string is not null and not blank
+     * @param string the string to be tested
+     * @return <code>true</code> if a string is not null and not blank
+     */
+    public static boolean isNotBlank(String string) {
+        return string != null && !string.isBlank() ;
+    }
+
     static class Replacer {
         final Pattern pattern;
         final String replacement;
