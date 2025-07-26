@@ -3,31 +3,25 @@
         "StudyRequest": {
             "allOf": [
                 {
-                    "$ref": "Parameters/PagingParameters.json#/$defs/PagingParameters"
-                },
-                {
                     "$ref": "Parameters/CommonCropNamesParameters.json#/$defs/CommonCropNamesParameters"
-                },
-                {
-                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
-                },
-                {
-                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
-                },
-                {
-                    "$ref": "Parameters/StudyParameters.json#/$defs/StudyParameters"
-                },
-                {
-                    "$ref": "Parameters/LocationParameters.json#/$defs/LocationParameters"
                 },
                 {
                     "$ref": "Parameters/GermplasmParameters.json#/$defs/GermplasmParameters"
                 },
                 {
-                    "$ref": "Parameters/ObservationVariableParameters.json#/$defs/ObservationVariableParameters"
+                    "$ref": "Parameters/LocationParameters.json#/$defs/LocationParameters"
                 },
                 {
-                    "$ref": "Parameters/ExternalReferenceParameters.json#/$defs/ExternalReferenceParameters"
+                    "$ref": "Parameters/ProgramParameters.json#/$defs/ProgramParameters"
+                },
+                {
+                    "$ref": "Parameters/StudyParameters.json#/$defs/StudyParameters"
+                },
+                {
+                    "$ref": "Parameters/TrialParameters.json#/$defs/TrialParameters"
+                },
+                {
+                    "$ref": "Parameters/ObservationVariableParameters.json#/$defs/ObservationVariableParameters"
                 },
                 {
                     "type": "object",
@@ -47,31 +41,6 @@
                                 "Harvest Two 2017",
                                 "Summer 2018"
                             ]
-                        },
-                        "sortBy": {
-                            "description": "Name of one of the fields within the study object on which results can be sorted",
-                            "enum": [
-                                "studyDbId",
-                                "trialDbId",
-                                "programDbId",
-                                "locationDbId",
-                                "seasonDbId",
-                                "studyType",
-                                "studyName",
-                                "studyLocation",
-                                "programName",
-                                "germplasmDbId",
-                                "observationVariableDbId"
-                            ],
-                            "type": "string"
-                        },
-                        "sortOrder": {
-                            "description": "Order results should be sorted. ex. \"ASC\" or \"DESC\"",
-                            "enum": [
-                                "ASC",
-                                "DESC"
-                            ],
-                            "type": "string"
                         },
                         "studyTypes": {
                             "description": "The type of study being performed. ex. \"Yield Trial\", etc",

@@ -3,6 +3,7 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,34 +19,66 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     private String dataFieldName;
 
     @Getter(AccessLevel.PRIVATE)
-    private boolean pagedDefault;
+    private Boolean pagedDefault;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> input = new HashMap<>();
 
     private String pagingInputName;
     private String pageInputTypeName;
     private String pageTypeName;
     private String pageFieldName;
 
-    public void validate() {
-        super.validate();
-        assert dataFieldName != null : String.format("'dataFieldName' option on %s is null", this.getClass().getSimpleName());
-        assert paged != null : String.format("'paged' option on %s is null", this.getClass().getSimpleName());
-        assert input != null : String.format("'input' option on %s is null", this.getClass().getSimpleName());
-        assert pagingInputName != null : String.format("'pagingInputName' option on %s is null", this.getClass().getSimpleName());
-        assert pageInputTypeName != null : String.format("'pageInputTypeName' option on %s is null", this.getClass().getSimpleName());
-        assert pageTypeName != null : String.format("'pageTypeName' option on %s is null", this.getClass().getSimpleName());
-        assert pageFieldName != null : String.format("'pageFieldName' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(dataFieldName, "'dataFieldName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagingInputName, "'pagingInputName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageInputTypeName, "'pageInputTypeName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageTypeName, "'pageTypeName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pageFieldName,  "'pageFieldName' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(ListQueryOptions overrideOptions) {
+        super.override(overrideOptions);
+
+        if (overrideOptions.dataFieldName != null) {
+            setDataFieldName(overrideOptions.dataFieldName); ;
+        }
+
+        if (overrideOptions.pagedDefault != null) {
+            setPagedDefault(overrideOptions.pagedDefault); ;
+        }
+
+        paged.putAll(overrideOptions.paged);
+
+        if (overrideOptions.pagingInputName != null) {
+            setPagingInputName(overrideOptions.pagingInputName); ;
+        }
+
+        if (overrideOptions.pageInputTypeName != null) {
+            setPageInputTypeName(overrideOptions.pageInputTypeName); ;
+        }
+
+        if (overrideOptions.pageTypeName != null) {
+            setPageTypeName(overrideOptions.pageTypeName); ;
+        }
+
+        if (overrideOptions.pageFieldName != null) {
+            setPageFieldName(overrideOptions.pageFieldName); ;
+        }
     }
 
     /**
      * Determine if any list query has paging
-     * @return <code>true</code> if any list query has paging. <code>false</code> otherwise
+     * @return {@code true} if any list query has paging. {@code false} otherwise
      */
+    @JsonIgnore
     public boolean hasPaging() {
         return pagedDefault || paged.values().stream().anyMatch(paged -> paged) ;
     }
@@ -54,7 +87,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Determines if the Query is paged for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull String name) {
@@ -64,7 +97,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Determines if the Query is paged for a specific primary model
      * @param type the primary model
-     * @return <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull BrAPIType type) {
@@ -74,7 +107,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     /**
      * Sets if the Query is paged for a specific primary model
      * @param name the name of the primary model
-     * @param hasInput <code>true</code> if the Query is paged for a specific primary model, <code>false</code> otherwise
+     * @param hasInput {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore

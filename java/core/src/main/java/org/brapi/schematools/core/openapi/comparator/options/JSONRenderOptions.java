@@ -1,0 +1,48 @@
+package org.brapi.schematools.core.openapi.comparator.options;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.validiation.Validation;
+
+/**
+ * JSONRender Options for the {@link org.brapi.schematools.core.openapi.comparator.OpenAPIComparator}..
+ */
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Accessors(chain = true)
+public class JSONRenderOptions implements Options {
+    @Getter(AccessLevel.PRIVATE)
+    private Boolean prettyPrint;
+
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(prettyPrint, "'prettyPrint' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(JSONRenderOptions overrideOptions) {
+        if (overrideOptions.prettyPrint != null) {
+           this.prettyPrint = overrideOptions.prettyPrint ;
+        }
+    }
+
+    /**
+     * Determines if the Comparator should pretty print any output
+     * @return {@code true} if the Comparator should pretty print any output, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isPrettyPrinting() {
+        return prettyPrint ;
+    }
+}

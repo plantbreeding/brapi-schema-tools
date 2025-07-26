@@ -3,12 +3,16 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
+/**
+ * Abstract base class for all GraphQL Options
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,10 +25,34 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> input = new HashMap<>();
 
-    public void validate() {
-        super.validate();
-        assert responseTypeNameFormat != null : String.format("'responseTypeNameFormat' option on %s is null", this.getClass().getSimpleName());
-        assert input != null : String.format("'input' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(responseTypeNameFormat, "'responseTypeNameFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName()) ;
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractGraphQLQueryOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.responseTypeNameFormat != null) {
+            setResponseTypeNameFormat(overrideOptions.responseTypeNameFormat);
+        }
+
+        input.putAll(overrideOptions.input);
+    }
+
+    /**
+     * Gets the response type name for a specific primary model
+     * @param typeName the name of the query
+     * @return the response type name for a specific primary model
+     */
+    @JsonIgnore
+    public final String getResponseTypeNameForType(@NonNull String typeName) {
+        return String.format(responseTypeNameFormat, typeName) ;
     }
 
     /**
@@ -40,7 +68,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Determines if the Query accepts an input object for a specific primary model
      * @param name the name of the primary model
-     * @return <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull String name) {
@@ -50,7 +78,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Determines if the Query accepts an input object for a specific primary model
      * @param type the primary model
-     * @return <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @return {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull BrAPIType type) {
@@ -60,7 +88,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     /**
      * Sets if the Query accepts an input object for a specific primary model
      * @param name the name of the primary model
-     * @param hasInput <code>true</code> if the Query accepts an input object for a specific primary model, <code>false</code> otherwise
+     * @param hasInput {@code true} if the Query accepts an input object for a specific primary model, {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore

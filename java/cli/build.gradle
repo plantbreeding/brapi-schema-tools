@@ -1,13 +1,20 @@
 plugins {
     id 'brapi.schema-tools.java-conventions'
     id 'application'
+    id 'java-library'
+    id "signing"
+    id 'maven-publish'
 }
 
 dependencies {
     api project(':core')
+    api project(':analyse')
+
     implementation 'info.picocli:picocli:4.7.0'
-    runtimeOnly 'ch.qos.logback:logback-classic:1.4.14'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+    implementation 'com.atlassian.oai:swagger-request-validator-core'
+    implementation 'org.dflib:dflib-excel'
+    implementation 'ch.qos.logback:logback-classic'
 }
 
 application {
@@ -19,4 +26,34 @@ jar {
     manifest {
         attributes 'Main-Class': application.mainClass
     }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'brapi-schema-tools-cli'
+
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            } else {
+                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            }
+
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }

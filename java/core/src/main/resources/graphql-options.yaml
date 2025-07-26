@@ -29,6 +29,7 @@ queryType:
         pagedDefault: true
         paged:
             BreedingMethod: false
+            Contact: false
         input:
             BreedingMethod: false
             CrossingProject: true
@@ -59,6 +60,7 @@ mutationType:
     createMutation:
         generate: true
         pluralisingName: false
+        multiple: false
         nameFormat: create%s
         descriptionFormat: Create a new %s
         generateFor:
@@ -69,11 +71,13 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     updateMutation:
         generate: true
         pluralisingName: false
+        multiple: false
         nameFormat: update%s
         descriptionFormat: Update the details for an existing %s
         generateFor:
@@ -84,11 +88,13 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
     deleteMutation:
         generate: false
         pluralisingName: true
+        multiple: true
         nameFormat: delete%s
         descriptionFormat: Delete existing %s
         generateFor:
@@ -98,9 +104,100 @@ mutationType:
             Event: false
             GenomeMap: false
             MarkerPosition: false
+            PedigreeNode: false
             Reference: false
             Variant: false
             VariantSet: false
-ids:
-    useIDType: true
-    nameFormat: "%sDbId"
+properties:
+    ids:
+        useIDType: true
+        nameFormat: "%sDbId"
+        fieldFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+    linkTypeFor:
+        BreedingMethod:
+            germplasm: none
+            pedigreeNodes: none
+        CallSet:
+            calls: sub-query
+        Cross:
+            observationUnits: none
+        CrossingProject:
+            crosses: none
+            plannedCrosses: none
+            pedigreeNodes: none
+        GeoJSON:
+            image: none
+            observation: none
+            observationUnit: none
+            germplasmOrigin: none
+        Germplasm:
+            samples: none
+            attributeValues: none
+            progenyPedigreeNodes: none
+            parentPedigreeNodes: none
+            siblingPedigreeNodes: none
+            observations: none
+            observationUnits: none
+            reference: none
+            referenceSet: none
+        Location:
+            seedLots: none
+            observationUnits: none
+            studies: none
+        OntologyTerm:
+            reference: none
+            referenceSet: none
+        Observation:
+            images: none
+        ObservationUnit:
+            samples: none
+            events: none
+            images: none
+            observations: none
+        ObservationVariable:
+            studies: none
+            observations: none
+        Person:
+            lists: none
+            programs: none
+        PlannedCross:
+            crosses: none
+        Program:
+            crossingProjects: none
+            observationUnits: none
+            plates: none
+            samples: none
+            seedLots: none
+            trials: none
+        Plate:
+            samples: none
+        Reference:
+            variant: none
+        SeedLot:
+            observationUnits: none
+        Study:
+            callSets: none
+            contacts: embedded
+            events: none
+            observations: none
+            observationUnits: none
+            plates: none
+            samples: none
+            variantSets: none
+        Trial:
+            contacts: embedded
+            observationUnits: none
+            plates: none
+            samples: none
+        Variant:
+            calls: sub-query
+        VariantSet:
+            calls: sub-query
+            callSets: sub-query
+            variants: sub-query
+            availableFormats: embedded
+mergeOneOfType: true
+mergingOneOfTypeFor:
+    GeoJSONGeometry: false

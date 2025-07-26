@@ -1,0 +1,67 @@
+analyseDepreciated: false
+getEntity:
+    analyse: true
+    analyseFor:
+        VendorPlateSubmission: false
+        VendorOrder: false
+listEntity:
+    analyse: true
+    analyseFor:
+        VendorPlateSubmission: false
+        VendorOrder: false
+    requiredParametersFor:
+        PedigreeNode:
+            - parameterName: germplasmDbId
+              variableName: germplasmDbId1
+              in: query
+    prerequisitesFor:
+        PedigreeNode:
+            - /germplasm
+createEntity:
+    analyse: false
+updateEntity:
+    analyse: false
+deleteEntity:
+    analyse: false
+search:
+    analyse: true
+    analyseFor:
+        VendorPlateSubmission: false
+        VendorOrder: false
+    requiredParametersFor:
+        PedigreeNode:
+            - parameterName: germplasmDbIds
+              variableName: germplasmDbIds1
+              in: body
+    prerequisitesFor:
+        PedigreeNode:
+            - /germplasm
+searchResult:
+    analyse: false
+table:
+    analyse: true
+partitionedByCrop : false
+properties:
+    id:
+        nameFormat: "%sDbId"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+            GenomeMap: mapDbId
+            ListDetails: listDbId
+    name:
+        nameFormat: "%sName"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeName
+            GermplasmAttributeValue: attributeValueName
+            GenomeMap: mapName
+            ListDetails: listName
+    pui:
+        nameFormat: "%sPUI"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributePUI
+            GermplasmAttributeValue: attributeValuePUI
+            GenomeMap: mapPUI

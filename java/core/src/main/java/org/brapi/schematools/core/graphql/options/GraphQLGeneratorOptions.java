@@ -1,18 +1,20 @@
 package org.brapi.schematools.core.graphql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Options for the {@link GraphQLGenerator}.
@@ -27,7 +29,23 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     private InputOptions input ;
     private QueryTypeOptions queryType;
     private MutationTypeOptions mutationType;
-    private IdsOptions ids;
+    private PropertiesOptions properties;
+    private Boolean mergeOneOfType;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> mergingOneOfTypeFor = new HashMap<>();
+
+    /**
+     * Load the default options
+     * @return The default options
+     */
+    public static GraphQLGeneratorOptions load() {
+        try {
+            return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Load the options from an options file in YAML or Json. The options file may have missing
@@ -37,23 +55,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the options file can not be found or is incorrectly formatted.
      */
     public static GraphQLGeneratorOptions load(Path optionsFile) throws IOException {
-        return load(Files.newInputStream(optionsFile));
-    }
-
-    /**
-     * Load the default options
-     * @return The default options
-     */
-    public static GraphQLGeneratorOptions load() {
-
-        try {
-            InputStream inputStream = GraphQLGeneratorOptions.class
-                .getClassLoader()
-                .getResourceAsStream("graphql-options.yaml");
-            return load(inputStream);
-        } catch (Exception e) { // The default options should be present on the classpath
-            throw new RuntimeException(e);
-        }
+        return load().override(ConfigurationUtils.load(optionsFile, GraphQLGeneratorOptions.class)) ;
     }
 
     /**
@@ -64,33 +66,59 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
     public static GraphQLGeneratorOptions load(InputStream inputStream) throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
-        GraphQLGeneratorOptions options = mapper.readValue(inputStream, GraphQLGeneratorOptions.class);
-
-        options.validate() ;
-
-        return options ;
+        return load().override(ConfigurationUtils.load(inputStream, GraphQLGeneratorOptions .class)) ;
     }
 
-    public void validate() {
-        super.validate() ;
+    public Validation validate() {
 
-        assert input != null : "Input Options are null";
-        assert queryType != null : "Query Options are null";
-        assert mutationType != null : "Mutation Options are null";
-        assert ids != null : "Id Options are null";
+        return super.validate()
+            .assertNotNull(input, "Input Options are null")
+            .assertNotNull(queryType,  "Query Options are null")
+            .assertNotNull(mutationType, "Mutation Options are null")
+            .assertNotNull(properties,  "Properties Options are null")
+            .assertNotNull(mergeOneOfType, "'mergeOneOfType' option on %s is null", this.getClass().getSimpleName())
+            .merge(input)
+            .merge(queryType)
+            .merge(mutationType)
+            .merge(properties) ;
+    }
 
-        input.validate() ;
-        queryType.validate() ;
-        mutationType.validate() ;
-        ids.validate() ;
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     * @return this options for method chaining
+     */
+    public GraphQLGeneratorOptions override(GraphQLGeneratorOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.input != null) {
+            input.override(overrideOptions.input) ;
+        }
+
+        if (overrideOptions.queryType != null) {
+            queryType.override(overrideOptions.queryType) ;
+        }
+
+        if (overrideOptions.mutationType != null) {
+            mutationType.override(overrideOptions.mutationType) ;
+        }
+
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.properties) ;
+        }
+
+        if (overrideOptions.mergeOneOfType != null) {
+            setMergeOneOfType(overrideOptions.mergeOneOfType) ;
+        }
+
+        mergingOneOfTypeFor.putAll(overrideOptions.mergingOneOfTypeFor);
+
+        return this ;
     }
 
     /**
      * Determines if the Generator should generate the Query Type.
-     * @return <code>true</code> if the Generator should generate the Query Type, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Query Type, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingQueryType() {
@@ -98,9 +126,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any single query. Returns <code>true</code> if
-     * {@link SingleQueryOptions#isGenerating} is set to <code>true</code> or
-     * @return <code>true</code> if the Generator should generate any single query, <code>false</code> otherwise
+     * Determines if the Generator should generate any single query. Returns {@code true} if
+     * {@link SingleQueryOptions#isGenerating} is set to {@code true} or
+     * @return {@code true} if the Generator should generate any single query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSingleQueries() {
@@ -109,9 +137,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the single query for a specific Primary Model.
-     * Returns <code>true</code> if {@link SingleQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link SingleQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate single query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate single query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSingleQueryFor(String name) {
@@ -119,9 +147,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any List Query. Returns <code>true</code> if
-     * {@link ListQueryOptions#isGenerating} is set to <code>true</code> for any type
-     * @return <code>true</code> if the Generator should generate any List Query, <code>false</code> otherwise
+     * Determines if the Generator should generate any List Query. Returns {@code true} if
+     * {@link ListQueryOptions#isGenerating} is set to {@code true} for any type
+     * @return {@code true} if the Generator should generate any List Query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueries() {
@@ -130,9 +158,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the List Query for a specific Primary Model.
-     * Returns <code>true</code> if {@link ListQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link ListQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate List Query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate List Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingListQueryFor(String name) {
@@ -140,9 +168,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate any Search Query. Returns <code>true</code> if
-     * {@link SearchQueryOptions#isGenerating} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate any Search Query, <code>false</code> otherwise
+     * Determines if the Generator should generate any Search Query. Returns {@code true} if
+     * {@link SearchQueryOptions#isGenerating} is set to {@code true}
+     * @return {@code true} if the Generator should generate any Search Query, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueries() {
@@ -151,9 +179,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Search Query for a specific Primary Model.
-     * Returns <code>true</code> if {@link SearchQueryOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link SearchQueryOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Search Query for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Search Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingSearchQueryFor(String name) {
@@ -162,7 +190,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Mutation Type.
-     * @return <code>true</code> if the Generator should generate the Mutation Type, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate the Mutation Type, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingMutationType() {
@@ -170,9 +198,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the New mutations. Returns <code>true</code> if
-     * {@link CreateMutationOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate New mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the New mutations. Returns {@code true} if
+     * {@link CreateMutationOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate New mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingCreateMutation() {
@@ -181,9 +209,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the New mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link CreateMutationOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link CreateMutationOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Create mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Create mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingCreateMutationFor(String name) {
@@ -191,9 +219,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Update mutations. Returns <code>true</code> if
-     * {@link UpdateMutationOptions#isGenerating()} is set to <code>true</code>
-     * @return <code>true</code> if the Generator should generate Update mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the Update mutations. Returns {@code true} if
+     * {@link UpdateMutationOptions#isGenerating()} is set to {@code true}
+     * @return {@code true} if the Generator should generate Update mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingUpdateMutation() {
@@ -202,9 +230,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Update mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link UpdateMutationOptions#isGeneratingFor(String)} is set to <code>true</code> or the specified type
+     * Returns {@code true} if {@link UpdateMutationOptions#isGeneratingFor(String)} is set to {@code true} or the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Update mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Update mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingUpdateMutationFor(String name) {
@@ -212,9 +240,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should generate the Delete mutations. Returns <code>true</code> if
-     * {@link DeleteMutationOptions#isGenerating} is set to <code>true</code> or
-     * @return <code>true</code> if the Generator should generate Delete mutations, <code>false</code> otherwise
+     * Determines if the Generator should generate the Delete mutations. Returns {@code true} if
+     * {@link DeleteMutationOptions#isGenerating} is set to {@code true} or
+     * @return {@code true} if the Generator should generate Delete mutations, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingDeleteMutation() {
@@ -223,9 +251,9 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Delete mutation for a specific Primary Model.
-     * Returns <code>true</code> if {@link DeleteMutationOptions#isGeneratingFor(String)} is set to <code>true</code> for the specified type
+     * Returns {@code true} if {@link DeleteMutationOptions#isGeneratingFor(String)} is set to {@code true} for the specified type
      * @param name the name of the Primary Model
-     * @return <code>true</code> if the Generator should generate Delete mutation for a specific Primary Model, <code>false</code> otherwise
+     * @return {@code true} if the Generator should generate Delete mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingDeleteMutationFor(String name) {
@@ -234,11 +262,31 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Determines if the built-in GraphQLID type should be used for IDs instead of GraphQLString
-     * @return <code>true</code> if the built-in GraphQLID type should be used for IDs instead of GraphQLString, <code>false</code> otherwise
+     * @return {@code true} if the built-in GraphQLID type should be used for IDs instead of GraphQLString, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isUsingIDType() {
-        return ids.isUsingIDType();
+        return properties.getIds().isUsingIDType();
+    }
+
+    /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param name the name of the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull String name) {
+        return input.getNameFor(getListQueryNameFor(name)) ;
+    }
+
+    /**
+     * Gets the name of the List or Search Query input parameter for of specific primary model
+     * @param type the primary model
+     * @return the name of the List or Search Query input parameter for of specific primary model
+     */
+    @JsonIgnore
+    public final String getQueryInputParameterNameFor(@NonNull BrAPIType type) {
+        return getQueryInputParameterNameFor(type.getName()) ;
     }
 
     /**
@@ -248,9 +296,8 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      */
     @JsonIgnore
     public final String getQueryInputTypeNameFor(@NonNull String name) {
-        return input.getTypeNameForQuery(queryType.getListQuery().getNameFor(name)) ;
+        return input.getTypeNameForQuery(getListQueryNameFor(name)) ;
     }
-
 
     /**
      * Gets the name of the List or Search Query input type for of specific primary model
@@ -320,5 +367,30 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
         String newName = options.isPluralisingName() ? getPluralFor(name) : name;
 
         return options.getNameFor(newName) ;
+    }
+
+    /**
+     * Gets if the possible types of a 'OneOf' type are merged into a single type.
+     *
+     * @param type the BrAPIClass
+     * @return {@code true} if the possible types of a 'OneOf' type are merged into a single type.
+     */
+    public boolean isMergingOneOfType(BrAPIClass type) {
+        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
+    }
+
+    /**
+     * Sets if the possible types of a 'OneOf' type are merged into a single type.
+     *
+     * @param name the name of the type
+     * @param isMergingOneOfType {@code true} if the possible types of a 'OneOf' type are merged into a single type,
+     *                 {@code false} otherwise
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final GraphQLGeneratorOptions setMergeOneOfType(String name, boolean isMergingOneOfType) {
+        mergingOneOfTypeFor.put(name, isMergingOneOfType) ;
+
+        return this ;
     }
 }

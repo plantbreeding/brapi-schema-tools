@@ -1,0 +1,11 @@
+plugins {
+    id 'brapi.schema-tools.java-conventions'
+    id 'java-library'
+    id "signing"
+    id 'maven-publish'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}

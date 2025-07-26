@@ -3,22 +3,38 @@ plugins {
 }
 
 group = 'org.brapi'
-version = '0.2.0-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+version = '0.32.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    implementation 'org.slf4j:slf4j-api:2.0.6'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.26'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+
+    implementation 'org.slf4j:slf4j-api:2.0.6'
+    implementation 'com.atlassian.oai:swagger-request-validator-core:2.44.1'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+    implementation 'org.dflib:dflib-csv:1.0.0-M22'
+    implementation 'org.dflib:dflib-excel:1.0.0-M22'
+
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
+    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 

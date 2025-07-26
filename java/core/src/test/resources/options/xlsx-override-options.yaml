@@ -1,0 +1,7 @@
+dataClassProperties:
+    - name: name
+    - name: module
+dataClassFieldHeaders:
+    - Class Name2
+dataClassFieldProperties:
+    - name: name

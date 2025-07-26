@@ -3,7 +3,8 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractOptions;
+import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.validiation.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
@@ -15,14 +16,31 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractGraphQLOptions extends AbstractOptions {
-    private boolean pluralisingName;
+public abstract class AbstractGraphQLOptions extends AbstractGeneratorSubOptions {
+    private Boolean pluralisingName;
     @Getter(AccessLevel.PRIVATE)
     private String nameFormat;
 
-    public void validate() {
-        super.validate();
-        assert nameFormat != null : String.format("'nameFormat' option on %s is null", this.getClass().getSimpleName());
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(pluralisingName, "'pluralisingName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName());
+    }
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null
+     * @param overrideOptions the options which will be used to override this Options Object
+     */
+    public void override(AbstractGraphQLOptions overrideOptions) {
+        super.override(overrideOptions) ;
+
+        if (overrideOptions.pluralisingName != null) {
+            setPluralisingName(overrideOptions.pluralisingName); ;
+        }
+
+        if (overrideOptions.nameFormat != null) {
+            setNameFormat(overrideOptions.nameFormat); ;
+        }
     }
 
     /**
@@ -43,6 +61,14 @@ public abstract class AbstractGraphQLOptions extends AbstractOptions {
     @JsonIgnore
     public final String getNameFor(@NonNull BrAPIType type) {
         return getNameFor(type.getName());
+    }
+
+    /**
+     * Determines if the query or mutation should have a plurialised name
+     * @return {@code true} if the query or mutation should have a plurialised name, <code>false </code> otherwise
+     */
+    public boolean isPluralisingName() {
+        return pluralisingName != null && pluralisingName ;
     }
 }
 
