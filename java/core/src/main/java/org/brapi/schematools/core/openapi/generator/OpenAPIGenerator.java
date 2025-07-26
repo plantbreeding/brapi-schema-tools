@@ -35,6 +35,7 @@ import static org.brapi.schematools.core.response.Response.success;
 @AllArgsConstructor
 public class OpenAPIGenerator {
 
+    public static final String BRAPI_COMMON = "BrAPI-Common";
     private final BrAPISchemaReader schemaReader;
     private final OpenAPIComponentsReader componentsReader;
     private final OpenAPIGeneratorOptions options ;
@@ -143,10 +144,17 @@ public class OpenAPIGenerator {
             Collection<BrAPIClass> values = brAPIClassMap.values();
 
             if (options.isSeparatingByModule()) {
-                return values.stream().
+                Map<String, List<BrAPIClass>> classesByModule = values.stream().
                     filter(type -> Objects.nonNull(type.getModule())).
-                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList())).
-                    entrySet().stream().map(entry -> generate(entry.getKey(), entry.getValue())).
+                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList()));
+                List<BrAPIClass> commonClasses = classesByModule.remove(BRAPI_COMMON);
+
+                return classesByModule.entrySet().stream().
+                    map(entry -> {
+                        entry.getValue().addAll(commonClasses);
+                        return entry;
+                    }).
+                    map(entry -> generate(entry.getKey(), entry.getValue())).
                     collect(Response.toList());
             } else {
                 return generate("BrAPI", values.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
