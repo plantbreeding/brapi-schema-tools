@@ -1,5 +1,7 @@
 package org.brapi.schematools.core.openapi.generator;
 
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
@@ -12,13 +14,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
 import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
-import static org.brapi.schematools.core.utils.StringUtils.prettyPrint;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -214,7 +217,9 @@ class OpenAPIGeneratorTest {
             String actual = prettyPrint(specification);
 
             if (!isJSONEqual(expected, actual)) {
-                Files.writeString(Files.createTempFile("OpenAPIGeneratorTest", ".json"), actual);
+                Path build = Paths.get("build", classPath);
+                Files.createDirectories(build.getParent()) ;
+                Files.writeString(build, actual);
             }
 
             assertJSONEquals(expected, actual);

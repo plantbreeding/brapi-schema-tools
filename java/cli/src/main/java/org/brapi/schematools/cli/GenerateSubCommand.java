@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.brapi.schematools.core.utils.StringUtils.prettyPrint;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 
 /**
  * The Generate Sub-command
