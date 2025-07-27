@@ -176,7 +176,7 @@ class OpenAPIGeneratorOptionsTest {
         assertNotNull(options.getPut());
         assertNotNull(options.getDelete());
 
-        assertFalse(options.isSeparatingByModule()) ;
+        assertTrue(options.isSeparatingByModule()) ;
 
         assertTrue(options.isGeneratingEndpoint()) ;
         assertTrue(options.isGeneratingEndpointFor("Trial"));

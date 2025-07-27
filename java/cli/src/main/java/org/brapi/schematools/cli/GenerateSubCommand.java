@@ -6,7 +6,6 @@ import graphql.GraphQL;
 import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
-import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.jena.ontapi.model.OntModel;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
@@ -29,6 +28,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 
 /**
  * The Generate Sub-command
@@ -189,9 +190,9 @@ public class GenerateSubCommand implements Runnable {
     private void outputOpenAPISpecificationFile(List<OpenAPI> specifications) {
         try {
             if (specifications.size() == 1) {
-                outputOpenAPISpecification(specifications.get(0), outputPath);
+                outputOpenAPISpecification(specifications.getFirst(), outputPath);
             } else {
-                if (specifications.size() == 0) {
+                if (specifications.isEmpty()) {
                     err.println("No specification to to output!");
                 } else {
                     err.printf("Can not output several specification to single file: '%s' :%n", outputPath.toFile());
@@ -223,7 +224,7 @@ public class GenerateSubCommand implements Runnable {
 
     private void outputOpenAPISpecification(OpenAPI specification, Path outputPath) throws IOException {
         if (openWriter(outputPath)) {
-            out.print(Json31.pretty(specification));
+            out.print(prettyPrint(specification));
             out.close();
         }
     }
