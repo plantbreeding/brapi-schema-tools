@@ -1,11 +1,17 @@
 package org.brapi.schematools.core.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
 import org.atteo.evo.inflector.English;
 import org.brapi.schematools.core.response.Response;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -221,6 +227,82 @@ public class StringUtils {
      */
     public static boolean isNotBlank(String string) {
         return string != null && !string.isBlank() ;
+    }
+
+    /**
+     * Compare two multiline strings to if they are the same.
+     * If the strings are JSON use the {@link #isJSONEqual(String, String)} method.
+     * @param expected the expected string
+     * @param actual the actual string
+     * @return <code>true</code> if actual string is equal to the expected string
+     */
+    public static boolean isMultilineEqual(String expected, String actual) {
+        BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
+        BufferedReader actualReader = new BufferedReader(new StringReader(actual));
+
+        boolean equals = true;
+
+        try {
+            String expectedLine = expectedReader.readLine() ;
+            String actualLine = actualReader.readLine() ;
+
+            while (equals && expectedLine != null && actualLine != null) {
+                equals = expectedLine.equals(actualLine);
+
+                expectedLine = expectedReader.readLine() ;
+                actualLine = actualReader.readLine() ;
+            }
+
+            equals = equals && expectedLine == null && actualLine == null ;
+        }
+        catch (Exception e) {
+            equals = false ;
+        }
+
+        return equals;
+    }
+
+    /**
+     * Compare two JSON strings to if they are the same.
+     * If the strings are not JSON use the {@link #isJSONEqual(String, String)} method.
+     * @param expected the expected JSON string
+     * @param actual the actual JSON string
+     * @return <code>true</code> if actual string is equal to the expected string
+     * @throws JsonProcessingException if the strings cannot be converted to JSON nodes.
+     */
+    public static boolean isJSONEqual(String expected, String actual) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.readTree(expected).equals(mapper.readTree(actual)) ;
+    }
+
+    /**
+     * Pretty print an object to a JSON String, with a default indentation of 4 spaces.
+     * @param value the object to be Pretty printed
+     * @return Pretty print JSON String version of the object
+     * @throws JsonProcessingException if the object cannot be converted to JSON.
+     */
+    public static String prettyPrint(Object value) throws JsonProcessingException {
+        return prettyPrint(value, 4) ;
+    }
+
+    /**
+     * Pretty print an object to a JSON String.
+     * @param value the object to be Pretty printed
+     * @param indent the number of spaces to indent
+     * @return Pretty print JSON String version of the object
+     * @throws JsonProcessingException if the object cannot be converted to JSON.
+     */
+    public static String prettyPrint(Object value, int indent) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        DefaultPrettyPrinter.Indenter indenter =
+            new DefaultIndenter(" ".repeat(indent), DefaultIndenter.SYS_LF);
+        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+        printer.indentObjectsWith(indenter);
+        printer.indentArraysWith(indenter);
+
+        return mapper.writer(printer).writeValueAsString(value);
     }
 
     static class Replacer {

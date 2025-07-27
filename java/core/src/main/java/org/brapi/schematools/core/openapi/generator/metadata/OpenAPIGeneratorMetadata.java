@@ -1,22 +1,32 @@
 package org.brapi.schematools.core.openapi.generator.metadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.brapi.schematools.core.metadata.Metadata;
+import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.generator.options.ListGetOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides metadata for the OpenAPI generation
  */
 @Getter
 @Setter
+@Accessors(chain = true)
 public class OpenAPIGeneratorMetadata implements Metadata {
     private String title ;
     private String version ;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> titleFor = new HashMap<>();
 
     private SingleGetMetadata singleGet = new SingleGetMetadata() ;
     private ListGetMetadata listGet = new ListGetMetadata() ;
@@ -74,6 +84,8 @@ public class OpenAPIGeneratorMetadata implements Metadata {
             setVersion(overrideMetadata.version);
         }
 
+        titleFor.putAll(overrideMetadata.titleFor);
+
         if (overrideMetadata.singleGet != null) {
             singleGet.override(overrideMetadata.getSingleGet()) ;
         }
@@ -93,6 +105,28 @@ public class OpenAPIGeneratorMetadata implements Metadata {
         if (overrideMetadata.search != null) {
             search.override(overrideMetadata.getSearch()) ;
         }
+
+        return this ;
+    }
+
+    /**
+     * Gets the specification title for a specification generated for a module or class
+     * @param name the name of the module or class
+     * @return the title for a specification generated for a module or class, or the default title
+     */
+    public String getTitleFor(String name) {
+        return titleFor.getOrDefault(name, name);
+    }
+
+    /**
+     * Sets the specification title for a specification generated for a module or class
+     * @param name the name of the module or class
+     * @param title the title for a specification generated for a module or class
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public OpenAPIGeneratorMetadata setTitleFor(String name, String title) {
+        titleFor.put(name, title) ;
 
         return this ;
     }

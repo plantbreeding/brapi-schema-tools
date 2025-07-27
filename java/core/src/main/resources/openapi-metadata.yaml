@@ -1,2 +1,7 @@
 title: BrAPI
 version: 0.0.0
+titleFor:
+    BrAPI-Core: BrAPI-Core
+    BrAPI-Germplasm: BrAPI-Germplasm
+    BrAPI-Phenotyping: BrAPI-Phenotyping
+    BrAPI-Genotyping: BrAPI-Genotyping
