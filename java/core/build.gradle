@@ -32,11 +32,11 @@ publishing {
     }
     repositories {
         maven {
-            name = "OSSRH"
+            name = "ossrh-staging-api"
             if(project.version.endsWith('-SNAPSHOT')) {
-                url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = "https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/"
             } else {
-                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
             }
 
             credentials {
