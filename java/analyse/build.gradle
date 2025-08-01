@@ -1,8 +1,5 @@
 plugins {
-    id 'brapi.schema-tools.java-conventions'
-    id 'java-library'
-    id "signing"
-    id 'maven-publish'
+    id 'brapi.schema-tools.java-library-conventions'
 }
 
 dependencies {
@@ -16,34 +13,4 @@ dependencies {
 
     testImplementation('org.mockito:mockito-core')
     testImplementation('org.mockito:mockito-junit-jupiter')
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'brapi-schema-tools-analyse'
-
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            name = "ossrh-staging-api"
-            if(project.version.endsWith('-SNAPSHOT')) {
-                url = "https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/"
-            } else {
-                url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-            }
-
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
