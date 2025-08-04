@@ -1,8 +1,5 @@
 plugins {
-    id 'brapi.schema-tools.java-conventions'
-    id 'java-library'
-    id "signing"
-    id 'maven-publish'
+    id 'brapi.schema-tools.java-library-conventions'
 }
 
 dependencies {
@@ -22,105 +19,6 @@ dependencies {
     implementation 'org.openapitools.openapidiff:openapi-diff-core:2.1.0'
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'brapi-schema-tools-core'
-
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            name = "ossrh-staging-api"
-            if(project.version.endsWith('-SNAPSHOT')) {
-                url = "https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots/"
-            } else {
-                url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-            }
-
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-// ossrh requries signing https://central.sonatype.org/pages/requirements.html
-// https://docs.gradle.org/current/userguide/signing_plugin.html
-// this only configures signing if the key is found
-// For signing you need to make signingKey and signingPassword available properties See https://docs.gradle.org/current/userguide/build_environment.html#sec:project_properties
-// The following makes the key available via the Gradle Property signingKey
-// export ORG_GRADLE_PROJECT_signingKey=`cat test-private.pgp`
-// export ORG_GRADLE_PROJECT_signingPassword="password"
-// After making the Gradle properties above available, you can try signing using
-// ./gradlew signMavenPublication
-//
-// NOTE: If you are using the legacy publishing you need to sign using the info at https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signing_pom_files
-def hasSigningKey = project.hasProperty("signingKeyId") || project.hasProperty("signingKey")
-if (hasSigningKey) {
-    sign(project)
-}
-
-void sign(Project project) {
-    project.signing {
-        required { project.gradle.taskGraph.hasTask("publish") }
-        def signingKeyId = project.findProperty("signingKeyId")
-        def signingKey = project.findProperty("signingKey")
-        def signingPassword = project.findProperty("signingPassword")
-        if (signingKeyId) {
-            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        } else if (signingKey) {
-            useInMemoryPgpKeys(signingKey, signingPassword)
-        }
-        sign publishing.publications.maven
-    }
-}
-
-// customize the pom so it complies to Maven central requirements https://central.sonatype.org/pages/requirements.html
-// https://docs.gradle.org/current/userguide/maven_plugin.html#sec:maven_pom_generation
-project.plugins.withType(MavenPublishPlugin).all {
-    PublishingExtension publishing = project.extensions.getByType(PublishingExtension)
-    publishing.publications.withType(MavenPublication).all { mavenPublication ->
-        mavenPublication.pom {
-            name = "${project.group}:${project.name}"
-            description = name
-            url = "https://github.com/plantbreeding/brapi-schema-tools"
-            licenses {
-                license {
-                    name = "MIT License"
-                    url = "https://github.com/plantbreeding/brapi-schema-tools?tab=MIT-1-ov-file"
-                }
-            }
-            developers {
-                developer {
-                    id = "daveneti"
-                    name = "Guy Davenport"
-                    email = "guy@daveneti.com"
-                    organization = "Daveneti"
-                    organizationUrl = "http://daveneti.com"
-                    timezone = "New Zealand Standard Time"
-                }
-                developer {
-                    id = "BrapiCoordinatorSelby"
-                    name = "Peter Selby"
-                    email = "ps664@cornell.edu"
-                    organization = "BrAPI"
-                    organizationUrl = "https://brapi.org"
-                    timezone = "Eastern Standard Time"
-                }
-            }
-            scm {
-                connection = "scm:git:https://github.com/plantbreeding/brapi-schema-tools"
-                developerConnection = "scm:git:ssh://github.com/plantbreeding/brapi-schema-tools.git"
-                url = "https://github.com/plantbreeding/brapi-schema-tools"
-            }
-        }
-    }
+mavenPublishing {
+    coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-core", project.version)
 }
