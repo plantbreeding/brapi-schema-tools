@@ -6,6 +6,7 @@ plugins {
 
 mavenPublishing {
     publishToMavenCentral(true)
+    signAllPublications()
 
     pom {
         name = "${project.group}:${project.name}"
