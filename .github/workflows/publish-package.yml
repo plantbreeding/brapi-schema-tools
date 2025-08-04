@@ -34,7 +34,7 @@ jobs:
         working-directory: ./java
         run: ./gradlew publish
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_UN }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_UN }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PW }}
           ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.PGP_KEY_ID }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.PGP_SECRET_KEY }}
