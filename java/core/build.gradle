@@ -20,5 +20,5 @@ dependencies {
 }
 
 mavenPublishing {
-    coordinates("org.brapi", "brapi-schema-tools-core", project.version)
+    coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-core", project.version)
 }
