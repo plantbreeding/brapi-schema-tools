@@ -1,5 +1,5 @@
 plugins {
-    id 'brapi.schema-tools.java-conventions'
+    id 'brapi.schema-tools.java-library-conventions'
     id 'application'
 }
 
