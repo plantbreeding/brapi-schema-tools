@@ -32,7 +32,7 @@ jobs:
 
       - name: Publish package
         working-directory: ./java
-        run: ./gradlew publish
+        run: ./gradlew publishAndReleaseToMavenCentral
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_UN }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PW }}
