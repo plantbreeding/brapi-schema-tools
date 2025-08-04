@@ -1,4 +1,4 @@
-separateByModule: false
+separateByModule: true
 generateNewRequest: true
 generateNewRequestFor:
     AlleleMatrix: false
@@ -12,6 +12,7 @@ generateNewRequestFor:
     PedigreeNode: false
     PlannedCross: false
     Season: false
+    ServerInfo: false
     Variant: false
     VariantSet: false
 newRequestNameFormat: "%sNewRequest"
@@ -20,6 +21,7 @@ listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
+    ServerInfo: ServerInfo
 pathItemNameFor:
     AlleleMatrix: /allelematrix
     GenomeMap: /maps
@@ -27,6 +29,7 @@ pathItemNameFor:
     GermplasmAttributeValue: /attributevalues
     ObservationVariable: /variables
     PedigreeNode: /pedigree
+    ServerInfo: /serverInfo
 tagFor:
     BreedingMethod: Germplasm
     PlannedCross: Crosses
@@ -42,12 +45,14 @@ singleGet:
         MarkerPosition: false
         PedigreeNode: false
         PlannedCross: false
+        ServerInfo: false
 listGet:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
     generateFor:
         AlleleMatrix: false
+        ServerInfo: false
     pagedDefault: true
     paged:
         BreedingMethod: false
@@ -100,6 +105,7 @@ search:
         Scale: false
         Season: false
         SeedLot: false
+        ServerInfo: false
         Trait: false
 post:
     generate: true
@@ -115,6 +121,7 @@ post:
         MarkerPosition: false
         Reference: false
         ReferenceSet: false
+        ServerInfo: false
         Variant: false
         VariantSet: false
 put:
@@ -133,6 +140,7 @@ put:
         ReferenceSet: false
         PedigreeNode: false
         Plate: false
+        ServerInfo: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -157,6 +165,7 @@ delete:
         GenomeMap: false
         MarkerPosition: false
         Reference: false
+        ServerInfo: false
         Variant: false
         VariantSet: false
 properties:

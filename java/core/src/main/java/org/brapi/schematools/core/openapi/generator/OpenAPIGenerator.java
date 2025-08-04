@@ -35,6 +35,7 @@ import static org.brapi.schematools.core.response.Response.success;
 @AllArgsConstructor
 public class OpenAPIGenerator {
 
+    public static final String BRAPI_COMMON = "BrAPI-Common";
     private final BrAPISchemaReader schemaReader;
     private final OpenAPIComponentsReader componentsReader;
     private final OpenAPIGeneratorOptions options ;
@@ -59,7 +60,7 @@ public class OpenAPIGenerator {
     /**
      * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
      * for each module. See {@link OpenAPIGeneratorOptions#isSeparatingByModule}.
@@ -74,7 +75,7 @@ public class OpenAPIGenerator {
     /**
      * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
      * for each module. See {@link OpenAPIGeneratorOptions#isSeparatingByModule()}.
@@ -88,6 +89,43 @@ public class OpenAPIGenerator {
         return options.validate().asResponse().merge(componentsReader.readComponents(componentsDirectory)).
                 mapResultToResponse(components -> schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
                     brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate()));
+
+    }
+
+    /**
+     * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
+     * for each module. See {@link OpenAPIGeneratorOptions#isSeparatingByModule}.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
+     * @param classNames the names of the classes to be generated
+     * @return a list of {@link OpenAPI} generated from the complete BrAPI Specification
+     */
+    public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory, Collection<String> classNames) {
+        return generate(schemaDirectory, componentsDirectory, new OpenAPIGeneratorMetadata(), classNames) ;
+    }
+
+    /**
+     * Generates a list of {@link OpenAPI} from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules. The list will contain a single {@link OpenAPI} or separate {@link OpenAPI}
+     * for each module. See {@link OpenAPIGeneratorOptions#isSeparatingByModule()}.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param componentsDirectory the path to the additional OpenAPI components needed to generate the Specification
+     * @param metadata additional metadata that is used in the generation
+     * @param classNames the names of the classes to be generated
+     * @return a list of {@link OpenAPI} generated from the complete BrAPI Specification
+     */
+    public Response<List<OpenAPI>> generate(Path schemaDirectory, Path componentsDirectory, OpenAPIGeneratorMetadata metadata, Collection<String> classNames) {
+
+        return options.validate().asResponse().merge(componentsReader.readComponents(componentsDirectory)).
+            mapResultToResponse(components -> schemaReader.readDirectories(schemaDirectory).mapResultToResponse(
+                brAPISchemas -> new OpenAPIGenerator.Generator(options, metadata, brAPISchemas, components).generate(classNames)));
 
     }
 
@@ -140,27 +178,48 @@ public class OpenAPIGenerator {
         }
 
         public Response<List<OpenAPI>> generate() {
-            Collection<BrAPIClass> values = brAPIClassMap.values();
+            return generateSpecifications(brAPIClassMap.values()) ;
+        }
 
+        public Response<List<OpenAPI>> generate(Collection<String> classNames) {
+            if (classNames != null && !classNames.isEmpty()) {
+                Collection<BrAPIClass> values = brAPIClassMap.values().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
+
+                return generateSpecifications(values) ;
+            } else {
+                return generateSpecifications(brAPIClassMap.values()) ;
+            }
+        }
+
+        public Response<List<OpenAPI>> generateSpecifications(Collection<BrAPIClass> classes) {
             if (options.isSeparatingByModule()) {
-                return values.stream().
+                Map<String, List<BrAPIClass>> classesByModule = classes.stream().
                     filter(type -> Objects.nonNull(type.getModule())).
-                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList())).
-                    entrySet().stream().map(entry -> generate(entry.getKey(), entry.getValue())).
+                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList()));
+                List<BrAPIClass> commonClasses = classesByModule.remove(BRAPI_COMMON);
+
+                return classesByModule.entrySet().stream().
+                    map(entry -> {
+                        if (commonClasses != null) {
+                            entry.getValue().addAll(commonClasses);
+                        }
+                        return entry;
+                    }).
+                    map(entry -> generateSpecifications(metadata.getTitleFor(entry.getKey()), entry.getValue())).
                     collect(Response.toList());
             } else {
-                return generate("BrAPI", values.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
+                return generateSpecifications(metadata.getTitle(), classes.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
                     mapResult(Collections::singletonList);
             }
         }
 
-        private Response<OpenAPI> generate(String title, Collection<BrAPIClass> classes) {
+        private Response<OpenAPI> generateSpecifications(String title, Collection<BrAPIClass> classes) {
 
             OpenAPI openAPI = new OpenAPI();
 
             Info info = new Info();
 
-            info.setTitle(title == null && metadata.getTitle() != null ? metadata.getTitle() : title);
+            info.setTitle(title != null ? title : "BrAPI");
             info.setVersion(metadata.getVersion() != null ? metadata.getVersion() : "0.0.0");
 
             openAPI.setInfo(info);

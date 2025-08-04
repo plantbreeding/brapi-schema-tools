@@ -3,6 +3,7 @@ package org.brapi.schematools.core.openapi.comparator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 class OpenAPIComparatorTest {
 
     private static ObjectMapper mapper;
@@ -45,7 +47,7 @@ class OpenAPIComparatorTest {
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore-comparison0.html").toURI()),
                 outputPath);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -72,7 +74,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -99,7 +101,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -126,7 +128,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -153,7 +155,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -180,7 +182,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -207,7 +209,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -234,7 +236,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -261,7 +263,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -287,7 +289,7 @@ class OpenAPIComparatorTest {
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore-comparison0.json").toURI()),
                 outputPath);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -314,7 +316,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -341,7 +343,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -368,7 +370,7 @@ class OpenAPIComparatorTest {
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi-comparison0.html").toURI()),
                 outputPath);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -395,7 +397,7 @@ class OpenAPIComparatorTest {
                 outputPath);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.debug(e.getMessage(), e);
             fail(e.getMessage());
         }
     }

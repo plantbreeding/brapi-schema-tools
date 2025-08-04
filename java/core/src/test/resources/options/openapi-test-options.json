@@ -1,5 +1,5 @@
 {
-    "separateByModule": false,
+    "separateByModule": true,
     "generateNewRequest": true,
     "generateNewRequestFor": {
         "AlleleMatrix": false,

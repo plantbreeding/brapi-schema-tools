@@ -32,10 +32,10 @@ jobs:
 
       - name: Publish package
         working-directory: ./java
-        run: ./gradlew publish
+        run: ./gradlew publishAndReleaseToMavenCentral
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_UN }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PW }}
           ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.PGP_KEY_ID }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.PGP_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PGP_PASSWORD }}
