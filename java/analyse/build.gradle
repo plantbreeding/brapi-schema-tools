@@ -14,3 +14,7 @@ dependencies {
     testImplementation('org.mockito:mockito-core')
     testImplementation('org.mockito:mockito-junit-jupiter')
 }
+
+mavenPublishing {
+    coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-analyse", project.version)
+}

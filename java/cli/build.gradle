@@ -1,5 +1,5 @@
 plugins {
-    id 'brapi.schema-tools.java-library-conventions'
+    id 'brapi.schema-tools.java-conventions'
     id 'application'
 }
 
@@ -23,4 +23,8 @@ jar {
     manifest {
         attributes 'Main-Class': application.mainClass
     }
+}
+
+mavenPublishing {
+    coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-cli", project.version)
 }

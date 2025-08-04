@@ -10,4 +10,5 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.1.4'
     implementation 'io.spring.dependency-management:io.spring.dependency-management.gradle.plugin:1.1.0'
+    implementation 'com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.34.0'
 }
