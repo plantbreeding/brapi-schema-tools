@@ -48,7 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.zip
+          asset_path: ./java/cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.zip
           asset_name: BrAPI-${{ steps.read_property.outputs.version }}.zip
           asset_content_type: application/zip
       - name: Upload Tar distribution
@@ -58,6 +58,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.tar
+          asset_path: ./java/cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.tar
           asset_name: BrAPI-${{ steps.read_property.outputs.version }}.tar
           asset_content_type: application/zip
