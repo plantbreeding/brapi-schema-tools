@@ -1,0 +1,63 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+name: Release CLI
+jobs:
+  build:
+    name: Release CLI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+
+      - name: Build distributions
+        working-directory: ./java
+        run: ./gradlew distTar distZip
+
+      - name: Read value from Properties-file
+        id: read_property
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: 'gradle.properties'
+          properties: 'version'
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.read_property.outputs.version }}
+          release_name: ${{ steps.read_property.outputs.version }}
+          draft: false
+          prerelease: false
+      - name: Upload Zip distribution
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.zip
+          asset_name: BrAPI-${{ steps.read_property.outputs.version }}.zip
+          asset_content_type: application/zip
+      - name: Upload Tar distribution
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./cli/build/distributions/BrAPI-${{ steps.read_property.outputs.version }}.tar
+          asset_name: BrAPI-${{ steps.read_property.outputs.version }}.tar
+          asset_content_type: application/zip
