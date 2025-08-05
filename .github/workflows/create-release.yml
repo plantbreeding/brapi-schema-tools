@@ -1,9 +1,9 @@
+name: Creates release of the CLI on Github
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-name: Release CLI
 jobs:
   build:
     name: Release CLI
