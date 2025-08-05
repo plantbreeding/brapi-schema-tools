@@ -3,7 +3,6 @@ plugins {
 }
 
 group = 'org.brapi'
-version = '0.35.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
