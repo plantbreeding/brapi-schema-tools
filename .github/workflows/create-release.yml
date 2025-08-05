@@ -42,7 +42,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload Zip distribution
-        id: upload-release-asset
+        id: upload-zip-distribution
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
           asset_name: BrAPI-${{ steps.read_property.outputs.version }}.zip
           asset_content_type: application/zip
       - name: Upload Tar distribution
-        id: upload-release-asset
+        id: upload-tar-distribution
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
