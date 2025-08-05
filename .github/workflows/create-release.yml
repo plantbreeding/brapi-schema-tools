@@ -28,7 +28,7 @@ jobs:
         id: read_property
         uses: christian-draeger/read-properties@1.1.1
         with:
-          path: 'gradle.properties'
+          path: './java/gradle.properties'
           properties: 'version'
 
       - name: Create Release
