@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.openapi.generator;
 
+import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -198,25 +199,35 @@ public class OpenAPIGenerator {
                     collect(Collectors.groupingBy(BrAPIClass::getModule, toList()));
                 List<BrAPIClass> commonClasses = classesByModule.remove(BRAPI_COMMON);
 
-                return classesByModule.entrySet().stream().
+                Response<List<OpenAPI>> res = classesByModule.entrySet().stream().
                     map(entry -> {
                         if (commonClasses != null) {
                             entry.getValue().addAll(commonClasses);
                         }
                         return entry;
                     }).
-                    map(entry -> generateSpecifications(metadata.getTitleFor(entry.getKey()), entry.getValue())).
+                    map(entry -> generateSpecifications(metadata.getTitleFor(entry.getKey()),
+                        options.getSupplementalSpecificationFor(metadata.getTitleFor(entry.getKey())),
+                        entry.getValue())).
                     collect(Response.toList());
+                return res;
             } else {
-                return generateSpecifications(metadata.getTitle(), classes.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
+                return generateSpecifications(metadata.getTitle(),
+                    options.getSupplementalSpecification(),
+                    classes.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
                     mapResult(Collections::singletonList);
             }
         }
 
-        private Response<OpenAPI> generateSpecifications(String title, Collection<BrAPIClass> classes) {
+        private Response<OpenAPI> generateSpecifications(String title, String supplementalSpecPath, Collection<BrAPIClass> classes) {
 
-            OpenAPI openAPI = new OpenAPI();
-
+            OpenAPI openAPI;
+            if(supplementalSpecPath != null && !supplementalSpecPath.isEmpty()) {
+                OpenAPI supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPath, null, null).getOpenAPI();
+                openAPI = Objects.requireNonNullElseGet(supplementalOpenAPI, OpenAPI::new);
+            }else{
+                openAPI = new OpenAPI();
+            }
             Info info = new Info();
 
             info.setTitle(title != null ? title : "BrAPI");
@@ -272,7 +283,7 @@ public class OpenAPIGenerator {
                         .collect(Response.toList()))
                 .merge(() -> processReferencedSchemas(classes)
                     .onSuccessDoWithResult(nonPrimaryClasses::addAll))
-                .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses).onSuccessDoWithResult(openAPI::components))
+                .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses, openAPI.getComponents()).onSuccessDoWithResult(openAPI::components))
                 .map(() -> success(openAPI));
         }
 
@@ -685,18 +696,30 @@ public class OpenAPIGenerator {
                 addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sListResponse", type.getName())))) ;
         }
 
-        private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes) {
-            Components components = new Components() ;
+        private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes, Components supplementalComponents) {
+            Components components = supplementalComponents != null ? supplementalComponents : new Components();
+
+            if (components.getSchemas() == null) { components.setSchemas(new LinkedHashMap<>());}
+            if (components.getResponses() == null) { components.setResponses(new LinkedHashMap<>());}
+            if (components.getParameters() == null) { components.setParameters(new LinkedHashMap<>());}
+            if (components.getSecuritySchemes() == null) { components.setSecuritySchemes(new LinkedHashMap<>());}
 
             return generateSchemas(primaryTypes, nonPrimaryTypes).
-                onSuccessDoWithResult(components::setSchemas).
+                onSuccessDoWithResult(schemaMap -> mergeComponents(components.getSchemas(), schemaMap)).
                 merge(this::generateResponses).
-                onSuccessDoWithResult(components::setResponses).
+                onSuccessDoWithResult(responsesMap -> mergeComponents(components.getResponses(), responsesMap)).
                 merge(this::generateParameters).
-                onSuccessDoWithResult(components::setParameters).
+                onSuccessDoWithResult(paramsMap -> mergeComponents(components.getParameters(), paramsMap)).
                 merge(this::generateSecuritySchemes).
-                onSuccessDoWithResult(components::setSecuritySchemes).
+                onSuccessDoWithResult(securityMap -> mergeComponents(components.getSecuritySchemes(), securityMap)).
                 map(() -> success(components));
+        }
+
+        private <T> Map<String, T> mergeComponents(Map<String, T> existingComponents, Map<String, T> newComponents){
+            if (newComponents != null && !newComponents.isEmpty()){
+                existingComponents.putAll(newComponents);
+            }
+            return existingComponents;
         }
 
         private Response<Map<String, Schema>> generateSchemas(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes) {
