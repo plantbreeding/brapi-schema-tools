@@ -10,8 +10,6 @@ import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.core.util.Yaml31;
 import io.swagger.v3.oas.models.OpenAPI;
 
-import java.util.Objects;
-
 public class OpenAPIUtils {
 
     public final static String OUTPUT_FORMAT_YAML = "YAML";

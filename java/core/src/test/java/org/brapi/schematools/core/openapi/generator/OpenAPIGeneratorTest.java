@@ -1,7 +1,5 @@
 package org.brapi.schematools.core.openapi.generator;
 
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
@@ -21,8 +19,8 @@ import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
-import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
+import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
