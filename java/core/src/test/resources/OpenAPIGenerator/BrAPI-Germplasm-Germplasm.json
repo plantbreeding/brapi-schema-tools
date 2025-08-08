@@ -7,211 +7,182 @@
     "paths" : {
         "/germplasm" : {
             "get" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Get a filtered list of Germplasm",
                 "description" : "Get a list of Germplasm",
-                "parameters" : [
-                    {
-                        "name" : "commonCropName",
-                        "in" : "query",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmDbId",
-                        "in" : "query",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmName",
-                        "in" : "query",
-                        "description" : "List of human readable names to identify germplasm to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programDbId",
-                        "in" : "query",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programName",
-                        "in" : "query",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyDbId",
-                        "in" : "query",
-                        "description" : "List of study identifiers to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyName",
-                        "in" : "query",
-                        "description" : "List of study names to filter search results",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialDbId",
-                        "in" : "query",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialName",
-                        "in" : "query",
-                        "description" : "The human readable name of a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmPUI",
-                        "in" : "query",
-                        "description" : "List of Permanent Unique Identifiers to identify germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "accessionNumber",
-                        "in" : "query",
-                        "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "collection",
-                        "in" : "query",
-                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "familyCode",
-                        "in" : "query",
-                        "description" : "A familyCode representing the family this germplasm belongs to.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "instituteCode",
-                        "in" : "query",
-                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "binomialName",
-                        "in" : "query",
-                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "genu",
-                        "in" : "query",
-                        "description" : "List of Genus names to identify germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "specy",
-                        "in" : "query",
-                        "description" : "List of Species names to identify germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "synonym",
-                        "in" : "query",
-                        "description" : "List of alternative names or IDs used to reference this germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "parentDbId",
-                        "in" : "query",
-                        "description" : "Search for Germplasm with these parents",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "progenyDbId",
-                        "in" : "query",
-                        "description" : "Search for Germplasm with these children",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceID"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceId"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceSource"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/page"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/pageSize"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/authorizationHeader"
+                "parameters" : [ {
+                    "name" : "commonCropName",
+                    "in" : "query",
+                    "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
                     }
-                ],
+                }, {
+                    "name" : "germplasmDbId",
+                    "in" : "query",
+                    "description" : "List of IDs which uniquely identify germplasm to search for",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "germplasmName",
+                    "in" : "query",
+                    "description" : "List of human readable names to identify germplasm to search for",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "programDbId",
+                    "in" : "query",
+                    "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "programName",
+                    "in" : "query",
+                    "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "studyDbId",
+                    "in" : "query",
+                    "description" : "List of study identifiers to search for",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "studyName",
+                    "in" : "query",
+                    "description" : "List of study names to filter search results",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "trialDbId",
+                    "in" : "query",
+                    "description" : "The ID which uniquely identifies a trial to search for",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "trialName",
+                    "in" : "query",
+                    "description" : "The human readable name of a trial to search for",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "germplasmPUI",
+                    "in" : "query",
+                    "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "accessionNumber",
+                    "in" : "query",
+                    "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "collection",
+                    "in" : "query",
+                    "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "familyCode",
+                    "in" : "query",
+                    "description" : "A familyCode representing the family this germplasm belongs to.",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "instituteCode",
+                    "in" : "query",
+                    "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "binomialName",
+                    "in" : "query",
+                    "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "genu",
+                    "in" : "query",
+                    "description" : "List of Genus names to identify germplasm",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "specy",
+                    "in" : "query",
+                    "description" : "List of Species names to identify germplasm",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "synonym",
+                    "in" : "query",
+                    "description" : "List of alternative names or IDs used to reference this germplasm",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "parentDbId",
+                    "in" : "query",
+                    "description" : "Search for Germplasm with these parents",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "name" : "progenyDbId",
+                    "in" : "query",
+                    "description" : "Search for Germplasm with these children",
+                    "required" : false,
+                    "schema" : {
+                        "type" : "string"
+                    }
+                }, {
+                    "$ref" : "#/components/parameters/externalReferenceID"
+                }, {
+                    "$ref" : "#/components/parameters/externalReferenceId"
+                }, {
+                    "$ref" : "#/components/parameters/externalReferenceSource"
+                }, {
+                    "$ref" : "#/components/parameters/page"
+                }, {
+                    "$ref" : "#/components/parameters/pageSize"
+                }, {
+                    "$ref" : "#/components/parameters/authorizationHeader"
+                } ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmListResponse"
@@ -228,16 +199,12 @@
                 }
             },
             "post" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Create new Germplasm",
                 "description" : "Add new Germplasm to database",
-                "parameters" : [
-                    {
-                        "$ref" : "#/components/parameters/authorizationHeader"
-                    }
-                ],
+                "parameters" : [ {
+                    "$ref" : "#/components/parameters/authorizationHeader"
+                } ],
                 "requestBody" : {
                     "content" : {
                         "application/json" : {
@@ -265,9 +232,7 @@
         },
         "/germplasm/{germplasmDbId}" : {
             "get" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Get the details of a specific Germplasm",
                 "description" : "Get details for a Germplasm",
                 "responses" : {
@@ -286,16 +251,12 @@
                 }
             },
             "put" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Update the details for an existing Germplasm",
                 "description" : "Update the details for an existing Germplasm",
-                "parameters" : [
-                    {
-                        "$ref" : "#/components/parameters/authorizationHeader"
-                    }
-                ],
+                "parameters" : [ {
+                    "$ref" : "#/components/parameters/authorizationHeader"
+                } ],
                 "requestBody" : {
                     "content" : {
                         "application/json" : {
@@ -323,9 +284,7 @@
         },
         "/search/germplasm" : {
             "post" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Submit a search request for `Germplasm`",
                 "description" : "Submit a search request for `Germplasm`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/germplasm/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "responses" : {
@@ -349,9 +308,7 @@
         },
         "/search/germplasm/{searchResultsDbId}" : {
             "get" : {
-                "tags" : [
-                    "Germplasm"
-                ],
+                "tags" : [ "Germplasm" ],
                 "summary" : "Submit a search request for `Germplasm`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/germplasm/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "description" : "Get the results of a `Germplasm` search request <br/>\nClients should submit a search request using the corresponding `POST /search/germplasm` endpoint.\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse this endpoint to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "responses" : {
@@ -375,32 +332,20 @@
         "schemas" : {
             "ContentTypes" : {
                 "type" : "string",
-                "enum" : [
-                    "application/json",
-                    "text/csv",
-                    "text/tsv",
-                    "application/flapjack"
-                ]
+                "enum" : [ "application/json", "text/csv", "text/tsv", "application/flapjack" ]
             },
             "Context" : {
                 "title" : "context",
                 "type" : "array",
                 "description" : "The JSON-LD Context is used to provide JSON-LD definitions to each field in a JSON object. By providing an array of context file urls, a BrAPI response object becomes JSON-LD compatible.  \n\nFor more information, see https://w3c.github.io/json-ld-syntax/#the-context",
-                "example" : [
-                    "https://brapi.org/jsonld/context/metadata.jsonld"
-                ],
+                "example" : [ "https://brapi.org/jsonld/context/metadata.jsonld" ],
                 "items" : {
                     "type" : "string",
                     "format" : "uri"
                 }
             },
             "Germplasm" : {
-                "required" : [
-                    "commonCropName",
-                    "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI"
-                ],
+                "required" : [ "commonCropName", "germplasmDbId", "germplasmName", "germplasmPUI" ],
                 "type" : "object",
                 "properties" : {
                     "accessionNumber" : {
@@ -415,29 +360,7 @@
                     "biologicalStatusOfAccessionCode" : {
                         "type" : "string",
                         "description" : "MCPD (v2.1) (SAMPSTAT) 19. The coding scheme proposed can be used at 3 different levels of detail: either by using the general codes such as 100, 200, 300, 400, or by using the more specific codes such as 110, 120, etc. \n\n100) Wild \n110) Natural \n120) Semi-natural/wild \n130) Semi-natural/sown \n200) Weedy \n300) Traditional cultivar/landrace \n400) Breeding/research material \n410) Breeders line \n411) Synthetic population \n412) Hybrid \n413) Founder stock/base population \n414) Inbred line (parent of hybrid cultivar) \n415) Segregating population \n416) Clonal selection \n420) Genetic stock \n421) Mutant (e.g. induced/insertion mutants, tilling populations) \n422) Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids,  amphiploids) \n423) Other genetic stocks (e.g. mapping populations) \n500) Advanced or improved cultivar (conventional breeding methods) \n600) GMO (by genetic engineering) \n999) Other (Elaborate in REMARKS field)",
-                        "enum" : [
-                            "100",
-                            "110",
-                            "120",
-                            "130",
-                            "200",
-                            "300",
-                            "400",
-                            "410",
-                            "411",
-                            "412",
-                            "413",
-                            "414",
-                            "415",
-                            "416",
-                            "420",
-                            "421",
-                            "422",
-                            "423",
-                            "500",
-                            "600",
-                            "999"
-                        ]
+                        "enum" : [ "100", "110", "120", "130", "200", "300", "400", "410", "411", "412", "413", "414", "415", "416", "420", "421", "422", "423", "500", "600", "999" ]
                     },
                     "biologicalStatusOfAccessionDescription" : {
                         "type" : "string"
@@ -514,13 +437,7 @@
                 }
             },
             "GermplasmNewRequest" : {
-                "required" : [
-                    "commonCropName",
-                    "germplasmDbId",
-                    "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI"
-                ],
+                "required" : [ "commonCropName", "germplasmDbId", "germplasmDbId", "germplasmName", "germplasmPUI" ],
                 "type" : "object",
                 "properties" : {
                     "accessionNumber" : {
@@ -535,29 +452,7 @@
                     "biologicalStatusOfAccessionCode" : {
                         "type" : "string",
                         "description" : "MCPD (v2.1) (SAMPSTAT) 19. The coding scheme proposed can be used at 3 different levels of detail: either by using the general codes such as 100, 200, 300, 400, or by using the more specific codes such as 110, 120, etc. \n\n100) Wild \n110) Natural \n120) Semi-natural/wild \n130) Semi-natural/sown \n200) Weedy \n300) Traditional cultivar/landrace \n400) Breeding/research material \n410) Breeders line \n411) Synthetic population \n412) Hybrid \n413) Founder stock/base population \n414) Inbred line (parent of hybrid cultivar) \n415) Segregating population \n416) Clonal selection \n420) Genetic stock \n421) Mutant (e.g. induced/insertion mutants, tilling populations) \n422) Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids,  amphiploids) \n423) Other genetic stocks (e.g. mapping populations) \n500) Advanced or improved cultivar (conventional breeding methods) \n600) GMO (by genetic engineering) \n999) Other (Elaborate in REMARKS field)",
-                        "enum" : [
-                            "100",
-                            "110",
-                            "120",
-                            "130",
-                            "200",
-                            "300",
-                            "400",
-                            "410",
-                            "411",
-                            "412",
-                            "413",
-                            "414",
-                            "415",
-                            "416",
-                            "420",
-                            "421",
-                            "422",
-                            "423",
-                            "500",
-                            "600",
-                            "999"
-                        ]
+                        "enum" : [ "100", "110", "120", "130", "200", "300", "400", "410", "411", "412", "413", "414", "415", "416", "420", "421", "422", "423", "500", "600", "999" ]
                     },
                     "biologicalStatusOfAccessionDescription" : {
                         "type" : "string"
@@ -641,10 +536,7 @@
                 "properties" : { }
             },
             "basePagination" : {
-                "required" : [
-                    "currentPage",
-                    "pageSize"
-                ],
+                "required" : [ "currentPage", "pageSize" ],
                 "type" : "object",
                 "properties" : {
                     "currentPage" : {
@@ -673,9 +565,7 @@
                 "description" : "The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br> Pages are zero indexed, so the first page will be page 0 (zero)."
             },
             "dataFile" : {
-                "required" : [
-                    "fileURL"
-                ],
+                "required" : [ "fileURL" ],
                 "type" : "object",
                 "properties" : {
                     "fileURL" : {
@@ -713,19 +603,16 @@
                 "description" : "A dataFile contains a URL and the relevant file metadata to represent a file"
             },
             "metadata" : {
-                "allOf" : [
-                    {
-                        "$ref" : "#/components/schemas/metadataBase"
-                    },
-                    {
-                        "type" : "object",
-                        "properties" : {
-                            "pagination" : {
-                                "$ref" : "#/components/schemas/basePagination"
-                            }
+                "allOf" : [ {
+                    "$ref" : "#/components/schemas/metadataBase"
+                }, {
+                    "type" : "object",
+                    "properties" : {
+                        "pagination" : {
+                            "$ref" : "#/components/schemas/basePagination"
                         }
                     }
-                ]
+                } ]
             },
             "metadataBase" : {
                 "type" : "object",
@@ -749,25 +636,19 @@
                 "description" : "An object in the BrAPI standard response model that describes some information about the service call being performed. This includes supplementary data, status log messages, and pagination information."
             },
             "metadataTokenPagination" : {
-                "allOf" : [
-                    {
-                        "$ref" : "#/components/schemas/metadataBase"
-                    },
-                    {
-                        "type" : "object",
-                        "properties" : {
-                            "pagination" : {
-                                "$ref" : "#/components/schemas/tokenPagination"
-                            }
+                "allOf" : [ {
+                    "$ref" : "#/components/schemas/metadataBase"
+                }, {
+                    "type" : "object",
+                    "properties" : {
+                        "pagination" : {
+                            "$ref" : "#/components/schemas/tokenPagination"
                         }
                     }
-                ]
+                } ]
             },
             "status" : {
-                "required" : [
-                    "message",
-                    "messageType"
-                ],
+                "required" : [ "message", "messageType" ],
                 "type" : "object",
                 "properties" : {
                     "message" : {
@@ -779,55 +660,45 @@
                         "type" : "string",
                         "description" : "The logging level for the attached message",
                         "example" : "INFO",
-                        "enum" : [
-                            "DEBUG",
-                            "ERROR",
-                            "WARNING",
-                            "INFO"
-                        ]
+                        "enum" : [ "DEBUG", "ERROR", "WARNING", "INFO" ]
                     }
                 },
                 "description" : "An array of status messages to convey technical logging information from the server to the client."
             },
             "tokenPagination" : {
-                "allOf" : [
-                    {
-                        "$ref" : "#/components/schemas/basePagination"
-                    },
-                    {
-                        "required" : [
-                            "nextPageToken"
-                        ],
-                        "type" : "object",
-                        "properties" : {
-                            "nextPageToken" : {
-                                "type" : "string",
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the next page of data.",
-                                "example" : "cb668f63",
-                                "deprecated" : true
-                            },
-                            "currentPageToken" : {
-                                "type" : "string",
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the current page of data.",
-                                "example" : "48bc6ac1",
-                                "deprecated" : true
-                            },
-                            "prevPageToken" : {
-                                "type" : "string",
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the previous page of data.",
-                                "example" : "9659857e",
-                                "deprecated" : true
-                            }
+                "allOf" : [ {
+                    "$ref" : "#/components/schemas/basePagination"
+                }, {
+                    "required" : [ "nextPageToken" ],
+                    "type" : "object",
+                    "properties" : {
+                        "nextPageToken" : {
+                            "type" : "string",
+                            "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the next page of data.",
+                            "example" : "cb668f63",
+                            "deprecated" : true
                         },
-                        "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br>Tokenized pages are for large data sets which can not be efficiently broken into indexed pages. Use the nextPageToken and prevPageToken to construct an additional query and move to the next or previous page respectively.  ",
-                        "example" : {
-                            "currentPage" : 0,
-                            "pageSize" : 1000,
-                            "totalCount" : 10,
-                            "totalPages" : 1
+                        "currentPageToken" : {
+                            "type" : "string",
+                            "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the current page of data.",
+                            "example" : "48bc6ac1",
+                            "deprecated" : true
+                        },
+                        "prevPageToken" : {
+                            "type" : "string",
+                            "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the previous page of data.",
+                            "example" : "9659857e",
+                            "deprecated" : true
                         }
+                    },
+                    "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br>Tokenized pages are for large data sets which can not be efficiently broken into indexed pages. Use the nextPageToken and prevPageToken to construct an additional query and move to the next or previous page respectively.  ",
+                    "example" : {
+                        "currentPage" : 0,
+                        "pageSize" : 1000,
+                        "totalCount" : 10,
+                        "totalPages" : 1
                     }
-                ]
+                } ]
             }
         },
         "responses" : {
@@ -848,10 +719,7 @@
                     "application/json" : {
                         "schema" : {
                             "title" : "GermplasmListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
+                            "required" : [ "metadata", "result" ],
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
@@ -861,9 +729,7 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
+                                    "required" : [ "data" ],
                                     "type" : "object",
                                     "properties" : {
                                         "data" : {
@@ -913,10 +779,7 @@
                     "application/json" : {
                         "schema" : {
                             "title" : "GermplasmSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
+                            "required" : [ "metadata", "result" ],
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
@@ -927,32 +790,6 @@
                                 },
                                 "result" : {
                                     "$ref" : "#/components/schemas/Germplasm"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "StudySingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudySingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Study"
                                 }
                             }
                         }
@@ -978,43 +815,6 @@
                             "type" : "string"
                         },
                         "example" : "ERROR - 2018-10-08T18:15:11Z - The requested object DbId is not found"
-                    }
-                }
-            },
-            "StudyListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudyListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Study"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             },

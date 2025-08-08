@@ -1,6 +1,6 @@
 supplementalSpecification: ''
 supplementalSpecificationFor:
-    BrAPI-Core: C:\Users\ps664\Documents\BrAPI\API\Specification\BrAPI-Core\BrAPI-Core-Supplemental-Spec.yaml
+    BrAPI-Core: ''
 separateByModule: true
 generateNewRequest: true
 generateNewRequestFor:

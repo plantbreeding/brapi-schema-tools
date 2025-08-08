@@ -215,7 +215,7 @@ public class GenerateSubCommand implements Runnable {
 
             for (OpenAPI specification : specifications) {
                 outputOpenAPISpecification(specification,
-                    outputPath != null ? outputPath.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null);
+                    outputPath != null ? outputPath.resolve(String.format("%s.yaml", specification.getInfo().getTitle())) : null);
             }
         } catch (IOException e) {
             err.println(e.getMessage());

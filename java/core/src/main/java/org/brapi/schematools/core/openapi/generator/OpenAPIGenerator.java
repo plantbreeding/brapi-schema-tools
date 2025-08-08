@@ -20,6 +20,7 @@ import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOpti
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.*;
@@ -223,8 +224,13 @@ public class OpenAPIGenerator {
 
             OpenAPI openAPI;
             if(supplementalSpecPath != null && !supplementalSpecPath.isEmpty()) {
-                OpenAPI supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPath, null, null).getOpenAPI();
-                openAPI = Objects.requireNonNullElseGet(supplementalOpenAPI, OpenAPI::new);
+                try {
+                    String supplementalSpecPathAbs = Path.of(supplementalSpecPath).toRealPath().toString();
+                    OpenAPI supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPathAbs, null, null).getOpenAPI();
+                    openAPI = Objects.requireNonNullElseGet(supplementalOpenAPI, OpenAPI::new);
+                } catch (IOException e) {
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find supplemental specification file : %s", e.getMessage()));
+                }
             }else{
                 openAPI = new OpenAPI();
             }

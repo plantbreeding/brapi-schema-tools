@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
 import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -214,7 +215,7 @@ class OpenAPIGeneratorTest {
     private void assertSpecificationEquals(String classPath, OpenAPI specification) {
         try {
             String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow() ;
-            String actual = prettyPrint(specification);
+            String actual = prettyPrint(specification, OUTPUT_FORMAT_JSON);
 
             if (!isJSONEqual(expected, actual)) {
                 Path build = Paths.get("build", classPath);
