@@ -6,13 +6,21 @@ package org.brapi.schematools.cli;
 public enum OutputFormat {
 
     /**
-     * Use this format to generate an OpenAPI specification
+     * Use this format to generate an OpenAPI specification in YAML
      */
     OPEN_API,
+    /**
+     * Use this format to generate an OpenAPI specification in JSON
+     */
+    OPEN_API_JSON,
     /**
      * Use this format to generate a GraphQL schema
      */
     GRAPHQL,
+    /**
+     * Use this format to generate a GraphQL schema in introspection format
+     */
+    GRAPHQL_INTROSPECTION,
     /**
      * Use this format to generate OWL specification in turtle format
      */
@@ -21,6 +29,7 @@ public enum OutputFormat {
      * Use this format to generate Markdown for type and their field descriptions
      */
     MARKDOWN,
+
     /**
      * Use this format to generate Excel (xlsx) for types and their field descriptions
      */

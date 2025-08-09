@@ -48,6 +48,11 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
 
+    @Getter(AccessLevel.PUBLIC)
+    private String supplementalSpecification;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> supplementalSpecificationFor = new HashMap<>();
     @Getter(AccessLevel.PRIVATE)
     private Boolean separateByModule;
     @Getter(AccessLevel.PRIVATE)
@@ -147,6 +152,14 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             generateNewRequest = overrideOptions.generateNewRequest ;
         }
 
+        if (overrideOptions.supplementalSpecification != null) {
+            supplementalSpecification = overrideOptions.supplementalSpecification ;
+        }
+
+        if (overrideOptions.supplementalSpecificationFor != null) {
+            supplementalSpecificationFor.putAll(overrideOptions.supplementalSpecificationFor) ;
+        }
+
         if (overrideOptions.generateNewRequestFor != null) {
             generateNewRequestFor.putAll(overrideOptions.generateNewRequestFor) ;
         }
@@ -196,6 +209,8 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .merge(delete)
             .merge(search)
             .merge(properties)
+            .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
+            .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
             .assertNotNull(newRequestNameFormat,  "'newRequestNameFormat' option is null")
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
@@ -279,6 +294,12 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull BrAPIType type) {
         return isGeneratingEndpointNameWithIdFor(type.getName()) ;
+    }
+
+
+    @JsonIgnore
+    public String getSupplementalSpecificationFor(@NonNull String name) {
+        return supplementalSpecificationFor.getOrDefault(name, supplementalSpecification) ;
     }
 
     /**
