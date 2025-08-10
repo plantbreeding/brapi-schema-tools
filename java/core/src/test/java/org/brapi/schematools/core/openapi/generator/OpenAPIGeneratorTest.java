@@ -1,7 +1,5 @@
 package org.brapi.schematools.core.openapi.generator;
 
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.core.util.Json31;
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
@@ -20,8 +18,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
-import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
+import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -214,7 +213,7 @@ class OpenAPIGeneratorTest {
     private void assertSpecificationEquals(String classPath, OpenAPI specification) {
         try {
             String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow() ;
-            String actual = prettyPrint(specification);
+            String actual = prettyPrint(specification, OUTPUT_FORMAT_JSON);
 
             if (!isJSONEqual(expected, actual)) {
                 Path build = Paths.get("build", classPath);

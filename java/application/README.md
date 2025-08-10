@@ -8,15 +8,7 @@ files respectively. See the [CLI module](../cli/README.md) for details.
 
 To run the application use the following commands
 
-In windows
-
 ```powershell
 ./gradlew bootRun
-```
-
-In Linux or MacOS
-
-```shell
-./gradle bootRun
 ```
 

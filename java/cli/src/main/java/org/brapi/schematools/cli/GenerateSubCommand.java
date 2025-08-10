@@ -29,6 +29,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.brapi.schematools.cli.OutputFormat.GRAPHQL;
+import static org.brapi.schematools.cli.OutputFormat.GRAPHQL_INTROSPECTION;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
+import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_YAML;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 
 /**
@@ -65,7 +69,7 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
     private boolean overwrite = true;
 
-    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
+    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True to throw an exception when validation or generation fails.")
     private boolean throwExceptionOnFail = false;
 
     @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
@@ -78,14 +82,14 @@ public class GenerateSubCommand implements Runnable {
 
             switch (outputFormat) {
 
-                case OPEN_API -> {
+                case OPEN_API, OPEN_API_JSON -> {
                     OpenAPIGeneratorOptions options = optionsPath != null ?
                         OpenAPIGeneratorOptions.load(optionsPath) : OpenAPIGeneratorOptions.load() ;
                     OpenAPIGeneratorMetadata metadata = metadataPath != null ?
                         OpenAPIGeneratorMetadata.load(metadataPath) :  OpenAPIGeneratorMetadata.load() ;
                     generateOpenAPISpecification(options, metadata);
                 }
-                case GRAPHQL -> {
+                case GRAPHQL, GRAPHQL_INTROSPECTION -> {
                     GraphQLGeneratorOptions options = optionsPath != null ?
                         GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
                     GraphQLGeneratorMetadata metadata = metadataPath != null ?
@@ -107,17 +111,7 @@ public class GenerateSubCommand implements Runnable {
                 }
             }
         } catch (Exception exception) {
-
-            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
-            err.println(message);
-
-            if (stackTrace) {
-                exception.printStackTrace(err);
-            }
-
-            if (throwExceptionOnFail) {
-                throw new BrAPICommandException(message, exception) ;
-            }
+            handleFail(exception);
         } finally {
             if (out != null) {
                 out.close();
@@ -131,7 +125,10 @@ public class GenerateSubCommand implements Runnable {
 
         Response<GraphQLSchema> response = graphQLGenerator.generate(schemaDirectory, metadata);
 
-        response.onSuccessDoWithResult(this::outputIDLSchema).onFailDoWithResponse(this::printGraphQLSchemaErrors);
+        response
+            .onSuccessDoWithResultOnCondition(outputFormat == GRAPHQL, this::outputIDLSchema)
+            .onSuccessDoWithResultOnCondition(outputFormat == GRAPHQL_INTROSPECTION, this::outputIntrospectionSchema)
+            .onFailDoWithResponse(this::printGraphQLSchemaErrors);
     }
 
     private void outputIDLSchema(GraphQLSchema schema) {
@@ -140,8 +137,8 @@ public class GenerateSubCommand implements Runnable {
                 out.print(new SchemaPrinter().print(schema));
                 out.close();
             }
-        } catch (IOException e) {
-            err.println(e.getMessage());
+        } catch (IOException exception) {
+            handleFail(exception) ;
         }
     }
 
@@ -156,8 +153,8 @@ public class GenerateSubCommand implements Runnable {
                 out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
                 out.close();
             }
-        } catch (IOException e) {
-            err.println(e.getMessage());
+        } catch (IOException exception) {
+            handleFail(exception) ;
         }
     }
 
@@ -182,49 +179,45 @@ public class GenerateSubCommand implements Runnable {
         Response<List<OpenAPI>> response = openAPIGenerator.generate(schemaDirectory, componentsDirectory, metadata);
 
         response
-            .onSuccessDoWithResultOnCondition(!options.isSeparatingByModule(), this::outputOpenAPISpecificationFile)
-            .onSuccessDoWithResultOnCondition(options.isSeparatingByModule(), this::outputOpenAPISpecificationDirectory)
+            .onSuccessDoWithResult(this::outputOpenAPISpecifications)
             .onFailDoWithResponse(this::printOpenAPISpecificationErrors);
     }
 
-    private void outputOpenAPISpecificationFile(List<OpenAPI> specifications) {
+    private void outputOpenAPISpecifications(List<OpenAPI> specifications) {
         try {
             if (specifications.size() == 1) {
-                outputOpenAPISpecification(specifications.getFirst(), outputPath);
+                if (outputPath != null && Files.isDirectory(outputPath)) {
+                    outputOpenAPISpecification(specifications.getFirst(), resolveOutputPath(specifications.getFirst()));
+                } else {
+                    outputOpenAPISpecification(specifications.getFirst(), outputPath);
+                }
+
             } else {
                 if (specifications.isEmpty()) {
-                    err.println("No specification to to output!");
+                    handleFail("No specification to to output!");
                 } else {
-                    err.printf("Can not output several specification to single file: '%s' :%n", outputPath.toFile());
+                    if (outputPath != null && Files.isRegularFile(outputPath)) {
+                        handleFail(String.format("Output path '%s' must be a directory if outputting to separate files.", outputPath.toFile()));
+                    } else {
+                        for (OpenAPI specification : specifications) {
+                            outputOpenAPISpecification(specification, resolveOutputPath(specification));
+                        }
+                    }
                 }
             }
-        } catch (IOException e) {
-            err.println(e.getMessage());
+        } catch (IOException exception) {
+            handleFail(exception) ;
         }
     }
 
-    private void outputOpenAPISpecificationDirectory(List<OpenAPI> specifications) {
-        try {
-            if (outputPath != null) {
-                if (Files.isRegularFile(outputPath)) {
-                    err.printf("Output path '%s' must be a directory if outputting separate files:%n", outputPath.toFile());
-                }
-
-                Files.createDirectories(outputPath);
-            }
-
-            for (OpenAPI specification : specifications) {
-                outputOpenAPISpecification(specification,
-                    outputPath != null ? outputPath.resolve(String.format("%s.json", specification.getInfo().getTitle())) : null);
-            }
-        } catch (IOException e) {
-            err.println(e.getMessage());
-        }
+    private Path resolveOutputPath(OpenAPI specification) {
+        return outputPath != null ? outputPath.resolve(
+            String.format(outputFormat == OutputFormat.OPEN_API ? "%s.yaml" : "%s.json", specification.getInfo().getTitle())) : null ;
     }
 
     private void outputOpenAPISpecification(OpenAPI specification, Path outputPath) throws IOException {
         if (openWriter(outputPath)) {
-            out.print(prettyPrint(specification));
+            out.print(prettyPrint(specification, outputFormat == OutputFormat.OPEN_API_JSON ? OUTPUT_FORMAT_JSON : OUTPUT_FORMAT_YAML));
             out.close();
         }
     }
@@ -259,8 +252,8 @@ public class GenerateSubCommand implements Runnable {
                 out.flush();
                 out.close();
             }
-        } catch (IOException e) {
-            err.println(e.getMessage());
+        } catch (IOException exception) {
+            handleFail(exception) ;
         }
     }
 
@@ -281,10 +274,16 @@ public class GenerateSubCommand implements Runnable {
 
     private boolean openWriter(Path outputPathFile) throws IOException {
         if (outputPathFile != null) {
+
+            if (Files.isDirectory(outputPathFile)) {
+                handleFail(String.format("Output path '%s' is a directory", outputPath));
+                return false ;
+            }
+
             Files.createDirectories(outputPathFile.getParent());
 
-            if (!overwrite && Files.exists(outputPathFile)) {
-                err.println(String.format("Output file '%s' already exists was not overwritten", outputPath));
+            if (!overwrite && Files.isRegularFile(outputPathFile)) {
+                handleFail(String.format("Output file '%s' already exists was not overwritten", outputPath));
                 return false ;
             }
 
@@ -300,21 +299,22 @@ public class GenerateSubCommand implements Runnable {
         try {
             if (outputPath != null) {
                 if (Files.isRegularFile(outputPath)) {
-                    err.println("For Markdown generation the output path must be a directory");
+                    handleFail("For Markdown generation the output path must be a directory");
+                } else {
+
+                    Files.createDirectories(outputPath);
+
+                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(outputPath, overwrite);
+
+                    Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
+
+                    response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
                 }
-
-                Files.createDirectories(outputPath);
-
-                MarkdownGenerator markdownGenerator = new MarkdownGenerator(outputPath, overwrite);
-
-                Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
-
-                response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
             } else {
-                err.println("For Markdown generation the output directory must be provided");
+                handleFail("For Markdown generation the output directory must be provided");
             }
         } catch (IOException exception) {
-            err.println(exception.getMessage());
+            handleFail(exception) ;
         }
     }
 
@@ -323,7 +323,7 @@ public class GenerateSubCommand implements Runnable {
             System.out.println("Did not generate any markdown files");
         } else if (paths.size() == 1) {
             System.out.println("Generated '1' markdown file:");
-            System.out.println(paths.get(0).toString());
+            System.out.println(paths.getFirst().toString());
         } else {
             System.out.printf("Generated '%s' markdown files:%n", paths.size());
             paths.forEach(path -> System.out.println(path.toString()));
@@ -353,19 +353,20 @@ public class GenerateSubCommand implements Runnable {
                 // TODO option for split files by module
 
                 if (Files.exists(outputPath) && !Files.isRegularFile(outputPath)) {
-                    err.println("For Excel (xlsx) generation the output path must be a file");
+                    handleFail("For Excel (xlsx) generation the output path must be a file");
+                } else {
+
+                    XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
+
+                    Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
+
+                    response.onSuccessDoWithResult(this::outputExcelPaths).onFailDoWithResponse(this::printExcelErrors);
                 }
-
-                XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
-
-                Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
-
-                response.onSuccessDoWithResult(this::outputExcelPaths).onFailDoWithResponse(this::printExcelErrors);
             } else {
-                err.println("For Excel (xlsx) generation the output file must be provided");
+                handleFail("For Excel (xlsx) generation the output file must be provided");
             }
         } catch (Exception exception) {
-            err.println(exception.getMessage());
+            handleFail(exception);
         }
     }
 
@@ -373,10 +374,10 @@ public class GenerateSubCommand implements Runnable {
         if (paths.isEmpty()) {
             System.out.println("Did not generate any excel files");
         } else if (paths.size() == 1) {
-            System.out.println(String.format("Generated '1' excel file:"));
-            System.out.println(paths.get(0).toString());
+            System.out.println("Generated '1' excel file:");
+            System.out.println(paths.getFirst().toString());
         } else {
-            System.out.println(String.format("Generated '%s' excel files:", paths.size()));
+            System.out.printf("Generated '%s' excel files:%n", paths.size());
             paths.forEach(path -> System.out.println(path.toString()));
         }
     }
@@ -393,6 +394,27 @@ public class GenerateSubCommand implements Runnable {
 
         if (throwExceptionOnFail) {
             throw new BrAPICommandException(message, response.getAllErrors()) ;
+        }
+    }
+
+    private void handleFail(Exception exception) {
+        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
+        err.println(message);
+
+        if (stackTrace) {
+            exception.printStackTrace(err);
+        }
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message, exception) ;
+        }
+    }
+
+    private void handleFail(String message) {
+        err.println(message);
+
+        if (throwExceptionOnFail) {
+            throw new BrAPICommandException(message) ;
         }
     }
 

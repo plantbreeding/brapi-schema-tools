@@ -1,3 +1,6 @@
+supplementalSpecification: ''
+supplementalSpecificationFor:
+    BrAPI-Core: ''
 separateByModule: true
 generateNewRequest: true
 generateNewRequestFor:
