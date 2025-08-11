@@ -188,9 +188,6 @@ public class BrAPISchemaReader {
                 if (metadata.isParameters()) {
                     ++i;
                 }
-                if (metadata.isInterfaceClass()) {
-                    ++i;
-                }
                 if (i > 1) {
                     return fail(Response.ErrorType.VALIDATION, String.format("In class '%s', 'primaryModel', 'request', 'properties', 'interface' are mutually exclusive, only one can be set to to true", brAPIClass.getName()));
                 }

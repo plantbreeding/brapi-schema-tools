@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
@@ -490,11 +491,13 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     public final String getPathItemNameForProperty(@NonNull String typeName, @NonNull String propertyName) {
         Map<String, String> map = pathItemNameForProperty.get(typeName) ;
 
+        String defaultPathItemNameForProperty = String.format("%s/%s", getPathItemNameFor(typeName), toPlural(propertyName)) ;
+
         if (map != null) {
-            return map.getOrDefault(propertyName, propertyName) ;
+            return map.getOrDefault(propertyName, defaultPathItemNameForProperty) ;
         }
 
-        return propertyName ;
+        return defaultPathItemNameForProperty ;
     }
 
     /**
