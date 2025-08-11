@@ -3,7 +3,6 @@ supplementalSpecificationFor:
     BrAPI-Core: ''
 separateByModule: true
 generateNewRequest: true
-generateEndpointForControlledVocabulary: true
 generateNewRequestFor:
     AlleleMatrix: false
     BreedingMethod: false
@@ -34,6 +33,10 @@ pathItemNameFor:
     ObservationVariable: /variables
     PedigreeNode: /pedigree
     ServerInfo: /serverInfo
+pathItemNameForProperty:
+    GermplasmAttribute:
+        attributeCategory:
+            /attributes/categories
 tagFor:
     BreedingMethod: Germplasm
     PlannedCross: Crosses
@@ -275,3 +278,7 @@ properties:
             calls: sub-path
             callSets: sub-path
             variants: sub-path
+controlledVocabulary:
+    generate: true
+    summaryFormat: Get the ${property} of ${type}
+    descriptionFormat: List all available ${type} ${property}

@@ -567,6 +567,8 @@ public class BrAPISchemaReader {
                 onSuccessDoWithResult(builder::parameters).
                 merge(findBoolean(path, metadata, "interface", false, false)).
                 onSuccessDoWithResult(builder::interfaceClass).
+                merge(findStringList(path, metadata, "controlledVocabularyProperties", false)).
+                onSuccessDoWithResult(builder::controlledVocabularyProperties).
                 map(() -> success(builder.build()));
         }
 

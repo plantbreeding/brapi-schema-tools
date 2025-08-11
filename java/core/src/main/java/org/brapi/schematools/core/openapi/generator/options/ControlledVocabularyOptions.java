@@ -9,10 +9,13 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
 /**
  * Provides options for the generation of Controlled Vocabulary Endpoints
@@ -83,19 +86,30 @@ public class ControlledVocabularyOptions implements Options {
 
     /**
      * Determines if the Endpoint is generated for a specific BrAPI Property
+     * @param typeName the name of the primary model
+     * @param propertyName the name of the property
+     * @return {@code true} if the Endpoint specific BrAPI Property, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isGeneratingFor(@NonNull String typeName, @NonNull String propertyName) {
+        Map<String, Boolean> map = generateFor.get(typeName) ;
+
+        if (map != null) {
+            return map.getOrDefault(propertyName, generate) ;
+        }
+
+        return generate ;
+    }
+
+    /**
+     * Determines if the Endpoint is generated for a specific BrAPI Property
      * @param type the primary model
      * @param property the property
      * @return {@code true} if the Endpoint specific BrAPI Property, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
-        Map<String, Boolean> map = generateFor.get(type.getName()) ;
-
-        if (map != null) {
-            return map.getOrDefault(property.getName(), generate) ;
-        }
-
-        return generate ;
+        return isGeneratingFor(type.getName(), property.getName()) ;
     }
 
     /**
@@ -151,7 +165,7 @@ public class ControlledVocabularyOptions implements Options {
      */
     @JsonIgnore
     public final String getDescriptionFor(@NonNull String typeName, @NonNull String propertyName) {
-        return String.format(descriptionFormat, typeName, propertyName) ;
+        return StringUtils.format(descriptionFormat, Map.of("type", typeName, "property", toPlural(propertyName))) ;
     }
 
     /**
@@ -173,7 +187,7 @@ public class ControlledVocabularyOptions implements Options {
      */
     @JsonIgnore
     public final String getSummaryFor(@NonNull String typeName, @NonNull String propertyName) {
-        return String.format(summaryFormat, typeName, propertyName) ;
+        return StringUtils.format(summaryFormat, Map.of("type", typeName, "property", toPlural(propertyName))) ;
     }
 
     /**

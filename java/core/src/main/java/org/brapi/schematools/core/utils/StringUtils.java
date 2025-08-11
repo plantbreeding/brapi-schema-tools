@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -303,6 +305,37 @@ public class StringUtils {
         printer.indentArraysWith(indenter);
 
         return mapper.writer(printer).writeValueAsString(value);
+    }
+
+    /**
+     * Places text in a string in the format {key} with a value.
+     * The
+     * @param format the format string that contains the keys to substitute.
+     * @param parameters A map of key value pairs
+     * @return the formatted string
+     */
+    public static String format(String format, Map<String, Object> parameters) {
+        if (format == null) {
+            return null ;
+        }
+
+        StringBuilder newFormat = new StringBuilder(format);
+        List<Object> valueList = new ArrayList<>();
+
+        Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(format);
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+
+            String paramName = "${" + key + "}";
+            int index = newFormat.indexOf(paramName);
+            if (index != -1) {
+                newFormat.replace(index, index + paramName.length(), "%s");
+                valueList.add(parameters.get(key));
+            }
+        }
+
+        return String.format(newFormat.toString(), valueList.toArray());
     }
 
     static class Replacer {
