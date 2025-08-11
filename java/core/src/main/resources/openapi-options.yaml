@@ -3,6 +3,7 @@ supplementalSpecificationFor:
     BrAPI-Core: ''
 separateByModule: true
 generateNewRequest: true
+generateEndpointForControlledVocabulary: true
 generateNewRequestFor:
     AlleleMatrix: false
     BreedingMethod: false

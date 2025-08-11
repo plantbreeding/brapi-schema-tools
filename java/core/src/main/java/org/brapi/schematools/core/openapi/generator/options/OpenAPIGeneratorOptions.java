@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.LinkType;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
@@ -47,6 +49,8 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
+    @Setter(AccessLevel.PRIVATE)
+    private ControlledVocabularyOptions controlledVocabulary;
 
     @Getter(AccessLevel.PUBLIC)
     private String supplementalSpecification;
@@ -74,6 +78,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
+
     /**
      * Load the default options
      * @return The default options
@@ -144,6 +149,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             properties.override(overrideOptions.getProperties()) ;
         }
 
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary.override(overrideOptions.getControlledVocabulary()) ;
+        }
+
         if (overrideOptions.separateByModule != null) {
             separateByModule = overrideOptions.separateByModule ;
         }
@@ -188,6 +197,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             tagFor.putAll(overrideOptions.tagFor) ;
         }
 
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary = overrideOptions.controlledVocabulary ;
+        }
+
         return this ;
     }
 
@@ -200,6 +213,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(delete,  "Delete Endpoint Options are null")
             .assertNotNull(search,  "Search Endpoint Options are null")
             .assertNotNull(properties,  "Properties Options are null")
+            .assertNotNull(controlledVocabulary,  "Controlled Vocabulary Options are null")
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
             .merge(singleGet)
@@ -209,6 +223,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .merge(delete)
             .merge(search)
             .merge(properties)
+            .merge(controlledVocabulary)
             .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
             .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
@@ -496,5 +511,26 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      */
     public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
         return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
+    }
+
+    /**
+     * Determines Controlled vocabulary endpoints should be generated. Any entity which as a
+     * property that is indicated in the metadata that it returns a controlled vocabulary
+     * will have an endpoint generated in the format /<entity-plural>/<property-name-plural>
+     * for example /attributes/categories
+     *
+     * @return {@code true} if controlled vocabulary endpoints should be generated
+     */
+    public boolean isGeneratingControlledVocabularyEndpoints() {
+        return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
+    }
+
+    /**
+     * Gets the path item for a property on a type
+     * @param typeWithProperty the BrAPIObjectType With Property
+     * @return the path item name for a specific BrAPIObjectType With Property
+     */
+    public String getPathItemFor(BrAPIObjectTypeWithProperty typeWithProperty) {
+        return String.format("%s/{%s}", getPathItemNameFor(typeWithProperty.getType()), toPlural(typeWithProperty.getProperty().getName()));
     }
 }
