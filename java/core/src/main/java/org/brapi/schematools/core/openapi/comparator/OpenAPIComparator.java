@@ -42,7 +42,8 @@ public class OpenAPIComparator {
      */
     public Response<ChangedOpenApi> compare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
-            return Response.success(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())) ;
+            ChangedOpenApi diff = OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile());
+            return Response.success(diff);
         } else {
             if (!Files.isRegularFile(firstPath) && !Files.isRegularFile(secondPath)) {
                 return Response.fail(Response.ErrorType.VALIDATION,

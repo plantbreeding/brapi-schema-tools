@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.metadata.Metadata;
-import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.options.ListGetOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 
 import java.io.IOException;
