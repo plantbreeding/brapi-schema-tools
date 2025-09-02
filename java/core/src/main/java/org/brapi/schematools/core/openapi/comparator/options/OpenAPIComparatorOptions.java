@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.openapi.comparator.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Options for the {@link org.brapi.schematools.core.openapi.comparator.OpenAPIComparator}.
@@ -32,6 +34,10 @@ public class OpenAPIComparatorOptions implements Options {
     private JSONRenderOptions json;
     @Setter(AccessLevel.PRIVATE)
     private MarkdownRenderOptions markdown;
+    private List<String> ignoreMissingEndpoints ;
+    private List<String> ignoreNewEndpoints ;
+    @Getter(AccessLevel.NONE)
+    private Boolean ignoreDepreciatedEndpoints ;
 
     /**
      * Load the default options
@@ -93,6 +99,18 @@ public class OpenAPIComparatorOptions implements Options {
             markdown.override(overrideOptions.markdown);
         }
 
+        if (overrideOptions.ignoreMissingEndpoints != null) {
+            ignoreMissingEndpoints = overrideOptions.ignoreMissingEndpoints ;
+        }
+
+        if (overrideOptions.ignoreNewEndpoints != null) {
+            ignoreNewEndpoints = overrideOptions.ignoreNewEndpoints ;
+        }
+
+        if (overrideOptions.ignoreDepreciatedEndpoints != null) {
+            this.ignoreDepreciatedEndpoints = overrideOptions.ignoreDepreciatedEndpoints ;
+        }
+
         return this ;
     }
 
@@ -102,5 +120,10 @@ public class OpenAPIComparatorOptions implements Options {
             .assertNotNull(html, "HTML Render Options are null")
             .assertNotNull(json, "JSON Render Options are null")
             .assertNotNull(markdown, "Markdown Render Options are null") ;
+    }
+
+    @JsonIgnore
+    public boolean isIgnoringDeprecatedEndpoints() {
+        return ignoreDepreciatedEndpoints != null ? ignoreDepreciatedEndpoints : false ;
     }
 }
