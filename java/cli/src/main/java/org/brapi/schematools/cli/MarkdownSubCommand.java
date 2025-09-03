@@ -39,16 +39,16 @@ public class MarkdownSubCommand implements Runnable {
     @CommandLine.Parameters(index = "0", description = "The URL or file path of the schema, or the result of an introspection query specification. If the path is a valid URL an introspection query will be sent to it. if the path is a file it will be read, otherwise it will be treated as the result of an introspection query.")
     private String schemaPath;
 
+    @CommandLine.Parameters(index = "1",  description = "The path of directory for the generated result.")
+    private Path outputPath;
+
     @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "OPEN_API", description = "The format of the Input. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_FORMAT}")
     private InputFormat inputFormat = DEFAULT_FORMAT;
-
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The path of the output file or directory for the generated result. If omitted the output will be written to the standard out")
-    private Path outputPath;
 
     @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
     private Path optionsPath;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
     private boolean overwrite = true;
 
     @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")

@@ -41,7 +41,7 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
     private Path optionsPath;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
     private boolean overwrite = true;
 
     @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
@@ -50,8 +50,8 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
     private boolean stackTrace = false;
 
-    @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")
-    private boolean prettyprint = true;
+    @CommandLine.Option(names = {"-p", "--prettyPrint"}, description = "Pretty print the JSON output if possible. True by default.")
+    private boolean prettyPrint = true;
 
     @Override
     public void run() {
