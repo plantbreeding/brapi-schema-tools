@@ -168,4 +168,27 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
 
         return propertiesFromRequest ;
     }
+
+    /**
+     * Gets whether a property from the Request is used in the List query
+     * @param type The BrAPI Object type
+     * @param property The BrAPI property
+     * @param propertiesFromRequest <code>true</code> if the property from the Request is used in the List query
+     * @return the options for chaining
+     */
+    public ListGetOptions setUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property, Boolean propertiesFromRequest) {
+
+        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
+
+        if (map != null) {
+            map.put(property.getName(), propertiesFromRequest) ;
+            return this ;
+        } else {
+            map = new HashMap<>() ;
+            map.put(property.getName(), propertiesFromRequest) ;
+            propertyFromRequestFor.put(type.getName(), map) ;
+
+            return this ;
+        }
+    }
 }

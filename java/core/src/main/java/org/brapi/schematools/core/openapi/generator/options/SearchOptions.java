@@ -14,7 +14,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class SearchOptions  extends AbstractOpenAPIOptions {
+public class SearchOptions extends AbstractOpenAPIOptions {
 
     @Getter(AccessLevel.PUBLIC)
     private String searchIdFieldName;

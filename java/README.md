@@ -36,8 +36,18 @@ code
 
 ### Releases
 
+#### If approval required
+
 1. Create a branch from develop for the release. 
-2. Update the version the version in the [gradle.properties](gradle.properties) file by removing the '-SNAPSHOT'.
+2. Update the version in the [gradle.properties](gradle.properties) making sure the '-SNAPSHOT' suffix is removed.
 3. Create a PR to merge into the main branch. 
 4. Get approval for the PR and merge
+5. This will automatically create the release.
+
+#### If approval not required
+
+1. Checkout main branch
+2. Merge in develop
+3. Update the version in the [gradle.properties](gradle.properties) making sure the '-SNAPSHOT' suffix is removed.
+4. Commit and push
 5. This will automatically create the release.
