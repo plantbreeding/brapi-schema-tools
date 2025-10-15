@@ -416,7 +416,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
     /**
      * Gets the name for the List Response for a specific Primary Model
-     * @param type the Primary Model
+     * @param typeWithProperty the Primary Model and the Property
      * @return the List Response name for a specific Primary Model
      */
     @JsonIgnore
@@ -614,7 +614,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     /**
      * Determines Controlled vocabulary endpoints should be generated. Any entity which as a
      * property that is indicated in the metadata that it returns a controlled vocabulary
-     * will have an endpoint generated in the format /<entity-plural>/<property-name-plural>
+     * will have an endpoint generated in the format /{entity-plural}/{property-name-plural}
      * for example /attributes/categories
      *
      * @return {@code true} if controlled vocabulary endpoints should be generated
