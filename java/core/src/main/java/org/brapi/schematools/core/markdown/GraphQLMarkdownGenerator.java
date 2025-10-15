@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.markdown;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.groupingBy;
@@ -23,10 +25,10 @@ import static org.brapi.schematools.core.response.Response.success;
 
 /**
  * Generates a Markdown files for type and their field descriptions from a GraphQL Schema.
- * For each type in the schema a Markdown file with the same name as the type will be created.
- * For each field in a type a Markdown file with same name as the type will be created.
- * For each field in the Query type in the schema a Markdown file with the same name as the field will be created.
- * For each argument for each field in the Query type in a type a Markdown file with same name as the type will be created.
+ * For each type in the schema, a Markdown file with the same name as the type will be created.
+ * For each field in a type, a Markdown file with the same name as the type will be created.
+ * For each field in the Query type in the schema, a Markdown file with the same name as the field will be created.
+ * For each argument for each field in the Query type in a type a Markdown file with the same name as the type will be created.
  * <p>
  * See the options to configure the generator
  */
@@ -64,7 +66,7 @@ public class GraphQLMarkdownGenerator {
     /**
      * Creates the default Generator.
      *
-     * @param outputPath the output path for markdown files.
+     * @param outputPath the output path for Markdown files.
      * @return the default Generator
      */
     public static GraphQLMarkdownGenerator generator(Path outputPath) {
@@ -74,7 +76,7 @@ public class GraphQLMarkdownGenerator {
     /**
      * Sets the output path.
      *
-     * @param outputPath the output path for markdown files.
+     * @param outputPath the output path for Markdown files.
      * @return the writer for method chaining
      */
     public GraphQLMarkdownGenerator outputPath(Path outputPath) {
@@ -119,6 +121,9 @@ public class GraphQLMarkdownGenerator {
         private final Map<String, GraphQLInputObjectField> duplicateInputObjectFieldDefinitions;
         private final Map<String, GraphQLArgument> duplicateQueryArgumentDefinitions;
 
+        private final Pattern ignoreQueryNamePattern;
+        private final Pattern ignoreTypeNamePattern;
+
         public Generator(GraphQLSchema graphQLSchema) {
             this.graphQLSchema = graphQLSchema;
 
@@ -135,6 +140,9 @@ public class GraphQLMarkdownGenerator {
 
             this.queryArgumentsPath = queryDefinitionsPath.resolve(options.getArgumentsDirectory());
 
+            ignoreQueryNamePattern = options.getIgnoreQueryNamePattern() != null ? Pattern.compile(options.getIgnoreQueryNamePattern()) : null ;
+            ignoreTypeNamePattern = options.getIgnoreTypeNamePattern() != null ? Pattern.compile(options.getIgnoreTypeNamePattern()) : null ;
+
             List<GraphQLFieldDefinition> objectFieldDefinitions = new ArrayList<>(
                 graphQLSchema.getAllTypesAsList().stream()
                     .filter(type -> type instanceof GraphQLObjectType)
@@ -150,7 +158,7 @@ public class GraphQLMarkdownGenerator {
                 .collect(groupingBy(GraphQLFieldDefinition::getName))
                 .values().stream()
                 .filter(fields -> fields.size() > 1)
-                .map(fields -> fields.get(0))
+                .map(List::getFirst)
                 .collect(Collectors.toMap(GraphQLFieldDefinition::getName, java.util.function.Function.identity())));
 
             Map<String, List<GraphQLInputObjectField>> inputObjectFieldDefinitions = new TreeMap<>(graphQLSchema.getAllTypesAsList().stream()
@@ -160,7 +168,7 @@ public class GraphQLMarkdownGenerator {
 
             duplicateInputObjectFieldDefinitions = new TreeMap<>(inputObjectFieldDefinitions.values().stream()
                 .filter(fields -> fields.size() > 1)
-                .map(fields -> fields.get(0))
+                .map(List::getFirst)
                 .collect(Collectors.toMap(GraphQLInputObjectField::getName, identity())));
 
             queryDefinitions = new TreeMap<>(graphQLSchema.getQueryType().getFields().stream()
@@ -173,7 +181,7 @@ public class GraphQLMarkdownGenerator {
             duplicateQueryArgumentDefinitions = new TreeMap<>(queryArgumentDefinitions.entrySet().stream()
                 .filter(entry -> !entry.getKey().equals("input") && entry.getValue().size() > 1)
                 .map(Map.Entry::getValue)
-                .map(fields -> fields.get(0))
+                .map(List::getFirst)
                 .collect(Collectors.toMap(GraphQLArgument::getName, identity())));
         }
 
@@ -208,12 +216,15 @@ public class GraphQLMarkdownGenerator {
                         .map(this::generateMarkdownForTopLevelArgument).collect(Response.mergeLists())
                         .mapResult(generatedPaths::addAll))
                 .map(
-                    () -> graphQLSchema.getAllTypesAsList().stream()
+                    () -> graphQLSchema.getAllTypesAsList()
+                        .stream()
+                        .filter(type -> isGeneratingDescriptionForType(type.getName()))
                         .map(this::generateTypeMarkdown)
                         .collect(Response.mergeLists())
                         .mapResult(generatedPaths::addAll))
                 .map(
                     () -> graphQLSchema.getQueryType().getFields().stream()
+                        .filter(query -> isGeneratingDescriptionQuery(query.getName()))
                         .map(this::generateQueryMarkdown)
                         .collect(Response.mergeLists())
                         .mapResult(generatedPaths::addAll))
@@ -434,6 +445,28 @@ public class GraphQLMarkdownGenerator {
             } catch (IOException exception) {
                 return fail(Response.ErrorType.VALIDATION, path, String.format("Can not write to file due to %s", exception.getMessage()));
             }
+        }
+
+        /**
+         * Determines if the Generator generates a description for a specific query
+         *
+         * @param name the name of the query to be checked
+         * @return {@code true} if the Generator generates a description for a specific query, {@code false} otherwise
+         */
+        @JsonIgnore
+        public boolean isGeneratingDescriptionQuery(String name) {
+            return this.ignoreQueryNamePattern == null || !this.ignoreQueryNamePattern.matcher(name).matches();
+        }
+
+        /**
+         * Determines if the Generator generates a description for a specific type
+         *
+         * @param name the name of the type to be checked
+         * @return {@code true} if the Generator generates a description for a specific type, {@code false} otherwise
+         */
+        @JsonIgnore
+        public boolean isGeneratingDescriptionForType(String name) {
+            return this.ignoreTypeNamePattern == null || !this.ignoreTypeNamePattern.matcher(name).matches();
         }
     }
 }

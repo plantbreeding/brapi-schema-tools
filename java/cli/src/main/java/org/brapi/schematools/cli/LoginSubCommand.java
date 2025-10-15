@@ -1,6 +1,6 @@
 package org.brapi.schematools.cli;
 
-import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
+import org.brapi.schematools.core.authorization.oauth.SingleSignOn;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
@@ -16,6 +16,7 @@ public class LoginSubCommand implements Runnable {
 
     private final PrintStream out = System.out;
     private final PrintStream err = System.err;
+
     @CommandLine.Option(names = {"-a", "--oauth"}, description = "The URL of the OAuth access token if used")
     private String oauthURL;
     @CommandLine.Option(names = {"-u", "--username"}, description = "The username for authentication if required. If not provided the current system username is used.")

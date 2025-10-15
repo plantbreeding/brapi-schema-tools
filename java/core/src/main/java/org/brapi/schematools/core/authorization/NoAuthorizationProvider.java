@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse.authorization;
+package org.brapi.schematools.core.authorization;
 
 /**
  * The case when no Authorisation is required
