@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.LIST_RESPONSE_PATTERN;
 import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.SEARCH_RESPONSE_PATTERN;
@@ -41,6 +42,9 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private Boolean createTopLevelInputFieldDefinitions;
     private Boolean createTopLeveArgumentDefinitions;
     private String introspectionQuery;
+    private String introspectionQueryJsonPath;
+    private String ignoreQueryNamePattern;
+    private String ignoreTypeNamePattern;
 
     /**
      * Load the default options
@@ -89,7 +93,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             .assertNotNull(argumentsDirectory, "'argumentsDirectory' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(createTopLevelFieldDefinitions, "'createTopLevelFieldDefinitions' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(createTopLeveArgumentDefinitions, "'createTopLeveArgumentDefinitions' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(introspectionQuery, "'introspectionQuery' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(introspectionQuery, "'introspectionQuery' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -135,13 +139,25 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             introspectionQuery = overrideOptions.introspectionQuery;
         }
 
+        if (overrideOptions.introspectionQueryJsonPath != null) {
+            introspectionQueryJsonPath = overrideOptions.introspectionQueryJsonPath;
+        }
+
+        if (overrideOptions.ignoreQueryNamePattern != null) {
+            ignoreQueryNamePattern = overrideOptions.ignoreQueryNamePattern;
+        }
+
+        if (overrideOptions.ignoreTypeNamePattern != null) {
+            ignoreTypeNamePattern = overrideOptions.ignoreTypeNamePattern;
+        }
+
         return this;
     }
 
     /**
      * Determines if the Generator should Overwrite exiting files.
      *
-     * @return {@code true} if the if the Generator should Overwrite exiting files, {@code false} otherwise
+     * @return {@code true} if the Generator should Overwrite exiting files, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isOverwritingExistingFiles() {

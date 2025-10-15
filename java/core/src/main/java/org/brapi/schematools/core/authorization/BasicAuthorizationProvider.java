@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse.authorization;
+package org.brapi.schematools.core.authorization;
 
 import lombok.Builder;
 import lombok.Value;
@@ -14,6 +14,11 @@ import java.util.Base64;
 public class BasicAuthorizationProvider implements AuthorizationProvider {
     String username ;
     String password ;
+
+    @Override
+    public boolean required() {
+        return true;
+    }
 
     @Override
     public Response<String> getAuthorization() {

@@ -12,6 +12,7 @@ dependencies {
     implementation 'com.atlassian.oai:swagger-request-validator-core'
     implementation 'org.dflib:dflib-excel'
     implementation 'ch.qos.logback:logback-classic'
+    implementation 'com.jayway.jsonpath:json-path:2.9.0'
 }
 
 application {
