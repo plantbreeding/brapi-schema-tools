@@ -42,9 +42,8 @@ import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
     name = "generate", mixinStandardHelpOptions = true,
     description = "Generates Various outputs from a BrAPI JSON schema, including OpenAPI Specification or GraphQL Schema"
 )
-public class GenerateSubCommand implements Runnable {
+public class GenerateSubCommand extends AbstractSubCommand {
     private PrintWriter out ;
-    private PrintWriter err ;
 
     private static final OutputFormat DEFAULT_FORMAT = OutputFormat.OPEN_API;
 
@@ -69,54 +68,39 @@ public class GenerateSubCommand implements Runnable {
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
     private boolean overwrite = true;
 
-    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True to throw an exception when validation or generation fails.")
-    private boolean throwExceptionOnFail = false;
-
-    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
-    private boolean stackTrace = false;
+    @Override
+    public void execute() throws IOException {
+        switch (outputFormat) {
+            case OPEN_API, OPEN_API_JSON -> {
+                OpenAPIGeneratorOptions options = optionsPath != null ?
+                    OpenAPIGeneratorOptions.load(optionsPath) : OpenAPIGeneratorOptions.load();
+                OpenAPIGeneratorMetadata metadata = metadataPath != null ?
+                    OpenAPIGeneratorMetadata.load(metadataPath) : OpenAPIGeneratorMetadata.load();
+                generateOpenAPISpecification(options, metadata);
+            }
+            case GRAPHQL, GRAPHQL_INTROSPECTION -> {
+                GraphQLGeneratorOptions options = optionsPath != null ?
+                    GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
+                GraphQLGeneratorMetadata metadata = metadataPath != null ?
+                    GraphQLGeneratorMetadata.load(metadataPath) : GraphQLGeneratorMetadata.load();
+                generateGraphQLSchema(options, metadata);
+            }
+            case OWL -> {
+                OntModelGeneratorOptions options = optionsPath != null ?
+                    OntModelGeneratorOptions.load(optionsPath) : OntModelGeneratorOptions.load();
+                OntModelGeneratorMetadata metadata = metadataPath != null ?
+                    OntModelGeneratorMetadata.load(metadataPath) : OntModelGeneratorMetadata.load();
+                generateOntModel(options, metadata);
+            }
+            case MARKDOWN -> generateMarkdown();
+            case XLSX -> generateExcel();
+        }
+    }
 
     @Override
-    public void run() {
-        try {
-            err = new PrintWriter(System.err) ;
-
-            switch (outputFormat) {
-
-                case OPEN_API, OPEN_API_JSON -> {
-                    OpenAPIGeneratorOptions options = optionsPath != null ?
-                        OpenAPIGeneratorOptions.load(optionsPath) : OpenAPIGeneratorOptions.load() ;
-                    OpenAPIGeneratorMetadata metadata = metadataPath != null ?
-                        OpenAPIGeneratorMetadata.load(metadataPath) :  OpenAPIGeneratorMetadata.load() ;
-                    generateOpenAPISpecification(options, metadata);
-                }
-                case GRAPHQL, GRAPHQL_INTROSPECTION -> {
-                    GraphQLGeneratorOptions options = optionsPath != null ?
-                        GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
-                    GraphQLGeneratorMetadata metadata = metadataPath != null ?
-                        GraphQLGeneratorMetadata.load(metadataPath) :  GraphQLGeneratorMetadata.load() ;
-                    generateGraphQLSchema(options, metadata);
-                }
-                case OWL -> {
-                    OntModelGeneratorOptions options = optionsPath != null ?
-                        OntModelGeneratorOptions.load(optionsPath) :  OntModelGeneratorOptions.load() ;
-                    OntModelGeneratorMetadata metadata = metadataPath != null ?
-                        OntModelGeneratorMetadata.load(metadataPath) :  OntModelGeneratorMetadata.load() ;
-                    generateOntModel(options, metadata);
-                }
-                case MARKDOWN -> {
-                    generateMarkdown();
-                }
-                case XLSX -> {
-                    generateExcel();
-                }
-            }
-        } catch (Exception exception) {
-            handleFail(exception);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            err.close();
+    protected void closeOut() {
+        if (out != null) {
+            out.close();
         }
     }
 
@@ -138,7 +122,7 @@ public class GenerateSubCommand implements Runnable {
                 out.close();
             }
         } catch (IOException exception) {
-            handleFail(exception) ;
+            handleException(exception) ;
         }
     }
 
@@ -154,22 +138,15 @@ public class GenerateSubCommand implements Runnable {
                 out.close();
             }
         } catch (IOException exception) {
-            handleFail(exception) ;
+            handleException(exception) ;
         }
     }
 
     private void printGraphQLSchemaErrors(Response<GraphQLSchema> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.println(message = "There was 1 error generating the GraphQL Schema");
+            printErrors("There was 1 error generating the GraphQL Schema", response.getAllErrors());
         } else {
-            err.println(message = String.format("There were %d errors generating the GraphQL Schema", response.getAllErrors().size()));
-        }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
+            printErrors(String.format("There were %d errors generating the GraphQL Schema", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -194,10 +171,10 @@ public class GenerateSubCommand implements Runnable {
 
             } else {
                 if (specifications.isEmpty()) {
-                    handleFail("No specification to to output!");
+                    handleError("No specification to to output!");
                 } else {
                     if (outputPath != null && Files.isRegularFile(outputPath)) {
-                        handleFail(String.format("Output path '%s' must be a directory if outputting to separate files.", outputPath.toFile()));
+                        handleError(String.format("Output path '%s' must be a directory if outputting to separate files.", outputPath.toFile()));
                     } else {
                         for (OpenAPI specification : specifications) {
                             outputOpenAPISpecification(specification, resolveOutputPath(specification));
@@ -206,7 +183,7 @@ public class GenerateSubCommand implements Runnable {
                 }
             }
         } catch (IOException exception) {
-            handleFail(exception) ;
+            handleException(exception) ;
         }
     }
 
@@ -223,17 +200,10 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printOpenAPISpecificationErrors(Response<List<OpenAPI>> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            System.err.println(message = "There was 1 error generating the OpenAPI Specification");
+            printErrors("There was 1 error generating the OpenAPI Specification", response.getAllErrors());
         } else {
-            System.err.println(message = String.format("There were %d errors generating the OpenAPI Specification", response.getAllErrors().size()));
-        }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
+            printErrors(String.format("There were %d errors generating the OpenAPI Specification", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -253,22 +223,15 @@ public class GenerateSubCommand implements Runnable {
                 out.close();
             }
         } catch (IOException exception) {
-            handleFail(exception) ;
+            handleException(exception) ;
         }
     }
 
     private void printOntModelErrors(Response<OntModel> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.println(message = "There was 1 error generating the RDF Graph");
+            printErrors("There was 1 error generating the RDF Graph", response.getAllErrors());
         } else {
-            err.println(message = String.format("There were %d errors generating the RDF Graph", response.getAllErrors().size()));
-        }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
+            printErrors(String.format("There were %d errors generating the RDF Graph", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -276,14 +239,14 @@ public class GenerateSubCommand implements Runnable {
         if (outputPathFile != null) {
 
             if (Files.isDirectory(outputPathFile)) {
-                handleFail(String.format("Output path '%s' is a directory", outputPath));
+                handleError(String.format("Output path '%s' is a directory", outputPath));
                 return false ;
             }
 
             Files.createDirectories(outputPathFile.getParent());
 
             if (!overwrite && Files.isRegularFile(outputPathFile)) {
-                handleFail(String.format("Output file '%s' already exists was not overwritten", outputPath));
+                handleError(String.format("Output file '%s' already exists was not overwritten", outputPath));
                 return false ;
             }
 
@@ -299,7 +262,7 @@ public class GenerateSubCommand implements Runnable {
         try {
             if (outputPath != null) {
                 if (Files.isRegularFile(outputPath)) {
-                    handleFail("For Markdown generation the output path must be a directory");
+                    handleError("For Markdown generation the output path must be a directory");
                 } else {
 
                     Files.createDirectories(outputPath);
@@ -311,10 +274,10 @@ public class GenerateSubCommand implements Runnable {
                     response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
                 }
             } else {
-                handleFail("For Markdown generation the output directory must be provided");
+                handleError("For Markdown generation the output directory must be provided");
             }
         } catch (IOException exception) {
-            handleFail(exception) ;
+            handleException(exception) ;
         }
     }
 
@@ -331,17 +294,10 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printMarkdownErrors(Response<List<Path>> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.println(message = "There was 1 error generating the Markdown");
+            printErrors("There was 1 error generating the Markdown file(s)", response.getAllErrors());
         } else {
-            err.println(message = String.format("There were %d errors generating the Markdown", response.getAllErrors().size())); ;
-        }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
+            printErrors(String.format("There were %d errors generating the Markdown file(s)", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -353,7 +309,7 @@ public class GenerateSubCommand implements Runnable {
                 // TODO option for split files by module
 
                 if (Files.exists(outputPath) && !Files.isRegularFile(outputPath)) {
-                    handleFail("For Excel (xlsx) generation the output path must be a file");
+                    handleError("For Excel (xlsx) generation the output path must be a file");
                 } else {
 
                     XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
@@ -363,10 +319,10 @@ public class GenerateSubCommand implements Runnable {
                     response.onSuccessDoWithResult(this::outputExcelPaths).onFailDoWithResponse(this::printExcelErrors);
                 }
             } else {
-                handleFail("For Excel (xlsx) generation the output file must be provided");
+                handleError("For Excel (xlsx) generation the output file must be provided");
             }
         } catch (Exception exception) {
-            handleFail(exception);
+            handleException(exception);
         }
     }
 
@@ -383,53 +339,10 @@ public class GenerateSubCommand implements Runnable {
     }
 
     private void printExcelErrors(Response<List<Path>> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.println(message = "There was 1 error generating the Excel");
+            printErrors("There was 1 error generating the Excel file", response.getAllErrors());
         } else {
-            err.println(message = String.format("There were %d errors generating the Excel", response.getAllErrors().size()));
+            printErrors(String.format("There were %d errors generating Excel file", response.getAllErrors().size()), response.getAllErrors());
         }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
-        }
-    }
-
-    private void handleFail(Exception exception) {
-        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
-        err.println(message);
-
-        if (stackTrace) {
-            exception.printStackTrace(err);
-        }
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, exception) ;
-        }
-    }
-
-    private void handleFail(String message) {
-        err.println(message);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message) ;
-        }
-    }
-
-    private void printError(Response.Error error) {
-        switch (error.getType()) {
-
-            case VALIDATION -> {
-                err.print("Validation Error :");
-            }
-            case PERMISSION, OTHER -> {
-                err.print("Error :");
-            }
-        }
-        err.print('\t');
-
-        err.println(error.getMessage());
     }
 }

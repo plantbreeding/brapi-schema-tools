@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse.authorization.oauth;
+package org.brapi.schematools.core.authorization.oauth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
+import org.brapi.schematools.core.authorization.AuthorizationProvider;
 import org.brapi.schematools.core.response.Response;
 
 import java.io.File;

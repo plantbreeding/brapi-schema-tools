@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse.authorization;
+package org.brapi.schematools.core.authorization;
 
 import org.brapi.schematools.core.response.Response;
 
@@ -16,7 +16,7 @@ public interface AuthorizationProvider {
     }
 
     /**
-     * Gets a response containing the Authorisation Header is {@link #required()} is {@code true},
+     * Gets a response containing the Authorisation Header when {@link #required()} is {@code true},
      * otherwise an empty response
      * @return a response containing the Authorisation Header.
      */

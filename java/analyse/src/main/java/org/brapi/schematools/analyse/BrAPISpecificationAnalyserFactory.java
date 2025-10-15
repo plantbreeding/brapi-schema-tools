@@ -21,7 +21,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.slf4j.Slf4j;
-import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
+import org.brapi.schematools.core.authorization.AuthorizationProvider;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -1180,8 +1180,8 @@ public class BrAPISpecificationAnalyserFactory {
                     .map(this::executePrerequisite).collect(Response.toList())
                     .map(() -> createBody(request)
                         .mapResult(bodyPublisher -> builder.method(request.getValidatorRequest().getMethod().name(), bodyPublisher))
-                        .map(authorizationProvider::getAuthorization)
-                        .mapResult(authorization -> builder.header("Authorization", authorization))
+                        .mapOnCondition(authorizationProvider.required(), authorizationProvider::getAuthorization)
+                        .onSuccessDoWithResult(authorization -> builder.header("Authorization", authorization))
                         .merge(() -> createURI(builder, request))
                         .mapResult(HttpRequest.Builder::build)
                         .mapResultToResponse(this::send)
@@ -1221,7 +1221,7 @@ public class BrAPISpecificationAnalyserFactory {
             if (request.getPathParameters().isEmpty()) {
                 Matcher matcher = PARAMETER_PATTERN.matcher(path);
 
-                // check to make sure there is no missing parameters
+                // check to make sure there are no missing parameters
                 if (matcher.find()) {
                     Response<String> response = fail(Response.ErrorType.VALIDATION,
                         String.format("Did not replace parameter '%s' in URI '%s'", matcher.group(1), path));
@@ -1416,8 +1416,8 @@ public class BrAPISpecificationAnalyserFactory {
         }
 
         private Response<HttpResponse<String>> send(HttpRequest request) {
-            log.debug(String.format("Sending %s %s", request.method(), request.uri()));
-            log.debug(String.format("Request body publisher %s", request.bodyPublisher().orElse(null)));
+            log.debug("Sending {} {}", request.method(), request.uri());
+            log.debug("Request body publisher {}", request.bodyPublisher().orElse(null));
             try {
                 return success(client.send(request, HttpResponse.BodyHandlers.ofString()));
             } catch (IOException | InterruptedException e) {
@@ -1426,8 +1426,8 @@ public class BrAPISpecificationAnalyserFactory {
         }
 
         private com.atlassian.oai.validator.model.Response createResponse(HttpResponse<String> response) {
-            log.debug(String.format("Response was %s for %s", response.statusCode(), response.uri()));
-            log.debug(String.format("Response body %s", response.body()));
+            log.debug("Response was {} for {}", response.statusCode(), response.uri());
+            log.debug("Response body {}", response.body());
             return SimpleResponse.Builder
                 .status(response.statusCode())
                 .withContentType(response.headers().firstValue("Content-Type").orElse(null))

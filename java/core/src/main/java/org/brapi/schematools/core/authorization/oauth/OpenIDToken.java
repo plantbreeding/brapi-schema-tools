@@ -1,4 +1,4 @@
-package org.brapi.schematools.analyse.authorization.oauth;
+package org.brapi.schematools.core.authorization.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;

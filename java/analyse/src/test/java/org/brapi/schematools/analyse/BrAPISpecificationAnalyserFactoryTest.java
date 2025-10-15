@@ -1,6 +1,6 @@
 package org.brapi.schematools.analyse;
 
-import org.brapi.schematools.analyse.authorization.NoAuthorizationProvider;
+import org.brapi.schematools.core.authorization.NoAuthorizationProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
