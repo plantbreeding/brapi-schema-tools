@@ -64,10 +64,10 @@ public class MarkdownSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-p", "--password"}, interactive = true, arity = "0..1", description = "The password for the supplied username. Will fail if not logged in and the password is not provided. Providing the option without a value make the application as for a value.")
     private String password;
 
-    @CommandLine.Option(names = {"-c", "--client"}, description = "The client id for authentication if required.")
+    @CommandLine.Option(names = {"-c", "--clientId"}, description = "The client id for authentication if required.")
     private String clientId;
 
-    @CommandLine.Option(names = {"-s", "--secret"}, description = "The client secret for authentication if required.")
+    @CommandLine.Option(names = {"-s", "--clientSecret"}, description = "The client secret for authentication if required.")
     private String clientSecret;
 
     @CommandLine.Option(names = {"-b", "--bearer"}, description = "The bearer token for authentication if required.")
@@ -213,13 +213,17 @@ public class MarkdownSubCommand extends AbstractSubCommand {
     }
 
     private Response<OpenIDToken> login(SingleSignOn sso) {
-        if (password != null) {
-            return sso.loginWithPassword(password);
+        if (password != null && clientSecret != null) {
+            return sso.loginWithPasswordAndClientId(password, clientSecret);
         } else {
-            if (clientSecret != null) {
-                return sso.loginWithClientId(clientSecret);
+            if (password != null) {
+                return sso.loginWithPassword(password);
             } else {
-                return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged in please provide password using option '-p' for user '%s' or client secret for client '%s'", username, clientId));
+                if (clientSecret != null) {
+                    return sso.loginWithClientId(clientSecret);
+                } else {
+                    return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged in please provide password using option '-p' for user '%s' or client secret for client '%s'", username, clientId));
+                }
             }
         }
     }
