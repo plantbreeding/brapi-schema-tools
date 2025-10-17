@@ -364,6 +364,15 @@
     },
     "components" : {
         "schemas" : {
+            "AdditionalInfo" : {
+                "type" : "object",
+                "properties" : {
+                    "additionalProperties" : {
+                        "type" : "string"
+                    }
+                },
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
+            },
             "ContentTypes" : {
                 "type" : "string",
                 "enum" : [
@@ -383,6 +392,59 @@
                 "items" : {
                     "type" : "string",
                     "format" : "uri"
+                }
+            },
+            "PedigreeNode" : {
+                "required" : [
+                    "germplasmDbId",
+                    "germplasmName",
+                    "germplasmPUI"
+                ],
+                "type" : "object",
+                "properties" : {
+                    "additionalInfo" : {
+                        "$ref" : "#/components/schemas/AdditionalInfo"
+                    },
+                    "breedingMethodDbId" : {
+                        "type" : "string"
+                    },
+                    "breedingMethodName" : {
+                        "type" : "string"
+                    },
+                    "crossingProjectDbId" : {
+                        "type" : "string"
+                    },
+                    "crossingProjectName" : {
+                        "type" : "string"
+                    },
+                    "crossingYear" : {
+                        "type" : "integer",
+                        "format" : "int32"
+                    },
+                    "defaultDisplayName" : {
+                        "type" : "string"
+                    },
+                    "familyCode" : {
+                        "type" : "string"
+                    },
+                    "germplasmDbId" : {
+                        "type" : "string"
+                    },
+                    "germplasmName" : {
+                        "type" : "string"
+                    },
+                    "germplasmPUI" : {
+                        "type" : "string"
+                    },
+                    "pedigreeString" : {
+                        "type" : "string"
+                    },
+                    "siblingDbIds" : {
+                        "type" : "array",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    }
                 }
             },
             "Study" : {
@@ -839,6 +901,43 @@
                     }
                 }
             },
+            "GermplasmListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Germplasm"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "202AcceptedSearchResponse" : {
                 "description" : "Accepted",
                 "content" : {
@@ -861,6 +960,32 @@
                                             "example" : "551ae08c"
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "GermplasmSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Germplasm"
                                 }
                             }
                         }

@@ -373,15 +373,6 @@
     },
     "components" : {
         "schemas" : {
-            "AdditionalInfo" : {
-                "type" : "object",
-                "properties" : {
-                    "additionalProperties" : {
-                        "type" : "string"
-                    }
-                },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
-            },
             "ContentTypes" : {
                 "type" : "string",
                 "enum" : [
@@ -916,32 +907,6 @@
                     }
                 }
             },
-            "StudySingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudySingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Study"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "GermplasmSingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -987,43 +952,6 @@
                             "type" : "string"
                         },
                         "example" : "ERROR - 2018-10-08T18:15:11Z - The requested object DbId is not found"
-                    }
-                }
-            },
-            "StudyListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudyListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Study"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             },
