@@ -5,6 +5,7 @@ import graphql.schema.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,11 +13,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.groupingBy;
@@ -104,7 +105,7 @@ public class GraphQLMarkdownGenerator {
      * @return the paths of the Markdown files generated from the complete BrAPI Specification
      */
     public Response<List<Path>> generate(GraphQLSchema schema) {
-        return new GraphQLMarkdownGenerator.Generator(schema).generate();
+        return new Generator(schema).generate();
     }
 
     private class Generator {
@@ -159,7 +160,7 @@ public class GraphQLMarkdownGenerator {
                 .values().stream()
                 .filter(fields -> fields.size() > 1)
                 .map(List::getFirst)
-                .collect(Collectors.toMap(GraphQLFieldDefinition::getName, java.util.function.Function.identity())));
+                .collect(Collectors.toMap(GraphQLFieldDefinition::getName, Function.identity())));
 
             Map<String, List<GraphQLInputObjectField>> inputObjectFieldDefinitions = new TreeMap<>(graphQLSchema.getAllTypesAsList().stream()
                 .filter(type -> type instanceof GraphQLInputObjectType)
@@ -244,7 +245,7 @@ public class GraphQLMarkdownGenerator {
                 return Response.empty();
             }
 
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s' with class '%s'",
+            return fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s' with class '%s'",
                 graphQLNamedType.getName(), graphQLNamedType.getClass().getSimpleName()));
         }
 
@@ -266,7 +267,7 @@ public class GraphQLMarkdownGenerator {
 
             GraphQLFieldDefinition queryDefinition = queryName != null ? queryDefinitions.get(queryName.toLowerCase()) : null ;
 
-            GraphQLOutputType dataType = matcher.matches() ? findEntityFromResponse(objectType) : null ;
+            GraphQLOutputType dataType = matcher.matches() ? findDataTypeFromResponse(objectType) : null ;
 
             List<Path> paths = new ArrayList<>();
             Path descriptionPath = typeDescriptionsPath.resolve(String.format("%s.md", objectType.getName()));
@@ -286,9 +287,29 @@ public class GraphQLMarkdownGenerator {
             List < Path > paths = new ArrayList<>();
             Path descriptionPath = typeDescriptionsPath.resolve(String.format("%s.md", objectType.getName()));
 
+            GraphQLOutputType entityType ;
+
+            if (queryDefinition != null && queryDefinition.getType() instanceof GraphQLObjectType responseType) {
+
+                matcher = LIST_RESPONSE_PATTERN.matcher(responseType.getName());
+
+                if (!matcher.matches()) {
+                    matcher = SEARCH_RESPONSE_PATTERN.matcher(responseType.getName());
+
+                    if (!matcher.matches()) {
+                        matcher = RESPONSE_PATTERN.matcher(responseType.getName());
+                    }
+                }
+
+                entityType = matcher.matches() ? findEntityFromResponse(responseType) : null ;
+
+            } else {
+                entityType = null ;
+            }
+
             return writeToFile(descriptionPath, objectType.getDescription(), () -> options.getDescriptionForInputObjectType(objectType, queryDefinition))
                 .onSuccessDoWithResult(paths::addAll)
-                .map(() -> generateMarkdownForInputFields(objectType, queryDefinition, objectType.getFields()))
+                .map(() -> generateMarkdownForInputFields(objectType, queryDefinition, objectType.getFields(), entityType))
                 .onSuccessDoWithResult(paths::addAll)
                 .map(() -> success(paths));
         }
@@ -297,7 +318,7 @@ public class GraphQLMarkdownGenerator {
             List<Path> paths = new ArrayList<>();
             Path descriptionPath = queryDescriptionsPath.resolve(String.format("%s.md", queryDefinition.getName()));
 
-            GraphQLOutputType dataType = findEntityFromResponse(queryDefinition.getType()) ;
+            GraphQLOutputType dataType = findDataTypeFromResponse(queryDefinition.getType()) ;
             GraphQLInputType inputType = queryDefinition.getArgument("input") != null ? queryDefinition.getArgument("input").getType() : null;
 
             return writeToFile(descriptionPath, graphQLSchema.getDescription(), () -> options.getDescriptionForQuery(queryDefinition, dataType, inputType))
@@ -307,16 +328,39 @@ public class GraphQLMarkdownGenerator {
                 .map(() -> success(paths));
         }
 
-        private GraphQLOutputType findEntityFromResponse(GraphQLType type) {
+        private GraphQLOutputType findDataTypeFromResponse(GraphQLType type) {
             if (type instanceof GraphQLObjectType graphQLObjectType) {
                 return graphQLObjectType.getField("data") != null ? graphQLObjectType.getField("data").getType() : null;
-            } else if (type instanceof GraphQLList graphQLList) {
-                return findEntityFromResponse(graphQLList.getWrappedType()) ;
-            } else if (type instanceof GraphQLNonNull graphQLNonNull) {
-                return findEntityFromResponse(graphQLNonNull.getWrappedType()) ;
             }
 
             return null;
+        }
+
+        private GraphQLOutputType findEntityFromResponse(GraphQLType type) {
+
+            GraphQLType entityType ;
+
+            if (type instanceof GraphQLObjectType) {
+                entityType = unwrapType(findDataTypeFromResponse(type));
+            } else {
+                entityType = unwrapType(type);
+            }
+
+            if (entityType instanceof GraphQLOutputType) {
+                return (GraphQLOutputType)entityType ;
+            }
+
+            return null;
+        }
+
+        private GraphQLType unwrapType(GraphQLType type) {
+            if (type instanceof GraphQLList graphQLList) {
+                return unwrapType(graphQLList.getWrappedType()) ;
+            } else if (type instanceof GraphQLNonNull graphQLNonNull) {
+                return unwrapType(graphQLNonNull.getWrappedType()) ;
+            }
+
+            return type;
         }
 
         private Response<List<Path>> generateMarkdownForTopLevelField(GraphQLFieldDefinition field) {
@@ -328,7 +372,7 @@ public class GraphQLMarkdownGenerator {
         private Response<List<Path>> generateMarkdownForTopLevelField(GraphQLInputObjectField field) {
             Path fieldPath = typeFieldsPath.resolve(String.format("%s.md", field.getName()));
 
-            return writeToFile(fieldPath, field.getDescription(), () -> options.getDescriptionForInputField(null, null, field));
+            return writeToFile(fieldPath, field.getDescription(), () -> options.getDescriptionForInputField(null, null, field, null, null));
         }
 
         private Response<List<Path>> generateMarkdownForFields(GraphQLNamedType type, List<GraphQLFieldDefinition> fields) {
@@ -355,14 +399,26 @@ public class GraphQLMarkdownGenerator {
             }
         }
 
-        private Response<List<Path>> generateMarkdownForInputFields(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, List<GraphQLInputObjectField> fields) {
-            return fields.stream().map(field -> generateMarkdownForInputField(type, queryDefinition, field)).collect(Response.mergeLists());
+        private Response<List<Path>> generateMarkdownForInputFields(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, List<GraphQLInputObjectField> fields, GraphQLOutputType entityType) {
+            return fields.stream().map(field -> generateMarkdownForInputField(type, queryDefinition, field, entityType)).collect(Response.mergeLists());
         }
 
-        private Response<List<Path>> generateMarkdownForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
+        private Response<List<Path>> generateMarkdownForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field, GraphQLOutputType entityType) {
+            GraphQLFieldDefinition objectField;
+
+            GraphQLObjectType namedOutputType;
+
+            if (entityType instanceof GraphQLNamedOutputType) {
+                namedOutputType = (GraphQLObjectType) entityType;
+                objectField = namedOutputType.getField(StringUtils.toSingular(field.getName()));
+            } else {
+                namedOutputType = null;
+                objectField = null;
+            }
+
             if (!options.isCreatingTopLevelInputFieldDefinitions() || !duplicateInputObjectFieldDefinitions.containsKey(field.getName())) {
                 return createPath(this.typeFieldsPath, type.getName(), String.format("%s.md", field.getName()))
-                    .mapResultToResponse(filePath -> writeToFile(filePath, field.getDescription(), () -> options.getDescriptionForInputField(type, queryDefinition, field)));
+                    .mapResultToResponse(filePath -> writeToFile(filePath, field.getDescription(), () -> options.getDescriptionForInputField(type, queryDefinition, field, namedOutputType, objectField)));
             } else {
                 log.warn("Skipping duplicate field '{}' in type '{}', it was created in top level", type.getName(), field.getName());
                 return success(Collections.emptyList());
@@ -439,7 +495,14 @@ public class GraphQLMarkdownGenerator {
                         printWriter.println("# Implementation");
                         printWriter.println(implementationText);
                     }
+
+                    if (options.isAddingGeneratorComments()) {
+                        printWriter.println();
+                        printWriter.println("<!-- Generated by Schema Tools Version " + options.getSchemaToolsVersion() + " " + this.getClass().getSimpleName() + " -->");
+                    }
+
                     printWriter.close();
+
                     return success(Collections.singletonList(path));
                 }
             } catch (IOException exception) {

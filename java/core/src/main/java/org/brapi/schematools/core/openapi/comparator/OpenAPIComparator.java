@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.openapi.comparator;
 
-import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;

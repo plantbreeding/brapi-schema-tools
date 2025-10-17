@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.LIST_RESPONSE_PATTERN;
 import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.SEARCH_RESPONSE_PATTERN;
@@ -45,6 +44,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String introspectionQueryJsonPath;
     private String ignoreQueryNamePattern;
     private String ignoreTypeNamePattern;
+    private Boolean addGeneratorComments;
 
     /**
      * Load the default options
@@ -151,6 +151,10 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             ignoreTypeNamePattern = overrideOptions.ignoreTypeNamePattern;
         }
 
+        if (overrideOptions.addGeneratorComments != null) {
+            addGeneratorComments = overrideOptions.addGeneratorComments;
+        }
+
         return this;
     }
 
@@ -177,7 +181,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
             if (queryDefinition != null) {
                 return String.format("%s is the response for the %s query, which returns %s.", type.getName(), getMarkdownLink(queryDefinition, "../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"), getMarkdownLink(dataType, ""));
             } else {
-                return String.format("%s is an Response Object Type, which returns %s.", type.getName(), getMarkdownLink(dataType, ""));
+                return String.format("%s is a Response Object Type, which returns %s.", type.getName(), getMarkdownLink(dataType, ""));
             }
         } else {
             return String.format("%s is an Object Type.", type.getName());
@@ -193,11 +197,10 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      */
     public String getDescriptionForInputObjectType(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition) {
         if (queryDefinition != null) {
-            return String.format("%s is used as an input for the %s query.", type.getName(), getMarkdownLink(queryDefinition, "../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
+            return String.format("%s is used to filter the results of the %s query.", type.getName(), getMarkdownLink(queryDefinition, "../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
         } else {
-            return String.format("%s is an Input Type.", type.getName());
+            return String.format("%s is an Input Type, which is used to filter the results of a query.", type.getName());
         }
-
     }
 
     /**
@@ -352,27 +355,39 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     /**
      * Creates the description for a GraphQLInputObjectField
      *
-     * @param type            the type to which this field belongs
-     * @param queryDefinition the query associated with the input field type
-     * @param field           the GraphQLInputObjectField
+     * @param type                the type to which this field belongs
+     * @param queryDefinition     the query associated with the input field type
+     * @param inputObjectField    the GraphQLInputObjectField
+     * @param responseEntity      the response entity
+     * @param responseEntityField the GraphQLFieldDefinition for the response entity that matches the inputObjectField
      * @return the description for a GraphQLInputObjectField
      */
-    public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition, GraphQLInputObjectField field) {
+    public String getDescriptionForInputField(GraphQLInputObjectType type, GraphQLFieldDefinition queryDefinition,
+                                              GraphQLInputObjectField inputObjectField, GraphQLNamedOutputType responseEntity, GraphQLFieldDefinition responseEntityField) {
         if (type != null) {
             if (queryDefinition != null) {
-                return String.format("The %s field in type %s is used in the %s query to filter the returned results.",
-                    field.getName(),
-                    getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
-                    getMarkdownLink(queryDefinition, "../../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
+                if (responseEntity != null && responseEntityField != null) {
+                    return String.format("The %s field in type %s is used in the %s query to filter the returned results, by the %s field in %s.",
+                        inputObjectField.getName(),
+                        getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
+                        getMarkdownLink(queryDefinition, "../../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"),
+                        getMarkdownLink(responseEntityField, "../../" + fieldsDirectory + "/" + responseEntity.getName() + "/"),
+                        getMarkdownLink(responseEntity, "../../" + descriptionsDirectory + "/"));
+                } else {
+                    return String.format("The %s field in type %s is used in the %s query to filter the returned results.",
+                        inputObjectField.getName(),
+                        getMarkdownLink(type, "../../" + descriptionsDirectory + "/"),
+                        getMarkdownLink(queryDefinition, "../../../" + queryDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
+                }
             } else {
                 return String.format("The %s field in type %s is used to filter query results.",
-                    field.getName(),
+                    inputObjectField.getName(),
                     getMarkdownLink(type, "../../" + descriptionsDirectory + "/"));
             }
         } else {
             return String.format("The %s field returns %s value.",
-                field.getName(),
-                getMarkdownLink(field.getType(), "../../" + descriptionsDirectory + "/"));
+                inputObjectField.getName(),
+                getMarkdownLink(inputObjectField.getType(), "../../" + descriptionsDirectory + "/"));
         }
     }
 
@@ -426,6 +441,16 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
         return createTopLeveArgumentDefinitions != null && createTopLeveArgumentDefinitions;
     }
 
+    /**
+     * Determines if the Generator should create a hidden comment at the bottom of the Markdown.
+     *
+     * @return {@code true} if the Generator should create a hidden comment at the bottom of the Markdown.,
+     * {@code false} otherwise
+     */
+    public boolean isAddingGeneratorComments() {
+        return addGeneratorComments != null && addGeneratorComments;
+    }
+
     private String getMarkdownLink(GraphQLType type, String prefix) {
         if (type instanceof GraphQLNamedType graphQLNamedType) {
             if (type instanceof GraphQLScalarType) {
@@ -445,4 +470,6 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String getMarkdownLink(GraphQLFieldDefinition queryDefinition, String prefix) {
         return String.format("[%s](%s%s.md)", queryDefinition.getName(), prefix, queryDefinition.getName());
     }
+
+
 }

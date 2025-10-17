@@ -22,3 +22,19 @@ dependencies {
 mavenPublishing {
     coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-core", project.version)
 }
+
+tasks.register('generateVersionFile') {
+    doLast {
+        def versionFile = file("${layout.buildDirectory.get()}/resources/main/version.txt")
+        versionFile.parentFile.mkdirs()
+        versionFile.text = "Version: ${project.version}\nGenerated on: ${new Date()}"
+    }
+}
+
+processResources {
+    dependsOn tasks.named('generateVersionFile')
+    from("${layout.buildDirectory.get()}/resources/main") {
+        include 'version.txt'
+    }
+}
+
