@@ -59,7 +59,7 @@ public class AnalyseSubCommand extends AbstractSubCommand {
     private String clientId;
     @CommandLine.Option(names = {"-s", "--clientSecret"}, description = "The client secret for authentication if required.")
     private String clientSecret;
-    @CommandLine.Option(names = {"-v", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
+    @CommandLine.Option(names = {"-vb", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
     private boolean verbose;
     @CommandLine.Option(names = {"-i", "--individualReportsByEntity"}, description = "Create an individual report for entity")
     private boolean individualReportsByEntity;
