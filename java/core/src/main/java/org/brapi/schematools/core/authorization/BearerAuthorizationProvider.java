@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.brapi.schematools.core.response.Response;
 
-import java.util.Base64;
-
 /**
  * The Bearer Authorisation
  */

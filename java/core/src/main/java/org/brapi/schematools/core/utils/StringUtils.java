@@ -12,8 +12,11 @@ import org.brapi.schematools.core.response.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -203,6 +206,26 @@ public class StringUtils {
      */
     public static String toLabel(String propertyName) {
         return capitalise(propertyName).replaceAll("([A-Z])", " $1").trim() ;
+    }
+
+    /**
+     * Reads a string from a Classpath
+     * @param classpath the classpath
+     * @return a string read from a classpath
+     */
+    public static Response<String> readStringFromClasspath(String classpath) {
+        try {
+            URL url = StringUtils.class.getClassLoader().getResource(classpath) ;
+
+            if (url != null) {
+                return readStringFromPath(Paths.get(url.toURI())) ;
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath)) ;
+            }
+
+        } catch (URISyntaxException exception) {
+            return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
+        }
     }
 
     /**

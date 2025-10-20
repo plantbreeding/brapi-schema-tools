@@ -7,4 +7,7 @@ import org.brapi.schematools.core.validiation.Validatable;
  */
 public interface Options extends Validatable {
 
+    default String getSchemaToolsVersion() {
+        return "1.0.0";
+    }
 }

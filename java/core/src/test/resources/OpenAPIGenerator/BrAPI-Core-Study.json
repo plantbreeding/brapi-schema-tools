@@ -523,6 +523,12 @@
                     "locationName" : {
                         "type" : "string"
                     },
+                    "observationLevelDbIds" : {
+                        "type" : "array",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "observationUnitsDescription" : {
                         "type" : "string"
                     },
@@ -637,6 +643,12 @@
                     },
                     "locationName" : {
                         "type" : "string"
+                    },
+                    "observationLevelDbIds" : {
+                        "type" : "array",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "observationUnitsDescription" : {
                         "type" : "string"

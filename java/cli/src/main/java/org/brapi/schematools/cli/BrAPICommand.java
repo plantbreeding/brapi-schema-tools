@@ -17,12 +17,12 @@ import picocli.CommandLine;
         LogoutSubCommand.class,
         AnalyseSubCommand.class,
         MarkdownSubCommand.class,
-        CompareSubCommand.class
+        CompareSubCommand.class,
+        VersionSubCommand.class
     },
     mixinStandardHelpOptions = true
 )
 public class BrAPICommand {
-
     /**
      * Main method for application
      * @param args arguments for application

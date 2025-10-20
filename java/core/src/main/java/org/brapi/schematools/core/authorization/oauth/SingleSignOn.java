@@ -115,6 +115,44 @@ public class SingleSignOn implements AuthorizationProvider {
     }
 
     /**
+     * Login with password and clientId
+     *
+     * @param password the current user's password
+     * @param clientSecret the clientSecret for the provided clientId
+     * @return A response containing a valid token or failure explaining why login has failed.
+     */
+    public Response<OpenIDToken> loginWithPasswordAndClientId(String password, String clientSecret) {
+
+        log.debug("Attempting to login with password and client secret");
+
+        if (username == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Username not provided!");
+        }
+
+        if (password == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Password not provided!");
+        }
+
+        if (clientId == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Client ID not provided!");
+        }
+
+        if (clientSecret == null) {
+            return Response.fail(Response.ErrorType.PERMISSION, "Client secret not provided!");
+        }
+
+        return requestToken(TokenRequest.builder()
+            .grantType("client_credentials")
+            .username(username)
+            .password(password)
+            .clientId(clientId)
+            .clientSecret(clientSecret)
+            .build())
+            .onSuccessDo(() -> log.debug("Logged in!"))
+            .onFailDo(() -> log.debug("Log failed!"));
+    }
+
+    /**
      * Logout the current user
      *
      * @return An empty response or failure explaining why logout has failed.
