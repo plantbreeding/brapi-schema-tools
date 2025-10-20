@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.options;
 
+import org.brapi.schematools.core.utils.Version;
 import org.brapi.schematools.core.validiation.Validatable;
 
 /**
@@ -8,6 +9,6 @@ import org.brapi.schematools.core.validiation.Validatable;
 public interface Options extends Validatable {
 
     default String getSchemaToolsVersion() {
-        return "1.0.0";
+        return Version.getVersion();
     }
 }

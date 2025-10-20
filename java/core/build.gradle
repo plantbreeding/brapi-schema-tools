@@ -27,7 +27,7 @@ tasks.register('generateVersionFile') {
     doLast {
         def versionFile = file("${layout.buildDirectory.get()}/resources/main/version.txt")
         versionFile.parentFile.mkdirs()
-        versionFile.text = "Version: ${project.version}\nGenerated on: ${new Date()}"
+        versionFile.text = ${project.version}
     }
 }
 
