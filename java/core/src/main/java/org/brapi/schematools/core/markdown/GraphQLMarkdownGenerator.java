@@ -483,7 +483,7 @@ public class GraphQLMarkdownGenerator {
 
         private Response<List<Path>> writeToFile(Path path, String implementationText, Supplier<String> descriptionProvider) {
             try {
-                if (options.isOverwritingExistingFiles() && Files.exists(path)) {
+                if (!options.isOverwritingExistingFiles() && Files.exists(path)) {
                     log.warn("Output file '{}' already exists and was not overwritten", path);
                     return success(Collections.emptyList());
                 } else {

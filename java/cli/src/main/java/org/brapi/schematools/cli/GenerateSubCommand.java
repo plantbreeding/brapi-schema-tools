@@ -68,7 +68,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
     private Path metadataPath;
 
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
-    private boolean overwrite = true;
+    private Boolean overwrite ;
 
     @Override
     public void execute() throws IOException {
@@ -96,7 +96,12 @@ public class GenerateSubCommand extends AbstractSubCommand {
             }
             case MARKDOWN -> {
                 MarkdownGeneratorOptions options = optionsPath != null ?
-                    MarkdownGeneratorOptions.load(optionsPath).setOverwrite(overwrite) : MarkdownGeneratorOptions.load();
+                    MarkdownGeneratorOptions.load(optionsPath) : MarkdownGeneratorOptions.load();
+
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
                 generateMarkdown(options);
             }
             case XLSX -> {
@@ -255,7 +260,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
             Files.createDirectories(outputPathFile.getParent());
 
-            if (!overwrite && Files.isRegularFile(outputPathFile)) {
+            if (!isOverwritingExistingFiles() && Files.isRegularFile(outputPathFile)) {
                 handleError(String.format("Output file '%s' already exists was not overwritten", outputPath));
                 return false ;
             }
@@ -354,5 +359,9 @@ public class GenerateSubCommand extends AbstractSubCommand {
         } else {
             printErrors(String.format("There were %d errors generating Excel file", response.getAllErrors().size()), response.getAllErrors());
         }
+    }
+
+    public boolean isOverwritingExistingFiles() {
+        return overwrite != null && overwrite;
     }
 }

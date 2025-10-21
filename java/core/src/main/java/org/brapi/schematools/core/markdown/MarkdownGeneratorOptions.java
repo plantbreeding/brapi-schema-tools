@@ -97,7 +97,7 @@ public class MarkdownGeneratorOptions implements Options {
      */
     @JsonIgnore
     public boolean isOverwritingExistingFiles() {
-        return overwrite;
+        return overwrite != null && overwrite;
     }
 
     /**

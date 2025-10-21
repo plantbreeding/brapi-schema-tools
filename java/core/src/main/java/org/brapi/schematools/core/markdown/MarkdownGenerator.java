@@ -168,7 +168,7 @@ public class MarkdownGenerator {
 
         private Response<List<Path>> writeToFile(Path path, String text) {
             try {
-                if (options.isOverwritingExistingFiles() && Files.exists(path)) {
+                if (!options.isOverwritingExistingFiles() && Files.exists(path)) {
                     log.warn("Output file '{}' already exists and was not overwritten", path);
                     return success(Collections.emptyList()) ;
                 } else {

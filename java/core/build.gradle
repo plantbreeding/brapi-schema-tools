@@ -31,7 +31,10 @@ tasks.register('generateVersionFile') {
     }
 }
 
-tasks.named("compileJava") {
-    dependsOn("generateVersionFile") // Ensure files are generated before compilation
+processResources {
+    dependsOn tasks.named('generateVersionFile')
+    from("${layout.buildDirectory.get()}/resources/main") {
+        include 'version.txt'
+    }
 }
 
