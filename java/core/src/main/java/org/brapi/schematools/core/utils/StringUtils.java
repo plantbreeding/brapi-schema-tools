@@ -223,7 +223,7 @@ public class StringUtils {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath)) ;
             }
 
-        } catch (URISyntaxException exception) {
+        } catch (Exception exception) {
             return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
         }
     }

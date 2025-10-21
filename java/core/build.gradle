@@ -27,14 +27,11 @@ tasks.register('generateVersionFile') {
     doLast {
         def versionFile = file("${layout.buildDirectory.get()}/resources/main/version.txt")
         versionFile.parentFile.mkdirs()
-        versionFile.text = ${project.version}
+        versionFile.text = "${project.version}"
     }
 }
 
-processResources {
-    dependsOn tasks.named('generateVersionFile')
-    from("${layout.buildDirectory.get()}/resources/main") {
-        include 'version.txt'
-    }
+tasks.named("compileJava") {
+    dependsOn("generateVersionFile") // Ensure files are generated before compilation
 }
 

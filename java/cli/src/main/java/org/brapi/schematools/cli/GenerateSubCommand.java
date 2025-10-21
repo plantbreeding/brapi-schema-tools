@@ -12,6 +12,7 @@ import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.markdown.MarkdownGenerator;
+import org.brapi.schematools.core.markdown.MarkdownGeneratorOptions;
 import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
@@ -20,6 +21,7 @@ import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMet
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
+import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
 import picocli.CommandLine;
 
 import java.io.FileOutputStream;
@@ -92,8 +94,16 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     OntModelGeneratorMetadata.load(metadataPath) : OntModelGeneratorMetadata.load();
                 generateOntModel(options, metadata);
             }
-            case MARKDOWN -> generateMarkdown();
-            case XLSX -> generateExcel();
+            case MARKDOWN -> {
+                MarkdownGeneratorOptions options = optionsPath != null ?
+                    MarkdownGeneratorOptions.load(optionsPath).setOverwrite(overwrite) : MarkdownGeneratorOptions.load();
+                generateMarkdown(options);
+            }
+            case XLSX -> {
+                XSSFWorkbookGeneratorOptions options = optionsPath != null ?
+                    XSSFWorkbookGeneratorOptions.load(optionsPath) : XSSFWorkbookGeneratorOptions.load();
+                generateExcel(options);
+            }
         }
     }
 
@@ -258,7 +268,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
         return true ;
     }
 
-    private void generateMarkdown() {
+    private void generateMarkdown(MarkdownGeneratorOptions options) {
         try {
             if (outputPath != null) {
                 if (Files.isRegularFile(outputPath)) {
@@ -267,7 +277,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                     Files.createDirectories(outputPath);
 
-                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(outputPath, overwrite);
+                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(options, outputPath);
 
                     Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
 
@@ -301,7 +311,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
         }
     }
 
-    private void generateExcel() {
+    private void generateExcel(XSSFWorkbookGeneratorOptions options) {
         try {
             if (outputPath != null) {
                 Files.createDirectories(outputPath.getParent());
@@ -312,7 +322,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     handleError("For Excel (xlsx) generation the output path must be a file");
                 } else {
 
-                    XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
+                    XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(options, outputPath);
 
                     Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
 

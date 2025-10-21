@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
+import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Options for the {@link GraphQLGenerator}.
+ * Options for the {@link XSSFWorkbookGenerator}.
  */
 @Getter
 @Setter(AccessLevel.PRIVATE)

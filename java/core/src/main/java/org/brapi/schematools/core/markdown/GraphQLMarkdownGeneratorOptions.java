@@ -417,6 +417,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level field descriptions when there is more than one field with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelFieldDefinitions() {
         return createTopLevelFieldDefinitions != null && createTopLevelFieldDefinitions;
     }
@@ -427,6 +428,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level input object field descriptions when there is more than one field with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelInputFieldDefinitions() {
         return createTopLevelInputFieldDefinitions != null && createTopLevelInputFieldDefinitions;
     }
@@ -437,6 +439,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level argument descriptions when there is more than one argument with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelArgumentDefinitions() {
         return createTopLeveArgumentDefinitions != null && createTopLeveArgumentDefinitions;
     }
@@ -447,6 +450,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create a hidden comment at the bottom of the Markdown.,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isAddingGeneratorComments() {
         return addGeneratorComments != null && addGeneratorComments;
     }
@@ -470,6 +474,4 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String getMarkdownLink(GraphQLFieldDefinition queryDefinition, String prefix) {
         return String.format("[%s](%s%s.md)", queryDefinition.getName(), prefix, queryDefinition.getName());
     }
-
-
 }

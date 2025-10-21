@@ -10,6 +10,6 @@ import org.brapi.schematools.core.utils.Version ;
 public class VersionSubCommand implements Runnable {
     @Override
     public void run() {
-        System.out.println(Version.getVersion());
+        System.out.println("Version: " + Version.getVersion());
     }
 }
