@@ -382,7 +382,7 @@ public class BrAPISchemaReader {
                     mapResultToResponse(types -> {
                         if (types.contains("object")) {
                             if (isEnum) {
-                                return fail(Response.ErrorType.VALIDATION, path, String.format("Object Type '%s' can not be an enum!", fallbackName));
+                                return fail(Response.ErrorType.VALIDATION, path, String.format("Object Type '%s' cannot be an enum!", fallbackName));
                             } else {
                                 return createObjectType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
                             }
@@ -390,7 +390,7 @@ public class BrAPISchemaReader {
 
                         if (types.contains("array")) {
                             if (isEnum) {
-                                return fail(Response.ErrorType.VALIDATION, path, String.format("Array Type '%s' can not be an enum!", fallbackName));
+                                return fail(Response.ErrorType.VALIDATION, path, String.format("Array Type '%s' cannot be an enum!", fallbackName));
                             }
 
                             return createArrayType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);

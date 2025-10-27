@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static org.brapi.schematools.core.response.Response.fail;
 
 /**
- * Generates Excel (xlsx) file(s) for type and their field descriptions from a BrAPI Json Schema.
+ * Generates Excel (xlsx) file(s) for type and their field descriptions from a BrAPI JSON Schema.
  */
 @Slf4j
 @AllArgsConstructor
@@ -66,7 +66,7 @@ public class XSSFWorkbookGenerator {
      * Generates Excel (xlsx) file(s) for type and their field descriptions
      * from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification

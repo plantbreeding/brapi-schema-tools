@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.brapi.schematools.core.response.Response.success;
 
 /**
- * Generates an Ontology Model from a BrAPI Json Schema.
+ * Generates an Ontology Model from a BrAPI JSON Schema.
  */
 @AllArgsConstructor
 public class OntModelGenerator {
@@ -48,7 +48,7 @@ public class OntModelGenerator {
     /**
      * Generates the {@link OntModel} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and BrAPI-Common that contains common schemas
+     * the BrAPI JSON schema and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
      * @return the {@link OntModel} from the complete BrAPI Specification
@@ -60,7 +60,7 @@ public class OntModelGenerator {
     /**
      * Generates the RDF {@link OntModel} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and BrAPI-Common that contains common schemas
+     * the BrAPI JSON schema and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
      * @param metadata additional metadata that is used in the generation

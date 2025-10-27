@@ -40,7 +40,7 @@ import static org.brapi.schematools.core.utils.StringUtils.makeValidName;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
 /**
- * Generates a GraphQL schema from a BrAPI Json Schema.
+ * Generates a GraphQL schema from a BrAPI JSON Schema.
  */
 @AllArgsConstructor
 @Slf4j
@@ -69,7 +69,7 @@ public class GraphQLGenerator {
     /**
      * Generates the {@link GraphQLSchema} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
@@ -82,7 +82,7 @@ public class GraphQLGenerator {
     /**
      * Generates the {@link GraphQLSchema} from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
@@ -665,7 +665,7 @@ public class GraphQLGenerator {
                 return createOutputType(type).mapResult(t -> (GraphQLNamedOutputType) t);
             } catch (ClassCastException e) {
                 return fail(Response.ErrorType.VALIDATION,
-                    String.format("Type can not be cast to GraphQLNamedOutputType, due to '%s'", e));
+                    String.format("Type cannot be cast to GraphQLNamedOutputType, due to '%s'", e));
             }
         }
 

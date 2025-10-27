@@ -34,7 +34,7 @@ import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
 /**
- * Generates an OpenAPI Specification from a BrAPI Json Schema.
+ * Generates an OpenAPI Specification from a BrAPI JSON Schema.
  */
 @AllArgsConstructor
 public class OpenAPIGenerator {

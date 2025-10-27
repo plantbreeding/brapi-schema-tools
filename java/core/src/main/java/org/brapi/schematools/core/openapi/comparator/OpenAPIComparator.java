@@ -159,7 +159,7 @@ public class OpenAPIComparator {
                 outputPath = Files.createTempFile(options.getTempFilePrefix(), getTempFileSuffix(outputFormat)) ;
             } catch (IOException e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory can not created due to '%s'", e.getMessage()));
+                    String.format("Parent directory cannot created due to '%s'", e.getMessage()));
             }
         }
 
@@ -168,7 +168,7 @@ public class OpenAPIComparator {
                 Files.createDirectories(outputPath.getParent());
             } catch (IOException e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory '%s' can not created", outputPath.getParent()));
+                    String.format("Parent directory '%s' cannot created", outputPath.getParent()));
             }
         }
 

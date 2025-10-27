@@ -791,6 +791,20 @@ public class Response<T> {
     }
 
     /**
+     * If response has no errors and the result is not null,
+     * pass the result of this response to the provider consumer
+     * @param consumer a consumer for the result of this response
+     * @return this response
+     */
+    public Response<T> ifPresentDoWithResult(Consumer<T> consumer) {
+        if (this.isPresent()) {
+            consumer.accept(this.getResult());
+            return this;
+        } else {
+            return this;
+        }
+    }
+    /**
      * If response has no errors and the result is not null apply the function to the result, otherwise use the
      * to get the new resource
      * @param function a function that takes the result of this response to create a new response

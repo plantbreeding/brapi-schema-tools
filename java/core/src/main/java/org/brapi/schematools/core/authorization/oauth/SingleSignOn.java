@@ -162,7 +162,7 @@ public class SingleSignOn implements AuthorizationProvider {
         File tokenFile = getTokenFile();
 
         if (!tokenFile.exists()) {
-            return Response.fail(Response.ErrorType.VALIDATION, "You were not logged in, so can not logout!");
+            return Response.fail(Response.ErrorType.VALIDATION, "You were not logged in, so cannot logout!");
         }
 
         if (tokenFile.delete()) {
@@ -175,7 +175,7 @@ public class SingleSignOn implements AuthorizationProvider {
 
     /**
      * Gets the current token if not expired or fetches a new one, or fails with a message explaining the reason why a
-     * valid token can not be obtained.
+     * valid token cannot be obtained.
      *
      * @return A response containing a valid token or failure.
      */

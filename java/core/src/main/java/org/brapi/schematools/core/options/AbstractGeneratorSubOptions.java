@@ -19,7 +19,7 @@ import java.util.Map;
 public abstract class AbstractGeneratorSubOptions implements Options {
     private Boolean generate;
     private String descriptionFormat;
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> generateFor = new HashMap<>();
 
@@ -80,7 +80,7 @@ public abstract class AbstractGeneratorSubOptions implements Options {
      * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
-    public final boolean isGeneratingFor(@NonNull BrAPIType type) {
+    public boolean isGeneratingFor(@NonNull BrAPIType type) {
         return isGeneratingFor(type.getName()) ;
     }
 

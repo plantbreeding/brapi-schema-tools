@@ -102,6 +102,10 @@ class MarkdownGeneratorOptionsTest {
         checkOptions(options);
 
         assertTrue(options.isAddingGeneratorComments());
+        assertTrue(options.isGeneratingForProperties());
+        assertFalse(options.isGeneratingForDuplicateProperties());
+        assertFalse(options.isGeneratingForParameters());
+        assertFalse(options.isGeneratingForRequests());
     }
 
     private void checkOptions(MarkdownGeneratorOptions options) {
