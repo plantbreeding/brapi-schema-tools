@@ -17,6 +17,7 @@ import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 
@@ -977,13 +978,13 @@ public class OpenAPIGenerator {
         }
 
         private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property) {
-            LinkType linkType = options.getProperties().getLinkTypeFor(parentType, property);
+            BrAPIType type = dereferenceType(property.getType());
 
-            if (LinkType.SUB_PATH.equals(linkType) || LinkType.NONE.equals(linkType)) {
+            LinkType linkType = options.getProperties().getLinkTypeFor(parentType, property, type);
+
+            if (LinkType.SUB_PATH.equals(linkType) || LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
                 return success(Collections.emptyMap());
             }
-
-            BrAPIType type = dereferenceType(property.getType());
 
             if (type instanceof BrAPIPrimitiveType || type instanceof BrAPIEnumType || type instanceof BrAPIOneOfType) {
                 return createEmbeddedProperty(objectSchema, property, type);

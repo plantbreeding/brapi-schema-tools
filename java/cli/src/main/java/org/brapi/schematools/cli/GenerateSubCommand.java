@@ -12,7 +12,7 @@ import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.markdown.MarkdownGenerator;
-import org.brapi.schematools.core.markdown.MarkdownGeneratorOptions;
+import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
 import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
@@ -20,6 +20,9 @@ import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.sql.SQLGenerator;
+import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
+import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
 import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
 import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
 import picocli.CommandLine;
@@ -103,6 +106,18 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 }
 
                 generateMarkdown(options);
+            }
+            case SQL -> {
+                SQLGeneratorOptions options = optionsPath != null ?
+                    SQLGeneratorOptions.load(optionsPath) : SQLGeneratorOptions.load();
+                SQLGeneratorMetadata metadata = metadataPath != null ?
+                    SQLGeneratorMetadata.load(metadataPath) : SQLGeneratorMetadata.load();
+
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
+                generateSQL(options, metadata);
             }
             case XLSX -> {
                 XSSFWorkbookGeneratorOptions options = optionsPath != null ?
@@ -313,6 +328,49 @@ public class GenerateSubCommand extends AbstractSubCommand {
             printErrors("There was 1 error generating the Markdown file(s)", response.getAllErrors());
         } else {
             printErrors(String.format("There were %d errors generating the Markdown file(s)", response.getAllErrors().size()), response.getAllErrors());
+        }
+    }
+
+    private void generateSQL(SQLGeneratorOptions options, SQLGeneratorMetadata metadata) {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    handleError("For Markdown generation the output path must be a directory");
+                } else {
+
+                    Files.createDirectories(outputPath);
+
+                    SQLGenerator sqlGenerator = new SQLGenerator(options, outputPath);
+
+                    Response<List<Path>> response = sqlGenerator.generate(schemaDirectory, metadata);
+
+                    response.onSuccessDoWithResult(this::outputSQLPaths).onFailDoWithResponse(this::printSQLErrors);
+                }
+            } else {
+                handleError("For SQL generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            handleException(exception) ;
+        }
+    }
+
+    private void outputSQLPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any SQL files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' SQL file:");
+            System.out.println(paths.getFirst().toString());
+        } else {
+            System.out.printf("Generated '%s' SQL files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printSQLErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            printErrors("There was 1 error generating the SQL file(s)", response.getAllErrors());
+        } else {
+            printErrors(String.format("There were %d errors generating the SQL file(s)", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 

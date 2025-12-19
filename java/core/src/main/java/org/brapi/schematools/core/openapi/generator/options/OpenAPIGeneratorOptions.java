@@ -7,7 +7,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
-import org.brapi.schematools.core.openapi.generator.LinkType;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;

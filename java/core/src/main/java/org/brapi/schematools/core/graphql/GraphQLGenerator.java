@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
-import org.brapi.schematools.core.graphql.options.LinkType;
 import org.brapi.schematools.core.model.*;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 
@@ -296,7 +296,7 @@ public class GraphQLGenerator {
                 return createScalarType(brAPIPrimitiveType).mapResult(t -> t);
             }
 
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown output type '%s'", type.getName()));
+            return fail(Response.ErrorType.VALIDATION, String.format("Unknown output type '%s'", type.getName()));
         }
 
         private Response<GraphQLTypeReference> createOutputReferenceType(BrAPIReferenceType type) {
@@ -417,6 +417,7 @@ public class GraphQLGenerator {
 
                     yield success(builder.build()) ;
                 }
+                case SUB_PATH -> fail(Response.ErrorType.VALIDATION, "Should be used on GraphQL!");
                 case NONE -> fail(Response.ErrorType.VALIDATION, "Should have been filtered out!");
             } ;
         }
@@ -476,7 +477,7 @@ public class GraphQLGenerator {
             } else if (type instanceof BrAPIEnumType brAPIEnumType) {
                 return createEnumType(brAPIEnumType).mapResult(t -> t);
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIEnumType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+                return fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIEnumType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
             }
         }
 
@@ -519,7 +520,7 @@ public class GraphQLGenerator {
                         .map(() -> addInputObjectType(builder.build()));
                 }
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIOneOfType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
+                return fail(Response.ErrorType.VALIDATION, String.format("Input object '%s' must be BrAPIObjectType or BrAPIOneOfType but was '%s'", type.getName(), type.getClass().getSimpleName())) ;
             }
         }
 
@@ -535,13 +536,13 @@ public class GraphQLGenerator {
                     .type(graphQLInputType)
                     .build());
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Input type must be GraphQLNamedInputType but was '%s'", graphQLInputType.getClass().getSimpleName())) ;
+                return fail(Response.ErrorType.VALIDATION, String.format("Input type must be GraphQLNamedInputType but was '%s'", graphQLInputType.getClass().getSimpleName())) ;
             }
         }
 
         private Response<List<GraphQLInputObjectField>> removeDuplicates(List<GraphQLInputObjectField> graphQLInputObjectFields) {
             try {
-                return Response.success(new ArrayList<>(graphQLInputObjectFields.stream().
+                return success(new ArrayList<>(graphQLInputObjectFields.stream().
                     collect(Collectors.toMap(GraphQLInputObjectField::getName, Function.identity(), this::merge)).values()));
             } catch (RuntimeException e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
@@ -610,7 +611,7 @@ public class GraphQLGenerator {
                     .mapResult(t -> t);
             }
 
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown input type '%s' for '%s'", type.getClass().getSimpleName(), type.getName()));
+            return fail(Response.ErrorType.VALIDATION, String.format("Unknown input type '%s' for '%s'", type.getClass().getSimpleName(), type.getName()));
         }
 
         private Response<GraphQLInputObjectField> createInputObjectField(BrAPIObjectProperty property) {
@@ -701,7 +702,7 @@ public class GraphQLGenerator {
                 case "number" -> success(GraphQLFloat);
                 case "boolean" -> success(GraphQLBoolean);
                 default ->
-                    Response.fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s'", type.getName()));
+                    fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s'", type.getName()));
             };
         }
 
@@ -737,7 +738,7 @@ public class GraphQLGenerator {
 
         private GraphQLFieldDefinition.Builder generateSingleGraphQLQuery(GraphQLObjectType type) {
 
-            return GraphQLFieldDefinition.newFieldDefinition().
+            return newFieldDefinition().
                 name(options.getSingleQueryNameFor(type.getName())).
                 description(createSingleQueryDescription(type)).
                 arguments(createSingleQueryArguments(type)).
@@ -773,7 +774,7 @@ public class GraphQLGenerator {
             boolean paged = options.getQueryType().getListQuery().isPagedFor(type.getName());
             boolean hasInput = options.getQueryType().getListQuery().hasInputFor(type.getName()) ;
 
-            return GraphQLFieldDefinition.newFieldDefinition().
+            return newFieldDefinition().
                 name(queryName).
                 description(createListQueryDescription(type)).
                 arguments(createListQueryArguments(paged, hasInput, type.getName())).
@@ -848,7 +849,7 @@ public class GraphQLGenerator {
                 field(createListDataField(graphQLObjectType));
 
             if (paged) {
-                builder.field(GraphQLFieldDefinition.newFieldDefinition().
+                builder.field(newFieldDefinition().
                     name(options.getQueryType().getListQuery().getPageFieldName()).
                     type(GraphQLTypeReference.typeRef(options.getQueryType().getListQuery().getPageTypeName())).
                     build());
@@ -860,32 +861,32 @@ public class GraphQLGenerator {
         }
 
         private GraphQLFieldDefinition createListDataField(GraphQLObjectType graphQLObjectType) {
-            return GraphQLFieldDefinition.newFieldDefinition().
+            return newFieldDefinition().
                 name(options.getQueryType().getListQuery().getDataFieldName()).
                 type(GraphQLList.list(GraphQLTypeReference.typeRef(graphQLObjectType.getName()))).
                 build();
         }
 
         private GraphQLType createPageInputType() {
-            return GraphQLInputObjectType.newInputObject().
+            return newInputObject().
                 name(options.getQueryType().getListQuery().getPageInputTypeName()).
-                field(GraphQLInputObjectField.newInputObjectField().name("page").type(GraphQLInt)).
-                field(GraphQLInputObjectField.newInputObjectField().name("pageSize").type(GraphQLInt)).build();
+                field(newInputObjectField().name("page").type(GraphQLInt)).
+                field(newInputObjectField().name("pageSize").type(GraphQLInt)).build();
         }
 
         private GraphQLType createPageType() {
-            return GraphQLObjectType.newObject().
+            return newObject().
                 name(options.getQueryType().getListQuery().getPageTypeName()).
-                field(GraphQLFieldDefinition.newFieldDefinition().name("currentPage").type(GraphQLInt)).
-                field(GraphQLFieldDefinition.newFieldDefinition().name("pageSize").type(GraphQLInt)).
-                field(GraphQLFieldDefinition.newFieldDefinition().name("totalCount").type(GraphQLInt)).
-                field(GraphQLFieldDefinition.newFieldDefinition().name("totalPages").type(GraphQLInt)).build();
+                field(newFieldDefinition().name("currentPage").type(GraphQLInt)).
+                field(newFieldDefinition().name("pageSize").type(GraphQLInt)).
+                field(newFieldDefinition().name("totalCount").type(GraphQLInt)).
+                field(newFieldDefinition().name("totalPages").type(GraphQLInt)).build();
         }
 
         private GraphQLFieldDefinition.Builder generateSearchGraphQLQuery(GraphQLObjectType graphQLObjectType) {
             String queryName = options.getSearchQueryNameFor(graphQLObjectType.getName()) ;
 
-            return GraphQLFieldDefinition.newFieldDefinition()
+            return newFieldDefinition()
                 .name(queryName)
                 .description(createSearchQueryDescription(graphQLObjectType))
                 .arguments(createSearchQueryArguments(graphQLObjectType))
@@ -919,7 +920,7 @@ public class GraphQLGenerator {
         private GraphQLOutputType createSearchResponse(String queryName, GraphQLObjectType type) {
             GraphQLObjectType.Builder builder = newObject().
                 name(String.format(options.getQueryType().getSearchQuery().getResponseTypeNameForQuery(queryName))).
-                field(GraphQLFieldDefinition.newFieldDefinition().
+                field(newFieldDefinition().
                     name(options.getQueryType().getSearchQuery().getSearchIdFieldName()).
                     type(GraphQLString).
                     build()).
@@ -963,7 +964,7 @@ public class GraphQLGenerator {
         }
 
         private GraphQLFieldDefinition.Builder generateUpdateGraphQLMutation(GraphQLObjectType graphQLObjectType) {
-            return GraphQLFieldDefinition.newFieldDefinition()
+            return newFieldDefinition()
                 .name(options.getUpdateMutationNameFor(graphQLObjectType.getName()))
                 .description(createUpdateMutationDescription(graphQLObjectType))
                 .arguments(createUpdateMutationArguments(graphQLObjectType))

@@ -1,0 +1,121 @@
+generate: true
+overwrite: false
+addDescriptionComments: true
+addGeneratorComments: true
+format: true
+descriptionFormat: TODO Description for %s
+generateFor:
+    AlleleMatrix: false
+    MarkerPosition: false
+properties:
+    id:
+        nameFormat: "%sDbId"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeDbId
+            GermplasmAttributeValue: attributeValueDbId
+            GenomeMap: mapDbId
+            ObservationUnitHierarchyLevel: levelName
+    name:
+        nameFormat: "%sName"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributeName
+            GermplasmAttributeValue: attributeValueName
+            GenomeMap: mapName
+            ObservationUnitHierarchyLevel: levelName
+    pui:
+        nameFormat: "%sPUI"
+        link: true
+        propertyFor:
+            GermplasmAttribute: attributePUI
+            GermplasmAttributeValue: attributeValuePUI
+            GenomeMap: mapPUI
+    linkTypeFor:
+        BreedingMethod:
+            germplasm: none
+            pedigreeNodes: none
+        CallSet:
+            alleleMatrices: none
+            calls: none
+        Cross:
+            observationUnits: none
+        CrossingProject:
+            crosses: none
+            plannedCrosses: none
+            pedigreeNodes: none
+        GeoJSON:
+            image: none
+            observation: none
+            observationUnit: none
+            germplasmOrigin: none
+        GenomeMap:
+            markerPositions: none
+        Germplasm:
+            sample: none
+            attributeValues: none
+            progenyPedigreeNodes: none
+            parentPedigreeNodes: none
+            siblingPedigreeNodes: none
+            observations: none
+            observationUnits: none
+            reference: none
+            referenceSet: none
+        Location:
+            seedLots: none
+            observationUnits: none
+            studies: none
+        OntologyTerm:
+            reference: none
+            referenceSet: none
+        Observation:
+            images: none
+        ObservationUnit:
+            samples: none
+            events: none
+            images: none
+            observations: none
+        ObservationVariable:
+            studies: none
+            observations: none
+        Person:
+            lists: none
+            programs: none
+        PlannedCross:
+            crosses: none
+        Program:
+            crossingProjects: none
+            observationUnits: none
+            plates: none
+            samples: none
+            seedLots: none
+            trials: none
+        Plate:
+            samples: none
+        Reference:
+            variant: none
+        SeedLot:
+            observationUnits: none
+        Study:
+            callSets: none
+            events: none
+            observations: none
+            observationUnits: none
+            plates: none
+            samples: none
+            variantSets: none
+        Trial:
+            contacts: embedded
+            observationUnits: none
+            plates: none
+            samples: none
+        Variant:
+            alleleMatrices: none
+            calls: none
+            markerPositions: none
+        VariantSet:
+            alleleMatrices: none
+            availableFormats: embedded
+            calls: none
+            callSets: none
+            variants: none

@@ -26,6 +26,13 @@ public class BrAPIClassCacheUtil {
     private Predicate<BrAPIClass> cachePredicate ;
 
     /**
+     * Create BrAPIClassCacheUtil where all classes are cached.
+     */
+    public BrAPIClassCacheUtil() {
+        this(brAPIClass -> true);
+    }
+
+    /**
      * Creates the cache of classes as a Map
      * @param brAPIClasses the list of possible classes to be cached.
      * @return the cache of classes as a Map

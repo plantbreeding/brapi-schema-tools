@@ -12,7 +12,7 @@ import org.brapi.schematools.core.authorization.oauth.OpenIDToken;
 import org.brapi.schematools.core.authorization.oauth.SingleSignOn;
 import org.brapi.schematools.core.graphql.GraphQLSchemaParser;
 import org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator;
-import org.brapi.schematools.core.markdown.GraphQLMarkdownGeneratorOptions;
+import org.brapi.schematools.core.markdown.options.GraphQLMarkdownGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 

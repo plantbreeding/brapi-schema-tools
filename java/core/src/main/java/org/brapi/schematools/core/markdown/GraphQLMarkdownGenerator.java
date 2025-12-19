@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.brapi.schematools.core.markdown.options.GraphQLMarkdownGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 

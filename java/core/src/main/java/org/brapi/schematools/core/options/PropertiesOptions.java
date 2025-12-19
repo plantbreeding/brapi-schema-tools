@@ -5,11 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIRelationshipType;
-import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.LinkType;
+import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -155,30 +151,56 @@ public class PropertiesOptions implements Options {
 
     /**
      * Gets the link type for a type property
-     * @param type The BrAPI Object type
+     * @param parentType The BrAPI Object parent type
      * @param property The BrAPI property
      * @return the link type for specified type property
      */
-    public LinkType getLinkTypeFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public LinkType getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
 
-        Map<String, String> map = linkTypeFor.get(type.getName()) ;
+        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
+
+        BrAPIType unwrappedType = unwrapType(property.getType());
 
         if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(type, property)) ;
+            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(parentType, property, unwrappedType)) ;
         }
 
-        return getDefaultLinkTypeFor(type, property) ;
+        return getDefaultLinkTypeFor(parentType, property, unwrapType(property.getType())) ;
     }
 
-    private LinkType getDefaultLinkTypeFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    /**
+     * Gets the link type for a type property
+     * @param parentType The BrAPI Object parent type
+     * @param property The BrAPI property
+     * @param type The BrAPI property type
+     * @return the link type for specified type property
+     */
+    public LinkType getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
+
+        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
+
+        if (map != null) {
+            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(parentType, property, type)) ;
+        }
+
+        return getDefaultLinkTypeFor(parentType, property, type) ;
+    }
+
+    private LinkType getDefaultLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
 
         BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
 
         return switch (relationshipType) {
-            case ONE_TO_ONE -> BrAPITypeUtils.isPrimaryModel(type) ? LinkType.ID : LinkType.EMBEDDED ;
-            case MANY_TO_ONE -> LinkType.ID ;
-            case ONE_TO_MANY -> LinkType.ID ;
-            case MANY_TO_MANY  -> LinkType.ID ;
+            case ONE_TO_ONE, ONE_TO_MANY -> type instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)type) ? LinkType.ID : LinkType.EMBEDDED ;
+            case MANY_TO_ONE, MANY_TO_MANY -> LinkType.ID ;
         } ;
+    }
+
+    private BrAPIType unwrapType(BrAPIType type) {
+        if (type instanceof BrAPIArrayType brAPIArrayType) {
+            return unwrapType(brAPIArrayType.getItems()) ;
+        } else {
+            return type ;
+        }
     }
 }

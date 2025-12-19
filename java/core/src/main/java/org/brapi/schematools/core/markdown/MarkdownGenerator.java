@@ -3,6 +3,7 @@ package org.brapi.schematools.core.markdown;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
+import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
@@ -111,7 +112,7 @@ public class MarkdownGenerator {
         }
 
         private boolean isGenerating(BrAPIClass brAPIClass) {
-            return brAPIClass.getMetadata() == null || options.isGeneratingFor(brAPIClass) ;
+            return options.isGeneratingFor(brAPIClass) ;
         }
 
         private Response<List<Path>> generateMarkdownFiles(List<BrAPIClass> brAPIClasses) {

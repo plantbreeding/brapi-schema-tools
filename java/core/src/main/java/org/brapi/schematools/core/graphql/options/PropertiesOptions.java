@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIRelationshipType;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
