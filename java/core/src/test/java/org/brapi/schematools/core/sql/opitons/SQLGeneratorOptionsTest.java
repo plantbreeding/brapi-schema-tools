@@ -104,7 +104,7 @@ class SQLGeneratorOptionsTest {
 
         assertFalse(options.isOverwritingExistingFiles());
 
-        assertEquals(LinkType.SUB_PATH,
+        assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("CallSet").build(),
                 BrAPIObjectProperty.builder().name("calls").build())
@@ -136,25 +136,25 @@ class SQLGeneratorOptionsTest {
                 BrAPIObjectProperty.builder().name("pedigreeNodes").build())
         );
 
-        assertEquals(LinkType.SUB_PATH,
+        assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Variant").build(),
                 BrAPIObjectProperty.builder().name("calls").build())
         );
 
-        assertEquals(LinkType.SUB_PATH,
+        assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
                 BrAPIObjectProperty.builder().name("calls").build())
         );
 
-        assertEquals(LinkType.SUB_PATH,
+        assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
                 BrAPIObjectProperty.builder().name("callSets").build())
         );
 
-        assertEquals(LinkType.SUB_PATH,
+        assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
                 BrAPIObjectProperty.builder().name("variants").build())
