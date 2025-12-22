@@ -4,24 +4,12 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo",
+					"relationshipType": "one-to-one"
                 },
                 "crossType": {
                     "description": "the type of cross",
-                    "enum": [
-                        "BIPARENTAL",
-                        "SELF",
-                        "OPEN_POLLINATED",
-                        "BULK",
-                        "BULK_SELFED",
-                        "BULK_OPEN_POLLINATED",
-                        "DOUBLE_HAPLOID",
-                        null
-                    ],
-                    "type": [
-                        "null",
-                        "string"
-                    ]
+                    "$ref": "CrossType.json#/$defs/CrossType"
                 },
                 "crossingProject": {
                     "$ref": "CrossingProject.json#/$defs/CrossingProject",
@@ -31,8 +19,10 @@
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -70,7 +60,8 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "title": "PlannedCrossStatus"
                 },
                 "crosses": {
                     "title": "crosses",
@@ -91,6 +82,7 @@
                 "plannedCrossDbId"
             ],
             "title": "PlannedCross",
+            "description": "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

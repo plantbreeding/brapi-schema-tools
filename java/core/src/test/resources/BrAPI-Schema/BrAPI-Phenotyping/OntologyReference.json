@@ -4,30 +4,13 @@
             "properties": {
                 "documentationLinks": {
                     "description": "links to various ontology documentation",
+                    "relationshipType": "one-to-many",
+                    "referencedAttribute": "ontologyReference",
                     "items": {
-                        "properties": {
-                            "URL": {
-                                "format": "uri",
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            },
-                            "type": {
-                                "enum": [
-                                    "OBO",
-                                    "RDF",
-                                    "WEBPAGE",
-                                    null
-                                ],
-                                "type": [
-                                    "null",
-                                    "string"
-                                ]
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "../BrAPI-Phenotyping/OntologyReference.json#/$defs/DocumentationLink",
+                        "description": "DocumentationLinks"
                     },
+                    "title": "DocumentationLinks",
                     "type": [
                         "null",
                         "array"
@@ -35,7 +18,15 @@
                 },
                 "ontology": {
                     "description": "The Ontology for this reference",
+                    "relationshipType": "one-to-one",
                     "$ref": "../BrAPI-Phenotyping/Ontology.json#/$defs/Ontology"
+                },
+				"ontologyReferenceDbId": {
+                    "description": "The ID which uniquely identifies a ontology reference",
+                    "type": [
+                        "null",
+                        "string"
+                    ]
                 },
                 "version": {
                     "description": "Ontology version (no specific format)",
@@ -49,6 +40,42 @@
                 "ontology"
             ],
             "title": "OntologyReference",
+            "description": "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).",
+            "type": "object",
+            "brapi-metadata": {
+                "primaryModel": false
+            }
+        },
+        "DocumentationLink": {
+            "properties": {
+                "URL": {
+                    "format": "uri",
+                    "type": [
+                        "null",
+                        "string"
+                    ]
+                },
+                "type": {
+                    "enum": [
+                        "OBO",
+                        "RDF",
+                        "WEBPAGE",
+                        null
+                    ],
+                    "type": [
+                        "null",
+                        "string"
+                    ]
+                },
+                "ontologyReference": {
+                    "description": "associated ontology reference",
+                    "$ref": "../BrAPI-Phenotyping/OntologyReference.json#/$defs/OntologyReference",
+                    "relationshipType": "many-to-one",
+                    "referencedAttribute": "documentationLinks"
+                }
+            },
+            "title": "DocumentationLink",
+            "description": "Links to various ontology documentation",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": false
