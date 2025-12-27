@@ -2178,8 +2178,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                "example" : null
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
             },
             "Attribute" : {
                 "required" : [
@@ -2345,8 +2344,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The techniques and protocol used to produce a Cross or Germplasm",
-                "example" : null
+                "description" : "The techniques and protocol used to produce a Cross or Germplasm"
             },
             "ContentMixture" : {
                 "type" : "object",
@@ -2379,8 +2377,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100.",
-                "example" : null
+                "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100."
             },
             "ContentTypes" : {
                 "type" : "string",
@@ -2419,8 +2416,7 @@
                                 "description" : "the unique identifier for a cross"
                             }
                         },
-                        "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present.",
-                        "example" : null
+                        "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present."
                     }
                 ]
             },
@@ -2444,8 +2440,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A custom attribute associated with a cross. For example, if the crossing event occurred on a humid day, a user might record 'crossAttributeName':'Relative Humidity', 'crossAttributeValue':'80%'",
-                "example" : null
+                "description" : "A custom attribute associated with a cross. For example, if the crossing event occurred on a humid day, a user might record 'crossAttributeName':'Relative Humidity', 'crossAttributeValue':'80%'"
             },
             "CrossNewRequest" : {
                 "type" : "object",
@@ -2504,8 +2499,7 @@
                         }
                     }
                 },
-                "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present.",
-                "example" : null
+                "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present."
             },
             "CrossParent" : {
                 "type" : "object",
@@ -2532,8 +2526,7 @@
                         "$ref" : "#/components/schemas/ParentType"
                     }
                 },
-                "description" : "The identifying information gor the parent material of a cross.",
-                "example" : null
+                "description" : "The identifying information gor the parent material of a cross."
             },
             "CrossType" : {
                 "type" : "string",
@@ -2564,8 +2557,7 @@
                                 "description" : "The unique identifier for a crossing project"
                             }
                         },
-                        "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented.",
-                        "example" : null
+                        "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented."
                     }
                 ]
             },
@@ -2616,8 +2608,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented.",
-                "example" : null
+                "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented."
             },
             "Donor" : {
                 "type" : "object",
@@ -2642,8 +2633,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Identifier assigned to an accession by the material donor.",
-                "example" : null
+                "description" : "Identifier assigned to an accession by the material donor."
             },
             "ExternalReference" : {
                 "type" : "object",
@@ -2658,8 +2648,7 @@
                         "description" : "An identifier for the source system or database of this reference",
                         "nullable" : true
                     }
-                },
-                "example" : null
+                }
             },
             "GeoJSON" : {
                 "type" : "object",
@@ -2672,8 +2661,7 @@
                         "description" : "The literal string \"Feature\""
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                "example" : null
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONGeometry" : {
                 "oneOf" : [
@@ -2696,8 +2684,7 @@
                                 "description" : "The literal string \"Point\""
                             }
                         },
-                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
@@ -2724,8 +2711,7 @@
                                 "description" : "The literal string \"Polygon\""
                             }
                         },
-                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
             },
@@ -2745,8 +2731,7 @@
                                 "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below."
                             }
                         },
-                        "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
-                        "example" : null
+                        "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy."
                     }
                 ]
             },
@@ -3137,8 +3122,7 @@
                                 "description" : "The ID which uniquely identifies this attribute value within the given database server"
                             }
                         },
-                        "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit.",
-                        "example" : null
+                        "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit."
                     }
                 ]
             },
@@ -3189,8 +3173,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit.",
-                "example" : null
+                "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit."
             },
             "GermplasmAttributeValueSearchRequest" : {
                 "type" : "object",
@@ -3321,8 +3304,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes.",
-                "example" : null
+                "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes."
             },
             "GermplasmNewRequest" : {
                 "required" : [
@@ -3529,8 +3511,7 @@
                         }
                     }
                 },
-                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
-                "example" : null
+                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy."
             },
             "GermplasmOrigin" : {
                 "type" : "object",
@@ -3558,8 +3539,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm.",
-                "example" : null
+                "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm."
             },
             "GermplasmParent" : {
                 "required" : [
@@ -3586,8 +3566,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes.",
-                "example" : null
+                "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes."
             },
             "GermplasmSearchRequest" : {
                 "type" : "object",
@@ -3750,8 +3729,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
-                "example" : null
+                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
             },
             "OntologyTerm" : {
                 "type" : "object",
@@ -3767,8 +3745,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A pointer to an ontology used by a genomic reference",
-                "example" : null
+                "description" : "A pointer to an ontology used by a genomic reference"
             },
             "ParentType" : {
                 "type" : "string",
@@ -3873,8 +3850,7 @@
                         }
                     }
                 },
-                "description" : "A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances.",
-                "example" : null
+                "description" : "A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances."
             },
             "PedigreeNodeSearchRequest" : {
                 "type" : "object",
@@ -4086,8 +4062,7 @@
                         ]
                     }
                 },
-                "description" : "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field.",
-                "example" : null
+                "description" : "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field."
             },
             "PollinationEvent" : {
                 "type" : "object",
@@ -4114,8 +4089,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Pollination Event that was used or attempted for a Cross.",
-                "example" : null
+                "description" : "A Pollination Event that was used or attempted for a Cross."
             },
             "SeedLot" : {
                 "allOf" : [
@@ -4133,8 +4107,7 @@
                                 "description" : "Unique DbId for the Seed Lot"
                             }
                         },
-                        "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program.",
-                        "example" : null
+                        "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program."
                     }
                 ]
             },
@@ -4232,8 +4205,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program.",
-                "example" : null
+                "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program."
             },
             "SeedLotTransaction" : {
                 "required" : [
@@ -4283,8 +4255,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The record of an event where material was moved in or out of a particular SeedLot",
-                "example" : null
+                "description" : "The record of an event where material was moved in or out of a particular SeedLot"
             },
             "StorageType" : {
                 "type" : "object",
@@ -4320,8 +4291,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The type of storage this germplasm is kept in at a genebank.",
-                "example" : null
+                "description" : "The type of storage this germplasm is kept in at a genebank."
             },
             "Synonym" : {
                 "type" : "object",
@@ -4346,8 +4316,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Alternative names or IDs used to reference this germplasm",
-                "example" : null
+                "description" : "Alternative names or IDs used to reference this germplasm"
             },
             "TaxonId" : {
                 "required" : [
@@ -4374,8 +4343,7 @@
                         "description" : "The identifier (name, ID, URI) of a particular taxonomy within the source provider"
                     }
                 },
-                "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species. \n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended.",
-                "example" : null
+                "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species. \n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended."
             },
             "TraitDataType" : {
                 "type" : "string",
@@ -4503,8 +4471,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
-                "example" : null
+                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
             },
             "basePagination" : {
                 "required" : [

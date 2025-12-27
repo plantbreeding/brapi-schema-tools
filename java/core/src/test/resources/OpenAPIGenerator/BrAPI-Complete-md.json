@@ -9484,8 +9484,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                "example" : null
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
             },
             "AlleleMatrix" : {
                 "required" : [
@@ -9552,8 +9551,7 @@
                         }
                     }
                 },
-                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier.",
-                "example" : null
+                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier."
             },
             "AlleleMatrixSearchRequest" : {
                 "type" : "object",
@@ -9628,8 +9626,7 @@
                                     "description" : "the maximum number of elements per page in this dimension of the matrix",
                                     "format" : "int32"
                                 }
-                            },
-                            "example" : null
+                            }
                         }
                     },
                     "positionRanges" : {
@@ -9677,8 +9674,7 @@
                         }
                     }
                 },
-                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier.",
-                "example" : null
+                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier."
             },
             "Analysis" : {
                 "required" : [
@@ -9731,8 +9727,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used.",
-                "example" : null
+                "description" : "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used."
             },
             "Attribute" : {
                 "required" : [
@@ -9928,8 +9923,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Each 'availableFormat' object is a pairing of dataFormat and fileFormat. These must be communicated in pairs because they are not independent parameters and sometimes one influences the other.",
-                "example" : null
+                "description" : "Each 'availableFormat' object is a pairing of dataFormat and fileFormat. These must be communicated in pairs because they are not independent parameters and sometimes one influences the other."
             },
             "BreedingMethod" : {
                 "required" : [
@@ -9960,8 +9954,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The techniques and protocol used to produce a Cross or Germplasm",
-                "example" : null
+                "description" : "The techniques and protocol used to produce a Cross or Germplasm"
             },
             "Call" : {
                 "required" : [
@@ -10008,8 +10001,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.",
-                "example" : null
+                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345."
             },
             "CallSearchRequest" : {
                 "type" : "object",
@@ -10052,8 +10044,7 @@
                         }
                     }
                 },
-                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.",
-                "example" : null
+                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345."
             },
             "CallSet" : {
                 "required" : [
@@ -10117,8 +10108,7 @@
                         }
                     }
                 },
-                "description" : "A CallSet is a collection of Calls that were generated by the same analysis of the same Sample",
-                "example" : null
+                "description" : "A CallSet is a collection of Calls that were generated by the same analysis of the same Sample"
             },
             "CallSetSearchRequest" : {
                 "type" : "object",
@@ -10260,8 +10250,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A persons contact information",
-                "example" : null
+                "description" : "A persons contact information"
             },
             "ContentMixture" : {
                 "type" : "object",
@@ -10294,8 +10283,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100.",
-                "example" : null
+                "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100."
             },
             "ContentTypes" : {
                 "type" : "string",
@@ -10334,8 +10322,7 @@
                                 "description" : "the unique identifier for a cross"
                             }
                         },
-                        "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present.",
-                        "example" : null
+                        "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present."
                     }
                 ]
             },
@@ -10359,8 +10346,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A custom attribute associated with a cross. For example, if the crossing event occurred on a humid day, a user might record 'crossAttributeName':'Relative Humidity', 'crossAttributeValue':'80%'",
-                "example" : null
+                "description" : "A custom attribute associated with a cross. For example, if the crossing event occurred on a humid day, a user might record 'crossAttributeName':'Relative Humidity', 'crossAttributeValue':'80%'"
             },
             "CrossNewRequest" : {
                 "type" : "object",
@@ -10419,8 +10405,7 @@
                         }
                     }
                 },
-                "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present.",
-                "example" : null
+                "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present."
             },
             "CrossParent" : {
                 "type" : "object",
@@ -10447,8 +10432,7 @@
                         "$ref" : "#/components/schemas/ParentType"
                     }
                 },
-                "description" : "The identifying information gor the parent material of a cross.",
-                "example" : null
+                "description" : "The identifying information gor the parent material of a cross."
             },
             "CrossType" : {
                 "type" : "string",
@@ -10479,8 +10463,7 @@
                                 "description" : "The unique identifier for a crossing project"
                             }
                         },
-                        "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented.",
-                        "example" : null
+                        "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented."
                     }
                 ]
             },
@@ -10531,8 +10514,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented.",
-                "example" : null
+                "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented."
             },
             "DataLink" : {
                 "type" : "object",
@@ -10578,8 +10560,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A link to extra data files associated with this study. Extra data could include notes, images, and reference data.",
-                "example" : null
+                "description" : "A link to extra data files associated with this study. Extra data could include notes, images, and reference data."
             },
             "DataMatrix" : {
                 "type" : "object",
@@ -10620,8 +10601,7 @@
                         ]
                     }
                 },
-                "description" : "A two dimensional array that holds allele data or associated metadata. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows.",
-                "example" : null
+                "description" : "A two dimensional array that holds allele data or associated metadata. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows."
             },
             "DatasetAuthorships" : {
                 "type" : "object",
@@ -10656,8 +10636,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "License and citation information for the data in this trial",
-                "example" : null
+                "description" : "License and citation information for the data in this trial"
             },
             "DocumentationLink" : {
                 "type" : "object",
@@ -10681,8 +10660,7 @@
                         ]
                     }
                 },
-                "description" : "Links to various ontology documentation",
-                "example" : null
+                "description" : "Links to various ontology documentation"
             },
             "Donor" : {
                 "type" : "object",
@@ -10707,8 +10685,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Identifier assigned to an accession by the material donor.",
-                "example" : null
+                "description" : "Identifier assigned to an accession by the material donor."
             },
             "EnvironmentParameter" : {
                 "required" : [
@@ -10765,8 +10742,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units. \n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).",
-                "example" : null
+                "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units. \n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below)."
             },
             "Event" : {
                 "required" : [
@@ -10830,8 +10806,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "An event is discrete occurrence at a particular time in the experiment. Events may be the realization of Treatments or parts of Treatments, or may be confounding to Treatments. \n<br> ICASA Management Events allow for the following types -> planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other",
-                "example" : null
+                "description" : "An event is discrete occurrence at a particular time in the experiment. Events may be the realization of Treatments or parts of Treatments, or may be confounding to Treatments. \n<br> ICASA Management Events allow for the following types -> planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other"
             },
             "EventDateRange" : {
                 "type" : "object",
@@ -10858,8 +10833,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
-                "example" : null
+                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)"
             },
             "EventParameter" : {
                 "type" : "object",
@@ -10906,8 +10880,7 @@
                         }
                     }
                 },
-                "description" : "Additional metadata to describe an event, based on the ICASA standard model. For example, 'Tillage Implement' (tiimp), 'Tillage Depth' (tidep), and 'Tillage Mix Effectiveness' (timix) might all be recorded parameters for a Tillage event.",
-                "example" : null
+                "description" : "Additional metadata to describe an event, based on the ICASA standard model. For example, 'Tillage Implement' (tiimp), 'Tillage Depth' (tidep), and 'Tillage Mix Effectiveness' (timix) might all be recorded parameters for a Tillage event."
             },
             "ExperimentalDesign" : {
                 "type" : "object",
@@ -10932,8 +10905,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology",
-                "example" : null
+                "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology"
             },
             "ExternalReference" : {
                 "type" : "object",
@@ -10948,8 +10920,7 @@
                         "description" : "An identifier for the source system or database of this reference",
                         "nullable" : true
                     }
-                },
-                "example" : null
+                }
             },
             "GenomeMap" : {
                 "required" : [
@@ -11031,8 +11002,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The GenomeMap represents the metadata associated with a reference map of a particular species genome. A GenomeMap can either represent a physical map or genetic map.",
-                "example" : null
+                "description" : "The GenomeMap represents the metadata associated with a reference map of a particular species genome. A GenomeMap can either represent a physical map or genetic map."
             },
             "GenotypeMetadata" : {
                 "type" : "object",
@@ -11067,8 +11037,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Genotype Metadata are additional layers of metadata associated with each genotype.",
-                "example" : null
+                "description" : "Genotype Metadata are additional layers of metadata associated with each genotype."
             },
             "GeoJSON" : {
                 "type" : "object",
@@ -11081,8 +11050,7 @@
                         "description" : "The literal string \"Feature\""
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                "example" : null
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONGeometry" : {
                 "oneOf" : [
@@ -11105,8 +11073,7 @@
                                 "description" : "The literal string \"Point\""
                             }
                         },
-                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
@@ -11133,8 +11100,7 @@
                                 "description" : "The literal string \"Polygon\""
                             }
                         },
-                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
             },
@@ -11154,8 +11120,7 @@
                                 "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below."
                             }
                         },
-                        "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
-                        "example" : null
+                        "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy."
                     }
                 ]
             },
@@ -11546,8 +11511,7 @@
                                 "description" : "The ID which uniquely identifies this attribute value within the given database server"
                             }
                         },
-                        "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit.",
-                        "example" : null
+                        "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit."
                     }
                 ]
             },
@@ -11598,8 +11562,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit.",
-                "example" : null
+                "description" : "The value recorded for a particular Trait/Attribute and a particular Germplasm. Similar to an Observation value, but more concrete, applying to the whole Germplasm instead of a single ObservationUnit."
             },
             "GermplasmAttributeValueSearchRequest" : {
                 "type" : "object",
@@ -11730,8 +11693,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes.",
-                "example" : null
+                "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes."
             },
             "GermplasmNewRequest" : {
                 "required" : [
@@ -11938,8 +11900,7 @@
                         }
                     }
                 },
-                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
-                "example" : null
+                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy."
             },
             "GermplasmOrigin" : {
                 "type" : "object",
@@ -11967,8 +11928,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm.",
-                "example" : null
+                "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm."
             },
             "GermplasmParent" : {
                 "required" : [
@@ -11995,8 +11955,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes.",
-                "example" : null
+                "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes."
             },
             "GermplasmSearchRequest" : {
                 "type" : "object",
@@ -12167,8 +12126,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Short description of the facility in which the study was carried out.",
-                "example" : null
+                "description" : "Short description of the facility in which the study was carried out."
             },
             "Image" : {
                 "allOf" : [
@@ -12186,8 +12144,7 @@
                                 "description" : "The unique identifier of an image"
                             }
                         },
-                        "description" : "The metadata for an image file that is connected to some phenotypic observation data.",
-                        "example" : null
+                        "description" : "The metadata for an image file that is connected to some phenotypic observation data."
                     }
                 ]
             },
@@ -12286,8 +12243,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The metadata for an image file that is connected to some phenotypic observation data.",
-                "example" : null
+                "description" : "The metadata for an image file that is connected to some phenotypic observation data."
             },
             "ImageSearchRequest" : {
                 "type" : "object",
@@ -12436,8 +12392,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The date and time when this study was last modified",
-                "example" : null
+                "description" : "The date and time when this study was last modified"
             },
             "List" : {
                 "allOf" : [
@@ -12455,8 +12410,7 @@
                                 "description" : "The unique identifier for a List"
                             }
                         },
-                        "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                        "example" : null
+                        "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
                     }
                 ]
             },
@@ -12529,8 +12483,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                "example" : null
+                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
             },
             "ListSearchRequest" : {
                 "type" : "object",
@@ -12590,8 +12543,7 @@
                         "$ref" : "#/components/schemas/ListType"
                     }
                 },
-                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                "example" : null
+                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
             },
             "ListType" : {
                 "type" : "string",
@@ -12625,8 +12577,7 @@
                                 "description" : "The unique identifier for a Location"
                             }
                         },
-                        "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc.",
-                        "example" : null
+                        "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
                     }
                 ]
             },
@@ -12736,8 +12687,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc.",
-                "example" : null
+                "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
             },
             "LocationSearchRequest" : {
                 "type" : "object",
@@ -12877,8 +12827,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A MarkerPosition describes a particular genetic marker at a specific position on a GenomeMap. A collection of MarkerPositions make up the data to represent a full GenomeMap.",
-                "example" : null
+                "description" : "A MarkerPosition describes a particular genetic marker at a specific position on a GenomeMap. A collection of MarkerPositions make up the data to represent a full GenomeMap."
             },
             "MarkerPositionSearchRequest" : {
                 "type" : "object",
@@ -12948,8 +12897,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard ",
-                "example" : null
+                "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard "
             },
             "Method" : {
                 "allOf" : [
@@ -12968,8 +12916,7 @@
                                 "nullable" : true
                             }
                         },
-                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". ",
-                        "example" : null
+                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
                     }
                 ]
             },
@@ -13024,8 +12971,7 @@
                         "$ref" : "#/components/schemas/OntologyReference"
                     }
                 },
-                "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". ",
-                "example" : null
+                "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
             },
             "Observation" : {
                 "allOf" : [
@@ -13043,8 +12989,7 @@
                                 "description" : "The ID which uniquely identifies an observation"
                             }
                         },
-                        "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit.",
-                        "example" : null
+                        "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
                     }
                 ]
             },
@@ -13128,8 +13073,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit.",
-                "example" : null
+                "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
             },
             "ObservationSearchRequest" : {
                 "type" : "object",
@@ -13301,8 +13245,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Treatment applied an Observation Unit at a given Modality/Level for a specific Factor.",
-                "example" : null
+                "description" : "A Treatment applied an Observation Unit at a given Modality/Level for a specific Factor."
             },
             "ObservationUnit" : {
                 "allOf" : [
@@ -13320,8 +13263,7 @@
                                 "description" : "The ID which uniquely identifies an observation unit\n\nMIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. "
                             }
                         },
-                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
-                        "example" : null
+                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
                     }
                 ]
             },
@@ -13340,8 +13282,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
-                "example" : null
+                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
             },
             "ObservationUnitLevel" : {
                 "type" : "object",
@@ -13488,8 +13429,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
-                "example" : null
+                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
             },
             "ObservationUnitPosition" : {
                 "type" : "object",
@@ -13549,8 +13489,7 @@
                         "$ref" : "#/components/schemas/PositionCoordinateType"
                     }
                 },
-                "description" : "All positional and layout information related to this Observation Unit",
-                "example" : null
+                "description" : "All positional and layout information related to this Observation Unit"
             },
             "ObservationUnitSearchRequest" : {
                 "type" : "object",
@@ -14049,8 +13988,7 @@
                                 "description" : "Ontology database unique identifier"
                             }
                         },
-                        "description" : "The identifier and metadata needed to reference an external controlled vocabulary",
-                        "example" : null
+                        "description" : "The identifier and metadata needed to reference an external controlled vocabulary"
                     }
                 ]
             },
@@ -14099,8 +14037,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The identifier and metadata needed to reference an external controlled vocabulary",
-                "example" : null
+                "description" : "The identifier and metadata needed to reference an external controlled vocabulary"
             },
             "OntologyReference" : {
                 "required" : [
@@ -14134,8 +14071,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).",
-                "example" : null
+                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology)."
             },
             "OntologyTerm" : {
                 "type" : "object",
@@ -14151,8 +14087,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A pointer to an ontology used by a genomic reference",
-                "example" : null
+                "description" : "A pointer to an ontology used by a genomic reference"
             },
             "Pagination" : {
                 "type" : "object",
@@ -14194,8 +14129,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Pagination info for the matrix",
-                "example" : null
+                "description" : "Pagination info for the matrix"
             },
             "ParentType" : {
                 "type" : "string",
@@ -14300,8 +14234,7 @@
                         }
                     }
                 },
-                "description" : "A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances.",
-                "example" : null
+                "description" : "A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances."
             },
             "PedigreeNodeSearchRequest" : {
                 "type" : "object",
@@ -14477,8 +14410,7 @@
                                 "description" : "Unique ID for a person"
                             }
                         },
-                        "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.",
-                        "example" : null
+                        "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
                     }
                 ]
             },
@@ -14537,8 +14469,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.",
-                "example" : null
+                "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
             },
             "PersonSearchRequest" : {
                 "type" : "object",
@@ -14675,8 +14606,7 @@
                         ]
                     }
                 },
-                "description" : "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field.",
-                "example" : null
+                "description" : "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field."
             },
             "Plate" : {
                 "allOf" : [
@@ -14691,8 +14621,7 @@
                                 "description" : "The ID which uniquely identifies a `Plate`"
                             }
                         },
-                        "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis.",
-                        "example" : null
+                        "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis."
                     }
                 ]
             },
@@ -14768,8 +14697,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis.",
-                "example" : null
+                "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis."
             },
             "PlateSearchRequest" : {
                 "type" : "object",
@@ -14914,8 +14842,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Pollination Event that was used or attempted for a Cross.",
-                "example" : null
+                "description" : "A Pollination Event that was used or attempted for a Cross."
             },
             "PositionCoordinateType" : {
                 "type" : "string",
@@ -14947,8 +14874,7 @@
                                 "description" : "The ID which uniquely identifies the program"
                             }
                         },
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.",
-                        "example" : null
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
                     }
                 ]
             },
@@ -15012,8 +14938,7 @@
                         ]
                     }
                 },
-                "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.",
-                "example" : null
+                "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
             },
             "ProgramSearchRequest" : {
                 "type" : "object",
@@ -15104,8 +15029,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "MIAPPE V1.1 (DM-9) Associated publication - An identifier for a literature publication where the investigation is described. Use of DOIs is recommended.",
-                "example" : null
+                "description" : "MIAPPE V1.1 (DM-9) Associated publication - An identifier for a literature publication where the investigation is described. Use of DOIs is recommended."
             },
             "Reference" : {
                 "required" : [
@@ -15198,8 +15122,7 @@
                         }
                     }
                 },
-                "description" : "A `Reference` is a canonical assembled contig, intended to act as a reference coordinate space for other genomic annotations. A single `Reference` might represent the human chromosome 1, for instance. `References` are designed to be immutable.",
-                "example" : null
+                "description" : "A `Reference` is a canonical assembled contig, intended to act as a reference coordinate space for other genomic annotations. A single `Reference` might represent the human chromosome 1, for instance. `References` are designed to be immutable."
             },
             "ReferenceSearchRequest" : {
                 "type" : "object",
@@ -15328,8 +15251,7 @@
                                 "description" : "The unique identifier for a ReferenceSet"
                             }
                         },
-                        "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.",
-                        "example" : null
+                        "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data."
                     }
                 ]
             },
@@ -15427,8 +15349,7 @@
                         }
                     }
                 },
-                "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.",
-                "example" : null
+                "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data."
             },
             "ReferenceSetSearchRequest" : {
                 "type" : "object",
@@ -15537,12 +15458,10 @@
                         "properties" : {
                             "sampleDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample.",
-                                "nullable" : true
+                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample."
                             }
                         },
-                        "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc).",
-                        "example" : null
+                        "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc)."
                     }
                 ]
             },
@@ -15681,8 +15600,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc).",
-                "example" : null
+                "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc)."
             },
             "SampleSearchRequest" : {
                 "type" : "object",
@@ -15811,8 +15729,7 @@
                                 "description" : "Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID."
                             }
                         },
-                        "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\".",
-                        "example" : null
+                        "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
                     }
                 ]
             },
@@ -15875,8 +15792,7 @@
                         "$ref" : "#/components/schemas/ValidValues"
                     }
                 },
-                "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\".",
-                "example" : null
+                "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
             },
             "Season" : {
                 "required" : [
@@ -15900,8 +15816,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Season defines a period in time. A Season is made of two parts; (1) the primary year and (2) a term which defines a segment of the year. This term could be a traditional season, like \"Spring\" or \"Summer\", or this term could be a month, like \"May\" or \"June\", or this could be an arbitrary season name which is meaningful to the breeding Program like \"PlantingTime_3\" or \"Season E\".",
-                "example" : null
+                "description" : "A Season defines a period in time. A Season is made of two parts; (1) the primary year and (2) a term which defines a segment of the year. This term could be a traditional season, like \"Spring\" or \"Summer\", or this term could be a month, like \"May\" or \"June\", or this could be an arbitrary season name which is meaningful to the breeding Program like \"PlantingTime_3\" or \"Season E\"."
             },
             "SeedLot" : {
                 "allOf" : [
@@ -15919,8 +15834,7 @@
                                 "description" : "Unique DbId for the Seed Lot"
                             }
                         },
-                        "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program.",
-                        "example" : null
+                        "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program."
                     }
                 ]
             },
@@ -16018,8 +15932,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program.",
-                "example" : null
+                "description" : "A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program."
             },
             "SeedLotTransaction" : {
                 "required" : [
@@ -16069,8 +15982,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The record of an event where material was moved in or out of a particular SeedLot",
-                "example" : null
+                "description" : "The record of an event where material was moved in or out of a particular SeedLot"
             },
             "StorageType" : {
                 "type" : "object",
@@ -16106,8 +16018,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The type of storage this germplasm is kept in at a genebank.",
-                "example" : null
+                "description" : "The type of storage this germplasm is kept in at a genebank."
             },
             "Study" : {
                 "allOf" : [
@@ -16125,8 +16036,7 @@
                                 "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution."
                             }
                         },
-                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                        "example" : null
+                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
                     }
                 ]
             },
@@ -16284,8 +16194,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                "example" : null
+                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
             },
             "StudySearchRequest" : {
                 "type" : "object",
@@ -16446,8 +16355,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Alternative names or IDs used to reference this germplasm",
-                "example" : null
+                "description" : "Alternative names or IDs used to reference this germplasm"
             },
             "TaxonId" : {
                 "required" : [
@@ -16474,8 +16382,7 @@
                         "description" : "The identifier (name, ID, URI) of a particular taxonomy within the source provider"
                     }
                 },
-                "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species. \n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended.",
-                "example" : null
+                "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species. \n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended."
             },
             "Trait" : {
                 "allOf" : [
@@ -16491,8 +16398,7 @@
                                 "nullable" : true
                             }
                         },
-                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". ",
-                        "example" : null
+                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
                     }
                 ]
             },
@@ -16596,8 +16502,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". ",
-                "example" : null
+                "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
             },
             "Trial" : {
                 "allOf" : [
@@ -16615,8 +16520,7 @@
                                 "description" : "The ID which uniquely identifies a trial\n\nMIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution."
                             }
                         },
-                        "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing.",
-                        "example" : null
+                        "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
                     }
                 ]
             },
@@ -16716,8 +16620,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing.",
-                "example" : null
+                "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
             },
             "TrialSearchRequest" : {
                 "type" : "object",
@@ -16866,8 +16769,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Metadata describing the acceptable values for this Scale",
-                "example" : null
+                "description" : "Metadata describing the acceptable values for this Scale"
             },
             "ValidValuesCategory" : {
                 "type" : "object",
@@ -16886,8 +16788,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "If the Scale is a categorical type, these objects define the valid options",
-                "example" : null
+                "description" : "If the Scale is a categorical type, these objects define the valid options"
             },
             "Variable" : {
                 "required" : [
@@ -17002,8 +16903,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
-                "example" : null
+                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
             },
             "Variant" : {
                 "required" : [
@@ -17143,8 +17043,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A `Variant` represents a change in DNA sequence relative to some reference. For example, a variant could represent a classic marker, a SNP, or an insertion. This is equivalent to a row in VCF.",
-                "example" : null
+                "description" : "A `Variant` represents a change in DNA sequence relative to some reference. For example, a variant could represent a classic marker, a SNP, or an insertion. This is equivalent to a row in VCF."
             },
             "VariantSearchRequest" : {
                 "type" : "object",
@@ -17320,8 +17219,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A VariantSet is a collection of variants and variant calls intended to be analyzed together.",
-                "example" : null
+                "description" : "A VariantSet is a collection of variants and variant calls intended to be analyzed together."
             },
             "VariantSetSearchRequest" : {
                 "type" : "object",

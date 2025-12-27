@@ -2979,8 +2979,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                "example" : null
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
             },
             "AlleleMatrix" : {
                 "required" : [
@@ -3047,8 +3046,7 @@
                         }
                     }
                 },
-                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier.",
-                "example" : null
+                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier."
             },
             "AlleleMatrixSearchRequest" : {
                 "type" : "object",
@@ -3123,8 +3121,7 @@
                                     "description" : "the maximum number of elements per page in this dimension of the matrix",
                                     "format" : "int32"
                                 }
-                            },
-                            "example" : null
+                            }
                         }
                     },
                     "positionRanges" : {
@@ -3172,8 +3169,7 @@
                         }
                     }
                 },
-                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier.",
-                "example" : null
+                "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier."
             },
             "Analysis" : {
                 "required" : [
@@ -3226,8 +3222,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used.",
-                "example" : null
+                "description" : "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used."
             },
             "Attribute" : {
                 "required" : [
@@ -3423,8 +3418,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Each 'availableFormat' object is a pairing of dataFormat and fileFormat. These must be communicated in pairs because they are not independent parameters and sometimes one influences the other.",
-                "example" : null
+                "description" : "Each 'availableFormat' object is a pairing of dataFormat and fileFormat. These must be communicated in pairs because they are not independent parameters and sometimes one influences the other."
             },
             "Call" : {
                 "required" : [
@@ -3471,8 +3465,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.",
-                "example" : null
+                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345."
             },
             "CallSearchRequest" : {
                 "type" : "object",
@@ -3515,8 +3508,7 @@
                         }
                     }
                 },
-                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.",
-                "example" : null
+                "description" : "A `Call` represents the determination of genotype with respect to a particular `Variant`. \n\nIt may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345."
             },
             "CallSet" : {
                 "required" : [
@@ -3580,8 +3572,7 @@
                         }
                     }
                 },
-                "description" : "A CallSet is a collection of Calls that were generated by the same analysis of the same Sample",
-                "example" : null
+                "description" : "A CallSet is a collection of Calls that were generated by the same analysis of the same Sample"
             },
             "CallSetSearchRequest" : {
                 "type" : "object",
@@ -3747,8 +3738,7 @@
                         ]
                     }
                 },
-                "description" : "A two dimensional array that holds allele data or associated metadata. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows.",
-                "example" : null
+                "description" : "A two dimensional array that holds allele data or associated metadata. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows."
             },
             "ExternalReference" : {
                 "type" : "object",
@@ -3763,8 +3753,7 @@
                         "description" : "An identifier for the source system or database of this reference",
                         "nullable" : true
                     }
-                },
-                "example" : null
+                }
             },
             "GenomeMap" : {
                 "required" : [
@@ -3846,8 +3835,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The GenomeMap represents the metadata associated with a reference map of a particular species genome. A GenomeMap can either represent a physical map or genetic map.",
-                "example" : null
+                "description" : "The GenomeMap represents the metadata associated with a reference map of a particular species genome. A GenomeMap can either represent a physical map or genetic map."
             },
             "GenotypeMetadata" : {
                 "type" : "object",
@@ -3882,8 +3870,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Genotype Metadata are additional layers of metadata associated with each genotype.",
-                "example" : null
+                "description" : "Genotype Metadata are additional layers of metadata associated with each genotype."
             },
             "GeoJSON" : {
                 "type" : "object",
@@ -3896,8 +3883,7 @@
                         "description" : "The literal string \"Feature\""
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                "example" : null
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONGeometry" : {
                 "oneOf" : [
@@ -3920,8 +3906,7 @@
                                 "description" : "The literal string \"Point\""
                             }
                         },
-                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
@@ -3948,8 +3933,7 @@
                                 "description" : "The literal string \"Polygon\""
                             }
                         },
-                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
             },
@@ -3983,8 +3967,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A MarkerPosition describes a particular genetic marker at a specific position on a GenomeMap. A collection of MarkerPositions make up the data to represent a full GenomeMap.",
-                "example" : null
+                "description" : "A MarkerPosition describes a particular genetic marker at a specific position on a GenomeMap. A collection of MarkerPositions make up the data to represent a full GenomeMap."
             },
             "MarkerPositionSearchRequest" : {
                 "type" : "object",
@@ -4054,8 +4037,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard ",
-                "example" : null
+                "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard "
             },
             "ObservationUnitHierarchyLevel" : {
                 "type" : "object",
@@ -4072,8 +4054,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
-                "example" : null
+                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
             },
             "OntologyTerm" : {
                 "type" : "object",
@@ -4089,8 +4070,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A pointer to an ontology used by a genomic reference",
-                "example" : null
+                "description" : "A pointer to an ontology used by a genomic reference"
             },
             "Pagination" : {
                 "type" : "object",
@@ -4132,8 +4112,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Pagination info for the matrix",
-                "example" : null
+                "description" : "Pagination info for the matrix"
             },
             "Plate" : {
                 "allOf" : [
@@ -4148,8 +4127,7 @@
                                 "description" : "The ID which uniquely identifies a `Plate`"
                             }
                         },
-                        "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis.",
-                        "example" : null
+                        "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis."
                     }
                 ]
             },
@@ -4225,8 +4203,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis.",
-                "example" : null
+                "description" : "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis."
             },
             "PlateSearchRequest" : {
                 "type" : "object",
@@ -4437,8 +4414,7 @@
                         }
                     }
                 },
-                "description" : "A `Reference` is a canonical assembled contig, intended to act as a reference coordinate space for other genomic annotations. A single `Reference` might represent the human chromosome 1, for instance. `References` are designed to be immutable.",
-                "example" : null
+                "description" : "A `Reference` is a canonical assembled contig, intended to act as a reference coordinate space for other genomic annotations. A single `Reference` might represent the human chromosome 1, for instance. `References` are designed to be immutable."
             },
             "ReferenceSearchRequest" : {
                 "type" : "object",
@@ -4567,8 +4543,7 @@
                                 "description" : "The unique identifier for a ReferenceSet"
                             }
                         },
-                        "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.",
-                        "example" : null
+                        "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data."
                     }
                 ]
             },
@@ -4666,8 +4641,7 @@
                         }
                     }
                 },
-                "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.",
-                "example" : null
+                "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data."
             },
             "ReferenceSetSearchRequest" : {
                 "type" : "object",
@@ -4776,12 +4750,10 @@
                         "properties" : {
                             "sampleDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample.",
-                                "nullable" : true
+                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample."
                             }
                         },
-                        "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc).",
-                        "example" : null
+                        "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc)."
                     }
                 ]
             },
@@ -4920,8 +4892,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc).",
-                "example" : null
+                "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc)."
             },
             "SampleSearchRequest" : {
                 "type" : "object",
@@ -5160,8 +5131,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
-                "example" : null
+                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
             },
             "Variant" : {
                 "required" : [
@@ -5301,8 +5271,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A `Variant` represents a change in DNA sequence relative to some reference. For example, a variant could represent a classic marker, a SNP, or an insertion. This is equivalent to a row in VCF.",
-                "example" : null
+                "description" : "A `Variant` represents a change in DNA sequence relative to some reference. For example, a variant could represent a classic marker, a SNP, or an insertion. This is equivalent to a row in VCF."
             },
             "VariantSearchRequest" : {
                 "type" : "object",
@@ -5478,8 +5447,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A VariantSet is a collection of variants and variant calls intended to be analyzed together.",
-                "example" : null
+                "description" : "A VariantSet is a collection of variants and variant calls intended to be analyzed together."
             },
             "VariantSetSearchRequest" : {
                 "type" : "object",

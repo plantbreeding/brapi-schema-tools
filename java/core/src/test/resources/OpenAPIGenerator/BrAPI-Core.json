@@ -2021,8 +2021,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                "example" : null
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
             },
             "Attribute" : {
                 "required" : [
@@ -2195,8 +2194,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A persons contact information",
-                "example" : null
+                "description" : "A persons contact information"
             },
             "ContentTypes" : {
                 "type" : "string",
@@ -2263,8 +2261,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A link to extra data files associated with this study. Extra data could include notes, images, and reference data.",
-                "example" : null
+                "description" : "A link to extra data files associated with this study. Extra data could include notes, images, and reference data."
             },
             "DatasetAuthorships" : {
                 "type" : "object",
@@ -2299,8 +2296,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "License and citation information for the data in this trial",
-                "example" : null
+                "description" : "License and citation information for the data in this trial"
             },
             "EnvironmentParameter" : {
                 "required" : [
@@ -2357,8 +2353,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units. \n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).",
-                "example" : null
+                "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units. \n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below)."
             },
             "ExperimentalDesign" : {
                 "type" : "object",
@@ -2383,8 +2378,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology",
-                "example" : null
+                "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology"
             },
             "ExternalReference" : {
                 "type" : "object",
@@ -2399,8 +2393,7 @@
                         "description" : "An identifier for the source system or database of this reference",
                         "nullable" : true
                     }
-                },
-                "example" : null
+                }
             },
             "GeoJSON" : {
                 "type" : "object",
@@ -2413,8 +2406,7 @@
                         "description" : "The literal string \"Feature\""
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                "example" : null
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONGeometry" : {
                 "oneOf" : [
@@ -2437,8 +2429,7 @@
                                 "description" : "The literal string \"Point\""
                             }
                         },
-                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
@@ -2465,8 +2456,7 @@
                                 "description" : "The literal string \"Polygon\""
                             }
                         },
-                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
             },
@@ -2493,8 +2483,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Short description of the facility in which the study was carried out.",
-                "example" : null
+                "description" : "Short description of the facility in which the study was carried out."
             },
             "LastUpdate" : {
                 "required" : [
@@ -2526,8 +2515,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The date and time when this study was last modified",
-                "example" : null
+                "description" : "The date and time when this study was last modified"
             },
             "List" : {
                 "allOf" : [
@@ -2545,8 +2533,7 @@
                                 "description" : "The unique identifier for a List"
                             }
                         },
-                        "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                        "example" : null
+                        "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
                     }
                 ]
             },
@@ -2619,8 +2606,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                "example" : null
+                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
             },
             "ListSearchRequest" : {
                 "type" : "object",
@@ -2680,8 +2666,7 @@
                         "$ref" : "#/components/schemas/ListType"
                     }
                 },
-                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study.",
-                "example" : null
+                "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
             },
             "ListType" : {
                 "type" : "string",
@@ -2715,8 +2700,7 @@
                                 "description" : "The unique identifier for a Location"
                             }
                         },
-                        "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc.",
-                        "example" : null
+                        "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
                     }
                 ]
             },
@@ -2826,8 +2810,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc.",
-                "example" : null
+                "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
             },
             "LocationSearchRequest" : {
                 "type" : "object",
@@ -2952,8 +2935,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
-                "example" : null
+                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
             },
             "OntologyTerm" : {
                 "type" : "object",
@@ -2969,8 +2951,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A pointer to an ontology used by a genomic reference",
-                "example" : null
+                "description" : "A pointer to an ontology used by a genomic reference"
             },
             "Person" : {
                 "allOf" : [
@@ -2988,8 +2969,7 @@
                                 "description" : "Unique ID for a person"
                             }
                         },
-                        "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.",
-                        "example" : null
+                        "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
                     }
                 ]
             },
@@ -3048,8 +3028,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.",
-                "example" : null
+                "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
             },
             "PersonSearchRequest" : {
                 "type" : "object",
@@ -3150,8 +3129,7 @@
                                 "description" : "The ID which uniquely identifies the program"
                             }
                         },
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.",
-                        "example" : null
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
                     }
                 ]
             },
@@ -3215,8 +3193,7 @@
                         ]
                     }
                 },
-                "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.",
-                "example" : null
+                "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
             },
             "ProgramSearchRequest" : {
                 "type" : "object",
@@ -3307,8 +3284,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "MIAPPE V1.1 (DM-9) Associated publication - An identifier for a literature publication where the investigation is described. Use of DOIs is recommended.",
-                "example" : null
+                "description" : "MIAPPE V1.1 (DM-9) Associated publication - An identifier for a literature publication where the investigation is described. Use of DOIs is recommended."
             },
             "Season" : {
                 "required" : [
@@ -3332,8 +3308,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Season defines a period in time. A Season is made of two parts; (1) the primary year and (2) a term which defines a segment of the year. This term could be a traditional season, like \"Spring\" or \"Summer\", or this term could be a month, like \"May\" or \"June\", or this could be an arbitrary season name which is meaningful to the breeding Program like \"PlantingTime_3\" or \"Season E\".",
-                "example" : null
+                "description" : "A Season defines a period in time. A Season is made of two parts; (1) the primary year and (2) a term which defines a segment of the year. This term could be a traditional season, like \"Spring\" or \"Summer\", or this term could be a month, like \"May\" or \"June\", or this could be an arbitrary season name which is meaningful to the breeding Program like \"PlantingTime_3\" or \"Season E\"."
             },
             "Study" : {
                 "allOf" : [
@@ -3351,8 +3326,7 @@
                                 "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution."
                             }
                         },
-                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                        "example" : null
+                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
                     }
                 ]
             },
@@ -3510,8 +3484,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                "example" : null
+                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
             },
             "StudySearchRequest" : {
                 "type" : "object",
@@ -3678,8 +3651,7 @@
                                 "description" : "The ID which uniquely identifies a trial\n\nMIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution."
                             }
                         },
-                        "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing.",
-                        "example" : null
+                        "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
                     }
                 ]
             },
@@ -3779,8 +3751,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing.",
-                "example" : null
+                "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
             },
             "TrialSearchRequest" : {
                 "type" : "object",
@@ -4011,8 +3982,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
-                "example" : null
+                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
             },
             "basePagination" : {
                 "required" : [

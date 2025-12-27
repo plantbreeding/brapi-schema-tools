@@ -401,8 +401,7 @@
                                 "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution."
                             }
                         },
-                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                        "example" : null
+                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
                     }
                 ]
             },
@@ -560,8 +559,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
-                "example" : null
+                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
             },
             "StudySearchRequest" : {
                 "type" : "object",
@@ -901,6 +899,43 @@
                     }
                 }
             },
+            "GermplasmListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Germplasm"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "202AcceptedSearchResponse" : {
                 "description" : "Accepted",
                 "content" : {
@@ -923,6 +958,32 @@
                                             "example" : "551ae08c"
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "GermplasmSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Germplasm"
                                 }
                             }
                         }

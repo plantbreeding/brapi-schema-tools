@@ -2357,8 +2357,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                "example" : null
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
             },
             "Attribute" : {
                 "required" : [
@@ -2538,8 +2537,7 @@
                         ]
                     }
                 },
-                "description" : "Links to various ontology documentation",
-                "example" : null
+                "description" : "Links to various ontology documentation"
             },
             "Event" : {
                 "required" : [
@@ -2603,8 +2601,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "An event is discrete occurrence at a particular time in the experiment. Events may be the realization of Treatments or parts of Treatments, or may be confounding to Treatments. \n<br> ICASA Management Events allow for the following types -> planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other",
-                "example" : null
+                "description" : "An event is discrete occurrence at a particular time in the experiment. Events may be the realization of Treatments or parts of Treatments, or may be confounding to Treatments. \n<br> ICASA Management Events allow for the following types -> planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other"
             },
             "EventDateRange" : {
                 "type" : "object",
@@ -2631,8 +2628,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
-                "example" : null
+                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)"
             },
             "EventParameter" : {
                 "type" : "object",
@@ -2679,8 +2675,7 @@
                         }
                     }
                 },
-                "description" : "Additional metadata to describe an event, based on the ICASA standard model. For example, 'Tillage Implement' (tiimp), 'Tillage Depth' (tidep), and 'Tillage Mix Effectiveness' (timix) might all be recorded parameters for a Tillage event.",
-                "example" : null
+                "description" : "Additional metadata to describe an event, based on the ICASA standard model. For example, 'Tillage Implement' (tiimp), 'Tillage Depth' (tidep), and 'Tillage Mix Effectiveness' (timix) might all be recorded parameters for a Tillage event."
             },
             "ExternalReference" : {
                 "type" : "object",
@@ -2695,8 +2690,7 @@
                         "description" : "An identifier for the source system or database of this reference",
                         "nullable" : true
                     }
-                },
-                "example" : null
+                }
             },
             "GeoJSON" : {
                 "type" : "object",
@@ -2709,8 +2703,7 @@
                         "description" : "The literal string \"Feature\""
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                "example" : null
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONGeometry" : {
                 "oneOf" : [
@@ -2733,8 +2726,7 @@
                                 "description" : "The literal string \"Point\""
                             }
                         },
-                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
@@ -2761,8 +2753,7 @@
                                 "description" : "The literal string \"Polygon\""
                             }
                         },
-                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "example" : null
+                        "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
             },
@@ -2782,8 +2773,7 @@
                                 "description" : "The unique identifier of an image"
                             }
                         },
-                        "description" : "The metadata for an image file that is connected to some phenotypic observation data.",
-                        "example" : null
+                        "description" : "The metadata for an image file that is connected to some phenotypic observation data."
                     }
                 ]
             },
@@ -2882,8 +2872,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "The metadata for an image file that is connected to some phenotypic observation data.",
-                "example" : null
+                "description" : "The metadata for an image file that is connected to some phenotypic observation data."
             },
             "ImageSearchRequest" : {
                 "type" : "object",
@@ -3019,8 +3008,7 @@
                                 "nullable" : true
                             }
                         },
-                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". ",
-                        "example" : null
+                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
                     }
                 ]
             },
@@ -3075,8 +3063,7 @@
                         "$ref" : "#/components/schemas/OntologyReference"
                     }
                 },
-                "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". ",
-                "example" : null
+                "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
             },
             "Observation" : {
                 "allOf" : [
@@ -3094,8 +3081,7 @@
                                 "description" : "The ID which uniquely identifies an observation"
                             }
                         },
-                        "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit.",
-                        "example" : null
+                        "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
                     }
                 ]
             },
@@ -3179,8 +3165,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit.",
-                "example" : null
+                "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
             },
             "ObservationSearchRequest" : {
                 "type" : "object",
@@ -3352,8 +3337,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A Treatment applied an Observation Unit at a given Modality/Level for a specific Factor.",
-                "example" : null
+                "description" : "A Treatment applied an Observation Unit at a given Modality/Level for a specific Factor."
             },
             "ObservationUnit" : {
                 "allOf" : [
@@ -3371,8 +3355,7 @@
                                 "description" : "The ID which uniquely identifies an observation unit\n\nMIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. "
                             }
                         },
-                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
-                        "example" : null
+                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
                     }
                 ]
             },
@@ -3391,8 +3374,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
-                "example" : null
+                "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
             },
             "ObservationUnitLevel" : {
                 "type" : "object",
@@ -3539,8 +3521,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
-                "example" : null
+                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
             },
             "ObservationUnitPosition" : {
                 "type" : "object",
@@ -3600,8 +3581,7 @@
                         "$ref" : "#/components/schemas/PositionCoordinateType"
                     }
                 },
-                "description" : "All positional and layout information related to this Observation Unit",
-                "example" : null
+                "description" : "All positional and layout information related to this Observation Unit"
             },
             "ObservationUnitSearchRequest" : {
                 "type" : "object",
@@ -4100,8 +4080,7 @@
                                 "description" : "Ontology database unique identifier"
                             }
                         },
-                        "description" : "The identifier and metadata needed to reference an external controlled vocabulary",
-                        "example" : null
+                        "description" : "The identifier and metadata needed to reference an external controlled vocabulary"
                     }
                 ]
             },
@@ -4150,8 +4129,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The identifier and metadata needed to reference an external controlled vocabulary",
-                "example" : null
+                "description" : "The identifier and metadata needed to reference an external controlled vocabulary"
             },
             "OntologyReference" : {
                 "required" : [
@@ -4185,8 +4163,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).",
-                "example" : null
+                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology)."
             },
             "OntologyTerm" : {
                 "type" : "object",
@@ -4202,8 +4179,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A pointer to an ontology used by a genomic reference",
-                "example" : null
+                "description" : "A pointer to an ontology used by a genomic reference"
             },
             "PositionCoordinateType" : {
                 "type" : "string",
@@ -4235,8 +4211,7 @@
                                 "description" : "Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID."
                             }
                         },
-                        "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\".",
-                        "example" : null
+                        "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
                     }
                 ]
             },
@@ -4299,8 +4274,7 @@
                         "$ref" : "#/components/schemas/ValidValues"
                     }
                 },
-                "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\".",
-                "example" : null
+                "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
             },
             "Trait" : {
                 "allOf" : [
@@ -4316,8 +4290,7 @@
                                 "nullable" : true
                             }
                         },
-                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". ",
-                        "example" : null
+                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
                     }
                 ]
             },
@@ -4421,8 +4394,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". ",
-                "example" : null
+                "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
             },
             "ValidValues" : {
                 "type" : "object",
@@ -4455,8 +4427,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "Metadata describing the acceptable values for this Scale",
-                "example" : null
+                "description" : "Metadata describing the acceptable values for this Scale"
             },
             "ValidValuesCategory" : {
                 "type" : "object",
@@ -4475,8 +4446,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "If the Scale is a categorical type, these objects define the valid options",
-                "example" : null
+                "description" : "If the Scale is a categorical type, these objects define the valid options"
             },
             "Variable" : {
                 "required" : [
@@ -4591,8 +4561,7 @@
                         "type" : "string"
                     }
                 },
-                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
-                "example" : null
+                "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
             },
             "basePagination" : {
                 "required" : [

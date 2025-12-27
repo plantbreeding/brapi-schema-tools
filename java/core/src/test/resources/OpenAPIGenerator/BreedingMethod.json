@@ -84,8 +84,7 @@
                         "nullable" : true
                     }
                 },
-                "description" : "The techniques and protocol used to produce a Cross or Germplasm",
-                "example" : null
+                "description" : "The techniques and protocol used to produce a Cross or Germplasm"
             },
             "ContentTypes" : {
                 "type" : "string",

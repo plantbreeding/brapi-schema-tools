@@ -500,7 +500,7 @@ public class BrAPISchemaReader {
                 onSuccessDoWithResult(builder::description);
 
             findValue(path, jsonNode, "example", false).
-                onSuccessDoWithResult(builder::example);
+                ifPresentDoWithResult(builder::example);
 
             findValues(path, jsonNode, "examples", false).
                 ifPresentDoWithResult(examples -> examples.forEach(builder::example));
