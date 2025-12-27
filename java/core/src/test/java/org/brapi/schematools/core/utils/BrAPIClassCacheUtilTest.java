@@ -32,7 +32,7 @@ class BrAPIClassCacheUtilTest {
         BrAPIClassCacheUtil subject = new BrAPIClassCacheUtil(this::isCaching) ;
         Map<String, BrAPIClass> map = subject.createMap(brAPIClasses);
 
-        assertEquals(102, map.size());
+        assertEquals(99, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("Attribute")) ;

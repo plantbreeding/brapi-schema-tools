@@ -185,6 +185,7 @@ delete:
         Variant: false
         VariantSet: false
 properties:
+    descriptionFormat: Property %s for type %s
     id:
         nameFormat: "%sDbId"
         link: true

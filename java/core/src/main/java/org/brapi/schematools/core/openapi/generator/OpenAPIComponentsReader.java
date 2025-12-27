@@ -59,7 +59,7 @@ public class OpenAPIComponentsReader {
 
             return Response.success(result.getOpenAPI().getComponents()) ;
         } catch (Exception e) {
-            return fail(Response.ErrorType.VALIDATION, e.getMessage());
+            return fail(Response.ErrorType.VALIDATION, path, e.getMessage());
         }
     }
 

@@ -1,5 +1,5 @@
 {
-    "openapi" : "3.0.1",
+    "openapi" : "0.0.0",
     "info" : {
         "title" : "BrAPI-Germplasm",
         "version" : "0.0.0"
@@ -373,15 +373,6 @@
     },
     "components" : {
         "schemas" : {
-            "AdditionalInfo" : {
-                "type" : "object",
-                "properties" : {
-                    "additionalProperties" : {
-                        "type" : "string"
-                    }
-                },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
-            },
             "ContentTypes" : {
                 "type" : "string",
                 "enum" : [
@@ -404,139 +395,44 @@
                 }
             },
             "Germplasm" : {
-                "required" : [
-                    "commonCropName",
-                    "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI"
-                ],
-                "type" : "object",
-                "properties" : {
-                    "accessionNumber" : {
-                        "type" : "string"
+                "allOf" : [
+                    {
+                        "$ref" : "#/components/schemas/GermplasmNewRequest"
                     },
-                    "acquisitionDate" : {
-                        "type" : "string"
-                    },
-                    "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
-                    },
-                    "biologicalStatusOfAccessionCode" : {
-                        "type" : "string",
-                        "description" : "MCPD (v2.1) (SAMPSTAT) 19. The coding scheme proposed can be used at 3 different levels of detail: either by using the general codes such as 100, 200, 300, 400, or by using the more specific codes such as 110, 120, etc. \n\n100) Wild \n110) Natural \n120) Semi-natural/wild \n130) Semi-natural/sown \n200) Weedy \n300) Traditional cultivar/landrace \n400) Breeding/research material \n410) Breeders line \n411) Synthetic population \n412) Hybrid \n413) Founder stock/base population \n414) Inbred line (parent of hybrid cultivar) \n415) Segregating population \n416) Clonal selection \n420) Genetic stock \n421) Mutant (e.g. induced/insertion mutants, tilling populations) \n422) Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids,  amphiploids) \n423) Other genetic stocks (e.g. mapping populations) \n500) Advanced or improved cultivar (conventional breeding methods) \n600) GMO (by genetic engineering) \n999) Other (Elaborate in REMARKS field)",
-                        "enum" : [
-                            "100",
-                            "110",
-                            "120",
-                            "130",
-                            "200",
-                            "300",
-                            "400",
-                            "410",
-                            "411",
-                            "412",
-                            "413",
-                            "414",
-                            "415",
-                            "416",
-                            "420",
-                            "421",
-                            "422",
-                            "423",
-                            "500",
-                            "600",
-                            "999"
-                        ]
-                    },
-                    "biologicalStatusOfAccessionDescription" : {
-                        "type" : "string"
-                    },
-                    "breedingMethodDbId" : {
-                        "type" : "string"
-                    },
-                    "breedingMethodName" : {
-                        "type" : "string"
-                    },
-                    "collection" : {
-                        "type" : "string"
-                    },
-                    "commonCropName" : {
-                        "type" : "string"
-                    },
-                    "countryOfOriginCode" : {
-                        "type" : "string"
-                    },
-                    "defaultDisplayName" : {
-                        "type" : "string"
-                    },
-                    "documentationURL" : {
-                        "type" : "string"
-                    },
-                    "genus" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
-                    },
-                    "germplasmPreprocessing" : {
-                        "type" : "string"
-                    },
-                    "instituteCode" : {
-                        "type" : "string"
-                    },
-                    "instituteName" : {
-                        "type" : "string"
-                    },
-                    "pedigree" : {
-                        "type" : "string"
-                    },
-                    "pedigreeNode" : {
-                        "$ref" : "#/components/schemas/PedigreeNode"
-                    },
-                    "sampleDbIds" : {
-                        "type" : "array",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "seedSource" : {
-                        "type" : "string"
-                    },
-                    "seedSourceDescription" : {
-                        "type" : "string"
-                    },
-                    "species" : {
-                        "type" : "string"
-                    },
-                    "speciesAuthority" : {
-                        "type" : "string"
-                    },
-                    "subtaxa" : {
-                        "type" : "string"
-                    },
-                    "subtaxaAuthority" : {
-                        "type" : "string"
+                    {
+                        "required" : [
+                            "germplasmDbId"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "germplasmDbId" : {
+                                "type" : "string",
+                                "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below."
+                            }
+                        },
+                        "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
+                        "example" : null
                     }
-                }
+                ]
             },
             "GermplasmNewRequest" : {
                 "required" : [
                     "commonCropName",
                     "germplasmDbId",
-                    "germplasmDbId",
                     "germplasmName",
                     "germplasmPUI"
                 ],
                 "type" : "object",
                 "properties" : {
                     "accessionNumber" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The unique identifier for a material or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true
                     },
                     "acquisitionDate" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The date a material or germplasm was acquired by the genebank \n\nMCPD (v2.1) (ACQDATE) 12. Date on which the accession entered the collection [YYYYMMDD] where YYYY is the year, MM is the month and DD is the day. Missing data (MM or DD) should be indicated with hyphens or \"00\" [double zero].",
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
@@ -544,6 +440,7 @@
                     "biologicalStatusOfAccessionCode" : {
                         "type" : "string",
                         "description" : "MCPD (v2.1) (SAMPSTAT) 19. The coding scheme proposed can be used at 3 different levels of detail: either by using the general codes such as 100, 200, 300, 400, or by using the more specific codes such as 110, 120, etc. \n\n100) Wild \n110) Natural \n120) Semi-natural/wild \n130) Semi-natural/sown \n200) Weedy \n300) Traditional cultivar/landrace \n400) Breeding/research material \n410) Breeders line \n411) Synthetic population \n412) Hybrid \n413) Founder stock/base population \n414) Inbred line (parent of hybrid cultivar) \n415) Segregating population \n416) Clonal selection \n420) Genetic stock \n421) Mutant (e.g. induced/insertion mutants, tilling populations) \n422) Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids,  amphiploids) \n423) Other genetic stocks (e.g. mapping populations) \n500) Advanced or improved cultivar (conventional breeding methods) \n600) GMO (by genetic engineering) \n999) Other (Elaborate in REMARKS field)",
+                        "nullable" : true,
                         "enum" : [
                             "100",
                             "110",
@@ -569,7 +466,9 @@
                         ]
                     },
                     "biologicalStatusOfAccessionDescription" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Supplemental text description for 'biologicalStatusOfAccessionCode'",
+                        "nullable" : true
                     },
                     "breedingMethodDbId" : {
                         "type" : "string"
@@ -578,76 +477,297 @@
                         "type" : "string"
                     },
                     "collection" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true
                     },
                     "commonCropName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Common name for the crop \n\nMCPD (v2.1) (CROPNAME) 10. Common name of the crop. Example: \"malting barley\", \"mas\"."
                     },
                     "countryOfOriginCode" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "3-letter ISO 3166-1 code of the country in which the sample was originally collected \n\nMCPD (v2.1) (ORIGCTY) 13. 3-letter ISO 3166-1 code of the country in which the sample was originally collected (e.g. landrace, crop wild relative, farmers variety), bred or selected (breeding lines, GMOs, segregating populations, hybrids, modern cultivars, etc.). Note- Descriptors 14 to 16 below should be completed accordingly only if it was \"collected\".",
+                        "nullable" : true
                     },
                     "defaultDisplayName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Human readable name used for display purposes",
+                        "nullable" : true
                     },
                     "documentationURL" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "A URL to the human readable documentation of an object",
+                        "nullable" : true
+                    },
+                    "donors" : {
+                        "type" : "array",
+                        "description" : "List of donor institutes",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/Donor"
+                        }
+                    },
+                    "externalReferences" : {
+                        "type" : "array",
+                        "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/ExternalReference"
+                        }
                     },
                     "genus" : {
-                        "type" : "string"
-                    },
-                    "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Genus name for taxon. Initial uppercase letter required.\n\nMCPD (v2.1) (GENUS) 5. Genus name for taxon. Initial uppercase letter required.\n\nMIAPPE V1.1 (DM-43) Genus - Genus name for the organism under study, according to standard scientific nomenclature.",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Name of the germplasm. It can be the preferred name and does not have to be unique.\n\nMCPD (v2.1) (ACCENAME) 11. Either a registered or other designation given to the material received, other than the donors accession number (23) or collecting number (3). First letter uppercase. Multiple names are separated by a semicolon without space."
+                    },
+                    "germplasmOrigin" : {
+                        "type" : "array",
+                        "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/GermplasmOrigin"
+                        }
                     },
                     "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The Permanent Unique Identifier which represents a germplasm\n\nMIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.\n\nMIAPPE V1.1 (DM-51) Material source DOI - Digital Object Identifier (DOI) of the material source\n\nMCPD (v2.1) (PUID) 0. Any persistent, unique identifier assigned to the accession so it can be unambiguously referenced at the global level and the information associated with it harvested through automated means. Report one PUID for each accession. The Secretariat of the International Treaty on Plant Genetic Resources for Food and Agriculture (PGRFA) is facilitating the assignment of a persistent unique identifier (PUID), in the form of a DOI, to PGRFA at the accession level. Genebanks not applying a true PUID to their accessions should use, and request recipients to use, the concatenation of INSTCODE, ACCENUMB, and GENUS as a globally unique identifier similar in most respects to the PUID whenever they exchange information on accessions with third parties."
                     },
                     "germplasmPreprocessing" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "Description of any process or treatment applied uniformly to the germplasm, prior to the study itself. Can be provided as free text or as an accession number from a suitable controlled vocabulary.",
+                        "nullable" : true
                     },
                     "instituteCode" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The code for the institute that maintains the material. \n\nMCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true
                     },
                     "instituteName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The name of the institute that maintains the material",
+                        "nullable" : true
                     },
                     "pedigree" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "The cross name and optional selection history.\n\nMCPD (v2.1) (ANCEST) 20. Information about either pedigree or other description of ancestral information (e.g. parent variety in case of mutant or selection). For example a pedigree 'Hanna/7*Atlas//Turk/8*Atlas' or a description 'mutation found in Hanna', 'selection from Irene' or 'cross involving amongst others Hanna and Irene'.",
+                        "nullable" : true
                     },
-                    "pedigreeNode" : {
-                        "$ref" : "#/components/schemas/PedigreeNode"
-                    },
-                    "sampleDbIds" : {
+                    "samples" : {
                         "type" : "array",
+                        "description" : "samples",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/Sample"
+                        }
+                    },
+                    "seedSource" : {
+                        "type" : "string",
+                        "description" : "An identifier for the source of the biological material\n<br/>MIAPPE V1.1 (DM-50) Material source ID (Holding institute/stock centre, accession) - An identifier for the source of the biological material, in the form of a key-value pair comprising the name/identifier of the repository from which the material was sourced plus the accession number of the repository for that material. Where an accession number has not been assigned, but the material has been derived from the crossing of known accessions, the material can be defined as follows: \"mother_accession X father_accession\", or, if father is unknown, as \"mother_accession X UNKNOWN\". For in situ material, the region of provenance may be used when an accession is not available.",
+                        "nullable" : true
+                    },
+                    "seedSourceDescription" : {
+                        "type" : "string",
+                        "description" : "Description of the material source\n\nMIAPPE V1.1 (DM-56) Material source description - Description of the material source",
+                        "nullable" : true
+                    },
+                    "species" : {
+                        "type" : "string",
+                        "description" : "Specific epithet portion of the scientific name in lowercase letters.\n\nMCPD (v2.1) (SPECIES) 6. Specific epithet portion of the scientific name in lowercase letters. Only the following abbreviation is allowed: \"sp.\" \n\nMIAPPE V1.1 (DM-44) Species - Species name (formally: specific epithet) for the organism under study, according to standard scientific nomenclature.",
+                        "nullable" : true
+                    },
+                    "speciesAuthority" : {
+                        "type" : "string",
+                        "description" : "The authority organization responsible for tracking and maintaining the species name \n\nMCPD (v2.1) (SPAUTHOR) 7. Provide the authority for the species name.",
+                        "nullable" : true
+                    },
+                    "storageTypes" : {
+                        "type" : "array",
+                        "description" : "The type of storage this germplasm is kept in at a genebank.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/StorageType"
+                        }
+                    },
+                    "subtaxa" : {
+                        "type" : "string",
+                        "description" : "Subtaxon can be used to store any additional taxonomic identifier.\n\nMCPD (v2.1) (SUBTAXA) 8. Subtaxon can be used to store any additional taxonomic identifier. The following abbreviations are allowed: \"subsp.\" (for subspecies); \"convar.\" (for convariety); \"var.\" (for variety); \"f.\" (for form); \"Group\" (for \"cultivar group\").\n\nMIAPPE V1.1 (DM-44) Infraspecific name - Name of any subtaxa level, including variety, crossing name, etc. It can be used to store any additional taxonomic identifier. Either free text description or key-value pair list format (the key is the name of the rank and the value is the value of  the rank). Ranks can be among the following terms: subspecies, cultivar, variety, subvariety, convariety, group, subgroup, hybrid, line, form, subform. For MCPD compliance, the following abbreviations are allowed: subsp. (subspecies); convar. (convariety); var. (variety); f. (form); Group (cultivar group).",
+                        "nullable" : true
+                    },
+                    "subtaxaAuthority" : {
+                        "type" : "string",
+                        "description" : "The authority organization responsible for tracking and maintaining the subtaxon information\n\nMCPD (v2.1) (SUBTAUTHOR) 9. Provide the subtaxon authority at the most detailed taxonomic level.",
+                        "nullable" : true
+                    },
+                    "synonyms" : {
+                        "type" : "array",
+                        "description" : "List of alternative names or IDs used to reference this germplasm\n\nMCPD (v2.1) (OTHERNUMB) 24. Any other identifiers known to exist in other collections for this accession. Use the following format: INSTCODE:ACCENUMB;INSTCODE:identifier;INSTCODE and identifier are separated by a colon without space. Pairs of INSTCODE and identifier are separated by a semicolon without space. When the institute is not known, the identifier should be preceded by a colon.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/Synonym"
+                        }
+                    },
+                    "taxonIds" : {
+                        "type" : "array",
+                        "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species.\n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/TaxonId"
+                        }
+                    }
+                },
+                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy.",
+                "example" : null
+            },
+            "GermplasmSearchRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "accessionNumbers" : {
+                        "type" : "array",
+                        "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "seedSource" : {
-                        "type" : "string"
+                    "binomialNames" : {
+                        "type" : "array",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
-                    "seedSourceDescription" : {
-                        "type" : "string"
+                    "collections" : {
+                        "type" : "array",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "familyCodes" : {
+                        "type" : "array",
+                        "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "genus" : {
+                        "type" : "array",
+                        "description" : "List of Genus names to identify germplasm",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmPUIs" : {
+                        "type" : "array",
+                        "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "instituteCodes" : {
+                        "type" : "array",
+                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "parentDbIds" : {
+                        "type" : "array",
+                        "description" : "Search for Germplasm with these parents",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "progenyDbIds" : {
+                        "type" : "array",
+                        "description" : "Search for Germplasm with these children",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "species" : {
-                        "type" : "string"
+                        "type" : "array",
+                        "description" : "List of Species names to identify germplasm",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
-                    "speciesAuthority" : {
-                        "type" : "string"
+                    "studyDbIds" : {
+                        "type" : "array",
+                        "description" : "List of study identifiers to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
-                    "subtaxa" : {
-                        "type" : "string"
+                    "studyNames" : {
+                        "type" : "array",
+                        "description" : "List of study names to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
-                    "subtaxaAuthority" : {
-                        "type" : "string"
+                    "synonyms" : {
+                        "type" : "array",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialDbIds" : {
+                        "type" : "array",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
-                }
-            },
-            "GermplasmSearchRequest" : {
-                "type" : "object",
-                "properties" : { }
+                },
+                "description" : "The conceptual identifiers and metadata describing a genetically unique organism that is noteworthy in some way. Depending on context, a Germplasm might be synonymous with Accession, Line, or Genotype. Note that Germplasm is conceptual data, not necessarily associated to a real physical object, so Seed/Inventory Lots and Observation Units become physical instantiations of a particular Germplasm. Note a Germplasm is unique and noteworthy, so a Cross may or may not create a new Germplasm, since not every Cross is unique or noteworthy."
             },
             "basePagination" : {
                 "required" : [

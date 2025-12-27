@@ -1,10 +1,7 @@
 package org.brapi.schematools.core.options;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
@@ -26,6 +23,7 @@ import static org.brapi.schematools.core.response.Response.fail;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertiesOptions implements Options {
+    private String descriptionFormat;
     private PropertyOptions id ;
     private PropertyOptions name ;
     private PropertyOptions pui ;
@@ -35,6 +33,7 @@ public class PropertiesOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName())
             .merge(linkTypeFor.values().stream().flatMap(map -> map.values().stream()).map(LinkType::fromNameOrLabels).collect(Response.toList()))
             .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -44,6 +43,10 @@ public class PropertiesOptions implements Options {
      * @param overrideOptions the options which will be used to override this Options Object
      */
     public void override(PropertiesOptions overrideOptions) {
+        if (overrideOptions.descriptionFormat != null) {
+            descriptionFormat = overrideOptions.descriptionFormat ;
+        }
+
         if (overrideOptions.id != null) {
             id.override(overrideOptions.id) ;
         }
@@ -202,5 +205,16 @@ public class PropertiesOptions implements Options {
         } else {
             return type ;
         }
+    }
+
+    /**
+     * Gets the description for a specific property in type
+     * @param type the type
+     * @param property the property
+     * @return the description for a specific property
+     */
+    @JsonIgnore
+    public final String getDescriptionFor(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
+        return property.getDescription() != null ? property.getDescription() : String.format("%s: %s", property.getName(), type.getName()) ;
     }
 }

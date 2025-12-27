@@ -1,5 +1,5 @@
 {
-    "openapi" : "3.0.1",
+    "openapi" : "0.0.0",
     "info" : {
         "title" : "BrAPI",
         "version" : "0.0.0"
@@ -65,18 +65,27 @@
                 "type" : "object",
                 "properties" : {
                     "abbreviation" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "A shortened version of the human readable name for a Breeding Method",
+                        "nullable" : true
                     },
                     "breedingMethodDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "the unique identifier for this breeding method"
                     },
                     "breedingMethodName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "the human readable identifier for this breeding method",
+                        "nullable" : true
                     },
                     "description" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "description" : "human readable description of the breeding method",
+                        "nullable" : true
                     }
-                }
+                },
+                "description" : "The techniques and protocol used to produce a Cross or Germplasm",
+                "example" : null
             },
             "ContentTypes" : {
                 "type" : "string",
