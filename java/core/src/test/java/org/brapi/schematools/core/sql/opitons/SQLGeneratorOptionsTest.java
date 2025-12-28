@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class SQLGeneratorOptionsTest {
     @Test
@@ -47,7 +50,7 @@ class SQLGeneratorOptionsTest {
     void loadJson() {
         SQLGeneratorOptions options = null;
         try {
-            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/sql-test-options.json").toURI()));
+            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -60,7 +63,7 @@ class SQLGeneratorOptionsTest {
     void loadYaml() {
         SQLGeneratorOptions options = null;
         try {
-            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/sql-test-options.yaml").toURI()));
+            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -73,7 +76,7 @@ class SQLGeneratorOptionsTest {
     void overwrite() {
         SQLGeneratorOptions options = null;
         try {
-            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/sql-override-options.yaml").toURI()));
+            options = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -86,7 +89,7 @@ class SQLGeneratorOptionsTest {
     void compare() {
         try {
             SQLGeneratorOptions options1 = SQLGeneratorOptions.load() ;
-            SQLGeneratorOptions options2 = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/sql-no-override-options.yaml").toURI()));
+            SQLGeneratorOptions options2 = SQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

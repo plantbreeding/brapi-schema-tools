@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class SQLGeneratorMetadataTest {
 
@@ -25,7 +27,7 @@ class SQLGeneratorMetadataTest {
     void loadJson() {
         SQLGeneratorMetadata metadata = null;
         try {
-            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/sql-test-metadata.json").toURI()));
+            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-test-metadata.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -38,7 +40,7 @@ class SQLGeneratorMetadataTest {
     void loadYaml() {
         SQLGeneratorMetadata metadata = null;
         try {
-            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/sql-test-metadata.yaml").toURI()));
+            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-test-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -51,7 +53,7 @@ class SQLGeneratorMetadataTest {
     void overwrite() {
         SQLGeneratorMetadata metadata = null;
         try {
-            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/sql-override-metadata.yaml").toURI()));
+            metadata = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-override-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -66,7 +68,7 @@ class SQLGeneratorMetadataTest {
     void compare() {
         try {
             SQLGeneratorMetadata options1 = SQLGeneratorMetadata.load() ;
-            SQLGeneratorMetadata options2 = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/sql-no-override-metadata.yaml").toURI()));
+            SQLGeneratorMetadata options2 = SQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-no-override-metadata.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

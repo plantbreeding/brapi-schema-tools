@@ -4,7 +4,10 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
-import org.brapi.schematools.core.model.*;
+import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.model.BrAPIEnumType;
+import org.brapi.schematools.core.model.BrAPIEnumValue;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
@@ -139,7 +142,7 @@ public class SQLGenerator {
 
                     PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(path, Charset.defaultCharset()));
 
-                    if (options.isAddingDescriptionComments()) {
+                    if (options.isAddingTableHeaderComments()) {
                         printWriter.print("# ");
                         printWriter.println(brAPIObjectType.getName());
 

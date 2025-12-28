@@ -1,6 +1,8 @@
 generate: true
 overwrite: false
-addDescriptionComments: true
+addTableHeaderComments: true
+addTableComments: true
+addTableColumnComments: true
 addGeneratorComments: true
 format: true
 descriptionFormat: TODO Description for %s
@@ -44,6 +46,10 @@ properties:
             crosses: none
             plannedCrosses: none
             pedigreeNodes: none
+        EnvironmentParameter:
+            study: none
+        ExperimentalDesign:
+            study: none
         GeoJSON:
             image: none
             observation: none
@@ -61,6 +67,10 @@ properties:
             observationUnits: none
             reference: none
             referenceSet: none
+        GrowthFacility:
+            study: none
+        LastUpdate:
+            study: none
         Location:
             seedLots: none
             observationUnits: none

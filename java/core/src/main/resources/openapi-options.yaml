@@ -236,6 +236,8 @@ properties:
             observationUnits: none
             reference: none
             referenceSet: none
+        GrowthFacility:
+            study: none
         Location:
             seedLots: none
             observationUnits: none

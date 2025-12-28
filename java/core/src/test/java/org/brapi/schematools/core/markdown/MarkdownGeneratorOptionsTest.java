@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class MarkdownGeneratorOptionsTest {
     @Test
@@ -45,7 +48,7 @@ class MarkdownGeneratorOptionsTest {
     void loadJson() {
         MarkdownGeneratorOptions options = null;
         try {
-            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/markdown-test-options.json").toURI()));
+            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("Markdown/markdown-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -58,7 +61,7 @@ class MarkdownGeneratorOptionsTest {
     void loadYaml() {
         MarkdownGeneratorOptions options = null;
         try {
-            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/markdown-test-options.yaml").toURI()));
+            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("Markdown/markdown-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -71,7 +74,7 @@ class MarkdownGeneratorOptionsTest {
     void overwrite() {
         MarkdownGeneratorOptions options = null;
         try {
-            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/markdown-override-options.yaml").toURI()));
+            options = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("Markdown/markdown-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -86,7 +89,7 @@ class MarkdownGeneratorOptionsTest {
     void compare() {
         try {
             MarkdownGeneratorOptions options1 = MarkdownGeneratorOptions.load() ;
-            MarkdownGeneratorOptions options2 = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/markdown-no-override-options.yaml").toURI()));
+            MarkdownGeneratorOptions options2 = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("Markdown/markdown-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

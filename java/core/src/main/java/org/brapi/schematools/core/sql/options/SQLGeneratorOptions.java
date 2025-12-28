@@ -1,7 +1,11 @@
 package org.brapi.schematools.core.sql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;
@@ -12,6 +16,7 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.*;
 
 /**
  * Options for the {@link SQLGenerator}.
@@ -24,9 +29,14 @@ import java.nio.file.Path;
 public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
 
     private Boolean overwrite;
-    private Boolean addDescriptionComments;
+    private Boolean addTableHeaderComments;
+    private Boolean addTableComments;
+    private Boolean addTableColumnComments;
     private Boolean addGeneratorComments;
     private Boolean format;
+    private String tableUsing;
+    private Map<String, Object> tableProperties;
+    private Boolean clustering;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
 
@@ -69,9 +79,9 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
         return load().override(ConfigurationUtils.load(inputStream, SQLGeneratorOptions.class));
     }
 
+    @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(overwrite, "'overwrite' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(properties, "Properties Options are null");
     }
 
@@ -88,8 +98,16 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
             overwrite = overrideOptions.overwrite;
         }
 
-        if (overrideOptions.addDescriptionComments != null) {
-            addDescriptionComments = overrideOptions.addDescriptionComments;
+        if (overrideOptions.addTableHeaderComments != null) {
+            addTableHeaderComments = overrideOptions.addTableHeaderComments;
+        }
+
+        if (overrideOptions.addTableComments != null) {
+            addTableComments = overrideOptions.addTableComments;
+        }
+
+        if (overrideOptions.addTableColumnComments != null) {
+            addTableColumnComments = overrideOptions.addTableColumnComments;
         }
 
         if (overrideOptions.addGeneratorComments != null) {
@@ -98,6 +116,22 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
 
         if (overrideOptions.format != null) {
             format = overrideOptions.format;
+        }
+
+        if (overrideOptions.tableUsing != null) {
+            tableUsing = overrideOptions.tableUsing;
+        }
+
+        if (overrideOptions.tableProperties != null && !overrideOptions.tableProperties.isEmpty()) {
+            if (tableProperties == null) {
+                tableProperties = new HashMap<>();
+            }
+
+            tableProperties.putAll(overrideOptions.tableProperties); ;
+        }
+
+        if (overrideOptions.clustering != null) {
+            clustering = overrideOptions.clustering;
         }
 
         if (overrideOptions.properties != null) {
@@ -118,20 +152,42 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     }
 
     /**
-     * Determines if the Generator should create a description comment at the top of the SQL.
+     * Determines if the Generator should create a description comment at the top of the SQL for each table.
      *
      * @return {@code true} if the Generator should create a description comment at the top of the SQL,
      * {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAddingDescriptionComments() {
-        return addDescriptionComments != null && addDescriptionComments;
+    public boolean isAddingTableHeaderComments() {
+        return addTableHeaderComments != null && addTableHeaderComments;
     }
 
     /**
-     * Determines if the Generator should create a comment at the bottom of the SQL.
+     * Determines if the Generator should create a comment in the table 'Create' statement
      *
-     * @return {@code true} if the Generator should create a comment at the bottom of the SQL,
+     * @return {@code true} if the Generator should create a comment in the table 'Create' statement,
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingTableComments() {
+        return addTableComments != null && addTableComments;
+    }
+
+    /**
+     * Determines if the Generator should create a comment for columns in the table 'Create' statement
+     *
+     * @return {@code true} if the Generator should create a comment for columns in the table 'Create' statement,
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingTableColumnComments() {
+        return addTableColumnComments != null && addTableColumnComments;
+    }
+
+    /**
+     * Determines if the Generator should create a comment at the bottom of the SQL for each file
+     *
+     * @return {@code true} if the Generator should create a comment at the bottom of the SQL for each file,
      * {@code false} otherwise
      */
     @JsonIgnore
@@ -149,4 +205,14 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
         return format != null && format;
     }
 
+    /**
+     * Determines if the Generator should add a 'Clustering By' to the 'Create Table' for
+     * each primary and foreign key.
+     *
+     * @return {@code true} if the Generator should add a 'Clustering By' to the 'Create Table', {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isClustering() {
+        return clustering != null && clustering;
+    }
 }

@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.sql;
 
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
@@ -11,20 +12,30 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.brapi.schematools.core.options.LinkType.ID;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.StringUtils.escapeSingleSQLQuotes;
+import static org.brapi.schematools.core.utils.StringUtils.removeCarriageReturns;
 
+@Slf4j
 public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
     private final SQLGeneratorOptions options ;
     private final SQLGeneratorMetadata metadata ;
     private final Map<String, BrAPIClass> brAPIClasses ;
+    private final String tableUsing ;
+    private final Map<String,Object> tableProperties ;
 
     public ANSICreateTableDDLGenerator(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, List<BrAPIClass> brAPIClasses) {
         this.options = options;
         this.metadata = metadata;
         this.brAPIClasses = new BrAPIClassCacheUtil().createMap(brAPIClasses) ;
+
+        this.tableUsing = options.getTableUsing() != null && !options.getTableUsing().isBlank() ? options.getTableUsing() : null ;
+        this.tableProperties = options.getTableProperties()  ;
     }
 
     @Override
@@ -44,14 +55,84 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         builder.append(columnDefinitions) ;
 
-        builder.append(")\n") ;
+        builder.append(") ") ;
 
-        builder.append(" USING delta\n") ;
-        builder.append(" TBLPROPERTIES (\n") ;
-        builder.append("  'delta.minReaderVersion' = '1', \n") ;
-        builder.append("  'delta.minWriterVersion' = '2') ; \n") ;
+        if (options.isClustering()) {
+            List<String> clusterColumn = findClusterColumns(brAPIObjectType);
+
+            if (!clusterColumn.isEmpty()) {
+                builder.append(" CLUSTER BY ( ") ;
+                builder.append(String.join(", ", findClusterColumns(brAPIObjectType))) ;
+                builder.append(")") ;
+            } else {
+                log.warn("No clustering columns found for table {}", brAPIObjectType.getName());
+            }
+        }
+
+        if (options.isAddingTableComments()) {
+            builder.append(" COMMENT '") ;
+
+            if (brAPIObjectType.getDescription() != null) {
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(brAPIObjectType.getDescription())));
+            } else {
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(options.getDescriptionFor(brAPIObjectType))));
+            }
+
+            builder.append("' ");
+        }
+
+        if (tableUsing != null) {
+            builder.append(" USING ") ;
+            builder.append(tableUsing) ;
+        }
+
+        if (tableProperties != null && !tableProperties.isEmpty()) {
+            builder.append(" TBLPROPERTIES (") ;
+            builder.append(tableProperties.entrySet().stream().map(this::tableProperty).collect(Collectors.joining())) ;
+            builder.append(")") ;
+        }
+
+        builder.append("; \n") ;
 
         return success(builder.toString()) ;
+    }
+
+    private List<String> findClusterColumns(BrAPIObjectType brAPIObjectType) {
+
+        List<String> clusterColumns = new ArrayList<>();
+
+        options.getProperties().getIdPropertyFor(brAPIObjectType).ifPresentDoWithResult(brAPIObjectProperty -> clusterColumns.add(brAPIObjectProperty.getName()));
+
+        for (BrAPIObjectProperty brAPIObjectProperty : brAPIObjectType.getProperties()) {
+
+            BrAPIType type = dereferenceType(brAPIObjectProperty.getType());
+
+            LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty, type);
+
+            if (type instanceof BrAPIObjectType brAPIObjectPropertyObjectType && linkType.equals(ID)) {
+                options.getProperties().getLinkPropertiesFor(brAPIObjectPropertyObjectType).forEach(linkProperty -> clusterColumns.add(linkProperty.getName())); ;
+            }
+        }
+
+        return clusterColumns ;
+    }
+
+    private String tableProperty(Map.Entry<String, Object> entry) {
+        StringBuilder builder = new StringBuilder() ;
+
+        builder.append("'") ;
+        builder.append(entry.getKey()) ;
+        builder.append("' = ") ;
+
+        if (entry.getValue() instanceof String) {
+            builder.append("\"") ;
+            builder.append(entry.getValue()) ;
+            builder.append("\"") ;
+        } else {
+            builder.append(entry.getValue()) ;
+        }
+
+        return builder.toString() ;
     }
 
     private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
@@ -61,7 +142,27 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             .filter(brAPIObjectProperty -> options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty) != LinkType.NONE)
             .toList();
 
-        return properties.stream().sorted(Comparator.comparing(BrAPIObjectProperty::getName)).map(property -> createColumnDefinition(brAPIObjectType, property)).collect(Response.toList()).mapResult(columns -> String.join(",\n", columns)) ;
+        return properties.stream().sorted(Comparator.comparing(BrAPIObjectProperty::getName)).map(property ->
+            createColumnDefinition(brAPIObjectType, property)
+                .conditionalMapResultToResponse(options.isAddingTableComments(), result -> addColumnComment(brAPIObjectType, property, result)))
+            .collect(Response.toList()).mapResult(columns -> String.join(",\n", columns)) ;
+    }
+
+    private Response<String> addColumnComment(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property, String columnDefinition) {
+
+        StringBuilder builder = new StringBuilder(columnDefinition) ;
+
+        builder.append(" COMMENT '") ;
+
+        if (property.getDescription() != null) {
+            builder.append(removeCarriageReturns(escapeSingleSQLQuotes(property.getDescription())));
+        } else {
+            builder.append(removeCarriageReturns(escapeSingleSQLQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
+        }
+
+        builder.append("' ");
+
+        return success(builder.toString()) ;
     }
 
     private Response<String> createColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
@@ -123,13 +224,22 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         return switch (linkType) {
             case EMBEDDED -> createObjectColumnType(brAPIObjectType).mapResult(columnType -> property.getName() + " " + columnType);
-            case ID -> options.getProperties().getLinkPropertiesFor(brAPIObjectType)
-                .stream()
-                .filter(p -> p.getType() instanceof BrAPIPrimitiveType)
-                .map(p -> createSimpleColumnDefinition(p, p.getType().getName())).collect(Response.toList())
-                .mapResult(columnDefinitions -> String.join(", ", columnDefinitions));
+            case ID -> createLinkObjectDefinition(parentType, property, brAPIObjectType) ;
             default -> fail(Response.ErrorType.VALIDATION, String.format("Unknown supported link type '%s' for property '%s' with item type '%s'", linkType, property.getName(), brAPIObjectType.getName()));
         } ;
+    }
+
+    private Response<String> createLinkObjectDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
+        List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(brAPIObjectType);
+
+        if (linkPropertiesFor.isEmpty()) {
+            return fail(Response.ErrorType.VALIDATION, String.format("No link properties for property '%s' in '%s' with item type '%s'", property.getName(), parentType.getName(), brAPIObjectType.getName()));
+        }
+
+        return linkPropertiesFor.stream()
+            .filter(p -> p.getType() instanceof BrAPIPrimitiveType)
+            .map(p -> createSimpleColumnDefinition(p, p.getType().getName())).collect(Response.toList())
+            .mapResult(columnDefinitions -> String.join(", ", columnDefinitions));
     }
 
     private Response<String> createObjectColumnType(BrAPIObjectType brAPIObjectType) {

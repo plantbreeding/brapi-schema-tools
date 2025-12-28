@@ -1,0 +1,4 @@
+overwrite: false
+clustering: true
+tableProperties: |
+    'delta.enableChangeDataFeed' = 'true'

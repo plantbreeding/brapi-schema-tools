@@ -34,7 +34,7 @@ class OpenAPIComparatorOptionsTest {
     void loadJson() {
         OpenAPIComparatorOptions options = null;
         try {
-            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-comparator-test-options.json").toURI()));
+            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-comparator-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -47,7 +47,7 @@ class OpenAPIComparatorOptionsTest {
     void loadYaml() {
         OpenAPIComparatorOptions options = null;
         try {
-            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-comparator-test-options.yaml").toURI()));
+            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-comparator-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -61,7 +61,7 @@ class OpenAPIComparatorOptionsTest {
         OpenAPIComparatorOptions options = null;
 
         try {
-            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-comparator-override-options.yaml").toURI()));
+            options = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-comparator-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -75,7 +75,7 @@ class OpenAPIComparatorOptionsTest {
     void compare() {
         try {
             OpenAPIComparatorOptions options1 = OpenAPIComparatorOptions.load() ;
-            OpenAPIComparatorOptions options2 = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-comparator-no-override-options.yaml").toURI()));
+            OpenAPIComparatorOptions options2 = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-comparator-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

@@ -27,7 +27,7 @@ class OpenAPIGeneratorMetadataTest {
     void loadJson() {
         OpenAPIGeneratorMetadata metadata = null;
         try {
-            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-metadata.json").toURI()));
+            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-metadata.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -40,7 +40,7 @@ class OpenAPIGeneratorMetadataTest {
     void loadYaml() {
         OpenAPIGeneratorMetadata metadata = null;
         try {
-            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-metadata.yaml").toURI()));
+            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -53,7 +53,7 @@ class OpenAPIGeneratorMetadataTest {
     void overwrite() {
         OpenAPIGeneratorMetadata metadata = null;
         try {
-            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/openapi-override-metadata.yaml").toURI()));
+            metadata = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-override-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -68,7 +68,7 @@ class OpenAPIGeneratorMetadataTest {
     void compare() {
         try {
             OpenAPIGeneratorMetadata options1 = OpenAPIGeneratorMetadata.load() ;
-            OpenAPIGeneratorMetadata options2 = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/openapi-no-override-metadata.yaml").toURI()));
+            OpenAPIGeneratorMetadata options2 = OpenAPIGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-no-override-metadata.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

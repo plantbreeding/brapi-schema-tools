@@ -12,7 +12,6 @@ import org.brapi.schematools.core.response.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -359,6 +358,29 @@ public class StringUtils {
         }
 
         return String.format(newFormat.toString(), valueList.toArray());
+    }
+
+    public static String escapeQuotes(String inputString) {
+        return inputString.replaceAll("\"", "\"").replaceAll("'", "''") ;
+    }
+
+    public static String escapeSingleSQLQuotes(String inputString) {
+        return inputString.replaceAll("'", "''") ;
+    }
+
+    public static String escapeSpecialCharacters(String inputString) {
+        StringBuilder escapedString = new StringBuilder();
+        for (char c : inputString.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                escapedString.append("\\");
+            }
+            escapedString.append(c);
+        }
+        return escapedString.toString();
+    }
+
+    public static String removeCarriageReturns(String inputString) {
+        return inputString.replaceAll("[\\n\\r]", " ") ;
     }
 
     static class Replacer {

@@ -194,8 +194,7 @@ public class PropertiesOptions implements Options {
         BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
 
         return switch (relationshipType) {
-            case ONE_TO_ONE, ONE_TO_MANY -> type instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)type) ? LinkType.ID : LinkType.EMBEDDED ;
-            case MANY_TO_ONE, MANY_TO_MANY -> LinkType.ID ;
+            case ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY -> type instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)type) ? LinkType.ID : LinkType.EMBEDDED ;
         } ;
     }
 

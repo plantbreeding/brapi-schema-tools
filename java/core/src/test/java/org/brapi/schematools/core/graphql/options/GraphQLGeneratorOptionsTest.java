@@ -33,7 +33,7 @@ class GraphQLGeneratorOptionsTest {
     void loadJson() {
         GraphQLGeneratorOptions options = null;
         try {
-            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/graphql-test-options.json").toURI()));
+            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -46,7 +46,7 @@ class GraphQLGeneratorOptionsTest {
     void loadYaml() {
         GraphQLGeneratorOptions options = null;
         try {
-            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/graphql-test-options.yaml").toURI()));
+            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -59,7 +59,7 @@ class GraphQLGeneratorOptionsTest {
     void overwrite() {
         GraphQLGeneratorOptions options = null;
         try {
-            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/graphql-override-options.yaml").toURI()));
+            options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -91,7 +91,7 @@ class GraphQLGeneratorOptionsTest {
     void compare() {
         try {
             GraphQLGeneratorOptions options1 = GraphQLGeneratorOptions.load() ;
-            GraphQLGeneratorOptions options2 = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/graphql-no-override-options.yaml").toURI()));
+            GraphQLGeneratorOptions options2 = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
