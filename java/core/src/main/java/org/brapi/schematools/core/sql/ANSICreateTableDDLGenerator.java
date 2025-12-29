@@ -6,7 +6,7 @@ import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
-import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,14 +25,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
     private final SQLGeneratorOptions options ;
     private final SQLGeneratorMetadata metadata ;
-    private final Map<String, BrAPIClass> brAPIClasses ;
+    private final BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache ;
     private final String tableUsing ;
     private final Map<String,Object> tableProperties ;
 
     public ANSICreateTableDDLGenerator(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, List<BrAPIClass> brAPIClasses) {
         this.options = options;
         this.metadata = metadata;
-        this.brAPIClasses = new BrAPIClassCacheUtil().createMap(brAPIClasses) ;
+        this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPIClasses) ;
 
         this.tableUsing = options.getTableUsing() != null && !options.getTableUsing().isBlank() ? options.getTableUsing() : null ;
         this.tableProperties = options.getTableProperties()  ;
@@ -105,16 +105,20 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         for (BrAPIObjectProperty brAPIObjectProperty : brAPIObjectType.getProperties()) {
 
-            BrAPIType type = dereferenceType(brAPIObjectProperty.getType());
+            BrAPIType dereferenceType = brAPIClassCache.dereferenceType(brAPIObjectProperty.getType());
 
-            LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty, type);
+            LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty, dereferenceType).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) ;
 
-            if (type instanceof BrAPIObjectType brAPIObjectPropertyObjectType && linkType.equals(ID)) {
+            if (dereferenceType instanceof BrAPIObjectType brAPIObjectPropertyObjectType && linkType.equals(ID)) {
                 options.getProperties().getLinkPropertiesFor(brAPIObjectPropertyObjectType).forEach(linkProperty -> clusterColumns.add(linkProperty.getName())); ;
             }
         }
 
         return clusterColumns ;
+    }
+
+    private void warn(Response<?> response) {
+        log.warn(response.getMessagesCombined(", "));
     }
 
     private String tableProperty(Map.Entry<String, Object> entry) {
@@ -139,7 +143,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         List<BrAPIObjectProperty> properties = brAPIObjectType.getProperties()
             .stream()
-            .filter(brAPIObjectProperty -> options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty) != LinkType.NONE)
+            .filter(brAPIObjectProperty -> options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
             .toList();
 
         return properties.stream().sorted(Comparator.comparing(BrAPIObjectProperty::getName)).map(property ->
@@ -166,25 +170,25 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     }
 
     private Response<String> createColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
-        BrAPIType type = dereferenceType(property.getType());
+        BrAPIType dereferenceType = brAPIClassCache.dereferenceType(property.getType());
 
         if (property.getType().getName().equals("AdditionalInfo")) {
             return createAdditionalInfoColumnDefinition(property);
-        } else if (type instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
+        } else if (dereferenceType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
             return createSimpleColumnDefinition(property, brAPIPrimitiveType.getName()) ;
-        } else if (type instanceof BrAPIEnumType brAPIEnumType) {
+        } else if (dereferenceType instanceof BrAPIEnumType brAPIEnumType) {
             return createSimpleColumnDefinition(property, brAPIEnumType.getType()) ;
-        } else if (type instanceof BrAPIObjectType brAPIObjectType) {
+        } else if (dereferenceType instanceof BrAPIObjectType brAPIObjectType) {
             return createObjectColumnDefinition(parentType, property, brAPIObjectType) ;
-        } else if (type instanceof BrAPIOneOfType brAPIOneOfType) {
+        } else if (dereferenceType instanceof BrAPIOneOfType brAPIOneOfType) {
             return createOneOfTypeColumnDefinition(parentType, property, brAPIOneOfType) ;
-        } else if (type instanceof BrAPIAllOfType brAPIAllOfType) {
+        } else if (dereferenceType instanceof BrAPIAllOfType brAPIAllOfType) {
             return fail(Response.ErrorType.VALIDATION, "All-of-types are not supported, should have been removed at this point!") ;
-        } else if (type instanceof BrAPIArrayType brAPIArrayType) {
+        } else if (dereferenceType instanceof BrAPIArrayType brAPIArrayType) {
             return createArrayColumnDefinition(parentType, property, brAPIArrayType) ;
         }
 
-        return fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s'", type != null ? type.getName() : "null")) ;
+        return fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s'", dereferenceType != null ? dereferenceType.getName() : "null")) ;
     }
 
     private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectProperty property) {
@@ -220,13 +224,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     }
 
     private Response<String> createObjectColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
-        LinkType linkType = options.getProperties().getLinkTypeFor(parentType, property, brAPIObjectType);
-
-        return switch (linkType) {
-            case EMBEDDED -> createObjectColumnType(brAPIObjectType).mapResult(columnType -> property.getName() + " " + columnType);
-            case ID -> createLinkObjectDefinition(parentType, property, brAPIObjectType) ;
-            default -> fail(Response.ErrorType.VALIDATION, String.format("Unknown supported link type '%s' for property '%s' with item type '%s'", linkType, property.getName(), brAPIObjectType.getName()));
-        } ;
+        return options.getProperties().getLinkTypeFor(parentType, property, brAPIObjectType).mapResultToResponse(
+            linkType -> switch (linkType) {
+                case EMBEDDED ->
+                    createObjectColumnType(brAPIObjectType).mapResult(columnType -> property.getName() + " " + columnType);
+                case ID -> createLinkObjectDefinition(parentType, property, brAPIObjectType);
+                default ->
+                    fail(Response.ErrorType.VALIDATION, String.format("Unknown supported link type '%s' for property '%s' with item type '%s'", linkType, property.getName(), brAPIObjectType.getName()));
+            });
     }
 
     private Response<String> createLinkObjectDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
@@ -286,35 +291,39 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     }
 
     private Response<String> createArrayColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType) {
-        BrAPIType itemType = dereferenceType(brAPIArrayType.getItems());
+        BrAPIType dereferenceItemType = brAPIClassCache.dereferenceType(brAPIArrayType.getItems());
 
-        LinkType linkType = options.getProperties().getLinkTypeFor(parentType, property, itemType) ;
-
-        if (itemType == null) {
+        if (dereferenceItemType == null) {
             return fail(Response.ErrorType.VALIDATION, String.format("Cannot deference '%s'", brAPIArrayType.getItems().getName()));
         }
 
+        return options.getProperties().getLinkTypeFor(parentType, property, dereferenceItemType).mapResultToResponse(
+            linkType -> createArrayColumnDefinition(property, dereferenceItemType, linkType)
+        ) ;
+    }
+
+    private Response<String> createArrayColumnDefinition(BrAPIObjectProperty property, BrAPIType dereferenceItemType, LinkType linkType) {
         StringBuilder builder = new StringBuilder();
         builder.append(property.getName());
         builder.append(" ARRAY<");
 
         return switch (linkType) {
-            case EMBEDDED -> createArrayColumnType(itemType)
+            case EMBEDDED -> createArrayColumnType(dereferenceItemType)
                 .mapResult(builder::append)
-                    .mapResult(b -> b.append(">"))
-                    .mapResult(StringBuilder::toString);
+                .mapResult(b -> b.append(">"))
+                .mapResult(StringBuilder::toString);
             case ID -> {
-                if (itemType instanceof BrAPIObjectType brAPIObjectType) {
+                if (dereferenceItemType instanceof BrAPIObjectType brAPIObjectType) {
                     yield options.getProperties().getIdPropertyFor(brAPIObjectType)
                         .mapResultToResponse(p-> findSimpleColumnType(p.getType().getName()))
                         .mapResult(builder::append)
                         .mapResult(b -> b.append(">"))
                         .mapResult(StringBuilder::toString);
                 } else {
-                    yield fail(Response.ErrorType.VALIDATION, String.format("Unknown link ID array type '%s'", itemType.getName()));
+                    yield fail(Response.ErrorType.VALIDATION, String.format("Unknown link ID array type '%s'", dereferenceItemType.getName()));
                 }
             }
-            default -> fail(Response.ErrorType.VALIDATION, String.format("Unknown supported link type '%s' for Array with item type '%s'", linkType, itemType.getName()));
+            default -> fail(Response.ErrorType.VALIDATION, String.format("Unknown supported link type '%s' for Array with item type '%s'", linkType, dereferenceItemType.getName()));
         } ;
     }
 
@@ -326,13 +335,5 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             default ->
                 fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded array type '%s'", itemType.getName()));
         };
-    }
-
-    private BrAPIType dereferenceType(BrAPIType type) {
-        if (type instanceof BrAPIReferenceType) {
-            return brAPIClasses.get(type.getName());
-        } else {
-            return type;
-        }
     }
 }

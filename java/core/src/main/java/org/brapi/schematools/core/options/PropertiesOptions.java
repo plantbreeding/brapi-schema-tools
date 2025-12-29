@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.brapi.schematools.core.response.Response.fail;
+import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 
 /**
  * Provides options for the generation of ID, Name and PUI property and their usage
@@ -153,57 +155,52 @@ public class PropertiesOptions implements Options {
     }
 
     /**
-     * Gets the link type for a type property
+     * Gets the link type for a type property, or fails if the property is not dereferenced first
      * @param parentType The BrAPI Object parent type
      * @param property The BrAPI property
      * @return the link type for specified type property
      */
-    public LinkType getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
 
         Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
 
-        BrAPIType unwrappedType = unwrapType(property.getType());
-
         if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(parentType, property, unwrappedType)) ;
+            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, property.getType())) ;
         }
 
-        return getDefaultLinkTypeFor(parentType, property, unwrapType(property.getType())) ;
+        return getDefaultLinkTypeFor(property, property.getType()) ;
     }
 
     /**
-     * Gets the link type for a type property
+     * Gets the link type for a type property. The property type which needs to be dereferenced first.
      * @param parentType The BrAPI Object parent type
      * @param property The BrAPI property
-     * @param type The BrAPI property type
+     * @param dereferencedUnwrappedType The BrAPI property type, which has been dereferenced first.
      * @return the link type for specified type property
      */
-    public LinkType getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
-
+    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType dereferencedType) {
         Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
 
         if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(parentType, property, type)) ;
+            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, dereferencedType)) ;
         }
 
-        return getDefaultLinkTypeFor(parentType, property, type) ;
+        return getDefaultLinkTypeFor(property, dereferencedType) ;
     }
 
-    private LinkType getDefaultLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
+    private Response<LinkType> getDefaultLinkTypeFor( BrAPIObjectProperty property, BrAPIType dereferencedType) {
+
+        BrAPIType unwrappedType = unwrapType(dereferencedType);
+
+        if (unwrappedType instanceof BrAPIReferenceType) {
+            return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' need to be dereferenced first", unwrappedType.getName())) ;
+        }
 
         BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
 
-        return switch (relationshipType) {
-            case ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY -> type instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)type) ? LinkType.ID : LinkType.EMBEDDED ;
-        } ;
-    }
-
-    private BrAPIType unwrapType(BrAPIType type) {
-        if (type instanceof BrAPIArrayType brAPIArrayType) {
-            return unwrapType(brAPIArrayType.getItems()) ;
-        } else {
-            return type ;
-        }
+        return success(switch (relationshipType) {
+            case ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY -> unwrappedType instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)unwrappedType) ? LinkType.ID : LinkType.EMBEDDED ;
+        }) ;
     }
 
     /**

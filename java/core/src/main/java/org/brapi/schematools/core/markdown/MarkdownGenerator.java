@@ -6,7 +6,7 @@ import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -75,7 +75,7 @@ public class MarkdownGenerator {
         private final Map<String, BrAPIObjectProperty> duplicateObjectProperties;
 
         public Generator(List<BrAPIClass> brAPIClasses) {
-            this.brAPIClasses = new BrAPIClassCacheUtil(this::isGenerating).createMap(brAPIClasses) ;
+            this.brAPIClasses = BrAPIClassCacheBuilder.createMap(this::isGenerating, brAPIClasses) ;
             this.descriptionsPath = outputPath.resolve("descriptions") ;
             this.fieldsPath = outputPath.resolve("fields") ;
 

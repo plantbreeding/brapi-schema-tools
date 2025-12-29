@@ -1,6 +1,8 @@
 package org.brapi.schematools.core.utils;
 
+import org.brapi.schematools.core.model.BrAPIArrayType;
 import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.model.BrAPIType;
 
 /**
  * Provides utility methods for BrAPI Types
@@ -22,5 +24,19 @@ public class BrAPITypeUtils {
      */
     public static boolean isPrimaryModel(BrAPIClass brAPIClass) {
         return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isPrimaryModel() ;
+    }
+
+    /**
+     * Unwraps a BrAPIType, by finding the inner type
+     *
+     * @param type the type to be unwrapped
+     * @return the unwrapped type
+     */
+    public static BrAPIType unwrapType(BrAPIType type) {
+        if (type instanceof BrAPIArrayType brAPIArrayType) {
+            return unwrapType(brAPIArrayType.getItems());
+        }
+
+        return type;
     }
 }

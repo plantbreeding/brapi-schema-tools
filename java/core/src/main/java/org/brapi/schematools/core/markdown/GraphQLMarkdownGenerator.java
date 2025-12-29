@@ -24,6 +24,7 @@ import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.GraphQLUtils.unwrapType;
 
 /**
  * Generates a Markdown files for type and their field descriptions from a GraphQL Schema.
@@ -352,16 +353,6 @@ public class GraphQLMarkdownGenerator {
             }
 
             return null;
-        }
-
-        private GraphQLType unwrapType(GraphQLType type) {
-            if (type instanceof GraphQLList graphQLList) {
-                return unwrapType(graphQLList.getWrappedType()) ;
-            } else if (type instanceof GraphQLNonNull graphQLNonNull) {
-                return unwrapType(graphQLNonNull.getWrappedType()) ;
-            }
-
-            return type;
         }
 
         private Response<List<Path>> generateMarkdownForTopLevelField(GraphQLFieldDefinition field) {

@@ -20,6 +20,7 @@ import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMet
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
 /**
@@ -146,7 +148,7 @@ public class OpenAPIGenerator {
         private final OpenAPIGeneratorOptions options;
 
         private final OpenAPIGeneratorMetadata metadata;
-        private final Map<String, BrAPIClass> brAPIClassMap;
+        private final BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache;
 
         private final Map<String, Parameter> parameters;
         private final Map<String, ApiResponse> responses;
@@ -160,7 +162,7 @@ public class OpenAPIGenerator {
             this.options = options;
             this.metadata = metadata;
             // cache all the BrAPI classes
-            this.brAPIClassMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPIClasses) ;
 
             // Cache all the generic components (TODO generate these instead of reading from a directory)
             if (components.getParameters() != null) {
@@ -192,16 +194,16 @@ public class OpenAPIGenerator {
         }
 
         public Response<List<OpenAPI>> generate() {
-            return generateSpecifications(brAPIClassMap.values());
+            return generateSpecifications(brAPIClassCache.getBrAPICClasses());
         }
 
         public Response<List<OpenAPI>> generate(Collection<String> classNames) {
             if (classNames != null && !classNames.isEmpty()) {
-                Collection<BrAPIClass> values = brAPIClassMap.values().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
+                Collection<BrAPIClass> values = brAPIClassCache.getBrAPICClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
 
                 return generateSpecifications(values);
             } else {
-                return generateSpecifications(brAPIClassMap.values());
+                return generateSpecifications(brAPIClassCache.getBrAPICClasses());
             }
         }
 
@@ -338,7 +340,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<BrAPIClass> findReferencedClass(String typeName) {
-            BrAPIClass brAPISchema = brAPIClassMap.get(typeName);
+            BrAPIClass brAPISchema = brAPIClassCache.getBrAPIClass(typeName);
 
             if (brAPISchema != null) {
                 return success(brAPISchema);
@@ -398,7 +400,7 @@ public class OpenAPIGenerator {
         private Response<PathItem> createSubPathItemWithId(BrAPIObjectType parentType, BrAPIObjectProperty property) {
             PathItem pathItem = new PathItem();
 
-            BrAPIType type = dereferenceType(property.getType());
+            BrAPIType type = brAPIClassCache.dereferenceType(property.getType());
 
             if (type instanceof BrAPIObjectType brAPIObjectType) {
                 return generateSubPathSingleGetOperation(parentType, brAPIObjectType)
@@ -407,10 +409,10 @@ public class OpenAPIGenerator {
 
             } else if (type instanceof BrAPIArrayType brAPIArrayType) {
                 int dimension = 1;
-                BrAPIType itemType = dereferenceType(brAPIArrayType.getItems());
+                BrAPIType itemType = brAPIClassCache.dereferenceType(brAPIArrayType.getItems());
 
                 while (itemType instanceof BrAPIArrayType brAPIArrayItemType) {
-                    itemType = dereferenceType(brAPIArrayItemType.getItems());
+                    itemType = brAPIClassCache.dereferenceType(brAPIArrayItemType.getItems());
                     ++dimension;
                 }
 
@@ -582,7 +584,7 @@ public class OpenAPIGenerator {
             }
 
             if (options.getListGet().hasInputFor(type)) {
-                BrAPIClass requestClass = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
 
                 if (requestClass == null) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", type.getName(), createPathItemName(type)));
@@ -951,7 +953,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {
-            BrAPIClass requestSchema = this.brAPIClassMap.get(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
 
             String name = options.getSearchRequestNameFor(type);
 
@@ -1028,17 +1030,23 @@ public class OpenAPIGenerator {
         }
 
         private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property) {
-            BrAPIType type = dereferenceType(property.getType());
+            BrAPIType unwrappedType = unwrapType(property.getType());
+            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
 
-            LinkType linkType = options.getProperties().getLinkTypeFor(parentType, property, type);
+            return options.getProperties().getLinkTypeFor(parentType, property, dereferencedType)
+                .mapResultToResponse(linkType -> createProperty(objectSchema, property, property.getType(), linkType)) ;
+        }
+
+        private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
+            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(type);
 
             if (LinkType.SUB_PATH.equals(linkType) || LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
                 return success(Collections.emptyMap());
             }
 
-            if (type instanceof BrAPIPrimitiveType || type instanceof BrAPIEnumType || type instanceof BrAPIOneOfType) {
-                return createEmbeddedProperty(objectSchema, property, type);
-            } else if (type instanceof BrAPIObjectType brAPIObjectType) {
+            if (dereferencedType instanceof BrAPIPrimitiveType || dereferencedType instanceof BrAPIEnumType || dereferencedType instanceof BrAPIOneOfType) {
+                return createEmbeddedProperty(objectSchema, property, dereferencedType);
+            } else if (dereferencedType instanceof BrAPIObjectType brAPIObjectType) {
                 BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
 
                 return switch (relationshipType) {
@@ -1050,10 +1058,10 @@ public class OpenAPIGenerator {
                             property.getName(), relationshipType, brAPIObjectType.getName()));
                 };
 
-            } else if (type instanceof BrAPIArrayType brAPIArrayType) {
+            } else if (dereferencedType instanceof BrAPIArrayType brAPIArrayType) {
                 BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_MANY;
 
-                BrAPIType itemType = dereferenceType(brAPIArrayType.getItems());
+                BrAPIType itemType = brAPIClassCache.dereferenceType(brAPIArrayType.getItems());
 
                 return switch (relationshipType) {
                     case ONE_TO_ONE, MANY_TO_ONE ->
@@ -1064,12 +1072,13 @@ public class OpenAPIGenerator {
                         createArrayProperty(objectSchema, property, brAPIArrayType);
                 };
             }
-            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unsupported type '%s' for property '%s'", type.getClass(), property.getName()));
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Unsupported type '%s' for property '%s'", dereferencedType.getClass(), property.getName()));
         }
+
 
         private Response<Map<String, Schema>> createEmbeddedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type) {
 
-            if (this.brAPIClassMap.containsKey(property.getName())) {
+            if (brAPIClassCache.containsBrAPIClass(property.getName())) {
                 return createReferenceSchema(property.getName())
                     .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                     .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
@@ -1173,14 +1182,6 @@ public class OpenAPIGenerator {
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
                 .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(property)))
                 .or(() -> success(Collections.emptyMap()));
-        }
-
-        private BrAPIType dereferenceType(BrAPIType type) {
-            if (type instanceof BrAPIReferenceType) {
-                return brAPIClassMap.get(type.getName());
-            } else {
-                return type;
-            }
         }
 
         private Response<Map<String, Schema>> createLinkingProperties(List<BrAPIObjectProperty> linkProperties) {

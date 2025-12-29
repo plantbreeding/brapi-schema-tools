@@ -30,6 +30,7 @@ import static java.nio.file.Files.find;
 import static java.util.Collections.singletonList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
@@ -253,14 +254,6 @@ public class BrAPISchemaReader {
             }
 
             return Response.success(property);
-        }
-
-        private BrAPIType unwrapType(BrAPIType type) {
-            if (type instanceof BrAPIArrayType brAPIArrayType) {
-                return unwrapType(brAPIArrayType.getItems());
-            }
-
-            return type;
         }
 
         private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
