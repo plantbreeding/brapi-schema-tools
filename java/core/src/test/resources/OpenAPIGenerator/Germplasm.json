@@ -556,12 +556,12 @@
                         "description" : "The cross name and optional selection history.\n\nMCPD (v2.1) (ANCEST) 20. Information about either pedigree or other description of ancestral information (e.g. parent variety in case of mutant or selection). For example a pedigree 'Hanna/7*Atlas//Turk/8*Atlas' or a description 'mutation found in Hanna', 'selection from Irene' or 'cross involving amongst others Hanna and Irene'.",
                         "nullable" : true
                     },
-                    "samples" : {
+                    "sampleDbIds" : {
                         "type" : "array",
                         "description" : "samples",
                         "nullable" : true,
                         "items" : {
-                            "$ref" : "#/components/schemas/Sample"
+                            "type" : "string"
                         }
                     },
                     "seedSource" : {

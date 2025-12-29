@@ -2460,6 +2460,54 @@
                     }
                 ]
             },
+            "GeoJSONPoint" : {
+                "required" : [
+                    "coordinateDbIds",
+                    "type"
+                ],
+                "type" : "object",
+                "properties" : {
+                    "coordinates" : {
+                        "type" : "array",
+                        "description" : "A single position",
+                        "items" : {
+                            "type" : "number"
+                        }
+                    },
+                    "type" : {
+                        "type" : "string",
+                        "description" : "The literal string \"Point\""
+                    }
+                },
+                "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
+            },
+            "GeoJSONPolygon" : {
+                "required" : [
+                    "coordinateDbIds",
+                    "type"
+                ],
+                "type" : "object",
+                "properties" : {
+                    "coordinates" : {
+                        "type" : "array",
+                        "description" : "An array of linear rings",
+                        "items" : {
+                            "type" : "array",
+                            "items" : {
+                                "type" : "array",
+                                "items" : {
+                                    "type" : "number"
+                                }
+                            }
+                        }
+                    },
+                    "type" : {
+                        "type" : "string",
+                        "description" : "The literal string \"Polygon\""
+                    }
+                },
+                "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
+            },
             "GrowthFacility" : {
                 "type" : "object",
                 "properties" : {
@@ -2472,15 +2520,6 @@
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-26) Description of growth facility - Short description of the facility in which the study was carried out.",
                         "nullable" : true
-                    },
-                    "studyDbId" : {
-                        "type" : "string"
-                    },
-                    "studyName" : {
-                        "type" : "string"
-                    },
-                    "studyPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Short description of the facility in which the study was carried out."
@@ -2719,12 +2758,12 @@
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
-                    "childLocations" : {
+                    "childLocationDbIds" : {
                         "type" : "array",
                         "description" : "",
                         "nullable" : true,
                         "items" : {
-                            "$ref" : "#/components/schemas/Location"
+                            "type" : "string"
                         }
                     },
                     "coordinateDescription" : {
@@ -3261,6 +3300,14 @@
                 },
                 "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
             },
+            "ProgramType" : {
+                "type" : "string",
+                "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
+                "enum" : [
+                    "STANDARD",
+                    "PROJECT"
+                ]
+            },
             "Publication" : {
                 "type" : "object",
                 "properties" : {
@@ -3350,12 +3397,12 @@
                         "description" : "Common name for the crop associated with this study",
                         "nullable" : true
                     },
-                    "contactDbIds" : {
+                    "contacts" : {
                         "type" : "array",
                         "description" : "List of contact entities associated with this study",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "$ref" : "#/components/schemas/Contact"
                         }
                     },
                     "culturalPractices" : {
@@ -3728,12 +3775,12 @@
                         "description" : "The date this trial started",
                         "nullable" : true
                     },
-                    "studies" : {
+                    "studyDbIds" : {
                         "type" : "array",
                         "description" : "",
                         "nullable" : true,
                         "items" : {
-                            "$ref" : "#/components/schemas/Study"
+                            "type" : "string"
                         }
                     },
                     "trialDescription" : {

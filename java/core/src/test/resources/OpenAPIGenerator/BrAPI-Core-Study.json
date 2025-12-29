@@ -425,12 +425,12 @@
                         "description" : "Common name for the crop associated with this study",
                         "nullable" : true
                     },
-                    "contactDbIds" : {
+                    "contacts" : {
                         "type" : "array",
                         "description" : "List of contact entities associated with this study",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "$ref" : "#/components/schemas/Contact"
                         }
                     },
                     "culturalPractices" : {
@@ -899,43 +899,6 @@
                     }
                 }
             },
-            "GermplasmListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Germplasm"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "202AcceptedSearchResponse" : {
                 "description" : "Accepted",
                 "content" : {
@@ -958,32 +921,6 @@
                                             "example" : "551ae08c"
                                         }
                                     }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Germplasm"
                                 }
                             }
                         }

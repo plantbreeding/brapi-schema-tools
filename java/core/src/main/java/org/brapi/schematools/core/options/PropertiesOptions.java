@@ -175,7 +175,7 @@ public class PropertiesOptions implements Options {
      * Gets the link type for a type property. The property type which needs to be dereferenced first.
      * @param parentType The BrAPI Object parent type
      * @param property The BrAPI property
-     * @param dereferencedUnwrappedType The BrAPI property type, which has been dereferenced first.
+     * @param dereferencedType The BrAPI property type, which has been dereferenced first.
      * @return the link type for specified type property
      */
     public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType dereferencedType) {
@@ -188,12 +188,12 @@ public class PropertiesOptions implements Options {
         return getDefaultLinkTypeFor(property, dereferencedType) ;
     }
 
-    private Response<LinkType> getDefaultLinkTypeFor( BrAPIObjectProperty property, BrAPIType dereferencedType) {
+    private Response<LinkType> getDefaultLinkTypeFor(BrAPIObjectProperty property, BrAPIType dereferencedType) {
 
         BrAPIType unwrappedType = unwrapType(dereferencedType);
 
         if (unwrappedType instanceof BrAPIReferenceType) {
-            return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' need to be dereferenced first", unwrappedType.getName())) ;
+            return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' needs to be dereferenced first", unwrappedType.getName())) ;
         }
 
         BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;

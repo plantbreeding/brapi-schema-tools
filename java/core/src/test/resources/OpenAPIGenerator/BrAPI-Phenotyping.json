@@ -2523,8 +2523,8 @@
                         "description" : "The URL or URI to the documentation",
                         "nullable" : true
                     },
-                    "ontologyReferenceDbId" : {
-                        "type" : "string"
+                    "ontologyReference" : {
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "type" : {
                         "type" : "string",
@@ -2538,6 +2538,24 @@
                     }
                 },
                 "description" : "Links to various ontology documentation"
+            },
+            "DocumentationLinkType" : {
+                "type" : "string",
+                "description" : "The type of documentation, which can be OBO Foundry, an RDF term or a webpage.",
+                "enum" : [
+                    "OBO",
+                    "RDF",
+                    "WEBPAGE"
+                ]
+            },
+            "EntryType" : {
+                "type" : "string",
+                "description" : "The type of entry for this observation unit. ex. \"CHECK\", \"TEST\", \"FILLER\"",
+                "enum" : [
+                    "CHECK",
+                    "TEST",
+                    "FILLER"
+                ]
             },
             "Event" : {
                 "required" : [
@@ -2756,6 +2774,54 @@
                         "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     }
                 ]
+            },
+            "GeoJSONPoint" : {
+                "required" : [
+                    "coordinateDbIds",
+                    "type"
+                ],
+                "type" : "object",
+                "properties" : {
+                    "coordinates" : {
+                        "type" : "array",
+                        "description" : "A single position",
+                        "items" : {
+                            "type" : "number"
+                        }
+                    },
+                    "type" : {
+                        "type" : "string",
+                        "description" : "The literal string \"Point\""
+                    }
+                },
+                "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
+            },
+            "GeoJSONPolygon" : {
+                "required" : [
+                    "coordinateDbIds",
+                    "type"
+                ],
+                "type" : "object",
+                "properties" : {
+                    "coordinates" : {
+                        "type" : "array",
+                        "description" : "An array of linear rings",
+                        "items" : {
+                            "type" : "array",
+                            "items" : {
+                                "type" : "array",
+                                "items" : {
+                                    "type" : "number"
+                                }
+                            }
+                        }
+                    },
+                    "type" : {
+                        "type" : "string",
+                        "description" : "The literal string \"Polygon\""
+                    }
+                },
+                "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "Image" : {
                 "allOf" : [
