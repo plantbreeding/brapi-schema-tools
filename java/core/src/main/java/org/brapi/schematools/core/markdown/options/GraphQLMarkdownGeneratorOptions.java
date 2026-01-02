@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.markdown;
+package org.brapi.schematools.core.markdown.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;
@@ -60,22 +60,22 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     }
 
     /**
-     * Load the options from an options file in YAML or Json. The options file may have missing
+     * Load the options from an options file in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      *
-     * @param optionsFile The path to the options file in YAML or Json.
-     * @return The options loaded from the YAML or Json file.
-     * @throws IOException if the options file can not be found or is incorrectly formatted.
+     * @param optionsFile The path to the options file in YAML or JSON.
+     * @return The options loaded from the YAML or JSON file.
+     * @throws IOException if the options file cannot be found or is incorrectly formatted.
      */
     public static GraphQLMarkdownGeneratorOptions load(Path optionsFile) throws IOException {
         return load().override(ConfigurationUtils.load(optionsFile, GraphQLMarkdownGeneratorOptions.class));
     }
 
     /**
-     * Load the options from an options input stream in YAML or Json. The options file may have missing
+     * Load the options from an options input stream in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
      *
-     * @param inputStream The input stream in YAML or Json.
+     * @param inputStream The input stream in YAML or JSON.
      * @return The options loaded from input stream.
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
@@ -165,7 +165,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      */
     @JsonIgnore
     public boolean isOverwritingExistingFiles() {
-        return overwrite;
+        return overwrite != null && overwrite;
     }
 
     /**
@@ -417,6 +417,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level field descriptions when there is more than one field with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelFieldDefinitions() {
         return createTopLevelFieldDefinitions != null && createTopLevelFieldDefinitions;
     }
@@ -427,6 +428,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level input object field descriptions when there is more than one field with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelInputFieldDefinitions() {
         return createTopLevelInputFieldDefinitions != null && createTopLevelInputFieldDefinitions;
     }
@@ -437,6 +439,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create top level argument descriptions when there is more than one argument with the same name,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isCreatingTopLevelArgumentDefinitions() {
         return createTopLeveArgumentDefinitions != null && createTopLeveArgumentDefinitions;
     }
@@ -447,6 +450,7 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
      * @return {@code true} if the Generator should create a hidden comment at the bottom of the Markdown.,
      * {@code false} otherwise
      */
+    @JsonIgnore
     public boolean isAddingGeneratorComments() {
         return addGeneratorComments != null && addGeneratorComments;
     }
@@ -470,6 +474,4 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     private String getMarkdownLink(GraphQLFieldDefinition queryDefinition, String prefix) {
         return String.format("[%s](%s%s.md)", queryDefinition.getName(), prefix, queryDefinition.getName());
     }
-
-
 }

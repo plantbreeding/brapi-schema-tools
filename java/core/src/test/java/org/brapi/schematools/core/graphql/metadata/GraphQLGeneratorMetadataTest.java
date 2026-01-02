@@ -26,7 +26,7 @@ class GraphQLGeneratorMetadataTest {
     void loadJson() {
         GraphQLGeneratorMetadata metadata = null;
         try {
-            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/graphql-test-metadata.json").toURI()));
+            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-metadata.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -39,7 +39,7 @@ class GraphQLGeneratorMetadataTest {
     void loadYaml() {
         GraphQLGeneratorMetadata metadata = null;
         try {
-            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/graphql-test-metadata.yaml").toURI()));
+            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -52,7 +52,7 @@ class GraphQLGeneratorMetadataTest {
     void overwrite() {
         GraphQLGeneratorMetadata metadata = null;
         try {
-            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/graphql-override-metadata.yaml").toURI()));
+            metadata = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-override-metadata.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -67,7 +67,7 @@ class GraphQLGeneratorMetadataTest {
     void compare() {
         try {
             GraphQLGeneratorMetadata options1 = GraphQLGeneratorMetadata.load() ;
-            GraphQLGeneratorMetadata options2 = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("options/graphql-no-override-metadata.yaml").toURI()));
+            GraphQLGeneratorMetadata options2 = GraphQLGeneratorMetadata.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-no-override-metadata.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

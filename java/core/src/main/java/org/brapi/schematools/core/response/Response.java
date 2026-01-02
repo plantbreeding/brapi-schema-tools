@@ -755,25 +755,25 @@ public class Response<T> {
     }
 
     /**
-     * Determines if response has no errors and the result is not null
-     * @return If response has no errors and the result is not null
+     * Determines if the response has no errors and the result is not null
+     * @return If the response has no errors and the result is not null
      */
     public boolean isPresent() {
         return !this.hasErrors() && result != null;
     }
 
     /**
-     * Determines if response has no errors and the result is null
-     * @return If response has no errors and the result is null
+     * Determines If the response has no errors and the result is null
+     * @return If the response has no errors and the result is null
      */
     public boolean isEmpty() {
         return !this.hasErrors() && result == null;
     }
 
     /**
-     * If response has no errors and the result is not null return the result, otherwise
+     * If the response has no errors and the result is not null return the result, otherwise
      * return the result from the supplier
-     * @param supplier the supplier to be used if response has no errors and the result is not null
+     * @param supplier the supplier to be used If the response has no errors and the result is not null
      * @return the result from this response or from the supplier
      */
     public T getResultIfPresentOrElseResult(Supplier<T> supplier) {
@@ -781,9 +781,9 @@ public class Response<T> {
     }
 
     /**
-     * If response has no errors and the result is not null return the result, otherwise
+     * If the response has no errors and the result is not null return the result, otherwise
      * return the provider result from the supplier
-     * @param result the result to returned if response has no errors and the result for this response is not null
+     * @param result the result to returned If the response has no errors and the result for this response is not null
      * @return the result from this response or from the supplier
      */
     public T getResultIfPresentOrElseResult(T result) {
@@ -791,18 +791,61 @@ public class Response<T> {
     }
 
     /**
-     * If response has no errors and the result is not null apply the function to the result, otherwise use the
+     * If the response has no errors and the result is not null,
+     * pass the result of this response to the provider consumer
+     * @param consumer a consumer for the result of this response
+     * @return this response
+     */
+    public Response<T> ifPresentDoWithResult(Consumer<T> consumer) {
+        if (this.isPresent()) {
+            consumer.accept(this.getResult());
+            return this;
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * If this response has no errors and the result is not null, returns a new response that takes the
+     * result of provided function that takes the result of this resource as an input,
+     * otherwise create a new response and merges in the errors
+     * from this response.
+     *
+     * @param function a function that takes the result of this response as an input
+     * @param supplier a supplier that provides a new response
+     * @return a new response from the function or supplier, or merge errors if there are any
+     * @param <U> the result type of the new response
+     */
+    public <U> Response<U> ifPresentMapResultOr(Function<T, U> function, Supplier<Response<U>> supplier) {
+        if (this.isPresent()) {
+            return new Response<>(function.apply(this.getResult()));
+        } else {
+            if (this.hasNoErrors()) {
+                return supplier.get();
+            } else {
+                return new Response<U>().mergeErrors(this);
+            }
+        }
+    }
+
+
+    /**
+     * If the response has no errors and the result is not null apply the function to the result, otherwise use the
      * to get the new resource
      * @param function a function that takes the result of this response to create a new response
      * @param supplier a supplier that provides a new response
-     * @return a new response from the function or supplier
+     * @return a new response from the function or supplier, or merge errors if there are any
      * @param <U> the result type of the new response
      */
     public <U> Response<U> ifPresentMapResultToResponseOr(Function<T, Response<U>> function, Supplier<Response<U>> supplier) {
         if (this.isPresent()) {
             return function.apply(this.getResult());
         } else {
-            return supplier.get();
+            if (this.hasNoErrors()) {
+                return supplier.get();
+            } else {
+                return new Response<U>().mergeErrors(this);
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.openapi.generator.LinkType;
+import org.brapi.schematools.core.options.LinkType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class OpenAPIGeneratorOptionsTest {
     void loadJson() {
         OpenAPIGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-options.json").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -54,7 +54,7 @@ class OpenAPIGeneratorOptionsTest {
     void loadYaml() {
         OpenAPIGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-test-options.yaml").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -70,7 +70,7 @@ class OpenAPIGeneratorOptionsTest {
         OpenAPIGeneratorOptions options = null;
 
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-override-options.yaml").toURI()));
+            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -100,13 +100,13 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals(LinkType.ID,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("CallSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.ID,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Trial").build(),
-                BrAPIObjectProperty.builder().name("contacts").build())
+                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
         );
     }
 
@@ -114,7 +114,7 @@ class OpenAPIGeneratorOptionsTest {
     void compare() {
         try {
             OpenAPIGeneratorOptions options1 = OpenAPIGeneratorOptions.load() ;
-            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("options/openapi-no-override-options.yaml").toURI()));
+            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -153,13 +153,13 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals(LinkType.SUB_PATH,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("CallSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.EMBEDDED,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Trial").build(),
-                BrAPIObjectProperty.builder().name("contacts").build())
+                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
         );
     }
 
@@ -212,37 +212,37 @@ class OpenAPIGeneratorOptionsTest {
         assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("BreedingMethod").build(),
-                BrAPIObjectProperty.builder().name("germplasm").build())
+                BrAPIObjectProperty.builder().name("germplasm").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.NONE,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("BreedingMethod").build(),
-                BrAPIObjectProperty.builder().name("pedigreeNodes").build())
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_PATH,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Variant").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_PATH,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_PATH,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("callSets").build())
+                BrAPIObjectProperty.builder().name("callSets").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_PATH,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("variants").build())
+                BrAPIObjectProperty.builder().name("variants").build()).getResultOrThrow()
         );
     }
 }

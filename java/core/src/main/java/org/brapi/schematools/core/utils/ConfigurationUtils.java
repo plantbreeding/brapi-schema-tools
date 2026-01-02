@@ -16,12 +16,12 @@ public class ConfigurationUtils {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     
     /**
-     * Load the configurations from a file in YAML or Json.
-     * @param configurationsFile The path to the configuration file in YAML or Json.
+     * Load the configurations from a file in YAML or JSON.
+     * @param configurationsFile The path to the configuration file in YAML or JSON.
      * @param configurationClass The configuration class.
      * @param <T> the class of the configuration
-     * @return The configurations loaded from the YAML or Json file.
-     * @throws IOException if the file can not be found or is incorrectly formatted.
+     * @return The configurations loaded from the YAML or JSON file.
+     * @throws IOException if the file cannot be found or is incorrectly formatted.
      */
     public static <T> T load(Path configurationsFile, Class<T> configurationClass) throws IOException {
         return load(Files.newInputStream(configurationsFile), configurationClass);
@@ -33,7 +33,7 @@ public class ConfigurationUtils {
      * @param configurationClass The configuration class.
      * @param <T> the class of the configuration
      * @return The default configurations
-     * @throws IOException if the file can not be found or is incorrectly formatted.
+     * @throws IOException if the file cannot be found or is incorrectly formatted.
      */
     public static <T> T load(String classPath, Class<T> configurationClass) throws IOException {
 
@@ -44,8 +44,8 @@ public class ConfigurationUtils {
     }
 
     /**
-     * Load the configurations from an input stream in YAML or Json.
-     * @param inputStream The input stream in YAML or Json
+     * Load the configurations from an input stream in YAML or JSON.
+     * @param inputStream The input stream in YAML or JSON
      * @param configurationClass The configuration class.
      * @param <T> the class of the configuration
      * @return The configurations loaded from input stream.

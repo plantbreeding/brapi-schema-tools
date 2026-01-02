@@ -12,7 +12,6 @@ import org.brapi.schematools.core.response.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,14 +30,6 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    /**
-     * Create a capitalised version of a string value, where the first character is converted to upper case
-     * @param value the string value to be capitalised
-     * @return a capitalised version of a string value, where the first character is converted to upper case
-     */
-    public static String capitalise(String value) {
-        return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null ;
-    }
     private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
@@ -73,6 +64,15 @@ public class StringUtils {
         replace("(.*)person$").with("$1people"),
         replace("(.*)Person$").with("$1People")
     );
+
+    /**
+     * Create a capitalised version of a string value, where the first character is converted to upper case
+     * @param value the string value to be capitalised
+     * @return a capitalised version of a string value, where the first character is converted to upper case
+     */
+    public static String capitalise(String value) {
+        return value != null ? !value.isEmpty() ? value.substring(0, 1).toUpperCase() + value.substring(1) : "" : null ;
+    }
 
     /**
      * Converts the noun from its plural form to its singular form
@@ -223,7 +223,7 @@ public class StringUtils {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath)) ;
             }
 
-        } catch (URISyntaxException exception) {
+        } catch (Exception exception) {
             return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
         }
     }
@@ -359,6 +359,29 @@ public class StringUtils {
         }
 
         return String.format(newFormat.toString(), valueList.toArray());
+    }
+
+    public static String escapeQuotes(String inputString) {
+        return inputString.replaceAll("\"", "\"").replaceAll("'", "''") ;
+    }
+
+    public static String escapeSingleSQLQuotes(String inputString) {
+        return inputString.replaceAll("'", "''") ;
+    }
+
+    public static String escapeSpecialCharacters(String inputString) {
+        StringBuilder escapedString = new StringBuilder();
+        for (char c : inputString.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                escapedString.append("\\");
+            }
+            escapedString.append(c);
+        }
+        return escapedString.toString();
+    }
+
+    public static String removeCarriageReturns(String inputString) {
+        return inputString.replaceAll("[\\n\\r]", " ") ;
     }
 
     static class Replacer {

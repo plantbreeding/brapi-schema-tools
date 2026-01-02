@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class BrAPIClassCacheUtilTest {
+class BrAPIClassCacheBuilderTest {
 
     List<BrAPIClass> brAPIClasses ;
 
@@ -29,10 +29,9 @@ class BrAPIClassCacheUtilTest {
 
     @Test
     void createMap() {
-        BrAPIClassCacheUtil subject = new BrAPIClassCacheUtil(this::isCaching) ;
-        Map<String, BrAPIClass> map = subject.createMap(brAPIClasses);
+        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createMap(this::isCaching, brAPIClasses);
 
-        assertEquals(102, map.size());
+        assertEquals(99, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("Attribute")) ;

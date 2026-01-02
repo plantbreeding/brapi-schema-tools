@@ -1,7 +1,7 @@
 package org.brapi.schematools.cli;
 
+import org.brapi.schematools.core.utils.Version;
 import picocli.CommandLine;
-import org.brapi.schematools.core.utils.Version ;
 
 @CommandLine.Command(
     name = "version", mixinStandardHelpOptions = true,
@@ -10,6 +10,6 @@ import org.brapi.schematools.core.utils.Version ;
 public class VersionSubCommand implements Runnable {
     @Override
     public void run() {
-        System.out.println(Version.getVersion());
+        System.out.println("Version: " + Version.getVersion());
     }
 }

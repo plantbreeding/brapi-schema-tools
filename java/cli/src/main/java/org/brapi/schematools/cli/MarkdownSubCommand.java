@@ -12,7 +12,7 @@ import org.brapi.schematools.core.authorization.oauth.OpenIDToken;
 import org.brapi.schematools.core.authorization.oauth.SingleSignOn;
 import org.brapi.schematools.core.graphql.GraphQLSchemaParser;
 import org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator;
-import org.brapi.schematools.core.markdown.GraphQLMarkdownGeneratorOptions;
+import org.brapi.schematools.core.markdown.options.GraphQLMarkdownGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
@@ -77,7 +77,7 @@ public class MarkdownSubCommand extends AbstractSubCommand {
     private String method;
 
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
-    private boolean overwrite = true;
+    private Boolean overwrite ;
 
     @Override
     public void execute() throws IOException {
@@ -113,7 +113,9 @@ public class MarkdownSubCommand extends AbstractSubCommand {
             GraphQLMarkdownGeneratorOptions options = optionsPath != null ?
                 GraphQLMarkdownGeneratorOptions.load(optionsPath) : GraphQLMarkdownGeneratorOptions.load();
 
-            options.setOverwrite(overwrite);
+            if (overwrite != null) {
+                options.setOverwrite(overwrite);
+            }
 
             GraphQLMarkdownGenerator markdownGenerator = GraphQLMarkdownGenerator
                 .generator(outputPath).options(options);

@@ -11,9 +11,8 @@ import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPIClassCacheUtil;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.xlsx.options.ColumnOption;
 import org.brapi.schematools.core.xlsx.options.ValuePropertyOption;
@@ -35,19 +34,18 @@ import java.util.stream.Collectors;
 import static org.brapi.schematools.core.response.Response.fail;
 
 /**
- * Generates Excel (xlsx) file(s) for type and their field descriptions from a BrAPI Json Schema.
+ * Generates Excel (xlsx) file(s) for type and their field descriptions from a BrAPI JSON Schema.
  */
 @Slf4j
 @AllArgsConstructor
 public class XSSFWorkbookGenerator {
     private final BrAPISchemaReader schemaReader;
     private final XSSFWorkbookGeneratorOptions options;
-
-    private Path outputPath ;
+    private final Path outputPath ;
 
     /**
      * Creates a XSSFWorkbookGenerator using a default {@link BrAPISchemaReader} and
-     * the default {@link OntModelGeneratorOptions}.
+     * the default {@link XSSFWorkbookGeneratorOptions}.
      * @param outputPath the path of the output file or directory
      */
     public XSSFWorkbookGenerator(Path outputPath) {
@@ -56,7 +54,7 @@ public class XSSFWorkbookGenerator {
 
     /**
      * Creates a XSSFWorkbookGenerator using a default {@link BrAPISchemaReader} and
-     * the provided {@link XSSFWorkbookGenerator}.
+     * the provided {@link XSSFWorkbookGeneratorOptions}.
      * @param options The options to be used in the generation.
      * @param outputPath the path of the output file or directory
      */
@@ -68,7 +66,7 @@ public class XSSFWorkbookGenerator {
      * Generates Excel (xlsx) file(s) for type and their field descriptions
      * from the complete BrAPI Specification in
      * a directory contains a subdirectories for each module that contain
-     * the BrAPI Json schema and the additional subdirectories called 'Requests'
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
@@ -85,7 +83,7 @@ public class XSSFWorkbookGenerator {
 
         public Generator(List<BrAPIClass> brAPISchemas) {
 
-            brAPIClasses = new BrAPIClassCacheUtil(this::isGenerating).createMap(brAPISchemas) ;
+            brAPIClasses = BrAPIClassCacheBuilder.createMap(this::isGenerating, brAPISchemas) ;
         }
 
         public Response<List<Path>> generate() {
@@ -233,7 +231,7 @@ public class XSSFWorkbookGenerator {
                 try {
                     updateCellValue(row.createCell(columnIndex.getAndIncrement()), column, column.getDefaultValue(), rowIndex, PropertyUtils.getProperty(bean, column.getName())) ;
                 } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    log.warn(String.format("Error parsing bean with property '%s', at index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
+                    log.warn("Error parsing bean with property '{}', at index '{}' due to '{}'", column.getName(), rowIndex, e.getMessage());
                 }
             }
         }
@@ -270,7 +268,7 @@ public class XSSFWorkbookGenerator {
                     updateCellValue(cell, column, null, rowIndex, defaultValue);
                 }
             } catch (Exception e) {
-                log.warn(String.format("Error parsing bean with property '%s', at row index '%d' due to '%s'", column.getName(), rowIndex, e.getMessage())) ;
+                log.warn("Error parsing bean with property '{}', at row index '{}' due to '{}'", column.getName(), rowIndex, e.getMessage());
             }
         }
     }

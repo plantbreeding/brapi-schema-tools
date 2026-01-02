@@ -4,12 +4,15 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo",
+					"relationshipType": "one-to-one"
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -22,11 +25,13 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "11223344"
                 },
                 "plateDbId": {
                     "description": "The ID which uniquely identifies a `Plate`",
-                    "type": "string"
+                    "type": "string",
+                    "example": "a106467f"
                 },
                 "plateFormat": {
                     "description": "Enum for plate formats, usually \"PLATE_96\" for a 96 well plate or \"TUBES\" for plateless format",
@@ -42,7 +47,8 @@
                 },
                 "plateName": {
                     "description": "A human readable name for a `Plate`",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Plate_123_XYZ"
                 },
                 "program": {
                     "$ref": "../BrAPI-Core/Program.json#/$defs/Program",
@@ -62,7 +68,8 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "TISSUE"
                 },
                 "study": {
                     "$ref": "../BrAPI-Core/Study.json#/$defs/Study",
@@ -95,6 +102,7 @@
                 "plateName"
             ],
             "title": "Plate",
+            "description": "A Plate represents the metadata for a collection of Samples. The physical Plate being represented might be a plastic tray full of Samples, or a group of Samples stored in individual containers ie bags, test tubes, etc. Whatever the container is, the Samples in a Plate should be related by the same physical space, though they may or may not be related as part of the same experiment or analysis.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

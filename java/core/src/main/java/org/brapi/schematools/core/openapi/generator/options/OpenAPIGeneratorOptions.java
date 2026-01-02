@@ -7,9 +7,9 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
-import org.brapi.schematools.core.openapi.generator.LinkType;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -95,20 +95,20 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Load the options from an options file in YAML or Json. The options file may have missing
+     * Load the options from an options file in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param optionsFile The path to the options file in YAML or Json.
-     * @return The options loaded from the YAML or Json file.
-     * @throws IOException if the options file can not be found or is incorrectly formatted.
+     * @param optionsFile The path to the options file in YAML or JSON.
+     * @return The options loaded from the YAML or JSON file.
+     * @throws IOException if the options file cannot be found or is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
         return load().override(ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class)) ;
     }
 
     /**
-     * Load the options from an options input stream in YAML or Json. The options file may have missing
+     * Load the options from an options input stream in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param inputStream The input stream in YAML or Json.
+     * @param inputStream The input stream in YAML or JSON.
      * @return The options loaded from input stream.
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */

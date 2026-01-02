@@ -30,6 +30,12 @@ public enum OutputFormat {
      */
     MARKDOWN,
 
+
+    /**
+     * Use this format to generate SQL for types and their fields
+     */
+    SQL,
+
     /**
      * Use this format to generate Excel (xlsx) for types and their field descriptions
      */

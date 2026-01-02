@@ -31,7 +31,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison0.html") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison0.html") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
@@ -57,7 +57,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.html") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.html") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI()),
@@ -84,7 +84,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.html") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.html") ;
             Response<Path> response = comparator.compare(
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI())).getResultOrThrow(),
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI())).getResultOrThrow(),
@@ -111,7 +111,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison0.md") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison0.md") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
@@ -138,7 +138,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.md") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.md") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI()),
@@ -165,7 +165,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.md") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.md") ;
             Response<Path> response = comparator.compare(
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI())).getResultOrThrow(),
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI())).getResultOrThrow(),
@@ -192,7 +192,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison0.text") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison0.text") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
@@ -219,7 +219,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.text") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.text") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI()),
@@ -246,7 +246,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.text") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.text") ;
             Response<Path> response = comparator.compare(
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI())).getResultOrThrow(),
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI())).getResultOrThrow(),
@@ -273,7 +273,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison0.json") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison0.json") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
@@ -299,7 +299,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.json") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.json") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI()),
@@ -326,7 +326,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/petstore-comparison1.json") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/petstore-comparison1.json") ;
             Response<Path> response = comparator.compare(
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_1.yaml").toURI())).getResultOrThrow(),
                 StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("OpenAPIComparator/petstore_v2_2.yaml").toURI())).getResultOrThrow(),
@@ -354,7 +354,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/brapi-comparison0.html") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/brapi-comparison0.html") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1.json").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1.json").toURI()),
@@ -380,7 +380,7 @@ class OpenAPIComparatorTest {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
-            Path outputPath = Path.of("build/test-output/brapi-comparison1.html") ;
+            Path outputPath = Path.of("build/test-output/OpenAPIComparator/brapi-comparison1.html") ;
             Response<Path> response = comparator.compare(
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1.json").toURI()),
                 Path.of(ClassLoader.getSystemResource("OpenAPIComparator/brapi_openapi_2_1_0.json").toURI()),

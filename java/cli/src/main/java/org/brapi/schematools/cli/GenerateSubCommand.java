@@ -1,5 +1,6 @@
 package org.brapi.schematools.cli;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -7,19 +8,26 @@ import graphql.introspection.IntrospectionQuery;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaPrinter;
 import io.swagger.v3.oas.models.OpenAPI;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.ontapi.model.OntModel;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.graphql.metadata.GraphQLGeneratorMetadata;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.markdown.MarkdownGenerator;
+import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
 import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.ontmodel.metadata.OntModelGeneratorMetadata;
 import org.brapi.schematools.core.ontmodel.options.OntModelGeneratorOptions;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
+import org.brapi.schematools.core.openapi.generator.OpenAPIWriter;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.sql.SQLGenerator;
+import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
+import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
 import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
+import org.brapi.schematools.core.xlsx.options.XSSFWorkbookGeneratorOptions;
 import picocli.CommandLine;
 
 import java.io.FileOutputStream;
@@ -33,17 +41,17 @@ import static org.brapi.schematools.cli.OutputFormat.GRAPHQL;
 import static org.brapi.schematools.cli.OutputFormat.GRAPHQL_INTROSPECTION;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_YAML;
-import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
 
 /**
  * The Generate Sub-command
  */
+@Slf4j
 @CommandLine.Command(
     name = "generate", mixinStandardHelpOptions = true,
     description = "Generates Various outputs from a BrAPI JSON schema, including OpenAPI Specification or GraphQL Schema"
 )
 public class GenerateSubCommand extends AbstractSubCommand {
-    private PrintWriter out ;
+    //private PrintWriter out ;
 
     private static final OutputFormat DEFAULT_FORMAT = OutputFormat.OPEN_API;
 
@@ -66,7 +74,10 @@ public class GenerateSubCommand extends AbstractSubCommand {
     private Path metadataPath;
 
     @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
-    private boolean overwrite = true;
+    private Boolean overwrite;
+
+    @CommandLine.Option(names = {"-y", "--separate"}, description = "Output into separate files if possible instead of a single file.")
+    private Boolean separate;
 
     @Override
     public void execute() throws IOException {
@@ -79,6 +90,9 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 generateOpenAPISpecification(options, metadata);
             }
             case GRAPHQL, GRAPHQL_INTROSPECTION -> {
+                if (isGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for GraphQL schema.");
+                }
                 GraphQLGeneratorOptions options = optionsPath != null ?
                     GraphQLGeneratorOptions.load(optionsPath) : GraphQLGeneratorOptions.load();
                 GraphQLGeneratorMetadata metadata = metadataPath != null ?
@@ -86,21 +100,51 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 generateGraphQLSchema(options, metadata);
             }
             case OWL -> {
+                if (isGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for OWL specifications.");
+                }
                 OntModelGeneratorOptions options = optionsPath != null ?
                     OntModelGeneratorOptions.load(optionsPath) : OntModelGeneratorOptions.load();
                 OntModelGeneratorMetadata metadata = metadataPath != null ?
                     OntModelGeneratorMetadata.load(metadataPath) : OntModelGeneratorMetadata.load();
                 generateOntModel(options, metadata);
             }
-            case MARKDOWN -> generateMarkdown();
-            case XLSX -> generateExcel();
-        }
-    }
+            case MARKDOWN -> {
+                if (isGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for Markdown file generation.");
+                }
+                MarkdownGeneratorOptions options = optionsPath != null ?
+                    MarkdownGeneratorOptions.load(optionsPath) : MarkdownGeneratorOptions.load();
 
-    @Override
-    protected void closeOut() {
-        if (out != null) {
-            out.close();
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
+                generateMarkdown(options);
+            }
+            case SQL -> {
+                if (isNotGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for SQL file generation.");
+                }
+                SQLGeneratorOptions options = optionsPath != null ?
+                    SQLGeneratorOptions.load(optionsPath) : SQLGeneratorOptions.load();
+                SQLGeneratorMetadata metadata = metadataPath != null ?
+                    SQLGeneratorMetadata.load(metadataPath) : SQLGeneratorMetadata.load();
+
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
+                generateSQL(options, metadata);
+            }
+            case XLSX -> {
+                if (isGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for XLSX file generation.");
+                }
+                XSSFWorkbookGeneratorOptions options = optionsPath != null ?
+                    XSSFWorkbookGeneratorOptions.load(optionsPath) : XSSFWorkbookGeneratorOptions.load();
+                generateExcel(options);
+            }
         }
     }
 
@@ -116,14 +160,9 @@ public class GenerateSubCommand extends AbstractSubCommand {
     }
 
     private void outputIDLSchema(GraphQLSchema schema) {
-        try {
-            if (openWriter(outputPath)) {
-                out.print(new SchemaPrinter().print(schema));
-                out.close();
-            }
-        } catch (IOException exception) {
-            handleException(exception) ;
-        }
+        openWriter(outputPath)
+            .onSuccessDoWithResult(printWriter -> printWriter.print(new SchemaPrinter().print(schema)))
+            .onSuccessDoWithResult(PrintWriter::close);
     }
 
     private void outputIntrospectionSchema(GraphQLSchema schema) {
@@ -133,12 +172,18 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
             ObjectMapper mapper = new ObjectMapper();
 
-            if (openWriter(outputPath)) {
-                out.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
-                out.close();
-            }
-        } catch (IOException exception) {
-            handleException(exception) ;
+            openWriter(outputPath)
+                .onSuccessDoWithResult(printWriter -> {
+                    try {
+                        printWriter.print(mapper.writeValueAsString(executionResult.toSpecification().get("data")));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .onSuccessDoWithResult(PrintWriter::close);
+
+        } catch (Exception exception) {
+            handleException(exception);
         }
     }
 
@@ -161,41 +206,41 @@ public class GenerateSubCommand extends AbstractSubCommand {
     }
 
     private void outputOpenAPISpecifications(List<OpenAPI> specifications) {
-        try {
-            if (specifications.size() == 1) {
-                if (outputPath != null && Files.isDirectory(outputPath)) {
-                    outputOpenAPISpecification(specifications.getFirst(), resolveOutputPath(specifications.getFirst()));
-                } else {
-                    outputOpenAPISpecification(specifications.getFirst(), outputPath);
-                }
+        OpenAPIWriter openAPIWriter = new OpenAPIWriter(outputPath,
+            outputFormat.equals(OutputFormat.OPEN_API_JSON) ? OUTPUT_FORMAT_JSON : OUTPUT_FORMAT_YAML,
+            isGeneratingIntoSeparateFiles(),
+            this::openWriter);
 
-            } else {
-                if (specifications.isEmpty()) {
-                    handleError("No specification to to output!");
-                } else {
-                    if (outputPath != null && Files.isRegularFile(outputPath)) {
-                        handleError(String.format("Output path '%s' must be a directory if outputting to separate files.", outputPath.toFile()));
-                    } else {
-                        for (OpenAPI specification : specifications) {
-                            outputOpenAPISpecification(specification, resolveOutputPath(specification));
-                        }
-                    }
-                }
-            }
-        } catch (IOException exception) {
-            handleException(exception) ;
+        try {
+            openAPIWriter.write(specifications)
+                .onSuccessDoWithResult(this::outputOpenAPISpecificationPaths)
+                .onFailDoWithResponse(this::printOpenAPISpecificationFileErrors)
+                .onFailDoWithResponse(this::handleFail) ;
+        } catch (IOException e) {
+            handleException(e);
         }
     }
 
-    private Path resolveOutputPath(OpenAPI specification) {
-        return outputPath != null ? outputPath.resolve(
-            String.format(outputFormat == OutputFormat.OPEN_API ? "%s.yaml" : "%s.json", specification.getInfo().getTitle())) : null ;
-    }
+    private Response<PrintWriter> openWriter(Path outputPath) {
+        try {
+            if (outputPath != null) {
 
-    private void outputOpenAPISpecification(OpenAPI specification, Path outputPath) throws IOException {
-        if (openWriter(outputPath)) {
-            out.print(prettyPrint(specification, outputFormat == OutputFormat.OPEN_API_JSON ? OUTPUT_FORMAT_JSON : OUTPUT_FORMAT_YAML));
-            out.close();
+                if (Files.isDirectory(outputPath)) {
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Output path '%s' is a directory", outputPath));
+                }
+
+                Files.createDirectories(outputPath.getParent());
+
+                if (!isOverwritingExistingFiles() && Files.isRegularFile(outputPath)) {
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Output file '%s' already exists was not overwritten", outputPath));
+                }
+
+                return Response.success(new PrintWriter(new FileOutputStream(outputPath.toFile())));
+            } else {
+                return Response.success(new PrintWriter(System.out));
+            }
+        } catch (IOException e) {
+            return Response.fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
     }
 
@@ -204,6 +249,27 @@ public class GenerateSubCommand extends AbstractSubCommand {
             printErrors("There was 1 error generating the OpenAPI Specification", response.getAllErrors());
         } else {
             printErrors(String.format("There were %d errors generating the OpenAPI Specification", response.getAllErrors().size()), response.getAllErrors());
+        }
+    }
+
+
+    private void outputOpenAPISpecificationPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any OpenAPI files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' OpenAPI file:");
+            System.out.println(paths.getFirst().toString());
+        } else {
+            System.out.printf("Generated '%s' OpenAPI files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printOpenAPISpecificationFileErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            printErrors("There was 1 error generating the OpenAPI file(s)", response.getAllErrors());
+        } else {
+            printErrors(String.format("There were %d errors generating the OpenAPI file(s)", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -216,15 +282,12 @@ public class GenerateSubCommand extends AbstractSubCommand {
     }
 
     private void outputOntModel(OntModel model) {
-        try {
-            if (openWriter(outputPath)) {
-                model.write(out, "TURTLE");
-                out.flush();
-                out.close();
-            }
-        } catch (IOException exception) {
-            handleException(exception) ;
-        }
+        openWriter(outputPath)
+            .onSuccessDoWithResult(printWriter -> model.write(printWriter, "TURTLE"))
+            .onSuccessDoWithResult(PrintWriter::flush)
+            .onSuccessDoWithResult(PrintWriter::close)
+            .onFailDoWithResponse(this::handleFail);
+
     }
 
     private void printOntModelErrors(Response<OntModel> response) {
@@ -235,30 +298,8 @@ public class GenerateSubCommand extends AbstractSubCommand {
         }
     }
 
-    private boolean openWriter(Path outputPathFile) throws IOException {
-        if (outputPathFile != null) {
 
-            if (Files.isDirectory(outputPathFile)) {
-                handleError(String.format("Output path '%s' is a directory", outputPath));
-                return false ;
-            }
-
-            Files.createDirectories(outputPathFile.getParent());
-
-            if (!overwrite && Files.isRegularFile(outputPathFile)) {
-                handleError(String.format("Output file '%s' already exists was not overwritten", outputPath));
-                return false ;
-            }
-
-            out = new PrintWriter(new FileOutputStream(outputPathFile.toFile()));
-        } else {
-            out = new PrintWriter(System.out);
-        }
-
-        return true ;
-    }
-
-    private void generateMarkdown() {
+    private void generateMarkdown(MarkdownGeneratorOptions options) {
         try {
             if (outputPath != null) {
                 if (Files.isRegularFile(outputPath)) {
@@ -267,17 +308,19 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                     Files.createDirectories(outputPath);
 
-                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(outputPath, overwrite);
+                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(options, outputPath);
 
                     Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
 
-                    response.onSuccessDoWithResult(this::outputMarkdownPaths).onFailDoWithResponse(this::printMarkdownErrors);
+                    response
+                        .onSuccessDoWithResult(this::outputMarkdownPaths)
+                        .onFailDoWithResponse(this::printMarkdownErrors);
                 }
             } else {
                 handleError("For Markdown generation the output directory must be provided");
             }
         } catch (IOException exception) {
-            handleException(exception) ;
+            handleException(exception);
         }
     }
 
@@ -301,7 +344,50 @@ public class GenerateSubCommand extends AbstractSubCommand {
         }
     }
 
-    private void generateExcel() {
+    private void generateSQL(SQLGeneratorOptions options, SQLGeneratorMetadata metadata) {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    handleError("For Markdown generation the output path must be a directory");
+                } else {
+
+                    Files.createDirectories(outputPath);
+
+                    SQLGenerator sqlGenerator = new SQLGenerator(options, outputPath);
+
+                    Response<List<Path>> response = sqlGenerator.generate(schemaDirectory, metadata);
+
+                    response.onSuccessDoWithResult(this::outputSQLPaths).onFailDoWithResponse(this::printSQLErrors);
+                }
+            } else {
+                handleError("For SQL generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            handleException(exception);
+        }
+    }
+
+    private void outputSQLPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any SQL files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' SQL file:");
+            System.out.println(paths.getFirst().toString());
+        } else {
+            System.out.printf("Generated '%s' SQL files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printSQLErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            printErrors("There was 1 error generating the SQL file(s)", response.getAllErrors());
+        } else {
+            printErrors(String.format("There were %d errors generating the SQL file(s)", response.getAllErrors().size()), response.getAllErrors());
+        }
+    }
+
+    private void generateExcel(XSSFWorkbookGeneratorOptions options) {
         try {
             if (outputPath != null) {
                 Files.createDirectories(outputPath.getParent());
@@ -312,7 +398,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     handleError("For Excel (xlsx) generation the output path must be a file");
                 } else {
 
-                    XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(outputPath);
+                    XSSFWorkbookGenerator xssfWorkbookGenerator = new XSSFWorkbookGenerator(options, outputPath);
 
                     Response<List<Path>> response = xssfWorkbookGenerator.generate(schemaDirectory);
 
@@ -344,5 +430,17 @@ public class GenerateSubCommand extends AbstractSubCommand {
         } else {
             printErrors(String.format("There were %d errors generating Excel file", response.getAllErrors().size()), response.getAllErrors());
         }
+    }
+
+    public boolean isOverwritingExistingFiles() {
+        return overwrite != null && overwrite;
+    }
+
+    public boolean isGeneratingIntoSeparateFiles() {
+        return separate != null && separate;
+    }
+
+    public boolean isNotGeneratingIntoSeparateFiles() {
+        return separate != null && !separate;
     }
 }
