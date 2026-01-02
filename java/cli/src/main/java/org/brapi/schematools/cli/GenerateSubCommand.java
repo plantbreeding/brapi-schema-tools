@@ -348,7 +348,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
         try {
             if (outputPath != null) {
                 if (Files.isRegularFile(outputPath)) {
-                    handleError("For Markdown generation the output path must be a directory");
+                    handleError("For SQL generation the output path must be a directory");
                 } else {
 
                     Files.createDirectories(outputPath);

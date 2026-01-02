@@ -46,6 +46,8 @@ properties:
             crosses: none
             plannedCrosses: none
             pedigreeNodes: none
+        DocumentationLink:
+            ontologyReference: none
         EnvironmentParameter:
             study: none
         ExperimentalDesign:
@@ -57,6 +59,8 @@ properties:
             germplasmOrigin: none
         GenomeMap:
             markerPositions: none
+        GenotypeMetadata:
+            call: none
         Germplasm:
             sample: none
             attributeValues: none
@@ -119,6 +123,8 @@ properties:
             observationUnits: none
             plates: none
             samples: none
+        ValidValuesCategory:
+            validValues: none
         Variant:
             alleleMatrices: none
             calls: none
