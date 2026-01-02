@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -39,7 +41,8 @@ public class OpenAPIWriter {
 
     private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(?:search/)?(\\w+)");
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("#/components/responses/(\\w+)");
-
+    private static final Pattern SCHEMA_PATTERN = Pattern.compile("#/components/schemas/(\\w+)");
+    private static final Pattern ENTITY_IN_RESPONSE_PATTERN = Pattern.compile("#/components/responses/(\\w+)(?:List|Single)Response");
 
     private final Path outputPath;
     private final String outputFormat;
@@ -62,21 +65,50 @@ public class OpenAPIWriter {
 
     private class Writer {
         private final List<OpenAPI> specifications ;
-        private final Map<String, Schema> schemas ;
-        private final Map<String, ApiResponse> responses ;
+        private final Map<String, String> pathToEntityName;
+        private final Map<String, Schema> remainingSchemas;
+        private final Map<String, Schema> usedSchemas;
+        private final Map<String, ApiResponse> remainingResponses;
         private final Map<String, Parameter> parameters ;
         private final Map<String, SecurityScheme> securitySchemes ;
+        private final Map<String, Set<String>> referrencedSchemas ;
+        private final Map<String, String> schemaModule ;
 
         private Writer(List<OpenAPI> specifications) {
             this.specifications = specifications;
 
-            schemas = new HashMap<>();
-            responses = new HashMap<>();
+            pathToEntityName = new HashMap<>();
+            remainingSchemas = new HashMap<>();
+            usedSchemas = new HashMap<>();
+            remainingResponses = new HashMap<>();
             parameters = new HashMap<>();
             securitySchemes = new HashMap<>();
+            referrencedSchemas = new HashMap<>();
+            schemaModule = new HashMap<>();
 
-            this.specifications.forEach(specification -> schemas.putAll(specification.getComponents().getSchemas())) ;
-            this.specifications.forEach(specification -> responses.putAll(specification.getComponents().getResponses())) ;
+            specifications.stream().flatMap(specification -> specification.getPaths().entrySet().stream())
+                .forEach(entry -> {
+
+                    PathItem value = entry.getValue();
+
+                    Matcher matcher = ENTITY_PATH_PATTERN.matcher(entry.getKey());
+
+                    if (matcher.find()) {
+                        String pathName = matcher.group(1);
+
+                        if (value.getGet() != null && value.getGet().getResponses() != null &&
+                            value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null) {
+
+                            Matcher entityMatcher = ENTITY_IN_RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
+                            if (entityMatcher.find()) {
+                                pathToEntityName.put(pathName, entityMatcher.group(1));
+                            }
+                        }
+                    }
+                });
+
+            this.specifications.forEach(specification -> remainingSchemas.putAll(specification.getComponents().getSchemas())) ;
+            this.specifications.forEach(specification -> remainingResponses.putAll(specification.getComponents().getResponses())) ;
             this.specifications.forEach(specification -> parameters.putAll(specification.getComponents().getParameters())) ;
             this.specifications.forEach(specification -> securitySchemes.putAll(specification.getComponents().getSecuritySchemes())) ;
         }
@@ -154,45 +186,78 @@ public class OpenAPIWriter {
             LinkedList<Path> paths = new LinkedList<>();
             String key = entry.getKey();
             PathItem value = entry.getValue();
-            String entityPluralName  = findEntityPluralNameFromPath(key);
-            String entityName  = StringUtils.toSingular(entityPluralName);
 
-            if (entityPluralName != null) {
+            String entityPathName  = findEntityPathName(key);
+            String entityName = this.pathToEntityName.getOrDefault(entityPathName, StringUtils.toSingular(StringUtils.capitalise(entityPathName)));
+
+            String endpointGroup ;
+
+            if (value.getGet() != null && value.getGet().getTags() != null && !value.getGet().getTags().isEmpty()) {
+                endpointGroup = value.getGet().getTags().getFirst().replace(" ", "");
+            } else {
+                endpointGroup = StringUtils.toPlural(entityName);
+            }
+
+            if (entityPathName != null) {
+                schemaModule.put(entityName, specification.getInfo().getTitle()) ;
+
                 OpenAPI openAPI = createOpenAPI(specification) ;
                 openAPI.path(key, value);
 
-                Set<String> refs = new TreeSet<>() ;
+                Set<String> referrencedResponses = new TreeSet<>() ;
+
                 if (value.getGet() != null && value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null ) {
                     Matcher matcher = RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
 
-                    if (matcher.matches() && responses.containsKey(matcher.group(1))) {
-                        refs.add(matcher.group(1));
+                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                        referrencedResponses.add(matcher.group(1));
                     }
                 }
 
                 if (value.getPost() != null && value.getPost().getResponses().get("200") != null && value.getPost().getResponses().get("200").get$ref() != null ) {
                     Matcher matcher = RESPONSE_PATTERN.matcher(value.getPost().getResponses().get("200").get$ref());
 
-                    if (matcher.matches() && responses.containsKey(matcher.group(1))) {
-                        refs.add(matcher.group(1));
+                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                        referrencedResponses.add(matcher.group(1));
                     }
                 }
 
                 if (value.getPut() != null && value.getPut().getResponses().get("200") != null && value.getPut().getResponses().get("200").get$ref() != null ) {
                     Matcher matcher = RESPONSE_PATTERN.matcher(value.getPut().getResponses().get("200").get$ref());
 
-                    if (matcher.matches() && responses.containsKey(matcher.group(1))) {
-                        refs.add(matcher.group(1));
+                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                        referrencedResponses.add(matcher.group(1));
                     }
                 }
 
-                if (!refs.isEmpty()) {
+                if (!referrencedResponses.isEmpty()) {
                     openAPI.setComponents(new Components());
                 }
 
-                refs.forEach(ref -> openAPI.getComponents().addResponses(ref, responses.remove(ref)));
+                referrencedResponses.forEach(ref -> openAPI.getComponents().addResponses(ref, remainingResponses.remove(ref)));
 
-                Path path = createDirectoryPath(parentPath, entityPluralName);
+                Set<String> referrencedSchemas = new TreeSet<>() ;
+
+                if (remainingSchemas.containsKey(entityName)) {
+                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName))) ;
+                }
+
+                if (remainingSchemas.containsKey(entityName + "NewRequest")) {
+                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "NewRequest"))) ;
+                }
+
+                if (remainingSchemas.containsKey(entityName + "SearchRequest")) {
+                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "SearchRequest"))) ;
+                }
+
+                referrencedSchemas.forEach(referrencedSchema -> {
+                    Set<String> fromEntity = this.referrencedSchemas.getOrDefault(referrencedSchema, new TreeSet<>());
+
+                    fromEntity.add(entityName) ;
+                    this.referrencedSchemas.put(referrencedSchema, fromEntity) ;
+                });
+
+                Path path = createDirectoryPath(parentPath, endpointGroup);
 
                 return prettyPrint(openAPI, objectWriter, path.resolve(String.format(filePattern, createFileName(key, value))))
                     .onSuccessDoWithResult(paths::addAll)
@@ -205,13 +270,35 @@ public class OpenAPIWriter {
             }
         }
 
+        private List<String> findReferrencedSchemas(Schema schema) {
+            if (schema instanceof ObjectSchema objectSchema) {
+                List<String> referrencedSchemas = new ArrayList<>();
+                objectSchema.getProperties().values().stream().map(this::findReferrencedSchemas).forEach(referrencedSchemas::addAll);
+                return referrencedSchemas;
+            } else if (schema instanceof ArraySchema arraySchema) {
+                return findReferrencedSchemas(arraySchema.getItems()) ;
+            } else if (schema != null && schema.get$ref() != null)  {
+                Matcher matcher = SCHEMA_PATTERN.matcher(schema.get$ref());
+
+                if (matcher.matches()) {
+                    return List.of(matcher.group(1));
+                }
+            } if (schema != null && schema.getEnum() != null && !schema.getEnum().isEmpty() && schema.getName() != null && !schema.getName().isEmpty())  {
+                return List.of(schema.getName());
+            }
+
+            return Collections.emptyList();
+        }
+
         private Response<List<Path>> addEntitySchemas(OpenAPI specification, ObjectWriter objectWriter, Path path, String entityName) {
             LinkedList<Path> paths = new LinkedList<>();
 
-            if (schemas.containsKey(entityName)) {
+            if (remainingSchemas.containsKey(entityName)) {
                 Path schemasPath = createDirectoryPath(path, "Schemas");
                 OpenAPI openAPI = createOpenAPI(specification);
-                openAPI.setComponents(new Components().addSchemas(entityName, schemas.remove(entityName)));
+                Schema schema = remainingSchemas.remove(entityName);
+                usedSchemas.put(entityName, schema);
+                openAPI.setComponents(new Components().addSchemas(entityName, schema));
 
                 prettyPrint(openAPI, objectWriter, schemasPath.resolve(String.format(filePattern, entityName))) ;
             }
@@ -298,11 +385,11 @@ public class OpenAPIWriter {
             }
         }
 
-        private String findEntityPluralNameFromPath(String path) {
+        private String findEntityPathName(String path) {
             Matcher matcher = ENTITY_PATH_PATTERN.matcher(path);
 
             if (matcher.find()) {
-                return capitalise(matcher.group(1)) ;
+                return matcher.group(1) ;
             }
 
             return null;
@@ -314,6 +401,7 @@ public class OpenAPIWriter {
 
             return addRemainingParameters(specification, objectWriter, componentPath).onSuccessDoWithResult(allRemainingPaths::addAll)
                 .map(() -> addRemainingResponses(specification, objectWriter, componentPath).onSuccessDoWithResult(allRemainingPaths::addAll))
+                .map(() -> addReferrencedSchemas(specification, objectWriter).onSuccessDoWithResult(allRemainingPaths::addAll))
                 .map(() -> addRemainingSchemas(specification, objectWriter, componentPath).onSuccessDoWithResult(allRemainingPaths::addAll))
                 .map(() -> addRemainingSecuritySchemas(specification, objectWriter, componentPath).onSuccessDoWithResult(allRemainingPaths::addAll))
                 .map(() -> success(allRemainingPaths));
@@ -334,7 +422,7 @@ public class OpenAPIWriter {
         private Response<List<Path>> addRemainingResponses(OpenAPI specification, ObjectWriter objectWriter, Path componentPath) {
             Path responsesPath = createDirectoryPath(componentPath, "Responses");
 
-            return responses.entrySet().stream()
+            return remainingResponses.entrySet().stream()
                 .map(entry -> {
                     OpenAPI openAPI = createOpenAPI(specification);
                     openAPI.setComponents(new Components().addResponses(entry.getKey(), entry.getValue()));
@@ -343,11 +431,23 @@ public class OpenAPIWriter {
                 }).collect(Response.mergeLists()) ;
         }
 
+        private Response<List<Path>> addReferrencedSchemas(OpenAPI specification, ObjectWriter objectWriter) {
+            return referrencedSchemas.entrySet().stream().filter(entry -> remainingSchemas.containsKey(entry.getKey()) && entry.getValue().size() == 1)
+                .map(entry -> {
+                    String key = entry.getKey();
+                    Path modulePath = entry.getValue().stream().findFirst().map(schemaModule::get).map(module -> createDirectoryPath(outputPath, module)).orElse(outputPath) ;
+                    Path entityPath = entry.getValue().stream().findFirst().map(StringUtils::toPlural).map(entityPlural -> createDirectoryPath(modulePath, entityPlural)).orElse(outputPath) ;
+                    OpenAPI openAPI = createOpenAPI(specification);
+                    openAPI.setComponents(new Components().addSchemas(key, remainingSchemas.remove(key)));
+                    return prettyPrint(openAPI, objectWriter, createDirectoryPath(entityPath, "Schemas").resolve(String.format(filePattern, key)));
+                }).collect(Response.mergeLists());
+        }
+
         private Response<List<Path>> addRemainingSchemas(OpenAPI specification, ObjectWriter objectWriter, Path componentPath) {
             Path schemasPath = createDirectoryPath(componentPath, "Schemas");
             Path searchRequestSchemasPath = createDirectoryPath(schemasPath, "SearchRequestSchemas");
 
-            return schemas.entrySet().stream()
+            return remainingSchemas.entrySet().stream()
                 .map(entry -> {
                     OpenAPI openAPI = createOpenAPI(specification);
                     openAPI.setComponents(new Components().addSchemas(entry.getKey(), entry.getValue()));
