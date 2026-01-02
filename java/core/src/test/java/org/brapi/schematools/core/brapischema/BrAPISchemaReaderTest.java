@@ -32,7 +32,7 @@ class BrAPISchemaReaderTest {
                 getResult().stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
             assertNotNull(schemas);
-            assertEquals(96, schemas.size());
+            assertEquals(130, schemas.size());
 
             BrAPIClass trialSchema = schemas.get("Trial");
             assertNotNull(trialSchema);
@@ -139,7 +139,7 @@ class BrAPISchemaReaderTest {
 
             assertNotNull(schemas);
 
-            assertEquals(1, schemas.size());
+            assertEquals(3, schemas.size());
 
             BrAPIClass trialSchema = schemas.getFirst();
 
@@ -166,7 +166,7 @@ class BrAPISchemaReaderTest {
 
             assertNotNull(schemas);
 
-            assertEquals(1, schemas.size());
+            assertEquals(5, schemas.size());
 
             BrAPIClass studySchema = schemas.getFirst();
 

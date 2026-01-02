@@ -1,0 +1,3 @@
+overwrite: false
+tableProperties: |
+    'delta.enableChangeDataFeed' = 'true'

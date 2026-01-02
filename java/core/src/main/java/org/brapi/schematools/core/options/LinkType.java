@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.graphql.options;
+package org.brapi.schematools.core.options;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +28,10 @@ public enum LinkType {
      * The property value will be exposed as a separate sub-query
      */
     SUB_QUERY("sub-query"),
+    /**
+     * The property value will be exposed as a separate endpoint
+     */
+    SUB_PATH("sub-path"),
     /**
      * The property value will be not be exposed in the parent object
      */

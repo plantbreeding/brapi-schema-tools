@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.markdown;
+package org.brapi.schematools.core.markdown.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import graphql.schema.*;

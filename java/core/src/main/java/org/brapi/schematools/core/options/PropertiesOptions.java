@@ -1,15 +1,8 @@
 package org.brapi.schematools.core.options;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIRelationshipType;
-import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.LinkType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -21,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.brapi.schematools.core.response.Response.fail;
+import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 
 /**
  * Provides options for the generation of ID, Name and PUI property and their usage
@@ -30,6 +25,7 @@ import static org.brapi.schematools.core.response.Response.fail;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertiesOptions implements Options {
+    private String descriptionFormat;
     private PropertyOptions id ;
     private PropertyOptions name ;
     private PropertyOptions pui ;
@@ -39,6 +35,7 @@ public class PropertiesOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
+            .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName())
             .merge(linkTypeFor.values().stream().flatMap(map -> map.values().stream()).map(LinkType::fromNameOrLabels).collect(Response.toList()))
             .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -48,6 +45,10 @@ public class PropertiesOptions implements Options {
      * @param overrideOptions the options which will be used to override this Options Object
      */
     public void override(PropertiesOptions overrideOptions) {
+        if (overrideOptions.descriptionFormat != null) {
+            descriptionFormat = overrideOptions.descriptionFormat ;
+        }
+
         if (overrideOptions.id != null) {
             id.override(overrideOptions.id) ;
         }
@@ -154,31 +155,62 @@ public class PropertiesOptions implements Options {
     }
 
     /**
-     * Gets the link type for a type property
-     * @param type The BrAPI Object type
+     * Gets the link type for a type property, or fails if the property is not dereferenced first
+     * @param parentType The BrAPI Object parent type
      * @param property The BrAPI property
      * @return the link type for specified type property
      */
-    public LinkType getLinkTypeFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
 
-        Map<String, String> map = linkTypeFor.get(type.getName()) ;
+        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
 
         if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).orElseGet(() -> getDefaultLinkTypeFor(type, property)) ;
+            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, property.getType())) ;
         }
 
-        return getDefaultLinkTypeFor(type, property) ;
+        return getDefaultLinkTypeFor(property, property.getType()) ;
     }
 
-    private LinkType getDefaultLinkTypeFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    /**
+     * Gets the link type for a type property. The property type which needs to be dereferenced first.
+     * @param parentType The BrAPI Object parent type
+     * @param property The BrAPI property
+     * @param dereferencedType The BrAPI property type, which has been dereferenced first.
+     * @return the link type for specified type property
+     */
+    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType dereferencedType) {
+        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
+
+        if (map != null) {
+            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, dereferencedType)) ;
+        }
+
+        return getDefaultLinkTypeFor(property, dereferencedType) ;
+    }
+
+    private Response<LinkType> getDefaultLinkTypeFor(BrAPIObjectProperty property, BrAPIType dereferencedType) {
+
+        BrAPIType unwrappedType = unwrapType(dereferencedType);
+
+        if (unwrappedType instanceof BrAPIReferenceType) {
+            return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' needs to be dereferenced first", unwrappedType.getName())) ;
+        }
 
         BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
 
-        return switch (relationshipType) {
-            case ONE_TO_ONE -> BrAPITypeUtils.isPrimaryModel(type) ? LinkType.ID : LinkType.EMBEDDED ;
-            case MANY_TO_ONE -> LinkType.ID ;
-            case ONE_TO_MANY -> LinkType.ID ;
-            case MANY_TO_MANY  -> LinkType.ID ;
-        } ;
+        return success(switch (relationshipType) {
+            case ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY -> unwrappedType instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)unwrappedType) ? LinkType.ID : LinkType.EMBEDDED ;
+        }) ;
+    }
+
+    /**
+     * Gets the description for a specific property in type
+     * @param type the type
+     * @param property the property
+     * @return the description for a specific property
+     */
+    @JsonIgnore
+    public final String getDescriptionFor(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
+        return property.getDescription() != null ? property.getDescription() : String.format("%s: %s", property.getName(), type.getName()) ;
     }
 }

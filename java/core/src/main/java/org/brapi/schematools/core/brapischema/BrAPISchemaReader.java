@@ -3,10 +3,7 @@ package org.brapi.schematools.core.brapischema;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.*;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -33,6 +30,7 @@ import static java.nio.file.Files.find;
 import static java.util.Collections.singletonList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
@@ -126,14 +124,17 @@ public class BrAPISchemaReader {
 
             types.forEach(type -> {
                 if (type instanceof BrAPIAllOfType brAPIAllOfType) {
-                    brAPIClasses.add(BrAPIObjectType.builder()
+                    BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder()
                         .name(brAPIAllOfType.getName())
                         .description(brAPIAllOfType.getDescription())
                         .module(brAPIAllOfType.getModule())
                         .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
                         .interfaces(extractInterfaces(brAPIAllOfType, typeMap))
-                        .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap))
-                        .build());
+                        .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap));
+
+                    brAPIAllOfType.getExamples().forEach(builder::example);
+
+                    brAPIClasses.add(builder.build());
                 } else {
                     brAPIClasses.add(type);
                 }
@@ -253,14 +254,6 @@ public class BrAPISchemaReader {
             }
 
             return Response.success(property);
-        }
-
-        private BrAPIType unwrapType(BrAPIType type) {
-            if (type instanceof BrAPIArrayType brAPIArrayType) {
-                return unwrapType(brAPIArrayType.getItems());
-            }
-
-            return type;
         }
 
         private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
@@ -499,6 +492,12 @@ public class BrAPISchemaReader {
             findString(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
+            findValue(path, jsonNode, "example", false).
+                ifPresentDoWithResult(builder::example);
+
+            findValues(path, jsonNode, "examples", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
             List<String> required = findStringList(path, jsonNode, "required", false).getResultIfPresentOrElseResult(Collections.emptyList());
 
             List<BrAPIObjectProperty> properties = new ArrayList<>();
@@ -544,6 +543,10 @@ public class BrAPISchemaReader {
 
             findString(path, jsonNode, "referencedAttribute", false).
                 onSuccessDoWithResult(builder::referencedAttribute);
+
+            findStringList(path, jsonNode, "type", false)
+                .ifPresentMapResultOr(types -> types.contains("null"), () -> findBoolean(path, jsonNode, "nullable", false, false))
+                .onSuccessDoWithResult(builder::nullable);
 
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module).
                 onSuccessDoWithResult(builder::type).
@@ -657,6 +660,48 @@ public class BrAPISchemaReader {
             } catch (NumberFormatException e) {
                 return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not convert '%s' to type '%s'", string, type));
             }
+        }
+
+        private Response<Object> findValue(Path path, JsonNode parentNode, String fieldName, boolean required) {
+            return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
+                if (jsonNode instanceof ValueNode) {
+                    return findValue(path, jsonNode).or(() -> fail(Response.ErrorType.VALIDATION, path,
+                            String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
+                }
+                return required ?
+                    fail(Response.ErrorType.VALIDATION, path,
+                        String.format("Child node type '%s' was not ValueNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
+                    Response.empty();
+            });
+        }
+
+        private Response<Object> findValue(Path path, JsonNode jsonNode) {
+            return switch (jsonNode) {
+                case TextNode textNode -> success(textNode.asText());
+                case NullNode ignored -> success(null);
+                case BooleanNode booleanNode -> success(booleanNode.asBoolean());
+                case ShortNode shortNode -> success(shortNode.shortValue());
+                case IntNode intNode -> success(intNode.intValue());
+                case LongNode longNode -> success(longNode.longValue());
+                case BigIntegerNode bigIntegerNode -> success(bigIntegerNode.bigIntegerValue());
+                case FloatNode floatNode -> success(floatNode.floatValue());
+                case DoubleNode doubleNode -> success(doubleNode.floatValue());
+                default -> fail(Response.ErrorType.VALIDATION, path,
+                    String.format("Child node type '%s' was unknown", jsonNode.getClass().getName()));
+            };
+        }
+
+        private Response<List<Object>> findValues(Path path, JsonNode parentNode, String fieldName, boolean required) {
+            return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
+                if (jsonNode instanceof ArrayNode arrayNode) {
+                    return StreamSupport.stream(arrayNode.spliterator(), false).map(jn -> findValue(path, jsonNode)).collect(Response.toList()).or(() -> fail(Response.ErrorType.VALIDATION, path,
+                        String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
+                }
+                return required ?
+                    fail(Response.ErrorType.VALIDATION, path,
+                        String.format("Child node type '%s' was not ValueNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
+                    Response.empty();
+            });
         }
 
         private Response<String> findString(Path path, JsonNode parentNode, String fieldName, boolean required) {

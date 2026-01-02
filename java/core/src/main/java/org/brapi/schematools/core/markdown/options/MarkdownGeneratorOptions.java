@@ -1,24 +1,18 @@
-package org.brapi.schematools.core.markdown;
+package org.brapi.schematools.core.markdown.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import graphql.schema.*;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.graphql.GraphQLGenerator;
+import org.brapi.schematools.core.markdown.MarkdownGenerator;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
-import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.regex.Matcher;
-
-import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.LIST_RESPONSE_PATTERN;
-import static org.brapi.schematools.core.markdown.GraphQLMarkdownGenerator.SEARCH_RESPONSE_PATTERN;
 
 /**
  * Options for the {@link MarkdownGenerator}.
@@ -184,9 +178,9 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
     }
 
     /**
-     * Determines if the Endpoint/Query/Mutation is generated for a specific primary model
+     * Determines if the Markdown file is generated for a specific primary model
      * @param type the primary model
-     * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
+     * @return {@code true} if the Markdown file is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull BrAPIType type) {

@@ -4,26 +4,31 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo",
+					"relationshipType": "one-to-one"
                 },
                 "description": {
                     "description": "description of this person",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Bob likes pina coladas and getting caught in the rain."
                 },
                 "emailAddress": {
                     "description": "email address for this person",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "bob@bob.com"
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -36,46 +41,53 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Bob"
                 },
                 "lastName": {
                     "description": "Persons last name",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Robertson"
                 },
                 "mailingAddress": {
                     "description": "physical address of this person",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "123 Street Ave, City, State, Country"
                 },
                 "middleName": {
                     "description": "Persons middle name",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Danger"
                 },
                 "personDbId": {
                     "description": "Unique ID for a person",
-                    "type": "string"
+                    "type": "string",
+                    "example": "14340a54"
                 },
                 "phoneNumber": {
                     "description": "phone number of this person",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "+1-555-555-5555"
                 },
                 "userID": {
                     "description": "A systems user ID associated with this person. Different from personDbId because you could have a person who is not a user of the system.",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "bob-23"
                 },
                 "lists": {
                     "title": "Lists",
@@ -110,6 +122,7 @@
                 "personDbId"
             ],
             "title": "Person",
+            "description": "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

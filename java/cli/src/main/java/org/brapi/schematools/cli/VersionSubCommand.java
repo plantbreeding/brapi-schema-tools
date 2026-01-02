@@ -1,7 +1,7 @@
 package org.brapi.schematools.cli;
 
+import org.brapi.schematools.core.utils.Version;
 import picocli.CommandLine;
-import org.brapi.schematools.core.utils.Version ;
 
 @CommandLine.Command(
     name = "version", mixinStandardHelpOptions = true,

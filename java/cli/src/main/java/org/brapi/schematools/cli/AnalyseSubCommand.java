@@ -3,6 +3,7 @@ package org.brapi.schematools.cli;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.analyse.*;
 import org.brapi.schematools.core.authorization.AuthorizationProvider;
 import org.brapi.schematools.core.authorization.BasicAuthorizationProvider;
@@ -13,11 +14,11 @@ import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.dflib.DataFrame;
 import org.dflib.Extractor;
+import org.dflib.Printers;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,9 +35,8 @@ import java.util.stream.Stream;
     name = "analyse", mixinStandardHelpOptions = true,
     description = "Executes a query pipeline or set of pipelines"
 )
+@Slf4j
 public class AnalyseSubCommand extends AbstractSubCommand {
-
-    private final PrintStream out = System.out;
 
     @CommandLine.Parameters(index = "0", description = "The path to the specification file.")
     private Path specificationPath;
@@ -70,7 +70,7 @@ public class AnalyseSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-ar", "--summariseAcrossReports"}, description = "Add a summary to any reporting")
     private boolean summariseAcrossReports;
 
-    private TabularReportWriter writer;
+    private final TabularReportWriter writer;
 
     /**
      * Creates the command
@@ -108,7 +108,7 @@ public class AnalyseSubCommand extends AbstractSubCommand {
                 printError("Batch process can only be used in conjunction with 'individualReportsByEntity'");
             } else {
                 if (Files.exists(reportPath)) {
-                    out.printf("Deleting Report file '%s'!%n", reportPath.toFile().getAbsolutePath());
+                    log.info("Deleting Report file '{}'!", reportPath.toFile().getAbsolutePath());
                     Files.delete(reportPath);
                 }
 
@@ -125,13 +125,6 @@ public class AnalyseSubCommand extends AbstractSubCommand {
                 .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
                 .mapResultToResponse(this::analyse)
                 .onFailDoWithResponse(this::outputError);
-        }
-    }
-
-    @Override
-    protected void closeOut() {
-        if (out != null) {
-            out.close();
         }
     }
 
@@ -318,12 +311,12 @@ public class AnalyseSubCommand extends AbstractSubCommand {
     }
 
     private void outputReportsToOut(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
-        out.println(tabularReportGenerator.generateReportTable(listResponses));
+        log.info(tabularReportGenerator.generateReportTable(listResponses));
     }
 
     private void outputSummaryToOut(TabularReportGenerator tabularReportGenerator) {
         if (summariseAcrossReports) {
-            out.println(tabularReportGenerator.getSummary());
+            log.info(Printers.tabular.toString(tabularReportGenerator.getSummary()));
         }
     }
 
@@ -464,17 +457,14 @@ public class AnalyseSubCommand extends AbstractSubCommand {
     }
 
     private void outputEndpointsToOut(BrAPISpecificationAnalyserFactory.Analyser analyser) {
-        out.println("Analysing Endpoints:");
-        analyser.getEndpoints().forEach(out::println);
-        out.println();
-        out.println("Skipping Endpoints:");
-        analyser.getSkippedEndpoints().forEach(out::println);
-        out.println();
-        out.println("Ignored Endpoints:");
-        analyser.getUnmatchedEndpoints().forEach(out::println);
-        out.println();
-        out.println("Deprecated Endpoints:");
-        analyser.getDeprecatedEndpoints().forEach(out::println);
+        log.info("Analysing Endpoints:");
+        analyser.getEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Skipping Endpoints:");
+        analyser.getSkippedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Ignored Endpoints:");
+        analyser.getUnmatchedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Deprecated Endpoints:");
+        analyser.getDeprecatedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
     }
 
 
