@@ -30,14 +30,6 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    /**
-     * Create a capitalised version of a string value, where the first character is converted to upper case
-     * @param value the string value to be capitalised
-     * @return a capitalised version of a string value, where the first character is converted to upper case
-     */
-    public static String capitalise(String value) {
-        return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null ;
-    }
     private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
@@ -72,6 +64,15 @@ public class StringUtils {
         replace("(.*)person$").with("$1people"),
         replace("(.*)Person$").with("$1People")
     );
+
+    /**
+     * Create a capitalised version of a string value, where the first character is converted to upper case
+     * @param value the string value to be capitalised
+     * @return a capitalised version of a string value, where the first character is converted to upper case
+     */
+    public static String capitalise(String value) {
+        return value != null ? !value.isEmpty() ? value.substring(0, 1).toUpperCase() + value.substring(1) : "" : null ;
+    }
 
     /**
      * Converts the noun from its plural form to its singular form

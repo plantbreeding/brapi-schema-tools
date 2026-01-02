@@ -26,16 +26,11 @@ public abstract class AbstractSubCommand implements Runnable {
         } catch (Exception exception) {
             handleException(exception);
         } finally {
-            closeOut();
             err.close();
         }
     }
 
     protected abstract void execute() throws IOException;
-
-    protected void closeOut() {
-
-    }
 
     protected void handleException(Exception exception) {
         printException(exception) ;
@@ -93,5 +88,9 @@ public abstract class AbstractSubCommand implements Runnable {
         err.print('\t');
 
         err.println(error.getMessage());
+    }
+
+    public void handleFail(Response<?> response) {
+        handleError(response.getMessagesCombined(", ")) ;
     }
 }

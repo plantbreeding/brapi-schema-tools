@@ -6,10 +6,25 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class StringUtilsTest {
+
+    @Test
+    void capitalise() {
+        assertEquals("Datamatrix", StringUtils.capitalise("datamatrix")) ;
+        assertEquals("Person", StringUtils.capitalise("person")) ;
+        assertEquals("Germplasm", StringUtils.capitalise("germplasm")) ;
+        assertEquals("Studies", StringUtils.capitalise("studies")) ;
+        assertEquals("DataMatrices", StringUtils.capitalise("dataMatrices")) ;
+        assertEquals("People", StringUtils.capitalise("people")) ;
+        assertEquals("Germplasm", StringUtils.capitalise("germplasm")) ;
+        assertEquals("Study", StringUtils.capitalise("study")) ;
+        assertEquals("", StringUtils.capitalise("")) ;
+        assertNull(StringUtils.capitalise(null));
+    }
 
     @Test
     void toSingular() {

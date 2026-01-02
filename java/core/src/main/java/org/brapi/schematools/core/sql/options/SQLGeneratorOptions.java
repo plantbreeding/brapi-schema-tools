@@ -16,7 +16,8 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Options for the {@link SQLGenerator}.
