@@ -20,6 +20,13 @@ application {
     applicationName = 'BrAPI'
 }
 
+tasks.named('startScripts') {
+    doLast {
+        unixScript.text = unixScript.text.replaceAll('^CLASSPATH=.*', 'CLASSPATH=.:$APP_HOME/lib/*')
+        windowsScript.text = windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
+    }
+}
+
 jar {
     manifest {
         attributes 'Main-Class': application.mainClass

@@ -11,8 +11,10 @@ import org.brapi.schematools.core.response.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -210,20 +212,18 @@ public class StringUtils {
 
     /**
      * Reads a string from a Classpath
+     *
      * @param classpath the classpath
      * @return a string read from a classpath
      */
     public static Response<String> readStringFromClasspath(String classpath) {
-        try {
-            URL url = StringUtils.class.getClassLoader().getResource(classpath) ;
-
-            if (url != null) {
-                return readStringFromPath(Paths.get(url.toURI())) ;
+        try (InputStream in = Version.class.getClassLoader().getResourceAsStream(classpath)) {
+            if (in != null) {
+                return Response.success(new String(in.readAllBytes(), StandardCharsets.UTF_8));
             } else {
-                return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath)) ;
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath));
             }
-
-        } catch (Exception exception) {
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
         }
     }

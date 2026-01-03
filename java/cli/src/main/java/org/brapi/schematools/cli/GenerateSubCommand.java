@@ -351,6 +351,11 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     handleError("For SQL generation the output path must be a directory");
                 } else {
 
+                    if (overwrite && Files.exists(outputPath)) {
+                        log.info("Overwriting existing SQL files in output directory '{}'", outputPath);
+                        Files.delete(outputPath);
+                    }
+
                     Files.createDirectories(outputPath);
 
                     SQLGenerator sqlGenerator = new SQLGenerator(options, outputPath);
