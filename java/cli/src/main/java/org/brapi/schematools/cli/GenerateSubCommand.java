@@ -353,7 +353,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                     if (overwrite && Files.exists(outputPath)) {
                         log.info("Overwriting existing SQL files in output directory '{}'", outputPath);
-                        Files.delete(outputPath);
+                        deleteDirectoryRecursively(outputPath) ;
                     }
 
                     Files.createDirectories(outputPath);
@@ -447,5 +447,17 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
     public boolean isNotGeneratingIntoSeparateFiles() {
         return separate != null && !separate;
+    }
+
+    public static void deleteDirectoryRecursively(Path dir) throws IOException {
+        Files.walk(dir)
+            .sorted((a, b) -> b.compareTo(a)) // delete children before parent
+            .forEach(path -> {
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 }
