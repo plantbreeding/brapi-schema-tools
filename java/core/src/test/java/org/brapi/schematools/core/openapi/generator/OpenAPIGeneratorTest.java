@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
-import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -236,16 +234,21 @@ class OpenAPIGeneratorTest {
 
     private void assertSpecificationEquals(String classPath, OpenAPI specification) {
         try {
-            String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow() ;
+            String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow();
             String actual = prettyPrint(specification, OUTPUT_FORMAT_JSON);
 
-            if (!isJSONEqual(expected, actual)) {
+            // Parse both JSON strings into objects for order-insensitive comparison
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            Object expectedObj = mapper.readTree(expected);
+            Object actualObj = mapper.readTree(actual);
+
+            if (!expectedObj.equals(actualObj)) {
                 Path build = Paths.get("build/test-output", classPath);
-                Files.createDirectories(build.getParent()) ;
+                Files.createDirectories(build.getParent());
                 Files.writeString(build, actual);
             }
 
-            assertJSONEquals(expected, actual);
+            assertEquals(expectedObj, actualObj, "OpenAPI spec does not match (ignoring property order)");
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
