@@ -42,6 +42,7 @@ table:
     analyse: true
 partitionedByCrop : false
 properties:
+    descriptionFormat: TODO Description for %s
     id:
         nameFormat: "%sDbId"
         link: true

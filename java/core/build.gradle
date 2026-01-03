@@ -25,17 +25,23 @@ mavenPublishing {
 }
 
 tasks.register('generateVersionFile') {
+    def outputFile = file("$buildDir/generated-resources/version.txt")
+    outputs.file(outputFile)
     doLast {
-        def versionFile = file("${layout.buildDirectory.get()}/resources/main/version.txt")
-        versionFile.parentFile.mkdirs()
-        versionFile.text = "${project.version}"
+        def version = project.version?.toString()
+        println "Generating version.txt with version: ${version}"
+        if (!version || version == 'unspecified') {
+            throw new GradleException("Project version is not set. Cannot generate version.txt.")
+        }
+        outputFile.parentFile.mkdirs()
+        outputFile.text = version
     }
 }
 
 processResources {
-    dependsOn tasks.named('generateVersionFile')
-    from("${layout.buildDirectory.get()}/resources/main") {
+    from("$buildDir/generated-resources") {
         include 'version.txt'
     }
+    dependsOn tasks.named('generateVersionFile')
 }
 
