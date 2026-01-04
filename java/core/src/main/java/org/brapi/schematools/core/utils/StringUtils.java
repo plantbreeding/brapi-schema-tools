@@ -236,7 +236,7 @@ public class StringUtils {
     public static Response<String> readStringFromPath(Path path) {
         try {
             Stream<String> lines = Files.lines(path);
-            String data = lines.collect(Collectors.joining("\n"));
+            String data = lines.collect(Collectors.joining(System.lineSeparator()));
             lines.close();
 
             return Response.success(data);

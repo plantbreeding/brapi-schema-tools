@@ -595,10 +595,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * Determines if a specific property should be exposed as a separate Endpoint
      * @param type the Object type
      * @param property the Object type property
-     * @return {@code true} generator will create  a separate Endpoint for the property, {@code false} otherwise
+     * @return {@code true} generator will create a separate Endpoint for the property, {@code false} otherwise
      */
     public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return LinkType.SUB_PATH.equals(properties.getLinkTypeFor(type, property)) ;
+        return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
     /**

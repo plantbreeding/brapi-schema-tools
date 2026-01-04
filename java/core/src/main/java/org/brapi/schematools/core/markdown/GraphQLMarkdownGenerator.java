@@ -461,13 +461,16 @@ public class GraphQLMarkdownGenerator {
             StringBuilder description = new StringBuilder(graphQLEnumType.getDescription() != null
                 ? graphQLEnumType.getDescription() : options.getDescriptionForEnum(graphQLEnumType));
 
-            description.append("\n\n Possible values are: \n");
+            description.append(System.lineSeparator()) ;
+            description.append(System.lineSeparator()) ;
+            description.append(" Possible values are: ");
+            description.append(System.lineSeparator()) ;
 
             for (GraphQLEnumValueDefinition value : graphQLEnumType.getValues()) {
                 description
                     .append("* ")
                     .append(value.getName())
-                    .append("\n");
+                    .append(System.lineSeparator());
             }
 
             return description.toString();

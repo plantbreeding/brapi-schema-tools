@@ -1,3 +1,4 @@
+DROP TABLE brapi_Study;
 CREATE TABLE brapi_Study (
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP < STRING,
@@ -50,27 +51,15 @@ CREATE TABLE brapi_Study (
   trialDbId STRING,
   trialName STRING,
   trialPUI STRING COMMENT 'The ID which uniquely identifies a trial'
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
+) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
+DROP TABLE brapi_ContactByStudy;
 CREATE TABLE brapi_ContactByStudy (
   contactDbId STRING,
   studyDbId STRING,
   studyName STRING,
   studyPUI STRING
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to Contact on property contacts';
+) COMMENT 'Link table for Study to Contact on property contacts';
+DROP TABLE brapi_ObservationVariableByStudy;
 CREATE TABLE brapi_ObservationVariableByStudy (
   observationVariableDbId STRING,
   observationVariableName STRING,
@@ -78,11 +67,4 @@ CREATE TABLE brapi_ObservationVariableByStudy (
   studyDbId STRING,
   studyName STRING,
   studyPUI STRING
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
+) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';

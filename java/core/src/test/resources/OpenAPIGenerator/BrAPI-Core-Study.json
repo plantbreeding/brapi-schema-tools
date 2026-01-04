@@ -425,14 +425,6 @@
                         "description" : "Common name for the crop associated with this study",
                         "nullable" : true
                     },
-                    "contacts" : {
-                        "type" : "array",
-                        "description" : "List of contact entities associated with this study",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/Contact"
-                        }
-                    },
                     "culturalPractices" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.",
@@ -504,13 +496,6 @@
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.",
                         "nullable" : true
-                    },
-                    "observationVariableDbIds" : {
-                        "type" : "array",
-                        "description" : "The list of Observation Variables being used in this study. \n\nThis list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ",
-                        "items" : {
-                            "type" : "string"
-                        }
                     },
                     "seasons" : {
                         "type" : "array",
@@ -899,6 +884,43 @@
                     }
                 }
             },
+            "GermplasmListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Germplasm"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "202AcceptedSearchResponse" : {
                 "description" : "Accepted",
                 "content" : {
@@ -921,6 +943,32 @@
                                             "example" : "551ae08c"
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "GermplasmSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Germplasm"
                                 }
                             }
                         }

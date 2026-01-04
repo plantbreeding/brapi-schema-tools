@@ -102,6 +102,14 @@ class SQLGeneratorOptionsTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    void checkMutuallyExclusiveOptions() {
+        assertTrue(SQLGeneratorOptions.load().setIfNotExists(true).validate().isValid());
+        assertTrue(SQLGeneratorOptions.load().setDropTable(true).validate().isValid());
+        assertFalse(SQLGeneratorOptions.load().setIfNotExists(true).setDropTable(true).validate().isValid());
+    }
+
     private void checkDefaultOptions(SQLGeneratorOptions options) {
         checkOptions(options);
 

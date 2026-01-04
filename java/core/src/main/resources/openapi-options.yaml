@@ -214,7 +214,7 @@ properties:
             germplasm: none
             pedigreeNodes: none
         CallSet:
-            calls: sub-path
+            calls: sub-query
         Cross:
             observationUnits: none
         CrossingProject:
@@ -287,11 +287,11 @@ properties:
             plates: none
             samples: none
         Variant:
-            calls: sub-path
+            calls: sub-query
         VariantSet:
-            calls: sub-path
-            callSets: sub-path
-            variants: sub-path
+            calls: sub-query
+            callSets: sub-query
+            variants: sub-query
 controlledVocabulary:
     generate: true
     summaryFormat: Get the ${property} of ${type}

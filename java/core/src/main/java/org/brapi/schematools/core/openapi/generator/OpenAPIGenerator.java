@@ -1039,7 +1039,7 @@ public class OpenAPIGenerator {
         private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(type);
 
-            if (LinkType.SUB_PATH.equals(linkType) || LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
+            if (LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
                 return success(Collections.emptyMap());
             }
 

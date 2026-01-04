@@ -204,7 +204,7 @@
                 "pedigreeNodes": "none"
             },
             "CallSet": {
-                "calls": "sub-path"
+                "calls": "sub-query"
             },
             "Cross": {
                 "observationUnits": "none"
@@ -293,12 +293,12 @@
                 "samples": "none"
             },
             "Variant": {
-                "calls": "sub-path"
+                "calls": "sub-query"
             },
             "VariantSet": {
-                "calls": "sub-path",
-                "callSets": "sub-path",
-                "variants": "sub-path"
+                "calls": "sub-query",
+                "callSets": "sub-query",
+                "variants": "sub-query"
             }
         }
     }

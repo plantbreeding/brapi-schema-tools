@@ -42,6 +42,11 @@ class ANSICreateTableDDLGeneratorTest {
     }
 
     @Test
+    void generateCallSet() {
+        generate(SQLGeneratorOptions.load(), SQLGeneratorMetadata.load(),"CallSet", "SQLGenerator/ANSI/CallSet.sql") ;
+    }
+
+    @Test
     void generateStudy() {
         generate(SQLGeneratorOptions.load(), SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/Study.sql") ;
     }
@@ -79,6 +84,16 @@ class ANSICreateTableDDLGeneratorTest {
     @Test
     void generateStudyWithUsingAndClusteringAndTableProperties() {
         generate(SQLGeneratorOptions.load().setTableUsing("delta").setClustering(true).setTableProperties(Map.of("delta.enableChangeDataFeed", true)), SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/Study-using-and-clustering-and-table-properties.sql") ;
+    }
+
+    @Test
+    void generateStudyIfNotExists() {
+        generate(SQLGeneratorOptions.load().setIfNotExists(true), SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/Study-if-not-exists.sql") ;
+    }
+
+    @Test
+    void generateStudyDropTable() {
+        generate(SQLGeneratorOptions.load().setDropTable(true), SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/Study-drop-table.sql") ;
     }
 
     void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, String className, String classPath) {

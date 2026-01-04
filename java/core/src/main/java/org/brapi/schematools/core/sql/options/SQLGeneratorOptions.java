@@ -38,6 +38,8 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     private String tableUsing;
     private Map<String, Object> tableProperties;
     private Boolean clustering;
+    private Boolean ifNotExists;
+    private Boolean dropTable;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
 
@@ -83,7 +85,8 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(properties, "Properties Options are null");
+            .assertNotNull(properties, "Properties Options are null")
+            .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable");
     }
 
     /**
@@ -133,6 +136,14 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
 
         if (overrideOptions.clustering != null) {
             clustering = overrideOptions.clustering;
+        }
+
+        if (overrideOptions.ifNotExists != null) {
+            ifNotExists = overrideOptions.ifNotExists;
+        }
+
+        if (overrideOptions.dropTable != null) {
+            dropTable = overrideOptions.dropTable;
         }
 
         if (overrideOptions.properties != null) {
@@ -215,5 +226,25 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     @JsonIgnore
     public boolean isClustering() {
         return clustering != null && clustering;
+    }
+
+    /**
+     * Determines if the Generator should add an 'IF NOT EXISTS' to the 'Create Table'
+     *
+     * @return {@code true} if the Generator should add an 'IF NOT EXISTS' to the 'Create Table', {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingIfNotExists() {
+        return ifNotExists != null && ifNotExists;
+    }
+
+    /**
+     * Determines if the Generator should add a 'DROP TABLE; statement before each 'Create Table'
+     *
+     * @return {@code true} if the Generator should add a 'DROP TABLE;, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingDropTable() {
+        return dropTable != null && dropTable ;
     }
 }

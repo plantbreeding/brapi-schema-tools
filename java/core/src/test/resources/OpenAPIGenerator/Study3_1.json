@@ -428,16 +428,6 @@
                         ],
                         "description" : "Common name for the crop associated with this study"
                     },
-                    "contacts" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
-                        "description" : "List of contact entities associated with this study",
-                        "items" : {
-                            "$ref" : "#/components/schemas/Contact"
-                        }
-                    },
                     "culturalPractices" : {
                         "type" : [
                             "null",
@@ -530,13 +520,6 @@
                             "string"
                         ],
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study."
-                    },
-                    "observationVariableDbIds" : {
-                        "type" : "array",
-                        "description" : "The list of Observation Variables being used in this study. \n\nThis list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ",
-                        "items" : {
-                            "type" : "string"
-                        }
                     },
                     "seasons" : {
                         "type" : [

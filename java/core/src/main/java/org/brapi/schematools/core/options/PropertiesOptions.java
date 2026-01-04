@@ -24,51 +24,39 @@ import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PropertiesOptions implements Options {
+public class PropertiesOptions extends AbstractPropertiesOptions {
     private String descriptionFormat;
     private PropertyOptions id ;
     private PropertyOptions name ;
     private PropertyOptions pui ;
-    @Getter(AccessLevel.PRIVATE)
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, Map<String, String>> linkTypeFor = new HashMap<>();
 
+    @Override
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName())
-            .merge(linkTypeFor.values().stream().flatMap(map -> map.values().stream()).map(LinkType::fromNameOrLabels).collect(Response.toList()))
-            .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
      */
-    public void override(PropertiesOptions overrideOptions) {
-        if (overrideOptions.descriptionFormat != null) {
-            descriptionFormat = overrideOptions.descriptionFormat ;
-        }
-
-        if (overrideOptions.id != null) {
-            id.override(overrideOptions.id) ;
-        }
-
-        if (overrideOptions.name != null) {
-            name.override(overrideOptions.name) ;
-        }
-
-        if (overrideOptions.pui != null) {
-            pui.override(overrideOptions.pui) ;
-        }
-
-        if (overrideOptions.linkTypeFor != null) {
-            overrideOptions.linkTypeFor.forEach((key, value) -> {
-                if (linkTypeFor.containsKey(key)) {
-                    linkTypeFor.get(key).putAll(value) ;
-                } else {
-                    linkTypeFor.put(key, new HashMap<>(value)) ;
-                }
-            });
+    @Override
+    public void override(AbstractPropertiesOptions overrideOptions) {
+        super.override(overrideOptions);
+        if (overrideOptions instanceof PropertiesOptions coreOverride) {
+            if (coreOverride.descriptionFormat != null) {
+                descriptionFormat = coreOverride.descriptionFormat;
+            }
+            if (coreOverride.id != null) {
+                id.override(coreOverride.id);
+            }
+            if (coreOverride.name != null) {
+                name.override(coreOverride.name);
+            }
+            if (coreOverride.pui != null) {
+                pui.override(coreOverride.pui);
+            }
         }
     }
 
@@ -152,55 +140,6 @@ public class PropertiesOptions implements Options {
         } else {
             return fail(Response.ErrorType.VALIDATION, String.format("Type '%s' is not an object, is type '%s'", type.getName(), type.getClass().getSimpleName()));
         }
-    }
-
-    /**
-     * Gets the link type for a type property, or fails if the property is not dereferenced first
-     * @param parentType The BrAPI Object parent type
-     * @param property The BrAPI property
-     * @return the link type for specified type property
-     */
-    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
-
-        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
-
-        if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, property.getType())) ;
-        }
-
-        return getDefaultLinkTypeFor(property, property.getType()) ;
-    }
-
-    /**
-     * Gets the link type for a type property. The property type which needs to be dereferenced first.
-     * @param parentType The BrAPI Object parent type
-     * @param property The BrAPI property
-     * @param dereferencedType The BrAPI property type, which has been dereferenced first.
-     * @return the link type for specified type property
-     */
-    public Response<LinkType> getLinkTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType dereferencedType) {
-        Map<String, String> map = linkTypeFor.get(parentType.getName()) ;
-
-        if (map != null) {
-            return LinkType.findByNameOrLabel(map.get(property.getName())).map(Response::success).orElseGet(() -> getDefaultLinkTypeFor(property, dereferencedType)) ;
-        }
-
-        return getDefaultLinkTypeFor(property, dereferencedType) ;
-    }
-
-    private Response<LinkType> getDefaultLinkTypeFor(BrAPIObjectProperty property, BrAPIType dereferencedType) {
-
-        BrAPIType unwrappedType = unwrapType(dereferencedType);
-
-        if (unwrappedType instanceof BrAPIReferenceType) {
-            return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' needs to be dereferenced first", unwrappedType.getName())) ;
-        }
-
-        BrAPIRelationshipType relationshipType = property.getRelationshipType() != null ? property.getRelationshipType() : BrAPIRelationshipType.ONE_TO_ONE;
-
-        return success(switch (relationshipType) {
-            case ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY -> unwrappedType instanceof BrAPIClass && BrAPITypeUtils.isPrimaryModel((BrAPIClass)unwrappedType) ? LinkType.ID : LinkType.EMBEDDED ;
-        }) ;
     }
 
     /**

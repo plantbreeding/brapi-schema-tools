@@ -142,7 +142,7 @@ public class AnalyseSubCommand extends AbstractSubCommand {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not read path '%s'", specificationPath.toFile()));
             }
 
-            String specification = lines.collect(Collectors.joining("\n"));
+            String specification = lines.collect(Collectors.joining(System.lineSeparator()));
             lines.close();
 
             return authorisation()

@@ -25,13 +25,9 @@ public enum LinkType {
      */
     ID("id"),
     /**
-     * The property value will be exposed as a separate sub-query
+     * The property value will be exposed as a separate sub-query, sub-path or separate table
      */
     SUB_QUERY("sub-query"),
-    /**
-     * The property value will be exposed as a separate endpoint
-     */
-    SUB_PATH("sub-path"),
     /**
      * The property value will be not be exposed in the parent object
      */

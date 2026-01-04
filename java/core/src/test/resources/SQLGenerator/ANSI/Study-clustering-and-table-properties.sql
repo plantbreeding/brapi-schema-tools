@@ -3,12 +3,7 @@ CREATE TABLE brapi_Study (
   additionalInfo MAP < STRING,
   STRING > COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',
-  contacts ARRAY < STRUCT < contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
-  email STRING COMMENT 'The contacts email address  MIAPPE V1.1 (DM-32) Person email - The electronic mail address of the person.',
-  instituteName STRING COMMENT 'The name of the institution which this contact is part of  MIAPPE V1.1 (DM-35) Person affiliation - The institution the person belongs to',
-  name STRING COMMENT 'The full name of this contact person  MIAPPE V1.1 (DM-31) Person name - The name of the person (either full name or as used in scientific publications)',
-  orcid STRING COMMENT 'The Open Researcher and Contributor ID for this contact person (orcid.org)  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
-  type STRING COMMENT 'The type of person this contact represents (ex: Coordinator, Scientist, PI, etc.)  MIAPPE V1.1 (DM-34) Person role - Type of contribution of the person to the investigation' > > COMMENT 'List of contact entities associated with this study',
+  -- Link table 'ContactByStudy' will be created separately COMMENT 'List of contact entities associated with this study' ,
   culturalPractices STRING COMMENT 'MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.',
   dataLinks ARRAY < STRUCT < dataFormat STRING COMMENT 'The structure of the data within a file. For example - VCF, table, image archive, multispectral image archives in EDAM ontology (used in Galaxy)  MIAPPE V1.1 (DM-38) Data file description - Description of the format of the data file. May be a standard file format name, or a description of organization of the data in a tabular file.',
   description STRING COMMENT 'The general description of this data link  MIAPPE V1.1 (DM-38) Data file description - Description of the format of the data file. May be a standard file format name, or a description of organization of the data in a tabular file.',
@@ -43,7 +38,7 @@ CREATE TABLE brapi_Study (
   observationLevels ARRAY < STRUCT < levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ' > > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',
-  observationVariables ARRAY < STRING > COMMENT 'The list of Observation Variables being used in this study.   This list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ',
+  -- Link table 'ObservationVariableByStudy' will be created separately COMMENT 'The list of Observation Variables being used in this study.   This list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ' ,
   seasons ARRAY < STRING > COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
   studyCode STRING COMMENT 'A short human readable code for a study',
@@ -62,4 +57,32 @@ CREATE TABLE brapi_Study (
   trialDbId,
   trialName,
   trialPUI
-) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.' TBLPROPERTIES ('delta.enableChangeDataFeed' = true);
+) TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
+CREATE TABLE brapi_ContactByStudy (
+  contactDbId STRING,
+  studyDbId STRING,
+  studyName STRING,
+  studyPUI STRING
+) CLUSTER BY (
+  studyDbId,
+  locationDbId,
+  locationName,
+  trialDbId,
+  trialName,
+  trialPUI
+) TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to Contact on property contacts';
+CREATE TABLE brapi_ObservationVariableByStudy (
+  observationVariableDbId STRING,
+  observationVariableName STRING,
+  observationVariablePUI STRING,
+  studyDbId STRING,
+  studyName STRING,
+  studyPUI STRING
+) CLUSTER BY (
+  studyDbId,
+  locationDbId,
+  locationName,
+  trialDbId,
+  trialName,
+  trialPUI
+) TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';

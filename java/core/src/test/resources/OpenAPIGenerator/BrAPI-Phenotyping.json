@@ -2602,13 +2602,6 @@
                         "description" : "An identifier for this event type, in the form of an ontology class reference\n<br/>ICASA Management events allow for the following types: planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other\n<br/>MIAPPE V1.1 (DM-66) Event accession number - Accession number of the event type in a suitable controlled vocabulary (Crop Ontology).",
                         "nullable" : true
                     },
-                    "observationUnitDbIds" : {
-                        "type" : "array",
-                        "description" : "A list of the affected observation units. If this parameter is not given, it is understood that the event affected all units in the study",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyDbId" : {
                         "type" : "string"
                     },
@@ -2920,13 +2913,6 @@
                         "type" : "string",
                         "description" : "The file type of the image. Examples 'image/jpeg', 'image/png', 'image/svg', etc",
                         "nullable" : true
-                    },
-                    "observationDbIds" : {
-                        "type" : "array",
-                        "description" : "A list of observation Ids this image is associated with, if applicable.",
-                        "items" : {
-                            "type" : "string"
-                        }
                     },
                     "observationUnitDbId" : {
                         "type" : "string"

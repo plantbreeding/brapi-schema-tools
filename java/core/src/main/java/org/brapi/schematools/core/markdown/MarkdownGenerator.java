@@ -208,13 +208,16 @@ public class MarkdownGenerator {
             StringBuilder description = new StringBuilder(brAPIEnumType.getDescription() != null
                 ? brAPIEnumType.getDescription() : options.getDescriptionFor(brAPIEnumType.getName()));
 
-            description.append("\n\n Possible values are: \n");
+            description.append(System.lineSeparator()) ;
+            description.append(System.lineSeparator()) ;
+            description.append(" Possible values are: ");
+            description.append(System.lineSeparator()) ;
 
             for (BrAPIEnumValue value : brAPIEnumType.getValues()) {
                 description
                     .append("* ")
                     .append(value.getName())
-                    .append("\n");
+                    .append(System.lineSeparator()) ;
             }
 
             return description.toString();

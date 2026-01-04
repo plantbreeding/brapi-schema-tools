@@ -1,4 +1,4 @@
-CREATE TABLE brapi_Study (
+CREATE TABLE IF NOT EXISTS brapi_Study (
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP < STRING,
   STRING > COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -50,39 +50,18 @@ CREATE TABLE brapi_Study (
   trialDbId STRING,
   trialName STRING,
   trialPUI STRING COMMENT 'The ID which uniquely identifies a trial'
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
-CREATE TABLE brapi_ContactByStudy (
+) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
+CREATE TABLE IF NOT EXISTS brapi_ContactByStudy (
   contactDbId STRING,
   studyDbId STRING,
   studyName STRING,
   studyPUI STRING
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to Contact on property contacts';
-CREATE TABLE brapi_ObservationVariableByStudy (
+) COMMENT 'Link table for Study to Contact on property contacts';
+CREATE TABLE IF NOT EXISTS brapi_ObservationVariableByStudy (
   observationVariableDbId STRING,
   observationVariableName STRING,
   observationVariablePUI STRING,
   studyDbId STRING,
   studyName STRING,
   studyPUI STRING
-) CLUSTER BY (
-  studyDbId,
-  locationDbId,
-  locationName,
-  trialDbId,
-  trialName,
-  trialPUI
-) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
+) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';

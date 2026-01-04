@@ -77,13 +77,13 @@ class GraphQLGeneratorOptionsTest {
         assertEquals(LinkType.ID,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("CallSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.ID,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Trial").build(),
-                BrAPIObjectProperty.builder().name("contacts").build())
+                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
         );
     }
 
@@ -118,13 +118,13 @@ class GraphQLGeneratorOptionsTest {
         assertEquals(LinkType.SUB_QUERY,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("CallSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.EMBEDDED,
             options.getProperties().getLinkTypeFor(
                 BrAPIObjectType.builder().name("Trial").build(),
-                BrAPIObjectProperty.builder().name("contacts").build())
+                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
         );
     }
 
@@ -163,37 +163,37 @@ class GraphQLGeneratorOptionsTest {
         assertEquals(LinkType.NONE,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("BreedingMethod").build(),
-                BrAPIObjectProperty.builder().name("germplasm").build())
+                BrAPIObjectProperty.builder().name("germplasm").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.NONE,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("BreedingMethod").build(),
-                BrAPIObjectProperty.builder().name("pedigreeNodes").build())
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_QUERY,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("Variant").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_QUERY,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build())
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_QUERY,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("callSets").build())
+                BrAPIObjectProperty.builder().name("callSets").build()).getResultOrThrow()
         );
 
         assertEquals(LinkType.SUB_QUERY,
             options.getLinkTypeFor(
                 BrAPIObjectType.builder().name("VariantSet").build(),
-                BrAPIObjectProperty.builder().name("variants").build())
+                BrAPIObjectProperty.builder().name("variants").build()).getResultOrThrow()
         );
     }
     private void checkOptions(IdsOptions options) {
