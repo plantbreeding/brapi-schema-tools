@@ -39,6 +39,7 @@ class OpenAPIGeneratorTest {
             log.debug(e.getMessage(), e);
             throw new RuntimeException(e);
         }
+
         assertNotNull(specifications);
 
         specifications.getAllErrors().forEach(this::printError);

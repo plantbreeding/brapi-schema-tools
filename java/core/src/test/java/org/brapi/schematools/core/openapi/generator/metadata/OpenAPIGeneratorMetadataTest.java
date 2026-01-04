@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.openapi.metadata;
+package org.brapi.schematools.core.openapi.generator.metadata;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
