@@ -223,7 +223,6 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
      *
      * @return {@code true} if the Generator should add a 'Clustering By' to the 'Create Table', {@code false} otherwise
      */
-    @JsonIgnore
     public boolean isClustering() {
         return clustering != null && clustering;
     }
