@@ -18,7 +18,8 @@ import picocli.CommandLine;
         AnalyseSubCommand.class,
         MarkdownSubCommand.class,
         CompareSubCommand.class,
-        VersionSubCommand.class
+        VersionSubCommand.class,
+        ExamplesSubCommand.class
     },
     mixinStandardHelpOptions = true
 )

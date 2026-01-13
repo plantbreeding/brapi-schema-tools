@@ -21,8 +21,9 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.6'
     implementation 'com.atlassian.oai:swagger-request-validator-core:2.44.1'
     implementation 'ch.qos.logback:logback-classic:1.4.14'
-    implementation 'org.dflib:dflib-csv:1.0.0-M22'
-    implementation 'org.dflib:dflib-excel:1.0.0-M22'
+    implementation 'org.dflib:dflib-json:2.0.0-M3'
+    implementation 'org.dflib:dflib-csv:2.0.0-M3'
+    implementation 'org.dflib:dflib-excel:2.0.0-M3'
 
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
