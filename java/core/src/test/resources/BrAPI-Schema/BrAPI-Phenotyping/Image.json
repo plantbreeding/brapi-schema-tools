@@ -11,14 +11,16 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Copyright 2018 Bob Robertson"
                 },
                 "description": {
                     "description": "The human readable description of an image.",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "This is a picture of a tomato"
                 },
                 "descriptiveOntologyTerms": {
                     "description": "A list of terms to formally describe the image. Each item could be a simple Tag, an Ontology reference Id, or a full ontology URL.",
@@ -28,12 +30,15 @@
                     "type": [
                         "null",
                         "array"
-                    ]
+                    ],
+                    "example": ["doi:10.1002/0470841559", "Red", "ncbi:0300294"]
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -50,50 +55,38 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "image_0000231.jpg"
                 },
                 "imageFileSize": {
                     "description": "The size of the image in Bytes.",
                     "type": [
                         "null",
                         "integer"
-                    ]
+                    ],
+                    "example": 50000
                 },
                 "imageHeight": {
                     "description": "The height of the image in Pixels.",
                     "type": [
                         "null",
                         "integer"
-                    ]
+                    ],
+                    "example": 550
                 },
                 "imageLocation": {
                     "description": "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                    "properties": {
-                        "geometry": {
-                            "description": "A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.",
-                            "$ref": "../BrAPI-Common/GeoJSONGeometry.json#/$defs/GeoJSONGeometry"
-                        },
-                        "type": {
-                            "default": "Feature",
-                            "description": "The literal string \"Feature\"",
-                            "type": [
-                                "null",
-                                "string"
-                            ]
-                        }
-                    },
-                    "title": "GeoJSON",
-                    "type": [
-                        "null",
-                        "object"
-                    ]
+                    "relationshipType": "one-to-one",
+                    "referencedAttribute": "image",
+					"$ref": "../BrAPI-Common/GeoJSON.json#/$defs/GeoJSON"
                 },
                 "imageName": {
                     "description": "The human readable name of an image. Might be the same as 'imageFileName', but could be different.",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Tomato Image 1"
                 },
                 "imageTimeStamp": {
                     "description": "The date and time the image was taken",
@@ -108,14 +101,16 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "https://wiki.brapi.org/images/tomato"
                 },
                 "imageWidth": {
                     "description": "The width of the image in Pixels.",
                     "type": [
                         "null",
                         "integer"
-                    ]
+                    ],
+                    "example": 700
                 },
                 "mimeType": {
                     "description": "The file type of the image. Examples 'image/jpeg', 'image/png', 'image/svg', etc",
@@ -123,7 +118,8 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "image/jpeg"
                 },
                 "observationUnit": {
                     "$ref": "ObservationUnit.json#/$defs/ObservationUnit",
@@ -145,6 +141,7 @@
                 "imageDbId"
             ],
             "title": "Image",
+            "description": "The metadata for an image file that is connected to some phenotypic observation data.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

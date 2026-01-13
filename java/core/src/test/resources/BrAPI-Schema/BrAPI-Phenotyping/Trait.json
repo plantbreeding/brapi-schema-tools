@@ -4,7 +4,8 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo",
+					"relationshipType": "one-to-one"
                 },
                 "alternativeAbbreviations": {
                     "description": "A list of shortened, human readable, names for a Trait. These abbreviations are acceptable alternatives to the mainAbbreviation and do not need to follow any formatting convention.",
@@ -14,40 +15,47 @@
                     "type": [
                         "null",
                         "array"
-                    ]
+                    ],
+                    "example": ["H", "PH", "H1"]
                 },
                 "attribute": {
                     "description": "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "height"
                 },
                 "attributePUI": {
                     "description": "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "http://my-traits.com/trait/PO:00012345"
                 },
                 "entity": {
                     "description": "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Stalk"
                 },
                 "entityPUI": {
                     "description": "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A Trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the Entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "http://my-traits.com/trait/PATO:00098765"
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -60,10 +68,12 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "PH"
                 },
                 "ontologyReference": {
                     "description": "MIAPPE V1.1\n\n(DM-85) Variable accession number - Accession number of the variable in the Crop Ontology\n\n(DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\n\n(DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\n\n(DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).",
+                    "relationshipType": "one-to-one",
                     "$ref": "../BrAPI-Phenotyping/OntologyReference.json#/$defs/OntologyReference"
                 },
                 "status": {
@@ -71,7 +81,8 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "recommended"
                 },
                 "synonyms": {
                     "description": "Other trait names",
@@ -81,14 +92,16 @@
                     "type": [
                         "null",
                         "array"
-                    ]
+                    ],
+                    "example": ["Height", "Plant Height", "Stalk Height", "Canopy Height"]
                 },
                 "traitClass": {
                     "description": "A classification to describe the type of trait and the context it should be considered in.\n<br/> examples- \"morphological\", \"phenological\", \"agronomical\", \"physiological\", \"abiotic stress\", \"biotic stress\", \"biochemical\", \"quality traits\", \"fertility\", etc.",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "phenological"
                 },
                 "traitDbId": {
                     "description": "The ID which uniquely identifies a trait",
@@ -102,24 +115,28 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "The height of the plant"
                 },
                 "traitName": {
                     "description": "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Height"
                 },
                 "traitPUI": {
                     "description": "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "http://my-traits.com/trait/CO_123:0000012"
                 }
             },
             "required": [
                 "traitName"
             ],
             "title": "Trait",
+            "description": "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". ",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

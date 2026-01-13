@@ -4,6 +4,7 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
+                    "relationshipType": "one-to-one",
                     "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
                 },
                 "amount": {
@@ -11,12 +12,15 @@
                     "type": [
                         "null",
                         "number"
-                    ]
+                    ],
+                    "example": 45
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -45,7 +49,8 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "f9cd88d2"
                 },
                 "transactionTimestamp": {
                     "description": "The time stamp for when the transaction occurred",
@@ -60,13 +65,15 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "seeds"
                 }
             },
             "required": [
                 "transactionDbId"
             ],
             "title": "SeedLotTransaction",
+            "description": "The record of an event where material was moved in or out of a particular SeedLot",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": false

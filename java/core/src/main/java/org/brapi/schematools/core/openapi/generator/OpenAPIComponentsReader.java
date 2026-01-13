@@ -54,9 +54,13 @@ public class OpenAPIComponentsReader {
 
     private Response<Components> readComponentFile(Path path) {
 
-        SwaggerParseResult result = new OpenAPIParser().readLocation(path.toFile().getPath(), null, null);
+        try {
+            SwaggerParseResult result = new OpenAPIParser().readLocation(path.toFile().getPath(), null, null);
 
-        return Response.success(result.getOpenAPI().getComponents()) ;
+            return Response.success(result.getOpenAPI().getComponents()) ;
+        } catch (Exception e) {
+            return fail(Response.ErrorType.VALIDATION, path, e.getMessage());
+        }
     }
 
     private boolean schemaPathMatcher(Path path, BasicFileAttributes basicFileAttributes) {

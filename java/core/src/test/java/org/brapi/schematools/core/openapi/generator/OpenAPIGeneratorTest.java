@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.brapi.schematools.core.test.TestUtils.assertJSONEquals;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_JSON;
 import static org.brapi.schematools.core.utils.OpenAPIUtils.prettyPrint;
-import static org.brapi.schematools.core.utils.StringUtils.isJSONEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,6 +39,7 @@ class OpenAPIGeneratorTest {
             log.debug(e.getMessage(), e);
             throw new RuntimeException(e);
         }
+
         assertNotNull(specifications);
 
         specifications.getAllErrors().forEach(this::printError);
@@ -153,6 +152,30 @@ class OpenAPIGeneratorTest {
     }
 
     @Test
+    void generateStudy3_1() {
+        Response<List<OpenAPI>> specifications;
+        try {
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
+                generate(
+                    Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
+                    Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
+                    OpenAPIGeneratorMetadata.load().setVersion("3.1.0"),
+                    List.of("Study"));
+        } catch (URISyntaxException e) {
+            log.debug(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        assertNotNull(specifications);
+
+        specifications.getAllErrors().forEach(this::printError);
+        assertFalse(specifications.hasErrors());
+
+        assertEquals(1, specifications.getResult().size());
+
+        assertSpecificationEquals("OpenAPIGenerator/Study3_1.json", specifications.getResult().getFirst()) ;
+    }
+
+    @Test
     void generateGermplasm() {
         Response<List<OpenAPI>> specifications;
         try {
@@ -212,16 +235,21 @@ class OpenAPIGeneratorTest {
 
     private void assertSpecificationEquals(String classPath, OpenAPI specification) {
         try {
-            String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow() ;
+            String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow();
             String actual = prettyPrint(specification, OUTPUT_FORMAT_JSON);
 
-            if (!isJSONEqual(expected, actual)) {
-                Path build = Paths.get("build", classPath);
-                Files.createDirectories(build.getParent()) ;
+            // Parse both JSON strings into objects for order-insensitive comparison
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            Object expectedObj = mapper.readTree(expected);
+            Object actualObj = mapper.readTree(actual);
+
+            if (!expectedObj.equals(actualObj)) {
+                Path build = Paths.get("build/test-output", classPath);
+                Files.createDirectories(build.getParent());
                 Files.writeString(build, actual);
             }
 
-            assertJSONEquals(expected, actual);
+            assertEquals(expectedObj, actualObj, "OpenAPI spec does not match (ignoring property order)");
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }

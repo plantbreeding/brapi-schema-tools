@@ -7,6 +7,9 @@ argumentsDirectory: arguments
 createTopLevelFieldDefinitions: true
 createTopLevelInputFieldDefinitions: false
 createTopLeveArgumentDefinitions: true
+addGeneratorComments: true
+ignoreQueryNamePattern: _+.+
+ignoreTypeNamePattern: (_+.+)|Query
 introspectionQuery: |
     query schema {
         __schema {

@@ -12,11 +12,19 @@ dependencies {
     implementation 'com.atlassian.oai:swagger-request-validator-core'
     implementation 'org.dflib:dflib-excel'
     implementation 'ch.qos.logback:logback-classic'
+    implementation 'com.jayway.jsonpath:json-path:2.9.0'
 }
 
 application {
     mainClass = 'org.brapi.schematools.cli.BrAPICommand'
     applicationName = 'BrAPI'
+}
+
+tasks.named('startScripts') {
+    doLast {
+        unixScript.text = unixScript.text.replaceAll('^CLASSPATH=.*', 'CLASSPATH=.:$APP_HOME/lib/*')
+        windowsScript.text = windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')
+    }
 }
 
 jar {

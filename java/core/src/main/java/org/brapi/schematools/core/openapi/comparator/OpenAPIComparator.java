@@ -1,11 +1,14 @@
 package org.brapi.schematools.core.openapi.comparator;
 
-import lombok.AllArgsConstructor;
 import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.openapitools.openapidiff.core.OpenApiCompare;
+import org.openapitools.openapidiff.core.compare.OpenApiDiffOptions;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
+import org.openapitools.openapidiff.core.model.ChangedOperation;
+import org.openapitools.openapidiff.core.model.ChangedSchema;
+import org.openapitools.openapidiff.core.model.Endpoint;
 import org.openapitools.openapidiff.core.output.AsciidocRender;
 import org.openapitools.openapidiff.core.output.HtmlRender;
 import org.openapitools.openapidiff.core.output.MarkdownRender;
@@ -16,20 +19,36 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Compares two OpenAPI Specifications
  */
-@AllArgsConstructor
 public class OpenAPIComparator {
 
     private final OpenAPIComparatorOptions options;
+
+    private final List<Pattern> ignoreMissingEndpoints ;
+
+    private final List<Pattern> ignoreNewEndpoints ;
 
     /**
      * Creates a Comparator with default options
      */
     public OpenAPIComparator() {
         this(OpenAPIComparatorOptions.load()) ;
+    }
+
+    public OpenAPIComparator(OpenAPIComparatorOptions options) {
+        this.options = options;
+
+        ignoreMissingEndpoints = options.getIgnoreMissingEndpoints() != null ?
+            options.getIgnoreMissingEndpoints().stream().map(Pattern::compile).toList() : new ArrayList<>() ;
+
+        ignoreNewEndpoints = options.getIgnoreNewEndpoints() != null ?
+            options.getIgnoreNewEndpoints().stream().map(Pattern::compile).toList() : new ArrayList<>() ;
     }
 
     /**
@@ -42,8 +61,7 @@ public class OpenAPIComparator {
      */
     public Response<ChangedOpenApi> compare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
-            ChangedOpenApi diff = OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile());
-            return Response.success(diff);
+            return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
         } else {
             if (!Files.isRegularFile(firstPath) && !Files.isRegularFile(secondPath)) {
                 return Response.fail(Response.ErrorType.VALIDATION,
@@ -89,7 +107,7 @@ public class OpenAPIComparator {
      */
     public Response<ChangedOpenApi> compare(String firstContent, String secondContent) {
         if (StringUtils.isNotBlank(firstContent) && StringUtils.isNotBlank(secondContent)) {
-            return Response.success(OpenApiCompare.fromContents(firstContent, secondContent)) ;
+            return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions()))) ;
         } else {
             if (!StringUtils.isNotBlank(firstContent) && !StringUtils.isNotBlank(secondContent)) {
                 return Response.fail(Response.ErrorType.VALIDATION, "Both input content need to be non blank");
@@ -119,6 +137,21 @@ public class OpenAPIComparator {
                 .mapResultToResponse(diff -> renderOutput(diff, actualOutputPath, outputFormat)));
     }
 
+    private OpenApiDiffOptions createOptions() {
+        return OpenApiDiffOptions.builder().build();
+    }
+
+    private ChangedOpenApi filterDiff(ChangedOpenApi changedOpenApi) {
+        return new ChangedOpenApi(createOptions())
+            .setChangedExtensions(changedOpenApi.getChangedExtensions()) // TODO
+            .setChangedOperations(changedOpenApi.getChangedOperations().stream().filter(this::keepChangedOperation).toList())
+            .setChangedSchemas(changedOpenApi.getChangedSchemas().stream().filter(this::keepChangedSchema).toList())
+            .setMissingEndpoints(changedOpenApi.getMissingEndpoints().stream().filter(this::keepMissingEndpoint).toList())
+            .setNewEndpoints(changedOpenApi.getNewEndpoints().stream().filter(this::keepNewEndpoint).toList())
+            .setNewSpecOpenApi(changedOpenApi.getNewSpecOpenApi())
+            .setOldSpecOpenApi(changedOpenApi.getOldSpecOpenApi()) ;
+    }
+
     private Response<Path> findActualOutputPath(Path outputPath, ComparisonOutputFormat outputFormat) {
         if (outputPath == null) {
 
@@ -126,7 +159,7 @@ public class OpenAPIComparator {
                 outputPath = Files.createTempFile(options.getTempFilePrefix(), getTempFileSuffix(outputFormat)) ;
             } catch (IOException e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory can not created due to '%s'", e.getMessage()));
+                    String.format("Parent directory cannot created due to '%s'", e.getMessage()));
             }
         }
 
@@ -135,7 +168,7 @@ public class OpenAPIComparator {
                 Files.createDirectories(outputPath.getParent());
             } catch (IOException e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory '%s' can not created", outputPath.getParent()));
+                    String.format("Parent directory '%s' cannot created", outputPath.getParent()));
             }
         }
 
@@ -210,5 +243,25 @@ public class OpenAPIComparator {
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
         return Response.success(outputPath) ;
+    }
+
+    private boolean keepChangedOperation(ChangedOperation changedOperation) {
+        return true ;
+    }
+
+    private boolean keepChangedSchema(ChangedSchema changedSchema) {
+        return true ;
+    }
+
+    private boolean keepMissingEndpoint(Endpoint endpoint) {
+        if (options.isIgnoringDeprecatedEndpoints() && endpoint.getOperation().getDeprecated() != null && endpoint.getOperation().getDeprecated()) {
+            return false ;
+        }
+
+        return ignoreMissingEndpoints.stream().noneMatch(pattern -> pattern.matcher(endpoint.getPathUrl()).matches()) ;
+    }
+
+    private boolean keepNewEndpoint(Endpoint endpoint) {
+        return ignoreNewEndpoints.stream().noneMatch(pattern -> pattern.matcher(endpoint.getPathUrl()).matches()) ;
     }
 }

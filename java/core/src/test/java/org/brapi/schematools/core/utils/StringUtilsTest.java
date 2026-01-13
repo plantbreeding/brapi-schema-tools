@@ -6,10 +6,25 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class StringUtilsTest {
+
+    @Test
+    void capitalise() {
+        assertEquals("Datamatrix", StringUtils.capitalise("datamatrix")) ;
+        assertEquals("Person", StringUtils.capitalise("person")) ;
+        assertEquals("Germplasm", StringUtils.capitalise("germplasm")) ;
+        assertEquals("Studies", StringUtils.capitalise("studies")) ;
+        assertEquals("DataMatrices", StringUtils.capitalise("dataMatrices")) ;
+        assertEquals("People", StringUtils.capitalise("people")) ;
+        assertEquals("Germplasm", StringUtils.capitalise("germplasm")) ;
+        assertEquals("Study", StringUtils.capitalise("study")) ;
+        assertEquals("", StringUtils.capitalise("")) ;
+        assertNull(StringUtils.capitalise(null));
+    }
 
     @Test
     void toSingular() {
@@ -152,5 +167,33 @@ class StringUtilsTest {
             fail(e.getMessage()) ;
         }
 
+    }
+
+    @Test
+    void testEscapeQuotes() {
+        assertEquals("\\\" '' SimpleText123 ", StringUtils.escapeQuotes("\\\" ' SimpleText123 "));
+        assertEquals(
+            "`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+            StringUtils.escapeQuotes("`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`'s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ")) ;
+    }
+
+    @Test
+    void testEscapeSingleSQLQuotes() {
+        assertEquals("'' SimpleText123 ", StringUtils.escapeSingleSQLQuotes("' SimpleText123 "));
+        assertEquals(
+            "`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+            StringUtils.escapeQuotes("`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`'s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ")) ;
+    }
+
+    @Test
+    void testEscapeSpecialCharacters() {
+        assertEquals("\\#\\$\\%\\^\\&\\*\\(\\)\\ SimpleText123\\ ", StringUtils.escapeSpecialCharacters("#$%^&*() SimpleText123 "));
+    }
+
+    @Test
+    void testRemoveCarriageReturns() {
+        assertEquals("test1 test2", StringUtils.removeCarriageReturns("test1\ntest2"));
+        assertEquals("test3  test4", StringUtils.removeCarriageReturns("test3\n\rtest4"));
+        assertEquals("test5 test6", StringUtils.removeCarriageReturns("test5\ntest6"));
     }
 }

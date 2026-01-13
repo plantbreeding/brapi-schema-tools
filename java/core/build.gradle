@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.graalvm.js:js:24.1.2'
     implementation 'org.jruby.joni:joni:2.2.5'
     implementation 'org.openapitools.openapidiff:openapi-diff-core:2.1.0'
+    implementation 'com.github.vertical-blank:sql-formatter:2.0.5'
     implementation 'org.dflib:dflib'
     implementation 'org.dflib:dflib-json'
 }
@@ -24,3 +25,25 @@ dependencies {
 mavenPublishing {
     coordinates("org.brapi.brapi-schema-tools", "brapi-schema-tools-core", project.version)
 }
+
+tasks.register('generateVersionFile') {
+    def outputFile = file("$buildDir/generated-resources/version.txt")
+    outputs.file(outputFile)
+    doLast {
+        def version = project.version?.toString()
+        println "Generating version.txt with version: ${version}"
+        if (!version || version == 'unspecified') {
+            throw new GradleException("Project version is not set. Cannot generate version.txt.")
+        }
+        outputFile.parentFile.mkdirs()
+        outputFile.text = version
+    }
+}
+
+processResources {
+    from("$buildDir/generated-resources") {
+        include 'version.txt'
+    }
+    dependsOn tasks.named('generateVersionFile')
+}
+

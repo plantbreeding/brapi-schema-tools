@@ -4,6 +4,7 @@
             "properties": {
                 "germplasm": {
                     "description": "the germplasm of the cross parent",
+					"relationshipType": "one-to-one",
                     "$ref": "Germplasm.json#/$defs/Germplasm",
                     "type": [
                         "null",
@@ -12,6 +13,7 @@
                 },
                 "observationUnit": {
                     "description": "the Observation Unit of the cross parent",
+                    "relationshipType": "many-to-one",
                     "$ref": "../BrAPI-Phenotyping/ObservationUnit.json#/$defs/ObservationUnit",
                     "type": [
                         "null",
@@ -20,20 +22,11 @@
                 },
                 "parentType": {
                     "description": "The type of parent ex. 'MALE', 'FEMALE', 'SELF', 'POPULATION', etc.",
-                    "enum": [
-                        "MALE",
-                        "FEMALE",
-                        "SELF",
-                        "POPULATION",
-                        null
-                    ],
-                    "type": [
-                        "null",
-                        "string"
-                    ]
+                    "$ref": "ParentType.json#/$defs/ParentType"
                 }
             },
             "title": "CrossParent",
+            "description": "The identifying information gor the parent material of a cross.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": false

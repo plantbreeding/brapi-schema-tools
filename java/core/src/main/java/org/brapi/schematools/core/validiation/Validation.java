@@ -1,5 +1,7 @@
 package org.brapi.schematools.core.validiation;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.brapi.schematools.core.response.Response;
@@ -7,6 +9,7 @@ import org.brapi.schematools.core.response.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,8 +19,13 @@ import static org.brapi.schematools.core.response.Response.empty;
  * Provides the results of a validation
  */
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Validation {
     List<Response.Error> errors = new ArrayList<>();
+
+    private Validation() {
+
+    }
 
     /**
      * Get a valid instant of the Validation
@@ -25,6 +33,28 @@ public class Validation {
      */
     public static Validation valid() {
         return new Validation();
+    }
+
+    /**
+     * Get a failed instant of the Validation. Not sure why you would use this over
+     * just creating a new Validation and using methods on it, but here it is.
+     * @return a failed instant of the Validation
+     */
+    public static Validation fail() {
+        return fail("Validation failed!") ;
+    }
+
+    /**
+     * Get a failed instant of the Validation with a specific message. Not sure why you would use this over
+     * just creating a new Validation and using methods on it, but here it is.
+     * @param message the error message
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return a failed instant of the Validation
+     */
+    public static Validation fail(String message, Object... args) {
+        Validation validation = new Validation();
+        validation.addError(message, args);
+        return validation ;
     }
 
     /**
@@ -50,22 +80,67 @@ public class Validation {
      */
     public Validation assertMutuallyExclusive(Object value, String... properties) {
         if (value == null) {
-            addError("Value is null!") ;
+            addError("Value is null!");
         } else {
             int count = 0;
-
+            Class<?> clazz = value.getClass();
             for (String property : properties) {
+                String getterName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
                 try {
-                    if (PropertyUtils.getProperty(value, property) != null) {
+                    java.lang.reflect.Method getter = clazz.getMethod(getterName);
+                    Object propertyValue = getter.invoke(value);
+                    if (propertyValue != null) {
                         ++count;
                     }
+                } catch (NoSuchMethodException e) {
+                    addError("No getter for property '" + property + "'.");
                 } catch (Exception e) {
                     addError(e);
                 }
             }
-
             if (count > 1) {
                 addError("Only one of '%s' can be provided", String.join(", ", Arrays.asList(properties)));
+            }
+        }
+        return this ;
+    }
+
+    /**
+     * Validate that only one of the provided boolean properties is non-null and their value is true
+     * @param value the value to be tested
+     * @param properties the array of properties to be checked
+     * @return this Validation
+     */
+    public Validation assertFlagsMutuallyExclusive(Object value, String... properties) {
+        if (value == null) {
+            addError("Value is null!");
+        } else {
+            int count = 0;
+            Class<?> clazz = value.getClass();
+            for (String property : properties) {
+                String getterName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+                String booleanGetterName = "is" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+                try {
+                    java.lang.reflect.Method getter;
+                    try {
+                        getter = clazz.getMethod(booleanGetterName);
+                    } catch (NoSuchMethodException e) {
+                        getter = clazz.getMethod(getterName);
+                    }
+                    Object propertyValue = getter.invoke(value);
+                    if (propertyValue instanceof Boolean && (Boolean) propertyValue) {
+                        ++count;
+                    } else if (propertyValue != null && !(propertyValue instanceof Boolean)) {
+                        addError("Property '" + property + "' is not Boolean, use 'assertMutuallyExclusive' for validation!");
+                    }
+                } catch (NoSuchMethodException e) {
+                    addError("No getter for property '" + property + "'.");
+                } catch (Exception e) {
+                    addError(e);
+                }
+            }
+            if (count > 1) {
+                addError("Only one of '%s' can be true", String.join(", ", Arrays.asList(properties)));
             }
         }
 

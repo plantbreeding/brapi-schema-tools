@@ -25,7 +25,7 @@ public class TestUtils {
             .getResource(pathString)).toURI());
 
         Stream<String> lines = Files.lines(path);
-        String data = lines.collect(Collectors.joining("\n"));
+        String data = lines.collect(Collectors.joining(System.lineSeparator()));
         lines.close();
 
         return data.trim() ;

@@ -4,14 +4,16 @@
             "properties": {
                 "additionalInfo": {
                     "description": "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo"
+                    "$ref": "../BrAPI-Common/AdditionalInfo.json#/$defs/AdditionalInfo",
+					"relationshipType": "one-to-one"
                 },
                 "commonCropName": {
                     "description": "the common name of a crop (for multi-crop systems)",
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Cassava"
                 },
                 "crossingProjectDbId": {
                     "description": "The unique identifier for a crossing project",
@@ -22,16 +24,20 @@
                     "type": [
                         "null",
                         "string"
-                    ]
+                    ],
+                    "example": "Crosses between germplasm X and germplasm Y in male nursery study X_2018 and female nursery study Y_2018"
                 },
                 "crossingProjectName": {
                     "description": "The human readable name for a crossing project",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Crosses_2018"
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                    "relationshipType": "one-to-many",
                     "items": {
-                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference"
+                        "$ref": "../BrAPI-Common/ExternalReference.json#/$defs/ExternalReference",
+                        "description": "ExternalReferences"
                     },
                     "title": "ExternalReferences",
                     "type": [
@@ -103,6 +109,7 @@
                 "crossingProjectName"
             ],
             "title": "CrossingProject",
+            "description": "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented.",
             "type": "object",
             "brapi-metadata": {
                 "primaryModel": true

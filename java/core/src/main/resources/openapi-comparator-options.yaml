@@ -6,3 +6,6 @@ json:
     prettyPrint: true
 markdown:
     showChangedMetadata: false
+ignoreMissingEndpoints:
+    - /vendor/\S+
+ignoreDepreciatedEndpoints: true

@@ -31,11 +31,11 @@ public class GraphQLGeneratorMetadata implements Metadata {
     }
 
     /**
-     * Load the metadata from a metadata file in YAML or Json. The metadata file may have missing
+     * Load the metadata from a metadata file in YAML or JSON. The metadata file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param metadataFile The path to the metadata file in YAML or Json.
-     * @return The metadata loaded from the YAML or Json file.
-     * @throws IOException if the metadata file can not be found or is incorrectly formatted.
+     * @param metadataFile The path to the metadata file in YAML or JSON.
+     * @return The metadata loaded from the YAML or JSON file.
+     * @throws IOException if the metadata file cannot be found or is incorrectly formatted.
      */
     public static GraphQLGeneratorMetadata load(Path metadataFile) throws IOException {
         return load().override(ConfigurationUtils.load(metadataFile, GraphQLGeneratorMetadata.class)) ;
@@ -43,9 +43,9 @@ public class GraphQLGeneratorMetadata implements Metadata {
 
 
     /**
-     * Load the metadata from an metadata input stream in YAML or Json. The metadata file may have missing
+     * Load the metadata from an metadata input stream in YAML or JSON. The metadata file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param inputStream The input stream in YAML or Json.
+     * @param inputStream The input stream in YAML or JSON.
      * @return The metadata loaded from input stream.
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */

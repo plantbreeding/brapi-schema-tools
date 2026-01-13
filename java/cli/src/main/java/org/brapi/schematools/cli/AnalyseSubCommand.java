@@ -3,21 +3,22 @@ package org.brapi.schematools.cli;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.analyse.*;
-import org.brapi.schematools.analyse.authorization.AuthorizationProvider;
-import org.brapi.schematools.analyse.authorization.BasicAuthorizationProvider;
-import org.brapi.schematools.analyse.authorization.NoAuthorizationProvider;
-import org.brapi.schematools.analyse.authorization.oauth.OpenIDToken;
-import org.brapi.schematools.analyse.authorization.oauth.SingleSignOn;
+import org.brapi.schematools.core.authorization.AuthorizationProvider;
+import org.brapi.schematools.core.authorization.BasicAuthorizationProvider;
+import org.brapi.schematools.core.authorization.NoAuthorizationProvider;
+import org.brapi.schematools.core.authorization.oauth.OpenIDToken;
+import org.brapi.schematools.core.authorization.oauth.SingleSignOn;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.dflib.DataFrame;
 import org.dflib.Extractor;
+import org.dflib.Printers;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,10 +35,8 @@ import java.util.stream.Stream;
     name = "analyse", mixinStandardHelpOptions = true,
     description = "Executes a query pipeline or set of pipelines"
 )
-public class AnalyseSubCommand implements Runnable {
-
-    private final PrintStream out = System.out;
-    private final PrintStream err = System.err;
+@Slf4j
+public class AnalyseSubCommand extends AbstractSubCommand {
 
     @CommandLine.Parameters(index = "0", description = "The path to the specification file.")
     private Path specificationPath;
@@ -56,11 +55,11 @@ public class AnalyseSubCommand implements Runnable {
     private String username = System.getProperty("user.name");
     @CommandLine.Option(names = {"-p", "--password"}, interactive = true, arity = "0..1", description = "The password for the supplied username. Will fail if not logged in and the password is not provided. Providing the option without a value make the application as for a value.")
     private String password;
-    @CommandLine.Option(names = {"-c", "--client"}, description = "The client id for authentication if required.")
+    @CommandLine.Option(names = {"-c", "--clientId"}, description = "The client id for authentication if required.")
     private String clientId;
-    @CommandLine.Option(names = {"-s", "--secret"}, description = "The client secret for authentication if required.")
+    @CommandLine.Option(names = {"-s", "--clientSecret"}, description = "The client secret for authentication if required.")
     private String clientSecret;
-    @CommandLine.Option(names = {"-v", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
+    @CommandLine.Option(names = {"-vb", "--verbose"}, description = "Provide a verbose output to standard out describing the current step etc.")
     private boolean verbose;
     @CommandLine.Option(names = {"-i", "--individualReportsByEntity"}, description = "Create an individual report for entity")
     private boolean individualReportsByEntity;
@@ -71,13 +70,7 @@ public class AnalyseSubCommand implements Runnable {
     @CommandLine.Option(names = {"-ar", "--summariseAcrossReports"}, description = "Add a summary to any reporting")
     private boolean summariseAcrossReports;
 
-    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
-    private boolean throwExceptionOnFail = false;
-
-    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
-    private boolean stackTrace = false;
-
-    private TabularReportWriter writer;
+    private final TabularReportWriter writer;
 
     /**
      * Creates the command
@@ -91,7 +84,7 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    protected void execute() throws IOException {
 
         if (verbose) {
             final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -101,42 +94,37 @@ public class AnalyseSubCommand implements Runnable {
             }
         }
 
-        try {
-            AnalysisOptions options = optionsPath != null ?
-                AnalysisOptions.load(optionsPath) : AnalysisOptions.load();
+        AnalysisOptions options = optionsPath != null ?
+            AnalysisOptions.load(optionsPath) : AnalysisOptions.load();
 
-            if (validate) {
-                validateOptions(options)
-                    .onFailDoWithResponse(this::outputValidation)
-                    .map(() -> createAnalyser(options))
-                    .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
-                    .onSuccessDoWithResult(this::outputEndpointsToOut);
-            } else if (batchProcess) {
-                if (!individualReportsByEntity) {
-                    err.println("Batch process can only be used in conjunction with 'individualReportsByEntity'");
-                } else {
-                    if (Files.exists(reportPath)) {
-                        out.printf("Deleting Report file '%s'!%n", reportPath.toFile().getAbsolutePath());
-                        Files.delete(reportPath);
-                    }
-
-                    validateOptions(options)
-                        .map(() -> createAnalyser(options))
-                        .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
-                        .mapResultToResponse(this::batchAnalyse)
-                        .onFailDoWithResponse(this::outputError);
+        if (validate) {
+            validateOptions(options)
+                .onFailDoWithResponse(this::outputValidation)
+                .map(() -> createAnalyser(options))
+                .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
+                .onSuccessDoWithResult(this::outputEndpointsToOut);
+        } else if (batchProcess) {
+            if (!individualReportsByEntity) {
+                printError("Batch process can only be used in conjunction with 'individualReportsByEntity'");
+            } else {
+                if (Files.exists(reportPath)) {
+                    log.info("Deleting Report file '{}'!", reportPath.toFile().getAbsolutePath());
+                    Files.delete(reportPath);
                 }
 
-            } else {
                 validateOptions(options)
                     .map(() -> createAnalyser(options))
                     .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
-                    .mapResultToResponse(this::analyse)
+                    .mapResultToResponse(this::batchAnalyse)
                     .onFailDoWithResponse(this::outputError);
             }
 
-        } catch (Exception exception) {
-            outputException(exception);
+        } else {
+            validateOptions(options)
+                .map(() -> createAnalyser(options))
+                .mapResultToResponse(BrAPISpecificationAnalyserFactory.Analyser::validate)
+                .mapResultToResponse(this::analyse)
+                .onFailDoWithResponse(this::outputError);
         }
     }
 
@@ -154,7 +142,7 @@ public class AnalyseSubCommand implements Runnable {
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not read path '%s'", specificationPath.toFile()));
             }
 
-            String specification = lines.collect(Collectors.joining("\n"));
+            String specification = lines.collect(Collectors.joining(System.lineSeparator()));
             lines.close();
 
             return authorisation()
@@ -196,7 +184,6 @@ public class AnalyseSubCommand implements Runnable {
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
-                err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
                 return Response.fail(Response.ErrorType.VALIDATION, String.format("Report file '%s' is directory", reportPath));
             }
 
@@ -275,24 +262,23 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private Response<OpenIDToken> login(SingleSignOn sso) {
-        if (password != null) {
-            return sso.loginWithPassword(password);
+        if (password != null && clientSecret != null) {
+            return sso.loginWithPasswordAndClientId(password, clientSecret);
         } else {
-            if (clientSecret != null) {
-                return sso.loginWithClientId(clientSecret);
+            if (password != null) {
+                return sso.loginWithPassword(password);
             } else {
-                return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged please provide password using option '-p' for user '%s' or client secret for client '%s'", username, clientId));
+                if (clientSecret != null) {
+                    return sso.loginWithClientId(clientSecret);
+                } else {
+                    return Response.fail(Response.ErrorType.PERMISSION, String.format("Not logged in please provide password using option '-p' for user '%s' or client secret for client '%s'", username, clientId));
+                }
             }
         }
     }
 
     private void outputError(Response<List<AnalysisReport>> response) {
-        err.println("Analysis failed due to: ");
-        response.getMessages().forEach(err::println);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(response.getMessagesCombined(", "));
-        }
+        printErrors("Analysis failed due to: ", response.getAllErrors());
     }
 
     private void outputReports(List<AnalysisReport> listResponses) {
@@ -305,14 +291,14 @@ public class AnalyseSubCommand implements Runnable {
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
-                err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
+                printError(String.format("Report file '%s' is directory!", reportPath.toFile().getAbsolutePath()));
                 return;
             }
 
             try {
                 Files.createDirectories(reportPath.getParent()) ;
             } catch (IOException e) {
-                err.printf("Can not create report file directory '%s' %n", reportPath.getParent());
+                printError(String.format("Can not create report file directory '%s", reportPath.getParent()));
                 return;
             }
 
@@ -325,12 +311,12 @@ public class AnalyseSubCommand implements Runnable {
     }
 
     private void outputReportsToOut(TabularReportGenerator tabularReportGenerator, List<AnalysisReport> listResponses) {
-        out.println(tabularReportGenerator.generateReportTable(listResponses));
+        log.info(tabularReportGenerator.generateReportTable(listResponses));
     }
 
     private void outputSummaryToOut(TabularReportGenerator tabularReportGenerator) {
         if (summariseAcrossReports) {
-            out.println(tabularReportGenerator.getSummary());
+            log.info(Printers.tabular.toString(tabularReportGenerator.getSummary()));
         }
     }
 
@@ -342,7 +328,7 @@ public class AnalyseSubCommand implements Runnable {
                 writer.writeToExcel(tabularReportGenerator.generateReport(listResponses), reportPath);
             }
         } catch (IOException e) {
-            outputException(e);
+            handleException(e);
         }
     }
 
@@ -351,7 +337,7 @@ public class AnalyseSubCommand implements Runnable {
             try {
                 writer.writeToExcel(tabularReportGenerator.getSummary(), reportPath);
             } catch (IOException e) {
-                outputException(e);
+                handleException(e);
             }
         }
     }
@@ -360,7 +346,7 @@ public class AnalyseSubCommand implements Runnable {
 
         if (reportPath != null) {
             if (Files.isDirectory(reportPath)) {
-                err.printf("Report file '%s' is directory!%n", reportPath.toFile().getAbsolutePath());
+                printError(String.format("Report file '%s' is directory!", reportPath.toFile().getAbsolutePath()));
                 return;
             }
 
@@ -466,40 +452,24 @@ public class AnalyseSubCommand implements Runnable {
         try {
             writer.writeToExcel(endpoints, reportPath);
         } catch (IOException e) {
-            outputException(e);
+            handleException(e);
         }
     }
 
     private void outputEndpointsToOut(BrAPISpecificationAnalyserFactory.Analyser analyser) {
-        out.println("Analysing Endpoints:");
-        analyser.getEndpoints().forEach(out::println);
-        out.println();
-        out.println("Skipping Endpoints:");
-        analyser.getSkippedEndpoints().forEach(out::println);
-        out.println();
-        out.println("Ignored Endpoints:");
-        analyser.getUnmatchedEndpoints().forEach(out::println);
-        out.println();
-        out.println("Deprecated Endpoints:");
-        analyser.getDeprecatedEndpoints().forEach(out::println);
+        log.info("Analysing Endpoints:");
+        analyser.getEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Skipping Endpoints:");
+        analyser.getSkippedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Ignored Endpoints:");
+        analyser.getUnmatchedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
+        log.info("Deprecated Endpoints:");
+        analyser.getDeprecatedEndpoints().forEach(endpoint -> log.info(endpoint.toString()));
     }
 
 
     private void outputValidation(Response<Validation> response) {
-        err.println("Validation Errors:");
-        response.getMessages().forEach(err::println);
-    }
-
-    private void outputException(Exception exception) throws BrAPICommandException {
-        String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage());
-        err.println(message);
-
-        if (stackTrace) {
-            exception.printStackTrace(err);
-        }
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, exception);
-        }
+        printError("Validation Errors:");
+        response.getMessages().forEach(this::printError);
     }
 }

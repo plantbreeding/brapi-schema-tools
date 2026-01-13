@@ -6,6 +6,7 @@ import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOp
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 
@@ -16,9 +17,8 @@ import java.nio.file.Path;
     name = "compare", mixinStandardHelpOptions = true,
     description = "Compares various types of BrAPI, including OpenAPI Specification or GraphQL Schema"
 )
-public class CompareSubCommand implements Runnable {
+public class CompareSubCommand extends AbstractSubCommand {
     private PrintWriter out ;
-    private PrintWriter err ;
 
     private static final InputFormat DEFAULT_INPUT_FORMAT = InputFormat.OPEN_API;
     private static final ComparisonOutputFormat DEFAULT_OUTPUT_FORMAT = ComparisonOutputFormat.MARKDOWN;
@@ -41,23 +41,15 @@ public class CompareSubCommand implements Runnable {
     @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
     private Path optionsPath;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
     private boolean overwrite = true;
 
-    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
-    private boolean throwExceptionOnFail = false;
-
-    @CommandLine.Option(names = {"-t", "--stackTrace"}, description = "If an error is recorded output the stack trace.")
-    private boolean stackTrace = false;
-
-    @CommandLine.Option(names = {"-p", "--prettyPrint"}, description = "Pretty print the JSON output if possible. True by default.")
-    private boolean prettyPrint = true;
+    @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")
+    private boolean prettyprint = true;
 
     @Override
-    public void run() {
-        try {
+    public void execute() throws IOException {
             out = new PrintWriter(System.out) ;
-            err = new PrintWriter(System.err) ;
 
             switch (inputFormat) {
                 case OPEN_API -> {
@@ -70,33 +62,8 @@ public class CompareSubCommand implements Runnable {
 
                     response.onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
                 }
-                case GRAPHQL, OWL -> {
-                    String message = String.format("Input format %s not supported", inputFormat) ;
-                    err.println(message);
-
-                    if (throwExceptionOnFail) {
-                        throw new BrAPICommandException(message) ;
-                    }
-                }
+                case GRAPHQL, OWL -> handleError(String.format("Input format %s not supported", inputFormat) );
             }
-        } catch (Exception exception) {
-
-            String message = String.format("%s: %s", exception.getClass().getSimpleName(), exception.getMessage()) ;
-            err.println(message);
-
-            if (stackTrace) {
-                exception.printStackTrace(err);
-            }
-
-            if (throwExceptionOnFail) {
-                throw new BrAPICommandException(message, exception) ;
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            err.close();
-        }
     }
 
     private void outputResponse(Path path) {
@@ -105,32 +72,10 @@ public class CompareSubCommand implements Runnable {
     }
 
     private void printComparisonErrors(Response<Path> response) {
-        String message ;
         if (response.getAllErrors().size() == 1) {
-            err.println(message = "There was 1 error generating the comparison");
+            printErrors("There was 1 error generating the comparison", response.getAllErrors());
         } else {
-            err.println(message = String.format("There were %d errors generating comparison", response.getAllErrors().size()));
+            printErrors(String.format("There were %d errors generating comparison", response.getAllErrors().size()), response.getAllErrors());
         }
-
-        response.getAllErrors().forEach(this::printError);
-
-        if (throwExceptionOnFail) {
-            throw new BrAPICommandException(message, response.getAllErrors()) ;
-        }
-    }
-
-    private void printError(Response.Error error) {
-        switch (error.getType()) {
-
-            case VALIDATION -> {
-                err.print("Validation Error :");
-            }
-            case PERMISSION, OTHER -> {
-                err.print("Error :");
-            }
-        }
-        err.print('\t');
-
-        err.println(error.getMessage());
     }
 }

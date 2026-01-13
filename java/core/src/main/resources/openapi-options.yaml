@@ -30,9 +30,17 @@ pathItemNameFor:
     GenomeMap: /maps
     GermplasmAttribute: /attributes
     GermplasmAttributeValue: /attributevalues
+    ObservationUnitHierarchyLevel: /observationlevels
     ObservationVariable: /variables
     PedigreeNode: /pedigree
     ServerInfo: /serverInfo
+pathItemNameForProperty:
+    GermplasmAttribute:
+        attributeCategory:
+            /attributes/categories
+    Study:
+        studyType:
+            /studytypes
 tagFor:
     BreedingMethod: Germplasm
     PlannedCross: Crosses
@@ -46,6 +54,7 @@ singleGet:
         Cross: false
         Event: false
         MarkerPosition: false
+        ObservationUnitHierarchyLevel: false
         PedigreeNode: false
         PlannedCross: false
         ServerInfo: false
@@ -103,6 +112,7 @@ search:
         Event: false
         GenomeMap: false
         Method: false
+        ObservationUnitHierarchyLevel: false
         Ontology: false
         PlannedCross: false
         Scale: false
@@ -122,6 +132,7 @@ post:
         Event: false
         GenomeMap: false
         MarkerPosition: false
+        ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
         ServerInfo: false
@@ -139,6 +150,7 @@ put:
         Event: false
         GenomeMap: false
         MarkerPosition: false
+        ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
         PedigreeNode: false
@@ -167,11 +179,13 @@ delete:
         Event: false
         GenomeMap: false
         MarkerPosition: false
+        ObservationUnitHierarchyLevel: false
         Reference: false
         ServerInfo: false
         Variant: false
         VariantSet: false
 properties:
+    descriptionFormat: Property %s for type %s
     id:
         nameFormat: "%sDbId"
         link: true
@@ -179,6 +193,7 @@ properties:
             GermplasmAttribute: attributeDbId
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
+            ObservationUnitHierarchyLevel: levelName
     name:
         nameFormat: "%sName"
         link: true
@@ -186,6 +201,7 @@ properties:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
             GenomeMap: mapName
+            ObservationUnitHierarchyLevel: levelName
     pui:
         nameFormat: "%sPUI"
         link: true
@@ -198,7 +214,7 @@ properties:
             germplasm: none
             pedigreeNodes: none
         CallSet:
-            calls: sub-path
+            calls: sub-query
         Cross:
             observationUnits: none
         CrossingProject:
@@ -220,6 +236,8 @@ properties:
             observationUnits: none
             reference: none
             referenceSet: none
+        GrowthFacility:
+            study: none
         Location:
             seedLots: none
             observationUnits: none
@@ -269,8 +287,12 @@ properties:
             plates: none
             samples: none
         Variant:
-            calls: sub-path
+            calls: sub-query
         VariantSet:
-            calls: sub-path
-            callSets: sub-path
-            variants: sub-path
+            calls: sub-query
+            callSets: sub-query
+            variants: sub-query
+controlledVocabulary:
+    generate: true
+    summaryFormat: Get the ${property} of ${type}
+    descriptionFormat: List all available ${type} ${property}

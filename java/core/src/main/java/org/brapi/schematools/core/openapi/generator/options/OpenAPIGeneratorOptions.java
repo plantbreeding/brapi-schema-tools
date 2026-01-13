@@ -6,9 +6,10 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.LinkType;
+import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
@@ -47,6 +50,8 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
+    @Setter(AccessLevel.PRIVATE)
+    private ControlledVocabularyOptions controlledVocabulary;
 
     @Getter(AccessLevel.PUBLIC)
     private String supplementalSpecification;
@@ -71,9 +76,12 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pathItemNameFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
+
     /**
      * Load the default options
      * @return The default options
@@ -87,20 +95,20 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
-     * Load the options from an options file in YAML or Json. The options file may have missing
+     * Load the options from an options file in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param optionsFile The path to the options file in YAML or Json.
-     * @return The options loaded from the YAML or Json file.
-     * @throws IOException if the options file can not be found or is incorrectly formatted.
+     * @param optionsFile The path to the options file in YAML or JSON.
+     * @return The options loaded from the YAML or JSON file.
+     * @throws IOException if the options file cannot be found or is incorrectly formatted.
      */
     public static OpenAPIGeneratorOptions load(Path optionsFile) throws IOException {
         return load().override(ConfigurationUtils.load(optionsFile, OpenAPIGeneratorOptions.class)) ;
     }
 
     /**
-     * Load the options from an options input stream in YAML or Json. The options file may have missing
+     * Load the options from an options input stream in YAML or JSON. The options file may have missing
      * (defined) values, in these cases the default values are loaded. See {@link #load()}
-     * @param inputStream The input stream in YAML or Json.
+     * @param inputStream The input stream in YAML or JSON.
      * @return The options loaded from input stream.
      * @throws IOException if the input stream is not valid or the content is incorrectly formatted.
      */
@@ -144,6 +152,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             properties.override(overrideOptions.getProperties()) ;
         }
 
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary.override(overrideOptions.getControlledVocabulary()) ;
+        }
+
         if (overrideOptions.separateByModule != null) {
             separateByModule = overrideOptions.separateByModule ;
         }
@@ -184,8 +196,22 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             pathItemNameFor.putAll(overrideOptions.pathItemNameFor) ;
         }
 
+        if (overrideOptions.pathItemNameForProperty != null) {
+            overrideOptions.pathItemNameForProperty.forEach((key, value) -> {
+                if (pathItemNameForProperty.containsKey(key)) {
+                    pathItemNameForProperty.get(key).putAll(value) ;
+                } else {
+                    pathItemNameForProperty.put(key, new HashMap<>(value)) ;
+                }
+            });
+        }
+
         if (overrideOptions.tagFor != null) {
             tagFor.putAll(overrideOptions.tagFor) ;
+        }
+
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary = overrideOptions.controlledVocabulary ;
         }
 
         return this ;
@@ -200,6 +226,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .assertNotNull(delete,  "Delete Endpoint Options are null")
             .assertNotNull(search,  "Search Endpoint Options are null")
             .assertNotNull(properties,  "Properties Options are null")
+            .assertNotNull(controlledVocabulary,  "Controlled Vocabulary Options are null")
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
             .merge(singleGet)
@@ -209,6 +236,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
             .merge(delete)
             .merge(search)
             .merge(properties)
+            .merge(controlledVocabulary)
             .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
             .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
@@ -387,6 +415,16 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Gets the name for the List Response for a specific Primary Model
+     * @param typeWithProperty the Primary Model and the Property
+     * @return the List Response name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getListResponseNameFor(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+        return String.format(listResponseNameFormat, String.format("%s%s", typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.getProperty().getName()))) ;
+    }
+
+    /**
      * Gets the name for the Search Request schema for a specific Primary Model
      * @param name the name of the Primary Model
      * @return the Search Request schema name for a specific Primary Model
@@ -444,6 +482,81 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Gets the path item name for a specific BrAPI Property
+     * @param typeName the name of the primary model
+     * @param propertyName the name of the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public final String getPathItemNameForProperty(@NonNull String typeName, @NonNull String propertyName) {
+        Map<String, String> map = pathItemNameForProperty.get(typeName) ;
+
+        String defaultPathItemNameForProperty = String.format("%s/%s", getPathItemNameFor(typeName), toPlural(propertyName)) ;
+
+        if (map != null) {
+            return map.getOrDefault(propertyName, defaultPathItemNameForProperty) ;
+        }
+
+        return defaultPathItemNameForProperty ;
+    }
+
+    /**
+     * Gets the path item name for a specific BrAPI Property
+     * @param type the primary model
+     * @param property the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public final String getPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
+        return getPathItemNameForProperty(type.getName(), property.getName()) ;
+    }
+
+    /**
+     * Gets the path item name for a specific BrAPI Property
+     * @param typeWithProperty the primary model with the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+        return getPathItemNameForProperty(typeWithProperty.getType(), typeWithProperty.getProperty()) ;
+    }
+
+    /**
+     * Sets the path item name for a specific BrAPI Property
+     * @param typeName the name of the primary model
+     * @param propertyName the name of the property
+     * @param pathItemName the path item name
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public OpenAPIGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
+        Map<String, String> map = pathItemNameForProperty.get(typeName) ;
+
+        if (map != null) {
+            map.put(propertyName, pathItemName) ;
+            return this ;
+        } else {
+            map = new HashMap<>() ;
+            map.put(propertyName, pathItemName) ;
+            pathItemNameForProperty.put(typeName, map) ;
+
+            return this ;
+        }
+    }
+
+    /**
+     * Sets the path item name for a specific BrAPI Property
+     * @param type the primary model
+     * @param property the property
+     * @param pathItemName the path item name
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public OpenAPIGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
+        return setPathItemNameForProperty(type.getName(), property.getName(), pathItemName) ;
+    }
+
+    /**
      * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
      * Use {@link #setTagFor(String, String)} to override this value.
      * @param name the name of the Primary Model
@@ -482,10 +595,10 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * Determines if a specific property should be exposed as a separate Endpoint
      * @param type the Object type
      * @param property the Object type property
-     * @return {@code true} generator will create  a separate Endpoint for the property, {@code false} otherwise
+     * @return {@code true} generator will create a separate Endpoint for the property, {@code false} otherwise
      */
     public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return LinkType.SUB_PATH.equals(properties.getLinkTypeFor(type, property)) ;
+        return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
     /**
@@ -496,5 +609,17 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      */
     public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
         return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
+    }
+
+    /**
+     * Determines Controlled vocabulary endpoints should be generated. Any entity which as a
+     * property that is indicated in the metadata that it returns a controlled vocabulary
+     * will have an endpoint generated in the format /{entity-plural}/{property-name-plural}
+     * for example /attributes/categories
+     *
+     * @return {@code true} if controlled vocabulary endpoints should be generated
+     */
+    public boolean isGeneratingControlledVocabularyEndpoints() {
+        return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
     }
 }

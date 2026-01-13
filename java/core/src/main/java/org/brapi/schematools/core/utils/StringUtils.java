@@ -11,10 +11,16 @@ import org.brapi.schematools.core.response.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,14 +32,6 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    /**
-     * Create a capitalised version of a string value, where the first character is converted to upper case
-     * @param value the string value to be capitalised
-     * @return a capitalised version of a string value, where the first character is converted to upper case
-     */
-    public static String capitalise(String value) {
-        return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null ;
-    }
     private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
@@ -68,6 +66,15 @@ public class StringUtils {
         replace("(.*)person$").with("$1people"),
         replace("(.*)Person$").with("$1People")
     );
+
+    /**
+     * Create a capitalised version of a string value, where the first character is converted to upper case
+     * @param value the string value to be capitalised
+     * @return a capitalised version of a string value, where the first character is converted to upper case
+     */
+    public static String capitalise(String value) {
+        return value != null ? !value.isEmpty() ? value.substring(0, 1).toUpperCase() + value.substring(1) : "" : null ;
+    }
 
     /**
      * Converts the noun from its plural form to its singular form
@@ -204,6 +211,24 @@ public class StringUtils {
     }
 
     /**
+     * Reads a string from a Classpath
+     *
+     * @param classpath the classpath
+     * @return a string read from a classpath
+     */
+    public static Response<String> readStringFromClasspath(String classpath) {
+        try (InputStream in = Version.class.getClassLoader().getResourceAsStream(classpath)) {
+            if (in != null) {
+                return Response.success(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION, String.format("Could not find resource on classpath '%s'", classpath));
+            }
+        } catch (IOException exception) {
+            return Response.fail(Response.ErrorType.VALIDATION, exception.getMessage());
+        }
+    }
+
+    /**
      * Reads a string from a file path
      * @param path the path of the file
      * @return a string read from a file path
@@ -211,7 +236,7 @@ public class StringUtils {
     public static Response<String> readStringFromPath(Path path) {
         try {
             Stream<String> lines = Files.lines(path);
-            String data = lines.collect(Collectors.joining("\n"));
+            String data = lines.collect(Collectors.joining(System.lineSeparator()));
             lines.close();
 
             return Response.success(data);
@@ -303,6 +328,60 @@ public class StringUtils {
         printer.indentArraysWith(indenter);
 
         return mapper.writer(printer).writeValueAsString(value);
+    }
+
+    /**
+     * Places text in a string in the format {key} with a value.
+     * The
+     * @param format the format string that contains the keys to substitute.
+     * @param parameters A map of key value pairs
+     * @return the formatted string
+     */
+    public static String format(String format, Map<String, Object> parameters) {
+        if (format == null) {
+            return null ;
+        }
+
+        StringBuilder newFormat = new StringBuilder(format);
+        List<Object> valueList = new ArrayList<>();
+
+        Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(format);
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+
+            String paramName = "${" + key + "}";
+            int index = newFormat.indexOf(paramName);
+            if (index != -1) {
+                newFormat.replace(index, index + paramName.length(), "%s");
+                valueList.add(parameters.get(key));
+            }
+        }
+
+        return String.format(newFormat.toString(), valueList.toArray());
+    }
+
+    public static String escapeQuotes(String inputString) {
+        return inputString.replaceAll("\"", "\"").replaceAll("'", "''") ;
+    }
+
+    public static String escapeSingleSQLQuotes(String inputString) {
+        return inputString.replaceAll("'", "''") ;
+    }
+
+    public static String escapeSpecialCharacters(String inputString) {
+        StringBuilder escapedString = new StringBuilder();
+        for (char c : inputString.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                escapedString.append("\\");
+            }
+            escapedString.append(c);
+        }
+        return escapedString.toString();
+    }
+
+    public static String removeCarriageReturns(String inputString) {
+        return inputString.replaceAll("[\\n\\r]", " ") ;
     }
 
     static class Replacer {
