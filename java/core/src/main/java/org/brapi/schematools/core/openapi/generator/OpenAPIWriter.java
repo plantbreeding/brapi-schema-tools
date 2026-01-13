@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ObjectSchema;
@@ -190,13 +191,7 @@ public class OpenAPIWriter {
             String entityPathName  = findEntityPathName(key);
             String entityName = this.pathToEntityName.getOrDefault(entityPathName, StringUtils.toSingular(StringUtils.capitalise(entityPathName)));
 
-            String endpointGroup ;
-
-            if (value.getGet() != null && value.getGet().getTags() != null && !value.getGet().getTags().isEmpty()) {
-                endpointGroup = value.getGet().getTags().getFirst().replace(" ", "");
-            } else {
-                endpointGroup = StringUtils.toPlural(entityName);
-            }
+            String endpointGroup = null ;
 
             if (entityPathName != null) {
                 schemaModule.put(entityName, specification.getInfo().getTitle()) ;
@@ -206,29 +201,43 @@ public class OpenAPIWriter {
 
                 Set<String> referrencedResponses = new TreeSet<>() ;
 
-                if (value.getGet() != null && value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null ) {
-                    Matcher matcher = RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
+                if (value.getGet() != null) {
+                    endpointGroup = findEndpointGroup(value.getGet()) ;
 
-                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                        referrencedResponses.add(matcher.group(1));
+                    if (value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null ) {
+                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
+
+                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                            referrencedResponses.add(matcher.group(1));
+                        }
                     }
                 }
 
-                if (value.getPost() != null && value.getPost().getResponses().get("200") != null && value.getPost().getResponses().get("200").get$ref() != null ) {
-                    Matcher matcher = RESPONSE_PATTERN.matcher(value.getPost().getResponses().get("200").get$ref());
+                if (value.getPost() != null) {
+                    endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPost()) ;
 
-                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                        referrencedResponses.add(matcher.group(1));
+                    if (value.getPost().getResponses().get("200") != null && value.getPost().getResponses().get("200").get$ref() != null ) {
+                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getPost().getResponses().get("200").get$ref());
+
+                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                            referrencedResponses.add(matcher.group(1));
+                        }
                     }
                 }
 
-                if (value.getPut() != null && value.getPut().getResponses().get("200") != null && value.getPut().getResponses().get("200").get$ref() != null ) {
-                    Matcher matcher = RESPONSE_PATTERN.matcher(value.getPut().getResponses().get("200").get$ref());
+                if (value.getPut() != null) {
+                    endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPut()) ;
 
-                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                        referrencedResponses.add(matcher.group(1));
+                    if (value.getPut().getResponses().get("200") != null && value.getPut().getResponses().get("200").get$ref() != null ) {
+                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getPut().getResponses().get("200").get$ref());
+
+                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                            referrencedResponses.add(matcher.group(1));
+                        }
                     }
                 }
+
+                endpointGroup = endpointGroup != null ? endpointGroup : StringUtils.toPlural(entityName);
 
                 if (!referrencedResponses.isEmpty()) {
                     openAPI.setComponents(new Components());
@@ -268,6 +277,13 @@ public class OpenAPIWriter {
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Entity name '%s' not found!", key));
             }
+        }
+
+        private String findEndpointGroup(Operation operation) {
+            if (operation.getTags() != null && !operation.getTags().isEmpty()) {
+                return operation.getTags().getFirst().replace(" ", "");
+            }
+            return null;
         }
 
         private List<String> findReferrencedSchemas(Schema schema) {

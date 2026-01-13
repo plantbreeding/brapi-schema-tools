@@ -27,7 +27,7 @@ import java.util.Map;
  * The Examples Sub-command. Generates JSON examples from tabular data.
  */
 @CommandLine.Command(
-    name = "compare", mixinStandardHelpOptions = true,
+    name = "examples", mixinStandardHelpOptions = true,
     description = "Generates JSON examples from tabular data"
 )
 public class ExamplesSubCommand implements Runnable {

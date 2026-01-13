@@ -43,6 +43,7 @@ pathItemNameForProperty:
             /studytypes
 tagFor:
     BreedingMethod: Germplasm
+    MarkerPosition: Genome Maps
     PlannedCross: Crosses
 singleGet:
     generate: true

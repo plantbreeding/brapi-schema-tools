@@ -724,7 +724,7 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
             operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
 
-            operation.addTagsItem(options.getTagFor(type));
+            operation.addTagsItem(options.getTagFor(parentType));
 
             return createSingleApiResponses(type)
                 .onSuccessDoWithResult(operation::responses)
@@ -737,7 +737,7 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getListGet().getSummaryOrDefault(type.getName(), options.getListGet().getSummaryFor(type)));
             operation.setDescription(metadata.getListGet().getDescriptionOrDefault(type.getName(), options.getListGet().getDescriptionFor(type)));
 
-            operation.addTagsItem(options.getTagFor(type));
+            operation.addTagsItem(options.getTagFor(parentType));
 
             return createListGetParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)

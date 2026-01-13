@@ -117,7 +117,7 @@ public class TabularReportGenerator {
      */
     public String generateReportTable(List<AnalysisReport> reports) {
         DataFrame dataFrame = generateReport(reports);
-        return Printers.tabular.toString(dataFrame);
+        return Printers.tabular.print(dataFrame);
     }
 
     private DataFrame generateReport(Map.Entry<String, List<AnalysisReport>> entry) {
