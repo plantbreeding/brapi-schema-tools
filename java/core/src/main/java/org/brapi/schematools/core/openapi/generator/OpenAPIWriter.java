@@ -194,8 +194,6 @@ public class OpenAPIWriter {
             String endpointGroup = null ;
 
             if (entityPathName != null) {
-                schemaModule.put(entityName, specification.getInfo().getTitle()) ;
-
                 OpenAPI openAPI = createOpenAPI(specification) ;
                 openAPI.path(key, value);
 
@@ -237,8 +235,6 @@ public class OpenAPIWriter {
                     }
                 }
 
-                endpointGroup = endpointGroup != null ? endpointGroup : StringUtils.toPlural(entityName);
-
                 if (!referrencedResponses.isEmpty()) {
                     openAPI.setComponents(new Components());
                 }
@@ -259,10 +255,14 @@ public class OpenAPIWriter {
                     referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "SearchRequest"))) ;
                 }
 
+                final String group = endpointGroup != null ? endpointGroup : StringUtils.toPlural(entityName);
+
+                schemaModule.put(group, specification.getInfo().getTitle()) ;
+
                 referrencedSchemas.forEach(referrencedSchema -> {
                     Set<String> fromEntity = this.referrencedSchemas.getOrDefault(referrencedSchema, new TreeSet<>());
 
-                    fromEntity.add(entityName) ;
+                    fromEntity.add(group) ;
                     this.referrencedSchemas.put(referrencedSchema, fromEntity) ;
                 });
 
@@ -452,10 +452,10 @@ public class OpenAPIWriter {
                 .map(entry -> {
                     String key = entry.getKey();
                     Path modulePath = entry.getValue().stream().findFirst().map(schemaModule::get).map(module -> createDirectoryPath(outputPath, module)).orElse(outputPath) ;
-                    Path entityPath = entry.getValue().stream().findFirst().map(StringUtils::toPlural).map(entityPlural -> createDirectoryPath(modulePath, entityPlural)).orElse(outputPath) ;
+                    Path groupPath = entry.getValue().stream().findFirst().map(path -> createDirectoryPath(modulePath, path)).orElse(outputPath) ;
                     OpenAPI openAPI = createOpenAPI(specification);
                     openAPI.setComponents(new Components().addSchemas(key, remainingSchemas.remove(key)));
-                    return prettyPrint(openAPI, objectWriter, createDirectoryPath(entityPath, "Schemas").resolve(String.format(filePattern, key)));
+                    return prettyPrint(openAPI, objectWriter, createDirectoryPath(groupPath, "Schemas").resolve(String.format(filePattern, key)));
                 }).collect(Response.mergeLists());
         }
 

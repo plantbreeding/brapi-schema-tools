@@ -559,17 +559,19 @@ public class BrAPISchemaReader {
         private Response<BrAPIMetadata> parseMetadata(Path path, JsonNode metadata) {
             BrAPIMetadata.BrAPIMetadataBuilder builder = BrAPIMetadata.builder();
 
-            return findBoolean(path, metadata, "primaryModel", false, false).
-                onSuccessDoWithResult(builder::primaryModel).
-                merge(findBoolean(path, metadata, "request", false, false)).
-                onSuccessDoWithResult(builder::request).
-                merge(findBoolean(path, metadata, "parameters", false, false)).
-                onSuccessDoWithResult(builder::parameters).
-                merge(findBoolean(path, metadata, "interface", false, false)).
-                onSuccessDoWithResult(builder::interfaceClass).
-                merge(findStringList(path, metadata, "controlledVocabularyProperties", false)).
-                onSuccessDoWithResult(builder::controlledVocabularyProperties).
-                map(() -> success(builder.build()));
+            return findBoolean(path, metadata, "primaryModel", false, false)
+                .onSuccessDoWithResult(builder::primaryModel)
+                .merge(findBoolean(path, metadata, "request", false, false))
+                .onSuccessDoWithResult(builder::request)
+                .merge(findBoolean(path, metadata, "parameters", false, false))
+                .onSuccessDoWithResult(builder::parameters)
+                .merge(findBoolean(path, metadata, "interface", false, false))
+                .onSuccessDoWithResult(builder::interfaceClass)
+                .merge(findStringList(path, metadata, "controlledVocabularyProperties", false))
+                .onSuccessDoWithResult(builder::controlledVocabularyProperties)
+                .merge(findStringList(path, metadata, "subQueryProperties", false))
+                .onSuccessDoWithResult(builder::subQueryProperties)
+                .map(() -> success(builder.build()));
         }
 
         private Response<BrAPIType> createAllOfType(Path path, JsonNode jsonNode, String name, String module) {

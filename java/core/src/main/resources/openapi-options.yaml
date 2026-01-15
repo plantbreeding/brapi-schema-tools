@@ -69,6 +69,10 @@ listGet:
     pagedDefault: true
     paged:
         BreedingMethod: false
+    pagedTokenDefault: false
+    pagedToken:
+        Call: true
+        Variant: true
     inputFor:
         BreedingMethod: false
     propertiesFromRequest: true
@@ -226,7 +230,9 @@ properties:
             image: none
             observation: none
             observationUnit: none
-            germplasmOrigin: none
+            germplasmOr  in: none
+        GenomeMap:
+            linkageGroups: sub-query
         Germplasm:
             sample: none
             attributeValues: none

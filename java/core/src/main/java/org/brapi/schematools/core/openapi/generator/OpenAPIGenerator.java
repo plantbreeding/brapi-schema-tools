@@ -265,7 +265,6 @@ public class OpenAPIGenerator {
             }
 
             openAPI.setInfo(info);
-            openAPI.setOpenapi(info.getVersion());
 
             // TODO merge in openAPIMetadata
 
@@ -566,6 +565,17 @@ public class OpenAPIGenerator {
                 .map(() -> success(operation));
         }
 
+        private Response<Parameter> createIdGetParameterFor(BrAPIObjectType type) {
+            return options.getProperties().getIdPropertyFor(type)
+                .mapResultToResponse(property -> createSchemaForType(property.getType()).mapResult(
+                schema -> new Parameter().
+                    name(options.getSingularForProperty(property.getName())).
+                    in("path").
+                    description(property.getDescription()).
+                    required(property.isRequired()).
+                    schema(upwrapSchema(schema))));
+        }
+
         private Response<List<Parameter>> createListGetParametersFor(BrAPIObjectType type) {
 
             List<Parameter> parameters = new ArrayList<>();
@@ -576,11 +586,17 @@ public class OpenAPIGenerator {
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
             }
 
+            if (options.getListGet().hasPageTokenFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
+            }
+
             if (options.getListGet().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
-                parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
             }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
 
             if (options.getListGet().hasInputFor(type)) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
@@ -598,6 +614,39 @@ public class OpenAPIGenerator {
                         .map(() -> success(parameters));
                 } else {
                     return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));
+                }
+            }
+
+            return success(parameters);
+        }
+
+        private Response<List<Parameter>> createSubPathListGetParametersFor(BrAPIObjectType type) {
+
+            List<Parameter> parameters = new ArrayList<>();
+
+            if (options.getListGet().isPagedFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/page"));
+                parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+            }
+
+            if (options.getListGet().hasPageTokenFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
+            }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            if (options.getListGet().hasInputFor(type)) {
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+
+                if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                    List<String> subQueryProperties = requestClass.getMetadata() != null && requestClass.getMetadata().getSubQueryProperties() != null ? requestClass.getMetadata().getSubQueryProperties() : new ArrayList<>() ;
+
+                    return brAPIObjectType.getProperties().stream()
+                        .filter(property -> subQueryProperties.contains(property.getName()))
+                        .map(this::createListGetParameter)
+                        .collect(Response.toList())
+                        .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                        .map(() -> success(parameters));
                 }
             }
 
@@ -726,7 +775,9 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(parentType));
 
-            return createSingleApiResponses(type)
+            return createIdGetParameterFor(parentType)
+                .onSuccessDoWithResult(operation::addParametersItem)
+                .map(() -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -739,8 +790,10 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(parentType));
 
-            return createListGetParametersFor(type)
-                .onSuccessDoWithResult(operation::parameters)
+            return createIdGetParameterFor(parentType)
+                .onSuccessDoWithResult(operation::addParametersItem)
+                .map(() -> createSubPathListGetParametersFor(type))
+                .onSuccessDoWithResult(result -> result.forEach(operation::addParametersItem))
                 .map(() -> createListApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));

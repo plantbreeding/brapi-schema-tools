@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,5 +18,6 @@ public class BrAPIMetadata {
     boolean parameters ;
     @JsonProperty("interface")
     boolean interfaceClass ;
-    List<String> controlledVocabularyProperties;
+    List<String> controlledVocabularyProperties ;
+    List<String> subQueryProperties ;
 }

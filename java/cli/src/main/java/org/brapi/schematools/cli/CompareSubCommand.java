@@ -8,6 +8,7 @@ import picocli.CommandLine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -23,13 +24,13 @@ public class CompareSubCommand extends AbstractSubCommand {
     private static final InputFormat DEFAULT_INPUT_FORMAT = InputFormat.OPEN_API;
     private static final ComparisonOutputFormat DEFAULT_OUTPUT_FORMAT = ComparisonOutputFormat.MARKDOWN;
 
-    @CommandLine.Parameters(index = "0", description = "The file containing the first BrAPI Specification/Schema")
+    @CommandLine.Parameters(index = "0", description = "The file or directory containing the first BrAPI Specification/Schema")
     private Path firstPath;
 
-    @CommandLine.Parameters(index = "1", description = "The file containing the second BrAPI Specification/Schema")
+    @CommandLine.Parameters(index = "1", description = "The file or directory containing the second BrAPI Specification/Schema")
     private Path secondPath;
 
-    @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "GRAPHQL", fallbackValue = "GRAPHQL", description = "The format of the Input. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_INPUT_FORMAT}")
+    @CommandLine.Option(names = {"-l", "--language"}, defaultValue = "OPEN_API", fallbackValue = "OPEN_API", description = "The format of the Input. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_INPUT_FORMAT}")
     private InputFormat inputFormat = DEFAULT_INPUT_FORMAT;
 
     @CommandLine.Option(names = {"-w", "--output"}, defaultValue = "MARKDOWN", fallbackValue = "MARKDOWN", description = "The format of the Output. Possible options are: ${COMPLETION-CANDIDATES}. Default is ${DEFAULT_OUTPUT_FORMAT}")
@@ -58,17 +59,64 @@ public class CompareSubCommand extends AbstractSubCommand {
                         OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
                     OpenAPIComparator openAPIComparator = new OpenAPIComparator(options);
 
-                    Response<Path> response = openAPIComparator.compare(firstPath, secondPath, outputPath, outputFormat);
-
-                    response.onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
+                    if (Files.isDirectory(firstPath) && Files.isDirectory(secondPath)) {
+                        if (Files.isRegularFile(outputPath)) {
+                            handleError(String.format("Output path %s must not be a regular file", outputPath)) ;
+                        } else {
+                            Files.createDirectories(outputPath);
+                            compare(openAPIComparator, firstPath, secondPath, outputPath) ;
+                        }
+                    } else if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
+                        if (Files.isDirectory(outputPath)) {
+                            handleError(String.format("Output path %s must not be a directory", outputPath)) ;
+                        } else {
+                            openAPIComparator.compare(firstPath, secondPath, outputPath, outputFormat)
+                                .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
+                        }
+                    } else {
+                        handleError(String.format("First path %s and second path %s not must either both be directories or both regular files", firstPath, secondPath)) ;
+                    }
                 }
-                case GRAPHQL, OWL -> handleError(String.format("Input format %s not supported", inputFormat) );
+                case GRAPHQL, OWL -> handleError(String.format("Input format %s not supported", inputFormat));
             }
+
+        out.close();
+    }
+
+    private void compare(OpenAPIComparator openAPIComparator, Path firstPath, Path secondPath, Path outputPath) {
+        try {
+            Files.list(firstPath).forEach(child -> {
+                Path sibling = secondPath.resolve(child.getFileName());
+
+                if (Files.isDirectory(child)) {
+                    compare(openAPIComparator, child, sibling, outputPath) ;
+                } else if (Files.isRegularFile(child)) {
+                    if (child.getFileName().toString().endsWith(".yaml") || child.getFileName().toString().endsWith(".json")) {
+                        if (Files.isRegularFile(sibling)) {
+                            outputMessage(String.format("Comparing %s with %s", child, sibling));
+                            openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + ".md"), outputFormat)
+                                .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
+                        } else {
+                            printError(String.format("No matching file for %s found at %s", child, sibling)) ;
+                        }
+                    } else {
+                        outputMessage(String.format("Skipping path %s", child)) ;
+                    }
+                }
+            });
+        } catch (IOException e) {
+            printException(e);
+        }
     }
 
     private void outputResponse(Path path) {
-        out.print(String.format("Comparison generated in '%s'", path.toAbsolutePath()));
-        out.close();
+        out.println(String.format("Comparison generated in '%s'", path.toAbsolutePath()));
+        out.flush();
+    }
+
+    private void outputMessage(String message) {
+        out.println(message);
+        out.flush();
     }
 
     private void printComparisonErrors(Response<Path> response) {
