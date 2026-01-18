@@ -226,25 +226,34 @@ properties:
             crosses: none
             plannedCrosses: none
             pedigreeNodes: none
+        DataMatrix:
+            alleleMatrix: none
+        DocumentationLink:
+            ontologyReference: none
         GeoJSON:
             image: none
             observation: none
             observationUnit: none
-            germplasmOr  in: none
+            germplasmOrigin: none
         GenomeMap:
             linkageGroups: sub-query
+        GenotypeMetadata:
+            call: none
         Germplasm:
             sample: none
             attributeValues: none
-            progenyPedigreeNodes: none
-            parentPedigreeNodes: none
-            siblingPedigreeNodes: none
             observations: none
             observationUnits: none
+            mcpd: sub-query
+            progenyPedigreeNodes: none
+            parentPedigreeNodes: none
             reference: none
             referenceSet: none
+            siblingPedigreeNodes: none
         GrowthFacility:
             study: none
+        Image:
+            imagecontent: sub-query
         Location:
             seedLots: none
             observationUnits: none
@@ -262,6 +271,8 @@ properties:
         ObservationVariable:
             studies: none
             observations: none
+        Pagination:
+            alleleMatrix: none
         Person:
             lists: none
             programs: none
@@ -277,9 +288,12 @@ properties:
         Plate:
             samples: none
         Reference:
+            bases: sub-query
             variant: none
         SeedLot:
+            fromSeedLotTransactions: sub-query
             observationUnits: none
+            toSeedLotTransactions: sub-query
         Study:
             callSets: none
             events: none
@@ -299,6 +313,8 @@ properties:
             calls: sub-query
             callSets: sub-query
             variants: sub-query
+        ValidValuesCategory:
+            validValues: none
 controlledVocabulary:
     generate: true
     summaryFormat: Get the ${property} of ${type}

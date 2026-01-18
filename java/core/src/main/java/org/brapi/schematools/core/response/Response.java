@@ -812,6 +812,29 @@ public class Response<T> {
      * from this response.
      *
      * @param function a function that takes the result of this response as an input
+     * @param supplier a supplier that provides a new result
+     * @return a new response from the function or supplier, or merge errors if there are any
+     * @param <U> the result type of the new response
+     */
+    public <U> Response<U> ifPresentMapResultOrResult(Function<T, U> function, Supplier<U> supplier) {
+        if (this.isPresent()) {
+            return new Response<>(function.apply(this.getResult()));
+        } else {
+            if (this.hasNoErrors()) {
+                return new Response<>(supplier.get());
+            } else {
+                return new Response<U>().mergeErrors(this);
+            }
+        }
+    }
+
+    /**
+     * If this response has no errors and the result is not null, returns a new response that takes the
+     * result of provided function that takes the result of this resource as an input,
+     * otherwise create a new response and merges in the errors
+     * from this response.
+     *
+     * @param function a function that takes the result of this response as an input
      * @param supplier a supplier that provides a new response
      * @return a new response from the function or supplier, or merge errors if there are any
      * @param <U> the result type of the new response

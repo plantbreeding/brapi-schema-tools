@@ -6,7 +6,9 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -43,7 +45,7 @@ public class OpenAPIWriter {
     private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(?:search/)?(\\w+)");
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("#/components/responses/(\\w+)");
     private static final Pattern SCHEMA_PATTERN = Pattern.compile("#/components/schemas/(\\w+)");
-    private static final Pattern ENTITY_IN_RESPONSE_PATTERN = Pattern.compile("#/components/responses/(\\w+)(?:List|Single)Response");
+    private static final Pattern ENTITY_IN_RESPONSE_PATTERN = Pattern.compile("(\\w+)(?:List|Single)Response");
 
     private final Path outputPath;
     private final String outputFormat;
@@ -66,7 +68,6 @@ public class OpenAPIWriter {
 
     private class Writer {
         private final List<OpenAPI> specifications ;
-        private final Map<String, String> pathToEntityName;
         private final Map<String, Schema> remainingSchemas;
         private final Map<String, Schema> usedSchemas;
         private final Map<String, ApiResponse> remainingResponses;
@@ -77,36 +78,14 @@ public class OpenAPIWriter {
 
         private Writer(List<OpenAPI> specifications) {
             this.specifications = specifications;
-
-            pathToEntityName = new HashMap<>();
-            remainingSchemas = new HashMap<>();
+            
+            remainingSchemas = new TreeMap<>();
             usedSchemas = new HashMap<>();
             remainingResponses = new HashMap<>();
             parameters = new HashMap<>();
             securitySchemes = new HashMap<>();
-            referrencedSchemas = new HashMap<>();
+            referrencedSchemas = new TreeMap<>();
             schemaModule = new HashMap<>();
-
-            specifications.stream().flatMap(specification -> specification.getPaths().entrySet().stream())
-                .forEach(entry -> {
-
-                    PathItem value = entry.getValue();
-
-                    Matcher matcher = ENTITY_PATH_PATTERN.matcher(entry.getKey());
-
-                    if (matcher.find()) {
-                        String pathName = matcher.group(1);
-
-                        if (value.getGet() != null && value.getGet().getResponses() != null &&
-                            value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null) {
-
-                            Matcher entityMatcher = ENTITY_IN_RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
-                            if (entityMatcher.find()) {
-                                pathToEntityName.put(pathName, entityMatcher.group(1));
-                            }
-                        }
-                    }
-                });
 
             this.specifications.forEach(specification -> remainingSchemas.putAll(specification.getComponents().getSchemas())) ;
             this.specifications.forEach(specification -> remainingResponses.putAll(specification.getComponents().getResponses())) ;
@@ -187,96 +166,138 @@ public class OpenAPIWriter {
             LinkedList<Path> paths = new LinkedList<>();
             String key = entry.getKey();
             PathItem value = entry.getValue();
-
-            String entityPathName  = findEntityPathName(key);
-            String entityName = this.pathToEntityName.getOrDefault(entityPathName, StringUtils.toSingular(StringUtils.capitalise(entityPathName)));
-
+            
             String endpointGroup = null ;
+            String entityName = null ;
+            
+            OpenAPI openAPI = createOpenAPI(specification) ;
+            openAPI.path(key, value);
 
-            if (entityPathName != null) {
-                OpenAPI openAPI = createOpenAPI(specification) ;
-                openAPI.path(key, value);
+            Set<String> referrencedSchemas = new TreeSet<>() ;
 
-                Set<String> referrencedResponses = new TreeSet<>() ;
-
-                if (value.getGet() != null) {
-                    endpointGroup = findEndpointGroup(value.getGet()) ;
-
-                    if (value.getGet().getResponses().get("200") != null && value.getGet().getResponses().get("200").get$ref() != null ) {
-                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getGet().getResponses().get("200").get$ref());
-
-                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                            referrencedResponses.add(matcher.group(1));
-                        }
-                    }
-                }
-
-                if (value.getPost() != null) {
-                    endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPost()) ;
-
-                    if (value.getPost().getResponses().get("200") != null && value.getPost().getResponses().get("200").get$ref() != null ) {
-                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getPost().getResponses().get("200").get$ref());
-
-                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                            referrencedResponses.add(matcher.group(1));
-                        }
-                    }
-                }
-
-                if (value.getPut() != null) {
-                    endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPut()) ;
-
-                    if (value.getPut().getResponses().get("200") != null && value.getPut().getResponses().get("200").get$ref() != null ) {
-                        Matcher matcher = RESPONSE_PATTERN.matcher(value.getPut().getResponses().get("200").get$ref());
-
-                        if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
-                            referrencedResponses.add(matcher.group(1));
-                        }
-                    }
-                }
-
-                if (!referrencedResponses.isEmpty()) {
-                    openAPI.setComponents(new Components());
-                }
-
-                referrencedResponses.forEach(ref -> openAPI.getComponents().addResponses(ref, remainingResponses.remove(ref)));
-
-                Set<String> referrencedSchemas = new TreeSet<>() ;
-
-                if (remainingSchemas.containsKey(entityName)) {
-                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName))) ;
-                }
-
-                if (remainingSchemas.containsKey(entityName + "NewRequest")) {
-                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "NewRequest"))) ;
-                }
-
-                if (remainingSchemas.containsKey(entityName + "SearchRequest")) {
-                    referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "SearchRequest"))) ;
-                }
-
-                final String group = endpointGroup != null ? endpointGroup : StringUtils.toPlural(entityName);
-
-                schemaModule.put(group, specification.getInfo().getTitle()) ;
-
-                referrencedSchemas.forEach(referrencedSchema -> {
-                    Set<String> fromEntity = this.referrencedSchemas.getOrDefault(referrencedSchema, new TreeSet<>());
-
-                    fromEntity.add(group) ;
-                    this.referrencedSchemas.put(referrencedSchema, fromEntity) ;
-                });
-
-                Path path = createDirectoryPath(parentPath, endpointGroup);
-
-                return prettyPrint(openAPI, objectWriter, path.resolve(String.format(filePattern, createFileName(key, value))))
-                    .onSuccessDoWithResult(paths::addAll)
-                    .map(() -> addEntitySchemas(specification, objectWriter, path, entityName)).onSuccessDoWithResult(paths::addAll)
-                    .map(() -> addEntitySchemas(specification, objectWriter, path, entityName + "NewRequest")).onSuccessDoWithResult(paths::addAll)
-                    .map(() -> addEntitySchemas(specification, objectWriter, path, entityName + "SearchRequest")).onSuccessDoWithResult(paths::addAll)
-                    .map(() -> success(paths));
-            } else {
-                return fail(Response.ErrorType.VALIDATION, String.format("Entity name '%s' not found!", key));
+            if (value.getGet() != null) {
+                endpointGroup = findEndpointGroup(value.getGet()) ;
+                entityName = findEntityName(value.getGet()) ;
+                
+                referrencedSchemas.addAll(addReferrencedSchemas(value.getGet())) ;
             }
+
+            if (value.getPost() != null) {
+                endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPost()) ;
+                entityName = entityName != null ? entityName : findEntityName(value.getPost()) ;
+                
+                referrencedSchemas.addAll(addReferrencedSchemas(value.getPost())) ;
+            }
+
+            if (value.getPut() != null) {
+                endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getPut()) ;
+                entityName = entityName != null ? entityName : findEntityName(value.getPut()) ;
+                
+                referrencedSchemas.addAll(addReferrencedSchemas(value.getPut())) ;
+            }
+
+            if (value.getDelete() != null) {
+                endpointGroup = endpointGroup != null ? endpointGroup : findEndpointGroup(value.getDelete()) ;
+                entityName = entityName != null ? entityName : findEntityName(value.getDelete()) ;
+
+                referrencedSchemas.addAll(addReferrencedSchemas(value.getDelete())) ;
+            }
+
+            if (!referrencedSchemas.isEmpty()) {
+                openAPI.setComponents(new Components());
+            }
+
+            referrencedSchemas.forEach(ref -> openAPI.getComponents().addResponses(ref, remainingResponses.remove(ref)));
+
+            if (entityName == null ) {
+                return fail(Response.ErrorType.VALIDATION, String.format("Entity name not found for path '%s' !", key));
+            }
+
+            if (remainingSchemas.containsKey(entityName)) {
+                referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName))) ;
+            }
+
+            if (remainingSchemas.containsKey(entityName + "NewRequest")) {
+                referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "NewRequest"))) ;
+            }
+
+            if (remainingSchemas.containsKey(entityName + "SearchRequest")) {
+                referrencedSchemas.addAll(findReferrencedSchemas(remainingSchemas.get(entityName + "SearchRequest"))) ;
+            }
+            
+            final String group = endpointGroup != null ? endpointGroup : StringUtils.toPlural(entityName);
+            final String name = entityName;
+            
+            schemaModule.put(group, specification.getInfo().getTitle()) ;
+
+            referrencedSchemas.forEach(referrencedSchema -> addReferrencedSchema(group, referrencedSchema));
+
+            Path path = createDirectoryPath(parentPath, endpointGroup);
+
+            return prettyPrint(openAPI, objectWriter, path.resolve(String.format(filePattern, createFileName(key, value))))
+                .onSuccessDoWithResult(paths::addAll)
+                .map(() -> addEntitySchemas(specification, objectWriter, path, name)).onSuccessDoWithResult(paths::addAll)
+                .map(() -> addEntitySchemas(specification, objectWriter, path, name + "NewRequest")).onSuccessDoWithResult(paths::addAll)
+                .map(() -> addEntitySchemas(specification, objectWriter, path, name + "SearchRequest")).onSuccessDoWithResult(paths::addAll)
+                .map(() -> success(paths));
+        }
+        
+        private void addReferrencedSchema(String group, String referrencedSchema) {
+            Set<String> fromEntity = this.referrencedSchemas.getOrDefault(referrencedSchema, new TreeSet<>());
+
+            fromEntity.add(group) ;
+            this.referrencedSchemas.put(referrencedSchema, fromEntity) ;
+        }
+
+        private Set<String> addReferrencedSchemas(Operation operation) {
+            Set<String> referrencedSchemas = new TreeSet<>() ;
+
+            if (operation.getResponses().get("200") != null) {
+                ApiResponse successfulResponse = operation.getResponses().get("200");
+                if (successfulResponse.get$ref() != null ) {
+                    Matcher matcher = RESPONSE_PATTERN.matcher(successfulResponse.get$ref());
+
+                    if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                        referrencedSchemas.add(matcher.group(1));
+                    }
+                }
+
+                if (successfulResponse.getContent() != null && successfulResponse.getContent().get("application/json") != null) {
+                    Schema schema = successfulResponse.getContent().get("application/json").getSchema();
+
+                    if (schema != null) {
+                        if (schema.get$ref() != null) {
+                            Matcher matcher = SCHEMA_PATTERN.matcher(schema.get$ref());
+
+                            if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                                referrencedSchemas.add(matcher.group(1));
+                            }
+                        } else if (schema.getType().equals("object") || schema.getTypes().contains("object")) {
+                            if (schema.getProperties().get("result") instanceof Schema resultSchema) {
+                                if (resultSchema.get$ref() != null) {
+                                    Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
+
+                                    if (matcher.matches() && remainingSchemas.containsKey(matcher.group(1))) {
+                                        referrencedSchemas.add(matcher.group(1));
+                                    }
+                                } else if (resultSchema.getType().equals("object") || resultSchema.getTypes().contains("object")) {
+                                    if (resultSchema.getProperties().get("data") instanceof Schema dataSchema) {
+                                        if (dataSchema.get$ref() != null) {
+                                            Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
+
+                                            if (matcher.matches() && remainingSchemas.containsKey(matcher.group(1))) {
+                                                referrencedSchemas.add(matcher.group(1));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return referrencedSchemas;
         }
 
         private String findEndpointGroup(Operation operation) {
@@ -286,24 +307,100 @@ public class OpenAPIWriter {
             return null;
         }
 
+        private String findEntityName(Operation operation) {
+            String entityName = null;
+
+            if (operation.getResponses() != null && operation.getResponses().get("200") != null) {
+                ApiResponse successfulResponse = operation.getResponses().get("200");
+
+                if (successfulResponse.get$ref() != null) {
+                    Matcher matcher = RESPONSE_PATTERN.matcher(successfulResponse.get$ref());
+
+                    if (matcher.matches()) {
+                        entityName = findEntityNameInResponse(matcher.group(1));
+                    }
+                }
+
+                if (successfulResponse.getContent() != null && successfulResponse.getContent().get("application/json") != null) {
+                    Schema schema = successfulResponse.getContent().get("application/json").getSchema();
+
+                    if (schema != null) {
+                        if (schema.get$ref() != null) {
+                            Matcher matcher = SCHEMA_PATTERN.matcher(schema.get$ref());
+
+                            if (matcher.matches() && remainingResponses.containsKey(matcher.group(1))) {
+                                entityName = findEntityNameInResponse(matcher.group(1));
+                            }
+                        } else if (schema.getType().equals("object") || schema.getTypes().contains("object")) {
+                            if (schema.getProperties().get("result") instanceof Schema resultSchema) {
+                                if (resultSchema.get$ref() != null) {
+                                    Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
+
+                                    if (matcher.matches() && remainingSchemas.containsKey(matcher.group(1))) {
+                                        entityName = findEntityNameInResponse(matcher.group(1));
+                                    }
+                                } else if (resultSchema.getType().equals("object") || resultSchema.getTypes().contains("object")) {
+                                    if (resultSchema.getProperties().get("data") instanceof Schema dataSchema) {
+                                        if (dataSchema.get$ref() != null) {
+                                            Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
+
+                                            if (matcher.matches() && remainingSchemas.containsKey(matcher.group(1))) {
+                                                entityName = findEntityNameInResponse(matcher.group(1));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return entityName;
+        }
+
+        private String findEntityNameInResponse(String responseEntityName) {
+            Matcher matcher = ENTITY_IN_RESPONSE_PATTERN.matcher(responseEntityName);
+
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
+
+            return responseEntityName ;
+        }
+
         private List<String> findReferrencedSchemas(Schema schema) {
-            if (schema instanceof ObjectSchema objectSchema) {
-                List<String> referrencedSchemas = new ArrayList<>();
-                objectSchema.getProperties().values().stream().map(this::findReferrencedSchemas).forEach(referrencedSchemas::addAll);
+            List<String> referrencedSchemas = new ArrayList<>();
+            if (schema == null) {
                 return referrencedSchemas;
+            } else if (schema.getAllOf() != null) {
+                for (Object child : schema.getAllOf()) {
+                    if (child instanceof Schema<?> childSchema) {
+                        referrencedSchemas.addAll(findReferrencedSchemas(childSchema)) ;
+                    }
+                }
+            } else if (schema.getOneOf() != null) {
+                for (Object child : schema.getOneOf()) {
+                    if (child instanceof Schema<?> childSchema) {
+                        referrencedSchemas.addAll(findReferrencedSchemas(childSchema)) ;
+                    }
+                }
+            } else if (schema instanceof ObjectSchema objectSchema) {
+                objectSchema.getProperties().values().stream().map(this::findReferrencedSchemas).forEach(referrencedSchemas::addAll);
             } else if (schema instanceof ArraySchema arraySchema) {
-                return findReferrencedSchemas(arraySchema.getItems()) ;
-            } else if (schema != null && schema.get$ref() != null)  {
+                referrencedSchemas.addAll(findReferrencedSchemas(arraySchema.getItems())) ;
+            } else if (schema.get$ref() != null)  {
                 Matcher matcher = SCHEMA_PATTERN.matcher(schema.get$ref());
 
                 if (matcher.matches()) {
-                    return List.of(matcher.group(1));
+                    referrencedSchemas.add(matcher.group(1));
+                    referrencedSchemas.addAll(findReferrencedSchemas(this.remainingSchemas.get(matcher.group(1)))) ;
                 }
-            } if (schema != null && schema.getEnum() != null && !schema.getEnum().isEmpty() && schema.getName() != null && !schema.getName().isEmpty())  {
-                return List.of(schema.getName());
+            } if (schema.getEnum() != null && !schema.getEnum().isEmpty() && schema.getName() != null && !schema.getName().isEmpty())  {
+                referrencedSchemas.add(schema.getName());
             }
 
-            return Collections.emptyList();
+            return referrencedSchemas;
         }
 
         private Response<List<Path>> addEntitySchemas(OpenAPI specification, ObjectWriter objectWriter, Path path, String entityName) {
@@ -401,16 +498,6 @@ public class OpenAPIWriter {
             }
         }
 
-        private String findEntityPathName(String path) {
-            Matcher matcher = ENTITY_PATH_PATTERN.matcher(path);
-
-            if (matcher.find()) {
-                return matcher.group(1) ;
-            }
-
-            return null;
-        }
-
         private Response<List<Path>> addRemainingComponents(OpenAPI specification, ObjectWriter objectWriter) {
             Path componentPath = createDirectoryPath(outputPath, "Components");
             LinkedList<Path> allRemainingPaths = new LinkedList<>();
@@ -441,6 +528,7 @@ public class OpenAPIWriter {
             return remainingResponses.entrySet().stream()
                 .map(entry -> {
                     OpenAPI openAPI = createOpenAPI(specification);
+                    openAPI.setPaths(new Paths());
                     openAPI.setComponents(new Components().addResponses(entry.getKey(), entry.getValue()));
 
                     return prettyPrint(openAPI, objectWriter, responsesPath.resolve(String.format(filePattern, entry.getKey()))) ;

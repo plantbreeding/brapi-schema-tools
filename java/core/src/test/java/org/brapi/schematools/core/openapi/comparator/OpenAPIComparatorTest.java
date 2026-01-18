@@ -27,7 +27,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreHTML0() {
+    void openApiComparePetstoreHTML0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -53,7 +53,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreHTML1() {
+    void openApiComparePetstoreHTML1() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -80,7 +80,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreHTMLFromString() {
+    void openApiComparePetstoreHTMLFromString() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -107,7 +107,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreMarkdown0() {
+    void openApiComparePetstoreMarkdown0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -134,7 +134,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreMarkdown1() {
+    void openApiComparePetstoreMarkdown1() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -161,7 +161,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreMarkdownFromString() {
+    void openApiComparePetstoreMarkdownFromString() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -188,7 +188,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreAsciidoc0() {
+    void openApiComparePetstoreAsciidoc0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -215,7 +215,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreAsciidoc1() {
+    void openApiComparePetstoreAsciidoc1() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -242,7 +242,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreAsciidocFromString() {
+    void openApiComparePetstoreAsciidocFromString() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -269,7 +269,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreJSON0() {
+    void openApiComparePetstoreJSON0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -295,7 +295,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreJSON1() {
+    void openApiComparePetstoreJSON1() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -322,7 +322,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void comparePetstoreJSONFromString() {
+    void openApiComparePetstoreJSONFromString() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -350,7 +350,7 @@ class OpenAPIComparatorTest {
 
 
     @Test
-    void compareBrAPIHTML0() {
+    void openApiCompareBrAPIHTML0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {
@@ -376,7 +376,7 @@ class OpenAPIComparatorTest {
     }
 
     @Test
-    void compareBrAPIHTML1() {
+    void openApiCompareBrAPIHTML1() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 
         try {

@@ -20,4 +20,6 @@ public class BrAPIMetadata {
     boolean interfaceClass ;
     List<String> controlledVocabularyProperties ;
     List<String> subQueryProperties ;
+    List<String> updatableProperties ;
+    List<String> writableProperties ;
 }

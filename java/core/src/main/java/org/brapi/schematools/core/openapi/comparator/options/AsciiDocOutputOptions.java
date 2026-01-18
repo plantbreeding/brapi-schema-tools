@@ -14,13 +14,13 @@ import org.brapi.schematools.core.options.Options;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class AsciiDocRenderOptions implements Options {
+public class AsciiDocOutputOptions implements Options {
 
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
      */
-    public void override(AsciiDocRenderOptions overrideOptions) {
+    public void override(AsciiDocOutputOptions overrideOptions) {
 
     }
 }

@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The Compare Sub-command
@@ -19,6 +21,8 @@ import java.nio.file.Path;
     description = "Compares various types of BrAPI, including OpenAPI Specification or GraphQL Schema"
 )
 public class CompareSubCommand extends AbstractSubCommand {
+    private static final List<String> IGNORE_PATHS = List.of("BrAPI-Schema", "OpenAPI-Components", "Generated", "swaggerMetaData.yaml");
+
     private PrintWriter out ;
 
     private static final InputFormat DEFAULT_INPUT_FORMAT = InputFormat.OPEN_API;
@@ -48,6 +52,9 @@ public class CompareSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")
     private boolean prettyprint = true;
 
+    @CommandLine.Option(names = {"-k", "--comparisonAPI"}, description = "Comparison API to use. Options are 'OpenApiCompare' and 'JsonDiff' Default is OpenApiCompare.")
+    private String comparisonAPI = "OpenApiCompare";
+
     @Override
     public void execute() throws IOException {
             out = new PrintWriter(System.out) ;
@@ -57,11 +64,13 @@ public class CompareSubCommand extends AbstractSubCommand {
 
                     OpenAPIComparatorOptions options = optionsPath != null ?
                         OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
-                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options);
+                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options.setComparisonAPI(comparisonAPI));
 
                     if (Files.isDirectory(firstPath) && Files.isDirectory(secondPath)) {
-                        if (Files.isRegularFile(outputPath)) {
-                            handleError(String.format("Output path %s must not be a regular file", outputPath)) ;
+                        if (comparisonAPI.equals("OpenApiCompare")) {
+                            handleError("OpenApiCompare can only be used on a single file and not separate files.") ;
+                        } if (Files.isRegularFile(outputPath)) {
+                            handleError(String.format("Output path %s must not be a regular file, if inputs are directories", outputPath)) ;
                         } else {
                             Files.createDirectories(outputPath);
                             compare(openAPIComparator, firstPath, secondPath, outputPath) ;
@@ -86,15 +95,18 @@ public class CompareSubCommand extends AbstractSubCommand {
     private void compare(OpenAPIComparator openAPIComparator, Path firstPath, Path secondPath, Path outputPath) {
         try {
             Files.list(firstPath).forEach(child -> {
+
                 Path sibling = secondPath.resolve(child.getFileName());
 
                 if (Files.isDirectory(child)) {
-                    compare(openAPIComparator, child, sibling, outputPath) ;
+                    if (compareDirectory(child)) {
+                        compare(openAPIComparator, child, sibling, outputPath);
+                    }
                 } else if (Files.isRegularFile(child)) {
                     if (child.getFileName().toString().endsWith(".yaml") || child.getFileName().toString().endsWith(".json")) {
                         if (Files.isRegularFile(sibling)) {
                             outputMessage(String.format("Comparing %s with %s", child, sibling));
-                            openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + ".md"), outputFormat)
+                            openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + getFileExtension(outputFormat)), outputFormat)
                                 .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
                         } else {
                             printError(String.format("No matching file for %s found at %s", child, sibling)) ;
@@ -107,6 +119,19 @@ public class CompareSubCommand extends AbstractSubCommand {
         } catch (IOException e) {
             printException(e);
         }
+    }
+
+    private boolean compareDirectory(Path directory) {
+        return !IGNORE_PATHS.contains(directory.getFileName().toString());
+    }
+
+    private String getFileExtension(ComparisonOutputFormat outputFormat) {
+        return switch (outputFormat) {
+            case HTML -> ".html";
+            case MARKDOWN -> ".md";
+            case ASCIIDOC -> ".txt";
+            case JSON -> ".json";
+        } ;
     }
 
     private void outputResponse(Path path) {
