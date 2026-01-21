@@ -5,15 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIRelationshipType;
 import org.brapi.schematools.core.options.AbstractPropertiesOptions;
-import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.validiation.Validation;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Provides options for the generation of properties and their usage

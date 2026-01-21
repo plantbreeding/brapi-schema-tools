@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,12 +54,19 @@ public class CompareSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-k", "--comparisonAPI"}, description = "Comparison API to use. Options are 'OpenApiCompare' and 'JsonDiff' Default is OpenApiCompare.")
     private String comparisonAPI = "OpenApiCompare";
 
+    @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components, required for the OPEN_API input format")
+    private Path componentsDirectory;
+
     @Override
     public void execute() throws IOException {
             out = new PrintWriter(System.out) ;
 
             switch (inputFormat) {
                 case OPEN_API -> {
+
+                    if (componentsDirectory == null || !Files.isDirectory(componentsDirectory)) {
+                        handleError("The directory containing the OpenAPI Components must be provided for the OPEN_API input format.") ;
+                    }
 
                     OpenAPIComparatorOptions options = optionsPath != null ?
                         OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
@@ -109,6 +115,16 @@ public class CompareSubCommand extends AbstractSubCommand {
                             openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + getFileExtension(outputFormat)), outputFormat)
                                 .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
                         } else {
+                            if (Files.isRegularFile(sibling)) {
+                                outputMessage(String.format("Comparing %s with %s", child, sibling));
+                                openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + getFileExtension(outputFormat)), outputFormat)
+                                    .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
+                            } else {
+                                Path siblingAgain = componentsDirectory.resolve(child.getFileName());
+
+                                printError(String.format("No matching file for %s found at %s or %s", child, sibling, siblingAgain)) ;
+                            }
+
                             printError(String.format("No matching file for %s found at %s", child, sibling)) ;
                         }
                     } else {
