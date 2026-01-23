@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 /**
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of
- * classes and caches those in the list if they pass the provided {@link #cachePredicate}.
+ * classes and caches those in the list if they pass the provided cachePredicate.
  * Additional classes are added to the cached depending on the subclass of {@link BrAPIClass}
  * For {@link BrAPIObjectType} utility checks the properties and
  * tries to cache any that are the return type of these properties {@link BrAPIClass}es.

@@ -316,7 +316,7 @@ public class AnalyseSubCommand extends AbstractSubCommand {
 
     private void outputSummaryToOut(TabularReportGenerator tabularReportGenerator) {
         if (summariseAcrossReports) {
-            log.info(Printers.tabular.toString(tabularReportGenerator.getSummary()));
+            log.info(Printers.tabular.print(tabularReportGenerator.getSummary()));
         }
     }
 
