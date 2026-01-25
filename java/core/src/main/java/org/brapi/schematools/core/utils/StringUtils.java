@@ -172,6 +172,23 @@ public class StringUtils {
     }
 
     /**
+     * Inserts an underscore before each upper case letter (except the first) and makes the whole string lower case
+     *
+     * @param value the string to be converted
+     * @return the converted string
+     */
+    public static String toSnakeCase(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        String result = value.replaceAll("([A-Z])", "_$1");
+        if (result.startsWith("_")) {
+            result = result.substring(1);
+        }
+        return result.toLowerCase();
+    }
+
+    /**
      * Makes the whole string lower case
      *
      * @param value the string to be converted

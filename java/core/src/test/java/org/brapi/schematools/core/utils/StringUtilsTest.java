@@ -53,6 +53,21 @@ class StringUtilsTest {
     }
 
     @Test
+    void toSnakeCase() {
+        assertEquals("data_matrix", StringUtils.toSnakeCase("DataMatrix")) ;
+        assertEquals("person", StringUtils.toSnakeCase("Person")) ;
+        assertEquals("germplasm", StringUtils.toSnakeCase("Germplasm")) ;
+        assertEquals("study", StringUtils.toSnakeCase("Study")) ;
+        assertEquals("data_matrix", StringUtils.toSnakeCase("dataMatrix")) ;
+        assertEquals("person", StringUtils.toSnakeCase("person")) ;
+        assertEquals("germplasm", StringUtils.toSnakeCase("germplasm")) ;
+        assertEquals("study", StringUtils.toSnakeCase("study")) ;
+        assertEquals("trial", StringUtils.toSnakeCase("trial")) ;
+        assertEquals("breeding_method", StringUtils.toSnakeCase("BreedingMethod")) ;
+        assertEquals("inventory_lot_attribute_value", StringUtils.toSnakeCase("InventoryLotAttributeValue")) ;
+    }
+
+    @Test
     void makeValidName() {
         assertEquals("null", StringUtils.makeValidName(null)) ;
         assertEquals("blank", StringUtils.makeValidName("")) ;
