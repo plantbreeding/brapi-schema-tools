@@ -1,0 +1,71 @@
+## R6 Class: [[${className}]]
+#' The [[${className}]] class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
+#' the [[${entityName}]] entity
+#' @title [[${className}]] Class
+#' @docType class
+#' @description The [[${className}]] class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
+#' the [[${entityName}]] entity
+#'
+#' @examples
+#' [[${className}]]$new()
+#' @import R6
+#' @importFrom glue glue
+#' @export
+[[${className}]] <- R6Class(
+  "[[${className}]]",
+  public = list(
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    #' It is not recommended that this object is created separately from the BrAPIClient
+    #' @param client THe BrAPIClient to be used for server communication
+    #'
+    initialize = function(client) {
+          private$.client <- client
+    }[# th:if="${get}"],
+    #' @description
+    #' Gets a [[${entityName}]] object by DbId from the BrAPI server
+    #' @param id The DbIid of the [[${entityName}]] to be returned
+    #'
+    get = function(id) {
+        return (private$.client$get(paste0("[[${entityPath}]]", id)))
+    }[/][# th:if="${getAll}"],
+    #' @description
+    #' Gets a list [[${entityName}]] objects from the BrAPI server
+    #' @param page The page number of results to return, starting from 0
+    #' @param pageSize The maximum number of results to return per page
+    #'
+    getAll = function(page = 0, pageSize = 1000) {
+
+    }[/][# th:if="${search}"],
+    #' @description
+    #' Searches for [[${entityName}]] objects on the BrAPI server. The server
+    #' may return the paged results or a search result ID for later retrieval
+    #' @param page The page number of results to return, starting from 0
+    #' @param pageSize The maximum number of results to return per page
+    #'
+    search = function(page = 0, pageSize = 1000) {
+
+    }[/][# th:if="${create}"],
+    #' @description
+    #' Creates a [[${entityName}]] object on the BrAPI server.
+    #'
+    create = function(newValue) {
+
+    }[/][# th:if="${update}"],
+    #' @description
+    #' Creates a [[${entityName}]] object on the BrAPI server.
+    #'
+    update = function(newValue) {
+
+    }[/][# th:if="${delete}"],
+    #' @description
+    #' Creates a [[${entityName}]] object on the BrAPI server.
+    #'
+    delete = function(newValue) {
+
+    }[/]
+  ),
+  private = list(
+    .client = NULL
+  )
+)

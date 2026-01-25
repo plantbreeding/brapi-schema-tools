@@ -1,0 +1,26 @@
+#' The BrAPIClient class handles the configuration of the BrAPIClient connection and
+#' is a wrapper class around httr2 functionality
+#' @title BrAPIClient Class
+#' @docType class
+#' @description The BrAPIClient class handles the configuration of the BrAPI connection and
+#' is a wrapper class around httr2 functionality
+#'
+#' @examples
+#' BrAPIClient$new(token = "www.brapiserver.com")
+#' @import R6
+#' @export
+BrAPIClient <- R6Class(
+  "BrAPIClient",
+  inherit = BaseBrAPIClient,
+  public = list(
+  [# th:each="className,iterStat : ${classNames}"]
+      #' @description
+      #' Gets a new instance of the [[${className}]] [R6][R6::R6Class] class
+      #' which can be used to call the BrAPI server for [${entityNames[iterStat.index]}]] entities
+      #'
+      [[${functionNames[iterStat.index]}]] = function() {
+         return ([[${className}]]$new())
+      }[# th:if="!${iterStat.last}"],[/]
+  [/]
+  )
+)

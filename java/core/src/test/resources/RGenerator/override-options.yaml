@@ -1,0 +1,11 @@
+overwrite: true
+properties:
+    name:
+        link: false
+    pui:
+        nameFormat: "%sPUItest"
+    linkTypeFor:
+        CallSet:
+            calls: id
+        Trial:
+            contacts: id
