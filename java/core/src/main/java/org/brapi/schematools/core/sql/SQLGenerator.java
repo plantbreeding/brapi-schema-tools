@@ -45,7 +45,7 @@ public class SQLGenerator {
     }
 
     /**
-     * Creates a XSSFWorkbookGenerator using a default {@link BrAPISchemaReader} and
+     * Creates a SQLGenerator using a default {@link BrAPISchemaReader} and
      * the provided {@link SQLGeneratorOptions}.
      * @param options The options to be used in the generation.
      * @param outputPath the path of the output file or directory

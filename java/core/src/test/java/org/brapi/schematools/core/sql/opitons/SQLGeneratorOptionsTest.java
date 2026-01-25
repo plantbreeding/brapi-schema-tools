@@ -43,7 +43,7 @@ class SQLGeneratorOptionsTest {
 
         validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
 
-        checkLOverrideOptions(options);
+        checkOverrideOptions(options);
     }
 
     @Test
@@ -128,7 +128,7 @@ class SQLGeneratorOptionsTest {
         );
     }
 
-    private void checkLOverrideOptions(SQLGeneratorOptions options) {
+    private void checkOverrideOptions(SQLGeneratorOptions options) {
         checkOptions(options);
 
         assertTrue(options.isOverwritingExistingFiles());
