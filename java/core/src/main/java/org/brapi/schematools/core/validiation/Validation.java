@@ -3,13 +3,11 @@ package org.brapi.schematools.core.validiation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.brapi.schematools.core.response.Response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -13,11 +13,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -399,6 +397,18 @@ public class StringUtils {
 
     public static String removeCarriageReturns(String inputString) {
         return inputString.replaceAll("[\\n\\r]", " ") ;
+    }
+
+    public static String extractFirstLine(String description) {
+        if (description == null || description.isEmpty()) {
+            return description;
+        }
+        String cleaned = description.replace("\r", "").replace("\n", " ");
+        int endIdx = cleaned.indexOf('.');
+        if (endIdx != -1) {
+            return cleaned.substring(0, endIdx + 1).trim();
+        }
+        return cleaned.trim();
     }
 
     static class Replacer {

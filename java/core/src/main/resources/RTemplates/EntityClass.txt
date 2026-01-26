@@ -25,44 +25,83 @@
     #' @description
     #' Gets a [[${entityName}]] object by DbId from the BrAPI server
     #' @param id The DbIid of the [[${entityName}]] to be returned
+    #' @return returns a [[${entityName}]] object by ID.
     #'
     get = function(id) {
-        return (private$.client$get(paste0("[[${entityPath}]]", id)))
+      if (is.null(id)) {
+       stop("id argument must be provided")
+      }
+
+      private$.client$perform_get_request(paste("[[${entityPath}]]", id, sep = '/'))
     }[/][# th:if="${getAll}"],
     #' @description
     #' Gets a list [[${entityName}]] objects from the BrAPI server
-    #' @param page The page number of results to return, starting from 0
+    [# th:each="argument,iterStat : ${requestArguments}"]#' @param [[${argument}]] [[${argumentDescriptions[iterStat.index]}]]
+    [/]#' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
+    #' @return returns a paged and filtered list of [[${entityName}]] objects.
     #'
-    getAll = function(page = 0, pageSize = 1000) {
-
+    getAll = function(
+        [# th:each="argument,iterStat : ${requestArguments}"][[${argument}]] = NULL,
+        [/]page = 0,
+        pageSize = 1000) {
+      queryParams <- list()
+      [# th:each="argument,iterStat : ${requestArguments}"]
+      if (!is.null([[${argument}]])) {
+        queryParams$[[${queryParameters[iterStat.index]}]] <- [[${argument}]]
+      }
+      [/]private$.client$perform_get_request("[[${entityPath}]]", queryParams, page, pageSize)
     }[/][# th:if="${search}"],
     #' @description
     #' Searches for [[${entityName}]] objects on the BrAPI server. The server
     #' may return the paged results or a search result ID for later retrieval
+    #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
+    #' @return returns the search result or an ID to the results.
     #'
-    search = function(page = 0, pageSize = 1000) {
+    search = function(
+        [# th:each="argument,iterStat : ${requestArguments}"][[${argument}]] = NULL,
+        [/]page = 0,
+        pageSize = 1000) {
+      queryParams <- list()
+      [# th:each="argument,iterStat : ${requestArguments}"]
+      if (!is.null([[${argument}]])) {
+        queryParams$[[${argument}]] <- to_list([[${argument}]])
+      }
+      [/]private$.client$perform_post_request("[[${searchPath}]]", queryParams, page, pageSize)
+    },
+    #' Get the result of a search for [[${entityName}]] objects on the BrAPI server. If the server
+    #' returned search result ID for later retrieval, use this function to get the results.
+    #' @param searchResultId The search result ID returned from a previous search call
+    #' @param page The page number of results to return, starting from 0
+    #' @param pageSize The maximum number of results to return per page
+    #' @return returns the search result or by ID to the results.
+    #'
+    searchResult = function(searchResultId, page = 0, pageSize = 1000) {
+      if (is.null(searchResultId)) {
+       stop("searchResultId argument must be provided")
+      }
 
+      private$.client$perform_get_request(paste("[[${searchPath}]]", id, sep = '/'))
     }[/][# th:if="${create}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
     #'
     create = function(newValue) {
-
+        stop("Create not yet implemented")
     }[/][# th:if="${update}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
     #'
     update = function(newValue) {
-
+        stop("Update not yet implemented")
     }[/][# th:if="${delete}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
     #'
     delete = function(newValue) {
-
+        stop("Delete not yet implemented")
     }[/]
   ),
   private = list(

@@ -211,4 +211,22 @@ class StringUtilsTest {
         assertEquals("test3  test4", StringUtils.removeCarriageReturns("test3\n\rtest4"));
         assertEquals("test5 test6", StringUtils.removeCarriageReturns("test5\ntest6"));
     }
+
+    @Test
+    void testExtractFirstLine() {
+        // Basic case
+        assertEquals("This is the first line.", StringUtils.extractFirstLine("This is the first line. This is the second line."));
+        // No full stop
+        assertEquals("No full stop in this string", StringUtils.extractFirstLine("No full stop in this string"));
+        // Carriage returns and newlines
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\nSecond line here."));
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\rSecond line here."));
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\r\nSecond line here."));
+        // Leading/trailing whitespace
+        assertEquals("First line.", StringUtils.extractFirstLine("  First line.  Second line."));
+        // Empty string
+        assertEquals("", StringUtils.extractFirstLine(""));
+        // Null input
+        assertNull(StringUtils.extractFirstLine(null));
+    }
 }

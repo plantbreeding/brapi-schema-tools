@@ -1,9 +1,7 @@
 package org.brapi.schematools.core.options;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;

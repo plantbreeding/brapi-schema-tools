@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.r.metadata.RGeneratorMetadata;
 import org.brapi.schematools.core.r.options.RGeneratorOptions;
@@ -124,18 +125,24 @@ public class RGenerator {
                 Context context = new Context();
                 context.setVariable("className", options.getPluralFor(brAPIClass));
                 context.setVariable("entityPath", options.getPathItemNameFor(brAPIClass));
+                context.setVariable("searchPath", options.getSearchPathItemNameFor(brAPIClass));
                 context.setVariable("entityName", brAPIObjectType.getName());
                 context.setVariable("get-description", options.getSingleGet().getDescriptionFor(brAPIClass.getName()));
-                context.setVariable("fields", brAPIObjectType.getProperties().stream()
-                    .map(f -> f.getName() + " : " + f.getType())
-                    .toList());
-
                 context.setVariable("get", options.getSingleGet().isGeneratingFor(brAPIObjectType));
                 context.setVariable("getAll", options.getListGet().isGeneratingFor(brAPIObjectType));
                 context.setVariable("search", options.getSearch().isGeneratingFor(brAPIObjectType));
                 context.setVariable("create", options.getPost().isGeneratingFor(brAPIObjectType));
                 context.setVariable("update", options.getPut().isGeneratingFor(brAPIObjectType));
                 context.setVariable("delete", options.getDelete().isGeneratingFor(brAPIObjectType));
+
+                BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", brAPIObjectType.getName()));
+
+                if (requestSchema instanceof BrAPIObjectType requestObjectType) {
+                    context.setVariable("requestArguments", requestObjectType.getProperties().stream().map(BrAPIObjectProperty::getName).toList()) ;
+                    context.setVariable("queryParameters", requestObjectType.getProperties().stream()
+                        .map(BrAPIObjectProperty::getName).map(options::getSingularForProperty).toList()) ;
+                    context.setVariable("argumentDescriptions", requestObjectType.getProperties().stream().map(this::getDescription).toList()) ;
+                }
 
                 String text = templateEngine.process("EntityClass.txt", context) ;
 
@@ -144,6 +151,10 @@ public class RGenerator {
             } else {
                 return fail(Response.ErrorType.VALIDATION, brAPIClass.getName() + " is not a object class") ;
             }
+        }
+
+        private String getDescription(BrAPIObjectProperty brAPIObjectProperty) {
+            return StringUtils.extractFirstLine(brAPIObjectProperty.getDescription());
         }
 
         private Path createPathForEntityClass(BrAPIObjectType brAPIObjectType) {

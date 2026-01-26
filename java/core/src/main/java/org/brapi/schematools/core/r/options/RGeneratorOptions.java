@@ -269,6 +269,24 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
     }
 
     /**
+     * Gets the search path item name for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the path item name for a specific Primary Model
+     */
+    public String getSearchPathItemNameFor(String name) {
+        return String.format("/search%s", getPathItemNameFor(name));
+    }
+
+    /**
+     * Gets the search path item name for a specific Primary Model
+     * @param type the Primary Model
+     * @return the path item name for a specific Primary Model
+     */
+    public String getSearchPathItemNameFor(BrAPIType type) {
+        return String.format("/search%s", getPathItemNameFor(type));
+    }
+
+    /**
      * Gets the path item name for a specific BrAPI Property
      * @param typeName the name of the primary model
      * @param propertyName the name of the property
