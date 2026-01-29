@@ -5,4 +5,4 @@ generateRequestClasses: false
 generateProperties: true
 descriptionFormat: TODO Description for %s
 addGeneratorComments: true
-generateDuplicateProperties: false
+generateDuplicateProperties: true
