@@ -5,9 +5,8 @@
 #' @docType class
 #' @description The [[${className}]] class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
 #' the [[${entityName}]] entity
-#'
-#' @examples
-#' [[${className}]]$new()
+#' @family generated
+#' @keywords generated
 #' @import R6
 #' @importFrom glue glue
 #' @export
@@ -36,6 +35,8 @@
     }[/][# th:if="${getAll}"],
     #' @description
     #' Gets a list [[${entityName}]] objects from the BrAPI server
+    #' Note the filtering arguments are all optional and can be combined to filter the results
+    #' The value of the filters an be a single value or a vector of values
     [# th:each="argument,iterStat : ${requestArguments}"]#' @param [[${argument}]] [[${argumentDescriptions[iterStat.index]}]]
     [/]#' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -55,7 +56,8 @@
     #' @description
     #' Searches for [[${entityName}]] objects on the BrAPI server. The server
     #' may return the paged results or a search result ID for later retrieval
-    #' using the searchResult function
+    [# th:each="argument,iterStat : ${requestArguments}"]#' @param [[${argument}]] [[${argumentDescriptions[iterStat.index]}]]
+    [/]#' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns the search result or an ID to the results.
@@ -87,20 +89,23 @@
     }[/][# th:if="${create}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
+    #' @param newValue The new [[${entityName}]] object to be created
     #'
     create = function(newValue) {
         stop("Create not yet implemented")
     }[/][# th:if="${update}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
+    #' @param value The updated [[${entityName}]] object to be sent to the server
     #'
-    update = function(newValue) {
+    update = function(value) {
         stop("Update not yet implemented")
     }[/][# th:if="${delete}"],
     #' @description
     #' Creates a [[${entityName}]] object on the BrAPI server.
+    #' @param value The [[${entityName}]] object to be deleted on the server
     #'
-    delete = function(newValue) {
+    delete = function(value) {
         stop("Delete not yet implemented")
     }[/]
   ),
