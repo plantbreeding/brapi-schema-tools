@@ -1,3 +1,4 @@
+comparisonAPI: OpenApiCompare
 html:
     title: Changelog
     linkCss: http://deepoove.com/swagger-diff/stylesheets/demo.css

@@ -5,10 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.examples.ExamplesGenerator;
 import org.brapi.schematools.core.examples.ExamplesGeneratorOptions;
-import org.brapi.schematools.core.openapi.comparator.OpenAPIComparator;
-import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
-import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
-import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.dflib.DataFrame;
 import org.dflib.csv.Csv;
@@ -17,7 +13,6 @@ import picocli.CommandLine;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -27,17 +27,18 @@ import java.util.List;
 public class OpenAPIComparatorOptions implements Options {
     private String tempFilePrefix ;
     @Setter(AccessLevel.PRIVATE)
-    private AsciiDocRenderOptions asciiDoc;
+    private AsciiDocOutputOptions asciiDoc;
     @Setter(AccessLevel.PRIVATE)
-    private HTMLRenderOptions html;
+    private HTMLOutputOptions html;
     @Setter(AccessLevel.PRIVATE)
-    private JSONRenderOptions json;
+    private JSONOutputOptions json;
     @Setter(AccessLevel.PRIVATE)
-    private MarkdownRenderOptions markdown;
+    private MarkdownOutputOptions markdown;
     private List<String> ignoreMissingEndpoints ;
     private List<String> ignoreNewEndpoints ;
     @Getter(AccessLevel.NONE)
     private Boolean ignoreDepreciatedEndpoints ;
+    private String comparisonAPI ;
 
     /**
      * Load the default options
@@ -111,6 +112,10 @@ public class OpenAPIComparatorOptions implements Options {
             this.ignoreDepreciatedEndpoints = overrideOptions.ignoreDepreciatedEndpoints ;
         }
 
+        if (overrideOptions.comparisonAPI != null) {
+            this.comparisonAPI = overrideOptions.comparisonAPI ;
+        }
+
         return this ;
     }
 
@@ -119,7 +124,8 @@ public class OpenAPIComparatorOptions implements Options {
             .assertNotNull(asciiDoc, "Ascii Doc Render Options are null")
             .assertNotNull(html, "HTML Render Options are null")
             .assertNotNull(json, "JSON Render Options are null")
-            .assertNotNull(markdown, "Markdown Render Options are null") ;
+            .assertNotNull(markdown, "Markdown Render Options are null")
+            .assertNotNull(comparisonAPI, "Comparison API is null") ;
     }
 
     @JsonIgnore

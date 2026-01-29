@@ -2,20 +2,17 @@ package org.brapi.schematools.core.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.brapi.schematools.core.model.*;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.utils.BrAPITypeUtils;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.brapi.schematools.core.response.Response.fail;
-import static org.brapi.schematools.core.response.Response.success;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 
 /**
  * Provides options for the generation of ID, Name and PUI property and their usage

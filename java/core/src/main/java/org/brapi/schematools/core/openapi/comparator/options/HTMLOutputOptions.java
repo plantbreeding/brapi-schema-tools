@@ -18,7 +18,7 @@ import org.brapi.schematools.core.validiation.Validation;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class HTMLRenderOptions implements Options {
+public class HTMLOutputOptions implements Options {
     private String title;
     private String linkCss;
     @Getter(AccessLevel.PRIVATE)
@@ -33,7 +33,7 @@ public class HTMLRenderOptions implements Options {
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
      */
-    public void override(HTMLRenderOptions overrideOptions) {
+    public void override(HTMLOutputOptions overrideOptions) {
         if (overrideOptions.title != null) {
             this.title = overrideOptions.title;
         }

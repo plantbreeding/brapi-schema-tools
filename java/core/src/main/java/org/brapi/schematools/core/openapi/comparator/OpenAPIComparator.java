@@ -1,5 +1,13 @@
 package org.brapi.schematools.core.openapi.comparator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import org.brapi.schematools.core.openapi.comparator.options.OpenAPIComparatorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -33,6 +41,8 @@ public class OpenAPIComparator {
     private final List<Pattern> ignoreMissingEndpoints ;
 
     private final List<Pattern> ignoreNewEndpoints ;
+    private final ObjectWriter writer;
+    private final Configuration jsonpathConfig;
 
     /**
      * Creates a Comparator with default options
@@ -49,6 +59,18 @@ public class OpenAPIComparator {
 
         ignoreNewEndpoints = options.getIgnoreNewEndpoints() != null ?
             options.getIgnoreNewEndpoints().stream().map(Pattern::compile).toList() : new ArrayList<>() ;
+
+        ObjectMapper mapper = new ObjectMapper();
+        if (options.getJson().isPrettyPrinting()) {
+            writer = mapper.writerWithDefaultPrettyPrinter();
+        } else {
+            writer = mapper.writer();
+        }
+
+        jsonpathConfig = Configuration.builder()
+            .jsonProvider(new JacksonJsonNodeJsonProvider())
+            .mappingProvider(new JacksonMappingProvider())
+            .build();
     }
 
     /**
@@ -59,9 +81,51 @@ public class OpenAPIComparator {
      * @param secondPath the path of the second Specification
      * @return a response with the diff output
      */
-    public Response<ChangedOpenApi> compare(Path firstPath, Path secondPath) {
+    public Response<ChangedOpenApi> openApiCompare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
-            return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
+            try {
+                return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
+            } catch (Exception e) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Can not compare, Path 1: '%s' Path 2: '%s' due to exception: %s", firstPath, secondPath, e.getMessage()));
+            }
+        } else {
+            if (!Files.isRegularFile(firstPath) && !Files.isRegularFile(secondPath)) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Both input paths need to be regular files, Path 1: '%s' Path 2: '%s'", firstPath, secondPath));
+            } else {
+                if (!Files.isRegularFile(firstPath)) {
+                    return Response.fail(Response.ErrorType.VALIDATION,
+                        String.format("First input path is not a regular file, Path 1: '%s'", firstPath));
+                } else {
+                    return Response.fail(Response.ErrorType.VALIDATION,
+                        String.format("Second input path is not a regular file, Path 1: '%s'", secondPath));
+                }
+            }
+        }
+    }
+
+    /**
+     * Compares the OpenAPI Specification in files on a file path and returns a diff object
+     * for downstream use.
+     *
+     * @param firstPath the path of the first Specification
+     * @param secondPath the path of the second Specification
+     * @return a response with the diff output
+     */
+    public Response<JsonNode> jsonDiff(Path firstPath, Path secondPath) {
+        if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
+            try { // uses file extension to determine if YAML or not, should replace with a better way
+                if (firstPath.getFileName().toString().endsWith(".yaml") || secondPath.getFileName().toString().endsWith(".yaml")) {
+                    return Response.success(filterDiff(JsonDiffCompare.fromFilesYAML(firstPath, secondPath)));
+                } else {
+                    return Response.success(filterDiff(JsonDiffCompare.fromFilesJSON(firstPath, secondPath)));
+                }
+
+            } catch (Exception e) {
+                return Response.fail(Response.ErrorType.VALIDATION,
+                    String.format("Can not compare, Path 1: '%s' Path 2: '%s' due to exception: %s", firstPath, secondPath, e.getMessage()));
+            }
         } else {
             if (!Files.isRegularFile(firstPath) && !Files.isRegularFile(secondPath)) {
                 return Response.fail(Response.ErrorType.VALIDATION,
@@ -91,9 +155,21 @@ public class OpenAPIComparator {
      * @return a response with the path of the created output
      */
     public Response<Path> compare(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
+        if (!options.getComparisonAPI().equals("OpenApiCompare") && !options.getComparisonAPI().equals("JsonDiff")) {
+            return Response.fail(Response.ErrorType.VALIDATION, "Unsupported comparison API: " + options.getComparisonAPI());
+        }
+
         return findActualOutputPath(outputPath, outputFormat)
-            .mapResultToResponse(actualOutputPath -> compare(firstPath, secondPath)
-                .mapResultToResponse(diff -> renderOutput(diff, actualOutputPath, outputFormat))) ;
+            .conditionalMapResultToResponse(options.getComparisonAPI().equals("OpenApiCompare"), actualOutputPath -> openApiCompareAndOutput(firstPath, secondPath, actualOutputPath, outputFormat))
+            .conditionalMapResultToResponse(options.getComparisonAPI().equals("JsonDiff"), actualOutputPath -> jsonDiffAndOutput(firstPath, secondPath, actualOutputPath, outputFormat)) ;
+    }
+
+    private Response<Path> openApiCompareAndOutput(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return openApiCompare(firstPath, secondPath).mapResultToResponse(diff -> renderOutput(diff, outputPath, outputFormat)) ;
+    }
+
+    private Response<Path> jsonDiffAndOutput(Path firstPath, Path secondPath, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return jsonDiff(firstPath, secondPath).mapResultToResponse(diff -> renderOutput(diff, outputPath, outputFormat)) ;
     }
 
     /**
@@ -152,6 +228,15 @@ public class OpenAPIComparator {
             .setOldSpecOpenApi(changedOpenApi.getOldSpecOpenApi()) ;
     }
 
+    private JsonNode filterDiff(JsonNode diff) {
+
+        DocumentContext jsonContext = JsonPath.using(jsonpathConfig).parse(diff);
+        jsonContext.delete("$.[?(@.op == 'replace' && @.path == '/info/title')]");
+        jsonContext.delete("$.[?(@.op == 'replace' && @.path == '/info/version')]");
+
+        return jsonContext.json() ;
+    }
+
     private Response<Path> findActualOutputPath(Path outputPath, ComparisonOutputFormat outputFormat) {
         if (outputPath == null) {
 
@@ -168,7 +253,7 @@ public class OpenAPIComparator {
                 Files.createDirectories(outputPath.getParent());
             } catch (IOException e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
-                    String.format("Parent directory '%s' cannot created", outputPath.getParent()));
+                    String.format("Parent directory '%s' cannot be created", outputPath.getParent()));
             }
         }
 
@@ -190,6 +275,14 @@ public class OpenAPIComparator {
             case MARKDOWN -> renderMarkdown(diff, outputPath);
             case ASCIIDOC -> renderAsciidoc(diff, outputPath);
             case JSON -> renderJson(diff, outputPath);
+        } ;
+    }
+
+    private Response<Path> renderOutput(JsonNode diff, Path outputPath, ComparisonOutputFormat outputFormat) {
+        return switch (outputFormat) {
+            case HTML, MARKDOWN, ASCIIDOC -> Response.fail(Response.ErrorType.VALIDATION,
+                String.format("Unsupported output format '%s'", outputFormat)) ;
+            case JSON -> outputJson(diff, outputPath);
         } ;
     }
 
@@ -243,6 +336,16 @@ public class OpenAPIComparator {
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
         return Response.success(outputPath) ;
+    }
+
+    private Response<Path> outputJson(JsonNode diff, Path outputPath) {
+        try {
+            String prettyJson = writer.writeValueAsString(diff);
+            Files.writeString(outputPath, prettyJson) ;
+            return Response.success(outputPath) ;
+        } catch (IOException e) {
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not output to file '%s' due to %s", outputPath, e.getMessage())) ;
+        }
     }
 
     private boolean keepChangedOperation(ChangedOperation changedOperation) {
