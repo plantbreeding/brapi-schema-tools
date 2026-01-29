@@ -29,8 +29,10 @@ public enum OutputFormat {
      * Use this format to generate Markdown for type and their field descriptions
      */
     MARKDOWN,
-
-
+    /**
+     * Use this format to generate R Client for types and their fields
+     */
+    R,
     /**
      * Use this format to generate SQL for types and their fields
      */

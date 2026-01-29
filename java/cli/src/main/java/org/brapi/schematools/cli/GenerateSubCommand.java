@@ -22,6 +22,9 @@ import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.generator.OpenAPIWriter;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
+import org.brapi.schematools.core.r.generator.RGenerator;
+import org.brapi.schematools.core.r.metadata.RGeneratorMetadata;
+import org.brapi.schematools.core.r.options.RGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.SQLGenerator;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
@@ -121,6 +124,21 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 }
 
                 generateMarkdown(options);
+            }
+            case R -> {
+                if (isNotGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for R file generation.");
+                }
+                RGeneratorOptions options = optionsPath != null ?
+                    RGeneratorOptions.load(optionsPath) : RGeneratorOptions.load();
+                RGeneratorMetadata metadata = metadataPath != null ?
+                    RGeneratorMetadata.load(metadataPath) : RGeneratorMetadata.load();
+
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
+                generateR(options, metadata);
             }
             case SQL -> {
                 if (isNotGeneratingIntoSeparateFiles()) {
@@ -298,7 +316,6 @@ public class GenerateSubCommand extends AbstractSubCommand {
         }
     }
 
-
     private void generateMarkdown(MarkdownGeneratorOptions options) {
         try {
             if (outputPath != null) {
@@ -341,6 +358,54 @@ public class GenerateSubCommand extends AbstractSubCommand {
             printErrors("There was 1 error generating the Markdown file(s)", response.getAllErrors());
         } else {
             printErrors(String.format("There were %d errors generating the Markdown file(s)", response.getAllErrors().size()), response.getAllErrors());
+        }
+    }
+
+    private void generateR(RGeneratorOptions options, RGeneratorMetadata metadata) {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    handleError("For R generation the output path must be a directory");
+                } else {
+
+                    if (overwrite && Files.exists(outputPath)) {
+                        log.info("Overwriting existing R files in output directory '{}'", outputPath);
+                        deleteFiles(outputPath, metadata.getFilePrefix()) ;
+                    }
+
+                    Files.createDirectories(outputPath);
+
+                    RGenerator rGenerator = new RGenerator(options, outputPath);
+
+                    Response<List<Path>> response = rGenerator.generate(schemaDirectory, metadata);
+
+                    response.onSuccessDoWithResult(this::outputRPaths).onFailDoWithResponse(this::printRErrors);
+                }
+            } else {
+                handleError("For R generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            handleException(exception);
+        }
+    }
+
+    private void outputRPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any R files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' R file:");
+            System.out.println(paths.getFirst().toString());
+        } else {
+            System.out.printf("Generated '%s' R files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toString()));
+        }
+    }
+
+    private void printRErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            printErrors("There was 1 error generating the R file(s)", response.getAllErrors());
+        } else {
+            printErrors(String.format("There were %d errors generating the R file(s)", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -459,5 +524,15 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     throw new RuntimeException(e);
                 }
             });
+    }
+
+    public static void deleteFiles(Path dir, String prefix) throws IOException {
+        try (var files = Files.list(dir)) {
+            for (Path path : files.toList()) {
+                if (Files.isRegularFile(path) && path.getFileName().toString().startsWith(prefix)) {
+                    Files.delete(path);
+                }
+            }
+        }
     }
 }

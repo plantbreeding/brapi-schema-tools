@@ -1,14 +1,4 @@
-generateNewRequestFor:
-    AlleleMatrix: true
-newRequestNameFormat: "%sNewRequest2"
-pluralFor:
-    AlleleMatrix: AlleleMatrix
-pathItemNameFor:
-    PedigreeNode: /pedigree2
-singleGet:
-    generate: false
-    generateFor:
-        AlleleMatrix: true
+overwrite: true
 listGet:
     summaryFormat: Get a filtered list of %s X
 post:

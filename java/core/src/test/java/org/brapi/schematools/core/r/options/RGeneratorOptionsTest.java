@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.openapi.generator.options;
+package org.brapi.schematools.core.r.options;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
-import org.junit.jupiter.api.BeforeEach;
+import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,57 +21,63 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class OpenAPIGeneratorOptionsTest {
+class RGeneratorOptionsTest {
+    @Test
+    void load() {
+        RGeneratorOptions options = RGeneratorOptions.load();
 
-    @BeforeEach
-    void setUp() {
+        Validation validation = options.validate();
+
+        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
+
+        assertTrue(validation.isValid()) ;
+
+        checkDefaultOptions(options);
     }
 
     @Test
-    void load() {
-        OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
+    void load2() {
+        RGeneratorOptions options = RGeneratorOptions.load().setOverwrite(true);
 
-        checkDefaultOptions(options);
+        Validation validation = options.validate();
 
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
+
+        checkOverrideOptions(options);
     }
 
     @Test
     void loadJson() {
-        OpenAPIGeneratorOptions options = null;
+        RGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.json").toURI()));
+            options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
 
         checkDefaultOptions(options);
-
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
     void loadYaml() {
-        OpenAPIGeneratorOptions options = null;
+        RGeneratorOptions options = null;
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.yaml").toURI()));
+            options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
 
         checkDefaultOptions(options);
-
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
     @Test
     void overwrite() {
-        OpenAPIGeneratorOptions options = null;
+        RGeneratorOptions options = null;
 
         try {
-            options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-override-options.yaml").toURI()));
+            options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -78,18 +85,12 @@ class OpenAPIGeneratorOptionsTest {
 
         checkOptions(options);
 
-        assertTrue(options.isGeneratingNewRequestFor("AlleleMatrix"));
-
-        assertEquals("TrialNewRequest2", options.getNewRequestNameFor("Trial"));
-
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
-        assertEquals("/pedigree2", options.getPathItemNameFor("PedigreeNode"));
-        assertEquals("/pedigree2", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
+        assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
         assertTrue(options.getSingleGet().isGenerating());
-        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
-
-        assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
         assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
 
@@ -113,8 +114,8 @@ class OpenAPIGeneratorOptionsTest {
     @Test
     void compare() {
         try {
-            OpenAPIGeneratorOptions options1 = OpenAPIGeneratorOptions.load() ;
-            OpenAPIGeneratorOptions options2 = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-no-override-options.yaml").toURI()));
+            RGeneratorOptions options1 = RGeneratorOptions.load() ;
+            RGeneratorOptions options2 = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/no-override-options.yaml").toURI()));
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -128,13 +129,8 @@ class OpenAPIGeneratorOptionsTest {
         }
     }
 
-    private void checkDefaultOptions(OpenAPIGeneratorOptions options) {
+    private void checkDefaultOptions(RGeneratorOptions options) {
         checkOptions(options);
-
-        assertFalse(options.isGeneratingNewRequestFor("BreedingMethod"));
-        assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
-
-        assertEquals("TrialNewRequest", options.getNewRequestNameFor("Trial"));
 
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
@@ -163,7 +159,7 @@ class OpenAPIGeneratorOptionsTest {
         );
     }
 
-    private void checkOptions(OpenAPIGeneratorOptions options) {
+    private void checkOptions(RGeneratorOptions options) {
         assertNotNull(options.validate());
         assertTrue(options.validate().isValid()) ;
 
@@ -175,23 +171,6 @@ class OpenAPIGeneratorOptionsTest {
         assertNotNull(options.getPost());
         assertNotNull(options.getPut());
         assertNotNull(options.getDelete());
-
-        assertTrue(options.isSeparatingByModule()) ;
-
-        assertTrue(options.isGeneratingEndpoint()) ;
-        assertTrue(options.isGeneratingEndpointFor("Trial"));
-        assertFalse(options.isGeneratingEndpointFor("AlleleMatrix"));
-
-        assertTrue(options.isGeneratingEndpointWithId()) ;
-        assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-
-        assertTrue(options.isGeneratingNewRequestFor("Trial"));
-
-        assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));
-
-        assertEquals("TrialSingleResponse", options.getSingleResponseNameFor("Trial"));
-        assertEquals("TrialListResponse", options.getListResponseNameFor("Trial"));
-        assertEquals("TrialSearchRequest", options.getSearchRequestNameFor("Trial"));
 
         assertEquals("Trials", options.getPluralFor("Trial"));
         assertEquals("Studies", options.getPluralFor("Study"));
@@ -244,5 +223,11 @@ class OpenAPIGeneratorOptionsTest {
                 BrAPIObjectType.builder().name("VariantSet").build(),
                 BrAPIObjectProperty.builder().name("variants").build()).getResultOrThrow()
         );
+    }
+
+    private void checkOverrideOptions(RGeneratorOptions options) {
+        checkOptions(options);
+
+        assertTrue(options.isOverwritingExistingFiles());
     }
 }

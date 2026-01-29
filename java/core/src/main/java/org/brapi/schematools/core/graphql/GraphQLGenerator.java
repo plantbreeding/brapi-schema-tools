@@ -16,11 +16,7 @@ import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -118,13 +114,13 @@ public class GraphQLGenerator {
             this.metadata = metadata;
 
             this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPISchemas) ;
-            objectOutputTypes = new HashMap<>();
-            interfaceTypes = new HashMap<>();
-            unionTypes = new HashMap<>();
-            enumTypes = new HashMap<>();
-            inputTypes = new HashMap<>();
-            listResponseTypesToBeCreated = new HashMap<>();
-            inputObjectTypeForListQueryToBeCreated = new HashMap<>();
+            objectOutputTypes = new TreeMap<>();
+            interfaceTypes = new TreeMap<>();
+            unionTypes = new TreeMap<>();
+            enumTypes = new TreeMap<>();
+            inputTypes = new TreeMap<>();
+            listResponseTypesToBeCreated = new TreeMap<>();
+            inputObjectTypeForListQueryToBeCreated = new TreeMap<>();
         }
 
         public Response<GraphQLSchema> generate() {
@@ -213,7 +209,7 @@ public class GraphQLGenerator {
 
                     builder.additionalType(createListResponse(paged, type));
                 } else {
-                    log.warn(String.format("Can not create '%s' no type '%s'", key, value));
+                    log.warn("Can not create '{}' no type '{}'", key, value);
                 }
             });
 
@@ -223,7 +219,7 @@ public class GraphQLGenerator {
                 if (type != null) {
                     createInputObjectTypeForListQuery(type).onSuccessDoWithResult(builder::additionalType);
                 } else {
-                    log.warn(String.format("Can not create '%s' no type '%s'", key, value));
+                    log.warn("Can not create '{}' no type '{}'", key, value);
                 }
             });
 
