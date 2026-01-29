@@ -1,5 +1,5 @@
 {
-    "openapi" : "0.0.0",
+    "openapi" : "3.0.1",
     "info" : {
         "title" : "BrAPI-Core",
         "version" : "0.0.0"
@@ -19,7 +19,8 @@
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -28,7 +29,8 @@
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -37,7 +39,8 @@
                         "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -46,7 +49,8 @@
                         "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -964,7 +968,7 @@
                         }
                     },
                     {
-                        "name" : "actife",
+                        "name" : "active",
                         "in" : "query",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
                         "required" : false,
@@ -1195,7 +1199,7 @@
                         }
                     },
                     {
-                        "name" : "actife",
+                        "name" : "active",
                         "in" : "query",
                         "description" : "A flag to indicate if a Trial is currently active and ongoing",
                         "required" : false,
@@ -1218,7 +1222,8 @@
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date"
                         }
                     },
                     {
@@ -1227,7 +1232,8 @@
                         "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date"
                         }
                     },
                     {
@@ -2078,6 +2084,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -2137,6 +2144,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
@@ -2253,6 +2261,7 @@
                     "url" : {
                         "type" : "string",
                         "description" : "URL describing the location of this data file to view or download\n\nMIAPPE V1.1 (DM-37) Data file link - Link to the data file (or digital object) in a public database or in a persistent institutional repository; or identifier of the data file when submitted together with the MIAPPE submission.",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "version" : {
@@ -2546,6 +2555,7 @@
                     "timestamp" : {
                         "type" : "string",
                         "description" : "The timestamp of the update.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "version" : {
@@ -2578,7 +2588,6 @@
             },
             "ListNewRequest" : {
                 "required" : [
-                    "listDbId",
                     "listName",
                     "listType"
                 ],
@@ -2598,11 +2607,13 @@
                     "dateCreated" : {
                         "type" : "string",
                         "description" : "Timestamp when the entity was first created",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "dateModified" : {
                         "type" : "string",
                         "description" : "Timestamp when the entity was last updated",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -2652,19 +2663,23 @@
                 "properties" : {
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
-                        "description" : "Define the end for an interval of time and only include Lists that are created within this interval."
+                        "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
+                        "format" : "date-time"
                     },
                     "dateCreatedRangeStart" : {
                         "type" : "string",
-                        "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval."
+                        "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
+                        "format" : "date-time"
                     },
                     "dateModifiedRangeEnd" : {
                         "type" : "string",
-                        "description" : "Define the end for an interval of time and only include Lists that are modified within this interval."
+                        "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
+                        "format" : "date-time"
                     },
                     "dateModifiedRangeStart" : {
                         "type" : "string",
-                        "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval."
+                        "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
+                        "format" : "date-time"
                     },
                     "listDbIds" : {
                         "type" : "array",
@@ -2745,7 +2760,6 @@
             },
             "LocationNewRequest" : {
                 "required" : [
-                    "locationDbId",
                     "locationName"
                 ],
                 "type" : "object",
@@ -2792,6 +2806,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "environmentType" : {
@@ -3174,7 +3189,6 @@
             },
             "ProgramNewRequest" : {
                 "required" : [
-                    "programDbId",
                     "programName"
                 ],
                 "type" : "object",
@@ -3195,6 +3209,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -3379,7 +3394,6 @@
             },
             "StudyNewRequest" : {
                 "required" : [
-                    "studyDbId",
                     "studyName"
                 ],
                 "type" : "object",
@@ -3413,11 +3427,13 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "environmentParameters" : {
@@ -3480,6 +3496,7 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "studyCode" : {
@@ -3689,7 +3706,6 @@
             },
             "TrialNewRequest" : {
                 "required" : [
-                    "trialDbId",
                     "trialName"
                 ],
                 "type" : "object",
@@ -3726,11 +3742,13 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date this trial ends",
+                        "format" : "date",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -3758,6 +3776,7 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this trial started",
+                        "format" : "date",
                         "nullable" : true
                     },
                     "studyDbIds" : {
@@ -3857,11 +3876,13 @@
                     },
                     "searchDateRangeEnd" : {
                         "type" : "string",
-                        "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`"
+                        "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "format" : "date"
                     },
                     "searchDateRangeStart" : {
                         "type" : "string",
-                        "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`"
+                        "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "format" : "date"
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -3935,6 +3956,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -3994,6 +4016,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
