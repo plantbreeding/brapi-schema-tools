@@ -35,10 +35,8 @@ import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLInterfaceType.newInterface;
 import static graphql.schema.GraphQLObjectType.newObject;
-import static org.brapi.schematools.core.options.LinkType.EMBEDDED;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 import static org.brapi.schematools.core.utils.StringUtils.makeValidName;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
@@ -712,10 +710,10 @@ public class GraphQLGenerator {
 
         private Response<GraphQLScalarType> createScalarType(BrAPIPrimitiveType type) {
             return switch (type.getName()) {
-                case "string" -> success(GraphQLString);
-                case "integer" -> success(GraphQLInt);
-                case "number" -> success(GraphQLFloat);
-                case "boolean" -> success(GraphQLBoolean);
+                case BrAPIPrimitiveType.STRING -> success(GraphQLString);
+                case BrAPIPrimitiveType.INTEGER -> success(GraphQLInt);
+                case BrAPIPrimitiveType.NUMBER -> success(GraphQLFloat);
+                case BrAPIPrimitiveType.BOOLEAN -> success(GraphQLBoolean);
                 default ->
                     fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s'", type.getName()));
             };

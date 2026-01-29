@@ -1,12 +1,10 @@
 package org.brapi.schematools.core.examples;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.options.Options;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 
