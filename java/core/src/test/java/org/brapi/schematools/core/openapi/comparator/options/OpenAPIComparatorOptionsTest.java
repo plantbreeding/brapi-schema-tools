@@ -72,7 +72,7 @@ class OpenAPIComparatorOptionsTest {
     }
 
     @Test
-    void compare() {
+    void openApiCompare() {
         try {
             OpenAPIComparatorOptions options1 = OpenAPIComparatorOptions.load() ;
             OpenAPIComparatorOptions options2 = OpenAPIComparatorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-comparator-no-override-options.yaml").toURI()));

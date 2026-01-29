@@ -706,10 +706,10 @@ public class GraphQLGenerator {
 
         private Response<GraphQLScalarType> createScalarType(BrAPIPrimitiveType type) {
             return switch (type.getName()) {
-                case "string" -> success(GraphQLString);
-                case "integer" -> success(GraphQLInt);
-                case "number" -> success(GraphQLFloat);
-                case "boolean" -> success(GraphQLBoolean);
+                case BrAPIPrimitiveType.STRING -> success(GraphQLString);
+                case BrAPIPrimitiveType.INTEGER -> success(GraphQLInt);
+                case BrAPIPrimitiveType.NUMBER -> success(GraphQLFloat);
+                case BrAPIPrimitiveType.BOOLEAN -> success(GraphQLBoolean);
                 default ->
                     fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s'", type.getName()));
             };
