@@ -107,7 +107,7 @@ class MarkdownGeneratorOptionsTest {
 
         assertTrue(options.isAddingGeneratorComments());
         assertTrue(options.isGeneratingForProperties());
-        assertFalse(options.isGeneratingForDuplicateProperties());
+        assertTrue(options.isGeneratingForDuplicateProperties());
         assertFalse(options.isGeneratingForParameters());
         assertFalse(options.isGeneratingForRequests());
     }

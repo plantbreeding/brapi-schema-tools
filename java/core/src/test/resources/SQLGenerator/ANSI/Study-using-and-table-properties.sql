@@ -3,7 +3,7 @@ CREATE TABLE brapi_Study (
   additionalInfo MAP < STRING,
   STRING > COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',
-  -- Link table 'ContactByStudy' will be created separately COMMENT 'List of contact entities associated with this study' ,
+  -- For property 'contacts' Link table 'ContactByStudy' will be created separately,
   culturalPractices STRING COMMENT 'MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.',
   dataLinks ARRAY < STRUCT < dataFormat STRING COMMENT 'The structure of the data within a file. For example - VCF, table, image archive, multispectral image archives in EDAM ontology (used in Galaxy)  MIAPPE V1.1 (DM-38) Data file description - Description of the format of the data file. May be a standard file format name, or a description of organization of the data in a tabular file.',
   description STRING COMMENT 'The general description of this data link  MIAPPE V1.1 (DM-38) Data file description - Description of the format of the data file. May be a standard file format name, or a description of organization of the data in a tabular file.',
@@ -33,12 +33,12 @@ CREATE TABLE brapi_Study (
   timestamp STRING COMMENT 'The timestamp of the update.',
   version STRING COMMENT 'The version of the update.' > COMMENT 'The date and time when this study was last modified',
   license STRING COMMENT 'The usage license associated with the study data',
-  locationDbId STRING,
-  locationName STRING COMMENT 'The unique identifier for a Location',
+  locationDbId STRING COMMENT 'The unique identifier for a Location',
+  locationName STRING COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   observationLevels ARRAY < STRUCT < levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ' > > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',
-  -- Link table 'ObservationVariableByStudy' will be created separately COMMENT 'The list of Observation Variables being used in this study.   This list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ' ,
+  -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
   seasons ARRAY < STRING > COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
   studyCode STRING COMMENT 'A short human readable code for a study',
@@ -47,21 +47,21 @@ CREATE TABLE brapi_Study (
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc',
-  trialDbId STRING,
-  trialName STRING,
-  trialPUI STRING COMMENT 'The ID which uniquely identifies a trial'
+  trialDbId STRING COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
+  trialName STRING COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
+  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.'
 ) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
 CREATE TABLE brapi_ContactByStudy (
-  contactDbId STRING,
-  studyDbId STRING,
-  studyName STRING,
-  studyPUI STRING
+  contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to Contact on property contacts';
 CREATE TABLE brapi_ObservationVariableByStudy (
-  observationVariableDbId STRING,
-  observationVariableName STRING,
-  observationVariablePUI STRING,
-  studyDbId STRING,
-  studyName STRING,
-  studyPUI STRING
+  observationVariableDbId STRING COMMENT 'Variable unique identifier  MIAPPE V1.1 (DM-83) Variable ID - Code used to identify the variable in the data file. We recommend using a variable definition from the Crop Ontology where possible. Otherwise, the Crop Ontology naming convention is recommended: <trait abbreviation>_<method abbreviation>_<scale abbreviation>). A variable ID must be unique within a given investigation.',
+  observationVariableName STRING COMMENT 'Variable name (usually a short name)  MIAPPE V1.1 (DM-84) Variable name - Name of the variable.',
+  observationVariablePUI STRING COMMENT 'The Permanent Unique Identifier of a Observation Variable, usually in the form of a URI',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) USING delta TBLPROPERTIES ('delta.enableChangeDataFeed' = true) COMMENT 'Link table for Study to ObservationVariable on property observationVariables';

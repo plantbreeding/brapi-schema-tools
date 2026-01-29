@@ -16,7 +16,7 @@ public class BrAPIPrimitiveType implements BrAPIType {
     /**
      * Boolean Integer Type
      */
-    public static final String INTEGER =" integer";
+    public static final String INTEGER = "integer";
     /**
      * Boolean Number Type
      */

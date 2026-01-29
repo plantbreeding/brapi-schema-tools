@@ -1,5 +1,5 @@
 {
-    "openapi" : "1.2.3",
+    "openapi" : "3.0.1",
     "info" : {
         "title" : "Test",
         "version" : "1.2.3"
@@ -12,7 +12,11 @@
                 ],
                 "summary" : "Get a filtered list of BreedingMethod",
                 "description" : "Get a list of BreedingMethod",
-                "parameters" : [ ],
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/BreedingMethodListResponse"
@@ -65,7 +69,7 @@
                         }
                     },
                     {
-                        "name" : "expandHomozygote",
+                        "name" : "expandHomozygotes",
                         "in" : "query",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
@@ -99,6 +103,9 @@
                         "schema" : {
                             "type" : "string"
                         }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/page"
@@ -525,7 +532,7 @@
                         }
                     },
                     {
-                        "name" : "includePotentialParent",
+                        "name" : "includePotentialParents",
                         "in" : "query",
                         "description" : "If the parameter 'includePotentialParents' is false, the array 'potentialParents' should be empty, null, or excluded from the response object.",
                         "required" : false,
@@ -662,7 +669,8 @@
                         "description" : "Filter based on an Event start date.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -671,7 +679,8 @@
                         "description" : "Filter based on an Event start date.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1633,7 +1642,8 @@
                         "description" : "The latest timestamp to search for.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1642,7 +1652,8 @@
                         "description" : "The earliest timestamp to search for.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1785,7 +1796,8 @@
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1794,7 +1806,8 @@
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1803,7 +1816,8 @@
                         "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -1812,7 +1826,8 @@
                         "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -2162,7 +2177,7 @@
         "/markerpositions" : {
             "get" : {
                 "tags" : [
-                    "MarkerPositions"
+                    "Genome Maps"
                 ],
                 "summary" : "Get a filtered list of MarkerPosition",
                 "description" : "Get a list of MarkerPosition",
@@ -2548,7 +2563,8 @@
                         "description" : "Timestamp range end",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -2557,7 +2573,8 @@
                         "description" : "Timestamp range start",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     {
@@ -2845,7 +2862,7 @@
                         }
                     },
                     {
-                        "name" : "includeObservation",
+                        "name" : "includeObservations",
                         "in" : "query",
                         "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
                         "required" : false,
@@ -3546,7 +3563,7 @@
                         }
                     },
                     {
-                        "name" : "includeParent",
+                        "name" : "includeParents",
                         "in" : "query",
                         "description" : "If this parameter is true, include the array of parents in the response",
                         "required" : false,
@@ -3555,7 +3572,7 @@
                         }
                     },
                     {
-                        "name" : "includeSibling",
+                        "name" : "includeSiblings",
                         "in" : "query",
                         "description" : "If this parameter is true, include the array of siblings in the response",
                         "required" : false,
@@ -4554,7 +4571,8 @@
                         "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases.",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "format" : "boolean"
                         }
                     },
                     {
@@ -5551,7 +5569,7 @@
                         }
                     },
                     {
-                        "name" : "actife",
+                        "name" : "active",
                         "in" : "query",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
                         "required" : false,
@@ -5914,7 +5932,7 @@
                         }
                     },
                     {
-                        "name" : "actife",
+                        "name" : "active",
                         "in" : "query",
                         "description" : "A flag to indicate if a Trial is currently active and ongoing",
                         "required" : false,
@@ -5937,7 +5955,8 @@
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date"
                         }
                     },
                     {
@@ -5946,7 +5965,8 @@
                         "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date"
                         }
                     },
                     {
@@ -6183,6 +6203,9 @@
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
+                        "$ref" : "#/components/parameters/pageToken"
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -6408,70 +6431,16 @@
         "/callsets/{callSetDbId}/calls" : {
             "get" : {
                 "tags" : [
-                    "Calls"
+                    "CallSets"
                 ],
                 "summary" : "Get a filtered list of Call",
                 "description" : "Get a list of Call",
                 "parameters" : [
                     {
                         "name" : "callSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "variantDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "variantSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "expandHomozygote",
-                        "in" : "query",
-                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "boolean"
-                        }
-                    },
-                    {
-                        "name" : "sepPhased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for phased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sepUnphased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for unphased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "unknownString",
-                        "in" : "query",
-                        "description" : "The string used as a representation for missing data.",
-                        "required" : false,
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a CallSet within the given database server",
+                        "required" : true,
                         "schema" : {
                             "type" : "string"
                         }
@@ -6481,6 +6450,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
@@ -7533,6 +7505,92 @@
                 }
             }
         },
+        "/seedlots/{seedLotDbId}/fromseedlottransactions" : {
+            "get" : {
+                "tags" : [
+                    "SeedLots"
+                ],
+                "summary" : "Get a filtered list of SeedLotTransaction",
+                "description" : "Get a list of SeedLotTransaction",
+                "parameters" : [
+                    {
+                        "name" : "seedLotDbId",
+                        "in" : "path",
+                        "description" : "Unique DbId for the Seed Lot",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/SeedLotTransactionListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/seedlots/{seedLotDbId}/toseedlottransactions" : {
+            "get" : {
+                "tags" : [
+                    "SeedLots"
+                ],
+                "summary" : "Get a filtered list of SeedLotTransaction",
+                "description" : "Get a list of SeedLotTransaction",
+                "parameters" : [
+                    {
+                        "name" : "seedLotDbId",
+                        "in" : "path",
+                        "description" : "Unique DbId for the Seed Lot",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/SeedLotTransactionListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/studies/{studyDbId}" : {
             "get" : {
                 "tags" : [
@@ -7733,70 +7791,16 @@
         "/variants/{variantDbId}/calls" : {
             "get" : {
                 "tags" : [
-                    "Calls"
+                    "Variants"
                 ],
                 "summary" : "Get a filtered list of Call",
                 "description" : "Get a list of Call",
                 "parameters" : [
                     {
-                        "name" : "callSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "variantDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "variantSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "expandHomozygote",
-                        "in" : "query",
-                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "boolean"
-                        }
-                    },
-                    {
-                        "name" : "sepPhased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for phased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sepUnphased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for unphased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "unknownString",
-                        "in" : "query",
-                        "description" : "The string used as a representation for missing data.",
-                        "required" : false,
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a `Variant`",
+                        "required" : true,
                         "schema" : {
                             "type" : "string"
                         }
@@ -7806,6 +7810,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
@@ -7853,70 +7860,16 @@
         "/variantsets/{variantSetDbId}/calls" : {
             "get" : {
                 "tags" : [
-                    "Calls"
+                    "VariantSets"
                 ],
                 "summary" : "Get a filtered list of Call",
                 "description" : "Get a list of Call",
                 "parameters" : [
                     {
-                        "name" : "callSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "variantDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "variantSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "expandHomozygote",
-                        "in" : "query",
-                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "boolean"
-                        }
-                    },
-                    {
-                        "name" : "sepPhased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for phased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sepUnphased",
-                        "in" : "query",
-                        "description" : "The string used as a separator for unphased allele calls.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "unknownString",
-                        "in" : "query",
-                        "description" : "The string used as a representation for missing data.",
-                        "required" : false,
+                        "in" : "path",
+                        "description" : "The unique identifier for a VariantSet",
+                        "required" : true,
                         "schema" : {
                             "type" : "string"
                         }
@@ -7926,6 +7879,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
@@ -7950,145 +7906,19 @@
         "/variantsets/{variantSetDbId}/callsets" : {
             "get" : {
                 "tags" : [
-                    "CallSets"
+                    "VariantSets"
                 ],
                 "summary" : "Get a filtered list of CallSet",
                 "description" : "Get a list of CallSet",
                 "parameters" : [
                     {
-                        "name" : "commonCropName",
-                        "in" : "query",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmDbId",
-                        "in" : "query",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmName",
-                        "in" : "query",
-                        "description" : "List of human readable names to identify germplasm to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programDbId",
-                        "in" : "query",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programName",
-                        "in" : "query",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyDbId",
-                        "in" : "query",
-                        "description" : "List of study identifiers to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyName",
-                        "in" : "query",
-                        "description" : "List of study names to filter search results",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialDbId",
-                        "in" : "query",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialName",
-                        "in" : "query",
-                        "description" : "The human readable name of a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sampleDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sampleName",
-                        "in" : "query",
-                        "description" : "A list of human readable names associated with `Samples`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "callSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "callSetName",
-                        "in" : "query",
-                        "description" : "A list of human readable names associated with `CallSets`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "variantSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
-                        "required" : false,
+                        "in" : "path",
+                        "description" : "The unique identifier for a VariantSet",
+                        "required" : true,
                         "schema" : {
                             "type" : "string"
                         }
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceID"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceId"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
                         "$ref" : "#/components/parameters/page"
@@ -8119,162 +7949,28 @@
         "/variantsets/{variantSetDbId}/variants" : {
             "get" : {
                 "tags" : [
-                    "Variants"
+                    "VariantSets"
                 ],
                 "summary" : "Get a filtered list of Variant",
                 "description" : "Get a list of Variant",
                 "parameters" : [
                     {
-                        "name" : "commonCropName",
-                        "in" : "query",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programDbId",
-                        "in" : "query",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programName",
-                        "in" : "query",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyDbId",
-                        "in" : "query",
-                        "description" : "List of study identifiers to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "studyName",
-                        "in" : "query",
-                        "description" : "List of study names to filter search results",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialDbId",
-                        "in" : "query",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialName",
-                        "in" : "query",
-                        "description" : "The human readable name of a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "callSetDbId",
-                        "in" : "query",
-                        "description" : "**Deprecated in v2.1** Parameter unnecessary. Github issue number #474 \n<br/>Only return variant calls which belong to call sets with these IDs. If unspecified, return all variants and no variant call objects.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "end",
-                        "in" : "query",
-                        "description" : "The end of the window (0-based, exclusive) for which overlapping variants should be returned.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "integer",
-                            "format" : "int32"
-                        }
-                    },
-                    {
-                        "name" : "referenceDbId",
-                        "in" : "query",
-                        "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "referenceDbId",
-                        "in" : "query",
-                        "description" : "The unique identifier representing a genotype `Reference`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "referenceSetDbId",
-                        "in" : "query",
-                        "description" : "The unique identifier representing a genotype `ReferenceSet`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "start",
-                        "in" : "query",
-                        "description" : "The beginning of the window (0-based, inclusive) for which overlapping variants should be returned. Genomic positions are non-negative integers less than reference length. Requests spanning the join of circular genomes are represented as two requests one on each side of the join (position 0).",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "integer",
-                            "format" : "int32"
-                        }
-                    },
-                    {
-                        "name" : "variantDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Variants`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "variantSetDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `VariantSets`",
-                        "required" : false,
+                        "in" : "path",
+                        "description" : "The unique identifier for a VariantSet",
+                        "required" : true,
                         "schema" : {
                             "type" : "string"
                         }
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceID"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceId"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
@@ -8533,7 +8229,7 @@
         "/search/markerpositions" : {
             "post" : {
                 "tags" : [
-                    "MarkerPositions"
+                    "Genome Maps"
                 ],
                 "summary" : "Submit a search request for `MarkerPosition`",
                 "description" : "Submit a search request for `MarkerPosition`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/markerPosition/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
@@ -9130,7 +8826,7 @@
         "/search/markerpositions/{searchResultsDbId}" : {
             "get" : {
                 "tags" : [
-                    "MarkerPositions"
+                    "Genome Maps"
                 ],
                 "summary" : "Submit a search request for `MarkerPosition`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/markerPosition/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "description" : "Get the results of a `MarkerPosition` search request <br/>\nClients should submit a search request using the corresponding `POST /search/markerPosition` endpoint.\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse this endpoint to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
@@ -9670,6 +9366,7 @@
                     "created" : {
                         "type" : "string",
                         "description" : "The time at which this record was created, in ISO 8601 format.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "description" : {
@@ -9693,6 +9390,7 @@
                     "updated" : {
                         "type" : "string",
                         "description" : "The time at which this record was last updated, in ISO 8601 format.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "variantSetDbId" : {
@@ -9759,6 +9457,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -9818,6 +9517,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
@@ -9874,6 +9574,7 @@
                     "fileURL" : {
                         "type" : "string",
                         "description" : "A URL which indicates the location of the file version of this VariantSet. Could be a static file URL or an API endpoint which generates the file.",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "sepPhased" : {
@@ -10069,6 +9770,7 @@
                     "created" : {
                         "type" : "string",
                         "description" : "The date this call set was created",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -10100,6 +9802,7 @@
                     "updated" : {
                         "type" : "string",
                         "description" : "The time at which this call set was last updated",
+                        "format" : "date-time",
                         "nullable" : true
                     }
                 },
@@ -10464,7 +10167,6 @@
             },
             "CrossingProjectNewRequest" : {
                 "required" : [
-                    "crossingProjectDbId",
                     "crossingProjectName"
                 ],
                 "type" : "object",
@@ -10558,6 +10260,7 @@
                     "url" : {
                         "type" : "string",
                         "description" : "URL describing the location of this data file to view or download\n\nMIAPPE V1.1 (DM-37) Data file link - Link to the data file (or digital object) in a public database or in a persistent institutional repository; or identifier of the data file when submitted together with the MIAPPE submission.",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "version" : {
@@ -10571,9 +10274,6 @@
             "DataMatrix" : {
                 "type" : "object",
                 "properties" : {
-                    "alleleMatrix" : {
-                        "$ref" : "#/components/schemas/AlleleMatrix"
-                    },
                     "dataMatrix" : {
                         "type" : "array",
                         "description" : "The two dimensional array of data, providing the allele matrix or an additional layer of metadata associated with each genotype value. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows.",
@@ -10668,10 +10368,8 @@
                     "URL" : {
                         "type" : "string",
                         "description" : "The URL or URI to the documentation",
+                        "format" : "uri",
                         "nullable" : true
-                    },
-                    "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "type" : {
                         "type" : "string",
@@ -10851,12 +10549,14 @@
                         "description" : "A list of dates when the event occurred\n<br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The end of a continuous or regularly repetitive event\n<br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "eventDbId" : {
@@ -10865,6 +10565,7 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The beginning of a continuous or regularly repetitive event\n<br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
+                        "format" : "date-time",
                         "nullable" : true
                     }
                 },
@@ -10991,6 +10692,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "linkageGroupCount" : {
@@ -11023,6 +10725,7 @@
                     "publishedDate" : {
                         "type" : "string",
                         "description" : "The date this `GenomeMap` was published",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "scientificName" : {
@@ -11045,9 +10748,6 @@
             "GenotypeMetadata" : {
                 "type" : "object",
                 "properties" : {
-                    "call" : {
-                        "$ref" : "#/components/schemas/Call"
-                    },
                     "dataType" : {
                         "type" : "string",
                         "description" : "The type of field represented in this Genotype Field. This is intended to help parse the data out of JSON.",
@@ -11229,7 +10929,6 @@
             },
             "GermplasmAttributeNewRequest" : {
                 "required" : [
-                    "attributeDbId",
                     "attributeName",
                     "methodDbId",
                     "methodName",
@@ -11287,6 +10986,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -11346,6 +11046,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
@@ -11603,8 +11304,7 @@
             },
             "GermplasmAttributeValueNewRequest" : {
                 "required" : [
-                    "attributeName",
-                    "attributeValueDbId"
+                    "attributeName"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -11623,6 +11323,7 @@
                     "determinedDate" : {
                         "type" : "string",
                         "description" : "The date the value of this attribute was determined for a given germplasm",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -11784,7 +11485,6 @@
             "GermplasmNewRequest" : {
                 "required" : [
                     "commonCropName",
-                    "germplasmDbId",
                     "germplasmName",
                     "germplasmPUI"
                 ],
@@ -11864,6 +11564,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "donors" : {
@@ -12285,6 +11986,7 @@
                     "imageTimeStamp" : {
                         "type" : "string",
                         "description" : "The date and time the image was taken",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "imageURL" : {
@@ -12378,11 +12080,13 @@
                     },
                     "imageTimeStampRangeEnd" : {
                         "type" : "string",
-                        "description" : "The latest timestamp to search for."
+                        "description" : "The latest timestamp to search for.",
+                        "format" : "date-time"
                     },
                     "imageTimeStampRangeStart" : {
                         "type" : "string",
-                        "description" : "The earliest timestamp to search for."
+                        "description" : "The earliest timestamp to search for.",
+                        "format" : "date-time"
                     },
                     "imageWidthMax" : {
                         "type" : "integer",
@@ -12454,6 +12158,7 @@
                     "timestamp" : {
                         "type" : "string",
                         "description" : "The timestamp of the update.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "version" : {
@@ -12486,7 +12191,6 @@
             },
             "ListNewRequest" : {
                 "required" : [
-                    "listDbId",
                     "listName",
                     "listType"
                 ],
@@ -12506,11 +12210,13 @@
                     "dateCreated" : {
                         "type" : "string",
                         "description" : "Timestamp when the entity was first created",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "dateModified" : {
                         "type" : "string",
                         "description" : "Timestamp when the entity was last updated",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -12560,19 +12266,23 @@
                 "properties" : {
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
-                        "description" : "Define the end for an interval of time and only include Lists that are created within this interval."
+                        "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
+                        "format" : "date-time"
                     },
                     "dateCreatedRangeStart" : {
                         "type" : "string",
-                        "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval."
+                        "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
+                        "format" : "date-time"
                     },
                     "dateModifiedRangeEnd" : {
                         "type" : "string",
-                        "description" : "Define the end for an interval of time and only include Lists that are modified within this interval."
+                        "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
+                        "format" : "date-time"
                     },
                     "dateModifiedRangeStart" : {
                         "type" : "string",
-                        "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval."
+                        "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
+                        "format" : "date-time"
                     },
                     "listDbIds" : {
                         "type" : "array",
@@ -12653,7 +12363,6 @@
             },
             "LocationNewRequest" : {
                 "required" : [
-                    "locationDbId",
                     "locationName"
                 ],
                 "type" : "object",
@@ -12700,6 +12409,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "environmentType" : {
@@ -12992,7 +12702,6 @@
             },
             "MethodNewRequest" : {
                 "required" : [
-                    "methodDbId",
                     "methodName"
                 ],
                 "type" : "object",
@@ -13097,6 +12806,7 @@
                     "observationTimeStamp" : {
                         "type" : "string",
                         "description" : "The date and time when this observation was made",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
@@ -13206,11 +12916,13 @@
                     },
                     "observationTimeStampRangeEnd" : {
                         "type" : "string",
-                        "description" : "Timestamp range end"
+                        "description" : "Timestamp range end",
+                        "format" : "date-time"
                     },
                     "observationTimeStampRangeStart" : {
                         "type" : "string",
-                        "description" : "Timestamp range start"
+                        "description" : "Timestamp range start",
+                        "format" : "date-time"
                     },
                     "observationUnitDbIds" : {
                         "type" : "array",
@@ -13727,7 +13439,6 @@
                 "required" : [
                     "methodDbId",
                     "methodName",
-                    "observationVariableDbId",
                     "observationVariableName",
                     "scaleDbId",
                     "scaleName",
@@ -13759,6 +13470,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -13827,6 +13539,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
@@ -14064,7 +13777,6 @@
             },
             "OntologyNewRequest" : {
                 "required" : [
-                    "ontologyDbId",
                     "ontologyName"
                 ],
                 "type" : "object",
@@ -14090,6 +13802,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "licence" : {
@@ -14162,9 +13875,6 @@
             "Pagination" : {
                 "type" : "object",
                 "properties" : {
-                    "alleleMatrix" : {
-                        "$ref" : "#/components/schemas/AlleleMatrix"
-                    },
                     "dimension" : {
                         "type" : "string",
                         "description" : "The dimension of the matrix being paginated",
@@ -14714,7 +14424,6 @@
             },
             "PlateNewRequest" : {
                 "required" : [
-                    "plateDbId",
                     "plateName"
                 ],
                 "type" : "object",
@@ -14926,6 +14635,7 @@
                     "pollinationTimeStamp" : {
                         "type" : "string",
                         "description" : "The timestamp when the pollination took place",
+                        "format" : "date-time",
                         "nullable" : true
                     }
                 },
@@ -14967,7 +14677,6 @@
             },
             "ProgramNewRequest" : {
                 "required" : [
-                    "programDbId",
                     "programName"
                 ],
                 "type" : "object",
@@ -14988,6 +14697,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -15252,7 +14962,8 @@
                     },
                     "isDerived" : {
                         "type" : "boolean",
-                        "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases."
+                        "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases.",
+                        "format" : "boolean"
                     },
                     "maxLength" : {
                         "type" : "integer",
@@ -15352,7 +15063,6 @@
             },
             "ReferenceSetNewRequest" : {
                 "required" : [
-                    "referenceSetDbId",
                     "referenceSetName"
                 ],
                 "type" : "object",
@@ -15562,7 +15272,6 @@
             },
             "SampleNewRequest" : {
                 "required" : [
-                    "sampleDbId",
                     "sampleName"
                 ],
                 "type" : "object",
@@ -15654,6 +15363,7 @@
                     "sampleTimestamp" : {
                         "type" : "string",
                         "description" : "The date and time a `Sample` was collected from the field\n<br> MIAPPE V1.1 (DM-80) Collection date - The date and time when the sample was collected / harvested",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "sampleType" : {
@@ -15840,7 +15550,6 @@
             },
             "ScaleNewRequest" : {
                 "required" : [
-                    "scaleDbId",
                     "scaleName"
                 ],
                 "type" : "object",
@@ -15945,7 +15654,6 @@
             },
             "SeedLotNewRequest" : {
                 "required" : [
-                    "seedLotDbId",
                     "seedLotName"
                 ],
                 "type" : "object",
@@ -15969,6 +15677,7 @@
                     "createdDate" : {
                         "type" : "string",
                         "description" : "The time stamp for when this seed lot was created",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -15979,17 +15688,10 @@
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
                     },
-                    "fromSeedLotTransactions" : {
-                        "type" : "array",
-                        "description" : "fromSeedLotTransactions",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/SeedLotTransaction"
-                        }
-                    },
                     "lastUpdated" : {
                         "type" : "string",
                         "description" : "The timestamp for the last update to this Seed Lot (including transactions)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "locationDbId" : {
@@ -16022,14 +15724,6 @@
                         "type" : "string",
                         "description" : "Description the storage location",
                         "nullable" : true
-                    },
-                    "toSeedLotTransactions" : {
-                        "type" : "array",
-                        "description" : "toSeedLotTransactions",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/SeedLotTransaction"
-                        }
                     },
                     "units" : {
                         "type" : "string",
@@ -16079,6 +15773,7 @@
                     "transactionTimestamp" : {
                         "type" : "string",
                         "description" : "The time stamp for when the transaction occurred",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "units" : {
@@ -16162,7 +15857,6 @@
             },
             "StudyNewRequest" : {
                 "required" : [
-                    "studyDbId",
                     "studyName"
                 ],
                 "type" : "object",
@@ -16196,11 +15890,13 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "environmentParameters" : {
@@ -16263,6 +15959,7 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "studyCode" : {
@@ -16522,7 +16219,6 @@
             },
             "TraitNewRequest" : {
                 "required" : [
-                    "traitDbId",
                     "traitName"
                 ],
                 "type" : "object",
@@ -16631,7 +16327,6 @@
             },
             "TrialNewRequest" : {
                 "required" : [
-                    "trialDbId",
                     "trialName"
                 ],
                 "type" : "object",
@@ -16668,11 +16363,13 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date this trial ends",
+                        "format" : "date",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -16700,6 +16397,7 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this trial started",
+                        "format" : "date",
                         "nullable" : true
                     },
                     "studyDbIds" : {
@@ -16799,11 +16497,13 @@
                     },
                     "searchDateRangeEnd" : {
                         "type" : "string",
-                        "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`"
+                        "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "format" : "date"
                     },
                     "searchDateRangeStart" : {
                         "type" : "string",
-                        "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`"
+                        "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "format" : "date"
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -16884,9 +16584,6 @@
                         "description" : "A text label for a category",
                         "nullable" : true
                     },
-                    "validValues" : {
-                        "$ref" : "#/components/schemas/ValidValues"
-                    },
                     "value" : {
                         "type" : "string",
                         "description" : "The actual value for a category",
@@ -16929,6 +16626,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -16988,6 +16686,7 @@
                     "submissionTimestamp" : {
                         "type" : "string",
                         "description" : "Timestamp when the Variable was added (ISO 8601)",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "synonyms" : {
@@ -17048,6 +16747,7 @@
                     "created" : {
                         "type" : "string",
                         "description" : "The timestamp when this variant was created.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "end" : {
@@ -17114,6 +16814,7 @@
                     "updated" : {
                         "type" : "string",
                         "description" : "The time at which this variant was last updated.",
+                        "format" : "date-time",
                         "nullable" : true
                     },
                     "variantDbId" : {
@@ -17925,6 +17626,43 @@
                                 },
                                 "result" : {
                                     "$ref" : "#/components/schemas/Sample"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "SeedLotTransactionListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "SeedLotTransactionListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/SeedLotTransaction"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -170,6 +170,23 @@ public class StringUtils {
     }
 
     /**
+     * Inserts an underscore before each upper case letter (except the first) and makes the whole string lower case
+     *
+     * @param value the string to be converted
+     * @return the converted string
+     */
+    public static String toSnakeCase(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        String result = value.replaceAll("([A-Z])", "_$1");
+        if (result.startsWith("_")) {
+            result = result.substring(1);
+        }
+        return result.toLowerCase();
+    }
+
+    /**
      * Makes the whole string lower case
      *
      * @param value the string to be converted
@@ -380,6 +397,18 @@ public class StringUtils {
 
     public static String removeCarriageReturns(String inputString) {
         return inputString.replaceAll("[\\n\\r]", " ") ;
+    }
+
+    public static String extractFirstLine(String description) {
+        if (description == null || description.isEmpty()) {
+            return description;
+        }
+        String cleaned = description.replace("\r", "").replace("\n", " ");
+        int endIdx = cleaned.indexOf('.');
+        if (endIdx != -1) {
+            return cleaned.substring(0, endIdx + 1).trim();
+        }
+        return cleaned.trim();
     }
 
     static class Replacer {

@@ -1,5 +1,5 @@
 {
-    "openapi" : "0.0.0",
+    "openapi" : "3.0.1",
     "info" : {
         "title" : "BrAPI",
         "version" : "0.0.0"
@@ -417,7 +417,6 @@
             "GermplasmNewRequest" : {
                 "required" : [
                     "commonCropName",
-                    "germplasmDbId",
                     "germplasmName",
                     "germplasmPUI"
                 ],
@@ -497,6 +496,7 @@
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri",
                         "nullable" : true
                     },
                     "donors" : {

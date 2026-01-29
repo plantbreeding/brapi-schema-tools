@@ -53,6 +53,21 @@ class StringUtilsTest {
     }
 
     @Test
+    void toSnakeCase() {
+        assertEquals("data_matrix", StringUtils.toSnakeCase("DataMatrix")) ;
+        assertEquals("person", StringUtils.toSnakeCase("Person")) ;
+        assertEquals("germplasm", StringUtils.toSnakeCase("Germplasm")) ;
+        assertEquals("study", StringUtils.toSnakeCase("Study")) ;
+        assertEquals("data_matrix", StringUtils.toSnakeCase("dataMatrix")) ;
+        assertEquals("person", StringUtils.toSnakeCase("person")) ;
+        assertEquals("germplasm", StringUtils.toSnakeCase("germplasm")) ;
+        assertEquals("study", StringUtils.toSnakeCase("study")) ;
+        assertEquals("trial", StringUtils.toSnakeCase("trial")) ;
+        assertEquals("breeding_method", StringUtils.toSnakeCase("BreedingMethod")) ;
+        assertEquals("inventory_lot_attribute_value", StringUtils.toSnakeCase("InventoryLotAttributeValue")) ;
+    }
+
+    @Test
     void makeValidName() {
         assertEquals("null", StringUtils.makeValidName(null)) ;
         assertEquals("blank", StringUtils.makeValidName("")) ;
@@ -195,5 +210,23 @@ class StringUtilsTest {
         assertEquals("test1 test2", StringUtils.removeCarriageReturns("test1\ntest2"));
         assertEquals("test3  test4", StringUtils.removeCarriageReturns("test3\n\rtest4"));
         assertEquals("test5 test6", StringUtils.removeCarriageReturns("test5\ntest6"));
+    }
+
+    @Test
+    void testExtractFirstLine() {
+        // Basic case
+        assertEquals("This is the first line.", StringUtils.extractFirstLine("This is the first line. This is the second line."));
+        // No full stop
+        assertEquals("No full stop in this string", StringUtils.extractFirstLine("No full stop in this string"));
+        // Carriage returns and newlines
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\nSecond line here."));
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\rSecond line here."));
+        assertEquals("First line only.", StringUtils.extractFirstLine("First line only.\r\nSecond line here."));
+        // Leading/trailing whitespace
+        assertEquals("First line.", StringUtils.extractFirstLine("  First line.  Second line."));
+        // Empty string
+        assertEquals("", StringUtils.extractFirstLine(""));
+        // Null input
+        assertNull(StringUtils.extractFirstLine(null));
     }
 }

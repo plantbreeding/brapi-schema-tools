@@ -4,7 +4,7 @@ newRequestNameFormat: "%sNewRequest2"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
-    PedigreeNode: pedigree
+    PedigreeNode: /pedigree2
 singleGet:
     generate: false
     generateFor:

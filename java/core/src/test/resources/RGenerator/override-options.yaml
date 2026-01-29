@@ -1,0 +1,18 @@
+overwrite: true
+listGet:
+    summaryFormat: Get a filtered list of %s X
+post:
+    summaryFormat: Create new %s X
+put:
+    generateFor:
+        BreedingMethod: true
+properties:
+    name:
+        link: false
+    pui:
+        nameFormat: "%sPUItest"
+    linkTypeFor:
+        CallSet:
+            calls: id
+        Trial:
+            contacts: id

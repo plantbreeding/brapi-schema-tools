@@ -84,8 +84,8 @@ class OpenAPIGeneratorOptionsTest {
 
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
 
-        assertEquals("pedigree", options.getPathItemNameFor("PedigreeNode"));
-        assertEquals("pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
+        assertEquals("/pedigree2", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigree2", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
         assertTrue(options.getSingleGet().isGenerating());
         assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
