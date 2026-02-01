@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.validiation;
 
+import com.networknt.schema.SpecVersion;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -161,6 +162,38 @@ public class Validation {
     }
 
     /**
+     * Checks that the provided value is one of the provided values.
+     * @param value the value to be checked, can not be null.
+     * @param values the list of permitted values that the provided value must adhere to, can not be null.
+     * @param message the error message to be used if the value is not one of the provided values
+     * @param <T> the class of the value
+     * @return this Validation
+     */
+    public <T> Validation assertOneOf(T value, T[] values, String message) {
+        if (value == null || values == null || Arrays.stream(values).noneMatch(v -> v.equals(value))) {
+            addError(message);
+        }
+
+        return this ;
+    }
+
+    /**
+     * Checks that the provided value is one of the provided values.
+     * @param value the value to be checked, can not be null.
+     * @param values the list of permitted values that the provided value must adhere to, can not be null.
+     * @param message the error message to be used if the value is not one of the provided values
+     * @param <T> the class of the value
+     * @return this Validation
+     */
+    public <T> Validation assertOneOf(T value, List<T> values, String message) {
+        if (value == null || values == null || !values.contains(value)) {
+            addError(message);
+        }
+
+        return this ;
+    }
+
+    /**
      * Was the validation successful,
      * @return {@code true} if the validation was successful, {@code false} otherwise
      */
@@ -246,7 +279,8 @@ public class Validation {
     public Validation mergeOnCondition(boolean condition, Validatable validatable, String prefixMessage) {
         if (condition) {
             if (validatable != null) {
-                addAllErrors(validatable.validate().getErrors(), prefixMessage);
+                Validation validate = validatable.validate();
+                addAllErrors(validate.getErrors(), prefixMessage);
             } else {
                 addError("Can not merge null Validatable!");
             }
@@ -326,8 +360,10 @@ public class Validation {
     }
 
     private void addAllErrors(Collection<Response.Error> errors, String prefixMessage) {
-        errors.forEach(error ->
-            this.errors.add(Response.Error.of(error.getCode(), String.format("%s %s", prefixMessage, error.getMessage()), error.getType()))
-        );
+        this.errors.addAll(errors.stream().map(error -> Response.Error.of(
+            error.getCode(),
+            prefixMessage + ": " + error.getMessage(),
+            error.getType()
+        )).toList());
     }
 }

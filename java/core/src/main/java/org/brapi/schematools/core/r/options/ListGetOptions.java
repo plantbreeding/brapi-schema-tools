@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class ListGetOptions extends AbstractOpenAPIOptions {
+public class ListGetOptions extends AbstractRGeneratorSubOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();

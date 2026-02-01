@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class PutOptions extends AbstractOpenAPIOptions {
+public class PutOptions extends AbstractRGeneratorSubOptions {
 
     private Boolean multiple;
     @Getter(AccessLevel.NONE)

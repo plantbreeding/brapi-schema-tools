@@ -145,4 +145,6 @@ properties:
             callSets: none
             variants: none
 brAPISchemaReader:
-    ignoreDuplicateProperties: true
+    specVersion: V202012
+    ignoreDuplicateProperties: false
+    warnAboutDuplicateProperties: true

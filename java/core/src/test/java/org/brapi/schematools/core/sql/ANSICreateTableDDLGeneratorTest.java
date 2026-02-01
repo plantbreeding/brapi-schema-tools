@@ -1,10 +1,10 @@
 package org.brapi.schematools.core.sql;
 
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
@@ -50,6 +50,19 @@ class ANSICreateTableDDLGeneratorTest {
     void generateStudy() {
         generate(SQLGeneratorOptions.load(), SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/Study.sql") ;
     }
+
+    @Test
+    void generateStudyWithOnlyPUIAsLink() {
+        SQLGeneratorOptions options = SQLGeneratorOptions.load();
+
+        options.getProperties().getId().setLink(false);
+        options.getProperties().getName().setLink(false);
+
+        options.getProperties().getId().setLinkFor("Location", true) ;
+
+        generate(options, SQLGeneratorMetadata.load(),"Study", "SQLGenerator/ANSI/StudyPUI.sql") ;
+    }
+
 
     @Test
     void generateStudyWithUsing() {
@@ -124,10 +137,9 @@ class ANSICreateTableDDLGeneratorTest {
         return (BrAPIObjectType)brAPIClasses.stream().filter(brAPIClass -> brAPIClass instanceof BrAPIObjectType && brAPIClass.getName().equals(className)).findFirst().orElseThrow() ;
     }
 
-    private void assertDDLEquals(String classPath, String ddl) {
+    private void assertDDLEquals(String classPath, String actual) {
         try {
             String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow() ;
-            String actual = format(ddl).getResultOrThrow() ;
 
             if (!isMultilineEqual(expected, actual)) {
                 Path build = Paths.get("build/test-output", classPath);
@@ -139,14 +151,6 @@ class ANSICreateTableDDLGeneratorTest {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             Assertions.fail(e) ;
-        }
-    }
-
-    private Response<String> format(String sqlStr) {
-        try {
-            return success(SqlFormatter.format(sqlStr)) ;
-        } catch (Exception e) {
-            return fail(Response.ErrorType.VALIDATION, e.getMessage());
         }
     }
 

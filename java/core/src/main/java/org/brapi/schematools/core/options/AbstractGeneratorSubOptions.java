@@ -29,6 +29,7 @@ public abstract class AbstractGeneratorSubOptions implements Options {
      * @return a Validation object than can be used queried to find if the options are valid and any errors
      * if the options are not valid
      */
+    @Override
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(generate, "'generate' option on %s is null", this.getClass().getSimpleName())

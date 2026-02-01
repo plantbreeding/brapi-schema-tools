@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
@@ -20,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class GraphQLGeneratorOptionsTest {
+@Slf4j
+class GraphQLGeneratorOptionsTest extends OptionsTestBase {
 
     @Test
     void load() {
         GraphQLGeneratorOptions options = GraphQLGeneratorOptions.load();
 
+        checkValidation(options);
         checkDefaultOptions(options);
     }
 
@@ -35,10 +39,11 @@ class GraphQLGeneratorOptionsTest {
         try {
             options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
+        checkValidation(options);
         checkDefaultOptions(options);
     }
 
@@ -48,10 +53,11 @@ class GraphQLGeneratorOptionsTest {
         try {
             options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
+        checkValidation(options);
         checkDefaultOptions(options);
     }
 
@@ -61,10 +67,11 @@ class GraphQLGeneratorOptionsTest {
         try {
             options = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
+        checkValidation(options);
         checkOptions(options);
         assertFalse(options.isUsingIDType());
         assertFalse(options.getQueryType().isPartitionedByCrop());
@@ -91,7 +98,9 @@ class GraphQLGeneratorOptionsTest {
     void compare() {
         try {
             GraphQLGeneratorOptions options1 = GraphQLGeneratorOptions.load() ;
+            checkValidation(options1);
             GraphQLGeneratorOptions options2 = GraphQLGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-no-override-options.yaml").toURI()));
+            checkValidation(options2);
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
@@ -100,7 +109,7 @@ class GraphQLGeneratorOptionsTest {
 
             assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }

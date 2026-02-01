@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -18,17 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class MarkdownGeneratorOptionsTest {
+class MarkdownGeneratorOptionsTest extends OptionsTestBase {
     @Test
     void load() {
         MarkdownGeneratorOptions options = MarkdownGeneratorOptions.load();
 
-        Validation validation = options.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
-
-        assertTrue(validation.isValid()) ;
-
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -36,10 +32,7 @@ class MarkdownGeneratorOptionsTest {
     void load2() {
         MarkdownGeneratorOptions options = MarkdownGeneratorOptions.load().setOverwrite(true);
 
-        Validation validation = options.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
-
+        checkValidation(options) ;
         assertTrue(options.isOverwritingExistingFiles());
         assertTrue(options.isAddingGeneratorComments()) ;
     }
@@ -54,6 +47,7 @@ class MarkdownGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -67,6 +61,7 @@ class MarkdownGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -80,6 +75,7 @@ class MarkdownGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkOptions(options);
 
         assertFalse(options.isAddingGeneratorComments()) ;
@@ -89,7 +85,9 @@ class MarkdownGeneratorOptionsTest {
     void compare() {
         try {
             MarkdownGeneratorOptions options1 = MarkdownGeneratorOptions.load() ;
+            checkValidation(options1) ;
             MarkdownGeneratorOptions options2 = MarkdownGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("Markdown/markdown-no-override-options.yaml").toURI()));
+            checkValidation(options2) ;
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
