@@ -22,7 +22,7 @@ import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.generator.OpenAPIWriter;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
-import org.brapi.schematools.core.r.generator.RGenerator;
+import org.brapi.schematools.core.r.RGenerator;
 import org.brapi.schematools.core.r.metadata.RGeneratorMetadata;
 import org.brapi.schematools.core.r.options.RGeneratorOptions;
 import org.brapi.schematools.core.response.Response;

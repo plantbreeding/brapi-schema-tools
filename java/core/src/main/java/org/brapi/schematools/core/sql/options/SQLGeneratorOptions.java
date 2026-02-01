@@ -1,11 +1,7 @@
 package org.brapi.schematools.core.sql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;

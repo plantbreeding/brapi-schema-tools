@@ -1,4 +1,4 @@
-package org.brapi.schematools.core.r.generator;
+package org.brapi.schematools.core.r;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +65,21 @@ public class RGenerator {
      * that contains the request schemas and BrAPI-Common that contains common schemas
      * for use across modules.
      * @param schemaDirectory the path to the complete BrAPI Specification
+     * @return the paths of the Markdown files generated from the complete BrAPI Specification
+     */
+    public Response<List<Path>> generate(Path schemaDirectory) {
+        return generate(schemaDirectory, RGeneratorMetadata.load()) ;
+    }
+
+    /**
+     * Generates SQL files for type and their field descriptions
+     * from the complete BrAPI Specification in
+     * a directory contains a subdirectories for each module that contain
+     * the BrAPI JSON schema and the additional subdirectories called 'Requests'
+     * that contains the request schemas and BrAPI-Common that contains common schemas
+     * for use across modules.
+     * @param schemaDirectory the path to the complete BrAPI Specification
+     * @param metadata the metadata for the generator
      * @return the paths of the Markdown files generated from the complete BrAPI Specification
      */
     public Response<List<Path>> generate(Path schemaDirectory, RGeneratorMetadata metadata) {

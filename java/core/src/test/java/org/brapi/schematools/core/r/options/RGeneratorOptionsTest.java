@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
-import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 class RGeneratorOptionsTest extends OptionsTestBase {
     @Test
     void load() {
@@ -38,17 +38,17 @@ class RGeneratorOptionsTest extends OptionsTestBase {
 
         checkValidation(options) ;
 
-        checkOverrideOptions(options);
+        checkDefaultOptions(options);
     }
 
     @Test
     void loadJson() {
         RGeneratorOptions options = null;
+
         try {
             options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
+            log.warn(e.getMessage(), e);
         }
 
         checkValidation(options) ;
@@ -61,7 +61,7 @@ class RGeneratorOptionsTest extends OptionsTestBase {
         try {
             options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
@@ -76,37 +76,12 @@ class RGeneratorOptionsTest extends OptionsTestBase {
         try {
             options = RGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("RGenerator/override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
         checkValidation(options) ;
-        checkOptions(options);
-
-        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
-
-        assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
-        assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
-        assertTrue(options.getSingleGet().isGenerating());
-        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
-
-        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
-
-        assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
-
-        assertTrue(options.getPut().isGeneratingFor("BreedingMethod"));
-
-        assertEquals(LinkType.ID,
-            options.getProperties().getLinkTypeFor(
-                BrAPIObjectType.builder().name("CallSet").build(),
-                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
-        );
-
-        assertEquals(LinkType.ID,
-            options.getProperties().getLinkTypeFor(
-                BrAPIObjectType.builder().name("Trial").build(),
-                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
-        );
+        checkOverrideOptions(options);
     }
 
     @Test
@@ -122,7 +97,7 @@ class RGeneratorOptionsTest extends OptionsTestBase {
 
             assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -155,6 +130,40 @@ class RGeneratorOptionsTest extends OptionsTestBase {
                 BrAPIObjectType.builder().name("Trial").build(),
                 BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
         );
+
+        assertFalse(options.getBrAPISchemaReader().isIgnoringDuplicateProperties());
+    }
+
+    private void checkOverrideOptions(RGeneratorOptions options) {
+        checkOptions(options);
+
+        assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
+
+        assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
+        assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
+        assertTrue(options.getSingleGet().isGenerating());
+        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+
+        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
+
+        assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
+
+        assertTrue(options.getPut().isGeneratingFor("BreedingMethod"));
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow()
+        );
+
+        assertEquals(LinkType.ID,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("Trial").build(),
+                BrAPIObjectProperty.builder().name("contacts").build()).getResultOrThrow()
+        );
+
+        assertTrue(options.isOverwritingExistingFiles());
+        assertTrue(options.getBrAPISchemaReader().isIgnoringDuplicateProperties());
     }
 
     private void checkOptions(RGeneratorOptions options) {
@@ -221,11 +230,5 @@ class RGeneratorOptionsTest extends OptionsTestBase {
                 BrAPIObjectType.builder().name("VariantSet").build(),
                 BrAPIObjectProperty.builder().name("variants").build()).getResultOrThrow()
         );
-    }
-
-    private void checkOverrideOptions(RGeneratorOptions options) {
-        checkOptions(options);
-
-        assertTrue(options.isOverwritingExistingFiles());
     }
 }

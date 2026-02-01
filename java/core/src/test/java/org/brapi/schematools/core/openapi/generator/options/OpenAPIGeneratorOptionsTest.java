@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
     @BeforeEach
@@ -43,7 +45,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         try {
             options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.json").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
@@ -59,7 +61,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         try {
             options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-test-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
@@ -75,7 +77,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         try {
             options = OpenAPIGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-override-options.yaml").toURI()));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
 
@@ -126,7 +128,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
             assertEquals(writer.writeValueAsString(options1), writer.writeValueAsString(options2));
         } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }

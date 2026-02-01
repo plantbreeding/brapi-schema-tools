@@ -9,10 +9,8 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
-import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
-import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

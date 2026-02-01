@@ -3,6 +3,7 @@ package org.brapi.schematools.core.r.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
@@ -57,6 +58,8 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
     private Map<String, String> pathItemNameFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private BrAPISchemaReaderOptions brAPISchemaReader ;
 
     /**
      * Load the default options
@@ -65,7 +68,17 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      */
     public static RGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("r-options.yaml", RGeneratorOptions.class);
+            RGeneratorOptions options = ConfigurationUtils.load("r-options.yaml", RGeneratorOptions.class);
+
+            if (options.getBrAPISchemaReader() == null) {
+                options.setBrAPISchemaReader(BrAPISchemaReaderOptions.load());
+            } else {
+                options.setBrAPISchemaReader(
+                    BrAPISchemaReaderOptions.load().override(options.getBrAPISchemaReader())
+                ) ;
+            }
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -116,7 +129,9 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
             .merge(search)
             .merge(properties)
             .merge(controlledVocabulary)
-            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null") ;
+            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
+            .assertNotNull(brAPISchemaReader, "'brAPISchemaReader' options on %s is null", this.getClass().getSimpleName())
+            .merge(brAPISchemaReader);
     }
 
     /**
@@ -184,6 +199,10 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
 
         if (overrideOptions.controlledVocabulary != null) {
             controlledVocabulary = overrideOptions.controlledVocabulary ;
+        }
+
+        if (overrideOptions.brAPISchemaReader != null) {
+            brAPISchemaReader.override(overrideOptions.brAPISchemaReader);
         }
 
         return this;
