@@ -16,3 +16,5 @@ properties:
             calls: id
         Trial:
             contacts: id
+brAPISchemaReader:
+    ignoreDuplicateProperties: true

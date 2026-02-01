@@ -1,6 +1,5 @@
 package org.brapi.schematools.core.validiation;
 
-import com.networknt.schema.SpecVersion;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

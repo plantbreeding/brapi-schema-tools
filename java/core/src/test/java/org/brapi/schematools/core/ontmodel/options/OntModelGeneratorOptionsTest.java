@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.options.OptionsTestBase;
-import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -14,7 +12,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class OntModelGeneratorOptionsTest extends OptionsTestBase {
