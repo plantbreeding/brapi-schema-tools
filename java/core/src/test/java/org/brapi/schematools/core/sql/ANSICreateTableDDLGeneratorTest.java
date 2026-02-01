@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,13 +19,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import static org.brapi.schematools.core.response.Response.fail;
-import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.test.TestUtils.assertMultilineEqual;
 import static org.brapi.schematools.core.utils.StringUtils.isMultilineEqual;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Slf4j
 class ANSICreateTableDDLGeneratorTest {
@@ -149,37 +143,6 @@ class ANSICreateTableDDLGeneratorTest {
 
             assertMultilineEqual(expected, actual);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            Assertions.fail(e) ;
-        }
-    }
-
-    public static void assertMultilineEqual(String expected, String actual) {
-        BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
-        BufferedReader actualReader = new BufferedReader(new StringReader(actual));
-
-        boolean equals = true;
-
-        try {
-            String expectedLine = expectedReader.readLine() ;
-            String actualLine = actualReader.readLine() ;
-
-            int line = 1 ;
-
-            while (equals && expectedLine != null && actualLine != null) {
-                equals = expectedLine.equals(actualLine);
-                assertEquals(expectedLine, actualLine, String.format("Expected '%s' but got '%s' at line %d", expectedLine, actualLine, line));
-
-                expectedLine = expectedReader.readLine() ;
-                actualLine = actualReader.readLine() ;
-
-                ++line;
-            }
-
-            assertNull(expectedLine, String.format("Expected no more line in expected string at line %d", line));
-            assertNull(actualLine, String.format("Expected no more line in expected string at line %d", line));
-        }
-        catch (Exception e) {
             log.error(e.getMessage(), e);
             Assertions.fail(e) ;
         }
