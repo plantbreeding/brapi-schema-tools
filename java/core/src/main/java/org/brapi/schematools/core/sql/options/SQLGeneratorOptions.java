@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.sql.SQLGenerator;
@@ -34,7 +35,7 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     private Boolean addTableComments;
     private Boolean addTableColumnComments;
     private Boolean addGeneratorComments;
-    private Boolean format;
+    private Integer indent ;
     private String tableUsing;
     private Map<String, Object> tableProperties;
     private Boolean clustering;
@@ -42,6 +43,8 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     private Boolean dropTable;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
+    @Setter(AccessLevel.PRIVATE)
+    private BrAPISchemaReaderOptions brAPISchemaReader ;
 
     /**
      * Load the default options
@@ -50,7 +53,17 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
      */
     public static SQLGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("sql-options.yaml", SQLGeneratorOptions.class);
+            SQLGeneratorOptions options = ConfigurationUtils.load("sql-options.yaml", SQLGeneratorOptions.class);
+
+            if (options.getBrAPISchemaReader() == null) {
+                options.setBrAPISchemaReader(BrAPISchemaReaderOptions.load());
+            } else {
+                options.setBrAPISchemaReader(
+                    BrAPISchemaReaderOptions.load().override(options.getBrAPISchemaReader())
+                ) ;
+            }
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -86,7 +99,10 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     public Validation validate() {
         return super.validate()
             .assertNotNull(properties, "Properties Options are null")
-            .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable");
+            .merge(properties)
+            .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable")
+            .assertNotNull(brAPISchemaReader, "'brAPISchemaReader' options on %s is null", this.getClass().getSimpleName())
+            .merge(brAPISchemaReader);
     }
 
     /**
@@ -118,8 +134,8 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
             addGeneratorComments = overrideOptions.addGeneratorComments;
         }
 
-        if (overrideOptions.format != null) {
-            format = overrideOptions.format;
+        if (overrideOptions.indent != null) {
+            indent = overrideOptions.indent;
         }
 
         if (overrideOptions.tableUsing != null) {
@@ -148,6 +164,10 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
 
         if (overrideOptions.properties != null) {
             properties.override(overrideOptions.getProperties()) ;
+        }
+
+        if (overrideOptions.brAPISchemaReader != null) {
+            brAPISchemaReader.override(overrideOptions.brAPISchemaReader);
         }
 
         return this;
@@ -208,13 +228,13 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     }
 
     /**
-     * Determines if the Generator should format files.
+     * Gets the indent size for formatting files.
      *
      * @return {@code true} if the Generator should format files, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isFormatingFiles() {
-        return format != null && format;
+    public int getIndentSize() {
+        return indent != null ? indent : 0;
     }
 
     /**

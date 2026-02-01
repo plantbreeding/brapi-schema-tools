@@ -27,6 +27,8 @@ public class PropertyOptions implements Options {
     @Getter(AccessLevel.PUBLIC)
     private Boolean link;
     @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> linkFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
     private Map<String, String> propertyFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralPropertyFor = new HashMap<>();
@@ -35,6 +37,7 @@ public class PropertyOptions implements Options {
         return Validation.valid()
             .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(link, "'link' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(linkFor, "'linkFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pluralPropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -52,6 +55,7 @@ public class PropertyOptions implements Options {
             setLink(overrideOptions.link); ;
         }
 
+        linkFor.putAll(overrideOptions.linkFor);
         propertyFor.putAll(overrideOptions.propertyFor);
         pluralPropertyFor.putAll(overrideOptions.pluralPropertyFor);
     }
@@ -62,6 +66,57 @@ public class PropertyOptions implements Options {
      */
     public boolean isLink() {
         return link != null && link ;
+    }
+
+    /**
+     * Gets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
+     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(String, String)}
+     * to override this value.
+     * @param name the name of the primary model
+     * @return {@code true} if this property is used as a foreign key link between entities
+     * for a specific primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isLinkFor(String name) {
+        return linkFor.getOrDefault(name, link) ;
+    }
+
+    /**
+     * Gets if this property is used specific primary model. For example the id property (or field)
+     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(BrAPIType, String)}
+     * to override this value.
+     * @param type the primary model
+     * @return {@code true} if this property is used as a foreign key link between entities
+     * for a specific primary model, {@code false} otherwise
+     */
+    public boolean isLinkFor(BrAPIType type) {
+        return isLinkFor(type.getName()) ;
+    }
+
+    /**
+     * Sets the property name for a specific primary model. For example the id property (or field)
+     * name of Study, would be 'studyDbId' by default.
+     * @param name the name of the primary model
+     * @param isLink {@code true} if this property is used as a foreign key link between entities
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public PropertyOptions setLinkFor(String name, Boolean isLink) {
+        linkFor.put(name, isLink) ;
+
+        return this ;
+    }
+
+    /**
+     * Sets the property name for a specific primary model. For example the id property (or field)
+     * name of Study, would be 'studyDbId' by default.
+     * @param type the primary model
+     * @param isLink {@code true} if this property is used as a foreign key link between entities
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public PropertyOptions setLinkFor(BrAPIType type, Boolean isLink) {
+        return setLinkFor(type.getName(), isLink) ;
     }
 
     /**
@@ -78,7 +133,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default. Use {@link #setPropertyNameFor(String, String)}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setPropertyNameFor(BrAPIType, String)}
      * to override this value.
      * @param type the primary model
      * @return property name for a specific primary model

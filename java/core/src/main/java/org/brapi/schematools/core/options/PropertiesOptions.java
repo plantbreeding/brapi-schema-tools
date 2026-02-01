@@ -31,7 +31,12 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     public Validation validate() {
         return super.validate()
             .assertNotNull(descriptionFormat, "'descriptionFormat' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(id, "'id' option on %s is null", this.getClass().getSimpleName())
+            .merge(id)
+            .assertNotNull(id, "'name' option on %s is null", this.getClass().getSimpleName())
+            .merge(name)
+            .assertNotNull(id, "'pui' option on %s is null", this.getClass().getSimpleName())
+            .merge(pui) ;
     }
 
     /**
@@ -68,21 +73,21 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectType brAPIObjectType) {
         List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
 
-        if (id.isLink()) {
+        if (id.isLinkFor(brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
                 .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)))
                 .findFirst()
                 .ifPresent(linkProperties::add);
         }
 
-        if (name != null && name.isLink()) {
+        if (name.isLinkFor(brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
                 .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)))
                 .findFirst()
                 .ifPresent(linkProperties::add);
         }
 
-        if (pui != null && pui.isLink()) {
+        if (pui.isLinkFor(brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
                 .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)))
                 .findFirst()

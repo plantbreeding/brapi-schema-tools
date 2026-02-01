@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class OpenAPIGeneratorOptionsTest {
+class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
     @BeforeEach
     void setUp() {
@@ -30,6 +31,7 @@ class OpenAPIGeneratorOptionsTest {
     void load() {
         OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load();
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
 
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
@@ -45,6 +47,7 @@ class OpenAPIGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
 
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));

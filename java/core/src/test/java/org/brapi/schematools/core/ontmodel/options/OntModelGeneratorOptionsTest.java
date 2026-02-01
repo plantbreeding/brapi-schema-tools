@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -16,17 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class OntModelGeneratorOptionsTest {
+class OntModelGeneratorOptionsTest extends OptionsTestBase {
     @Test
     void load() {
         OntModelGeneratorOptions options = OntModelGeneratorOptions.load();
 
-        Validation validation = options.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
-
-        assertTrue(validation.isValid()) ;
-
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -40,6 +36,7 @@ class OntModelGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -53,6 +50,7 @@ class OntModelGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -66,6 +64,7 @@ class OntModelGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkOptions(options);
 
         assertEquals("test2", options.getName());
@@ -75,7 +74,9 @@ class OntModelGeneratorOptionsTest {
     void compare() {
         try {
             OntModelGeneratorOptions options1 = OntModelGeneratorOptions.load() ;
+            checkValidation(options1) ;
             OntModelGeneratorOptions options2 = OntModelGeneratorOptions.load(Path.of(ClassLoader.getSystemResource("OntModelGenerator/ont-model-no-override-options.yaml").toURI()));
+            checkValidation(options2) ;
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);

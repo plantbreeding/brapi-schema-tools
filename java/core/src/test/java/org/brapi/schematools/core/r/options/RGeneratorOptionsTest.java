@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -21,16 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class RGeneratorOptionsTest {
+class RGeneratorOptionsTest extends OptionsTestBase {
     @Test
     void load() {
         RGeneratorOptions options = RGeneratorOptions.load();
 
-        Validation validation = options.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
-
-        assertTrue(validation.isValid()) ;
+        checkValidation(options) ;
 
         checkDefaultOptions(options);
     }
@@ -39,9 +36,7 @@ class RGeneratorOptionsTest {
     void load2() {
         RGeneratorOptions options = RGeneratorOptions.load().setOverwrite(true);
 
-        Validation validation = options.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
+        checkValidation(options) ;
 
         checkOverrideOptions(options);
     }
@@ -56,6 +51,7 @@ class RGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -69,6 +65,7 @@ class RGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkDefaultOptions(options);
     }
 
@@ -83,6 +80,7 @@ class RGeneratorOptionsTest {
             fail(e.getMessage());
         }
 
+        checkValidation(options) ;
         checkOptions(options);
 
         assertEquals("AlleleMatrix", options.getPluralFor("AlleleMatrix"));
