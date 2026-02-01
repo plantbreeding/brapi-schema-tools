@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.xlsx.options;
 
+import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ValuePropertyOptionTest {
+class ValuePropertyOptionTest extends OptionsTestBase {
 
     @Test
     void validate() {
@@ -22,11 +23,7 @@ class ValuePropertyOptionTest {
 
         option.setChildProperty(childProperty);
 
-        Validation validation = option.validate();
-
-        validation.getErrors().stream().map(Response.Error::getMessage).forEach(System.err::println);
-
-        assertTrue(validation.isValid()) ;
+        checkValidation(option);
     }
 
     @Test

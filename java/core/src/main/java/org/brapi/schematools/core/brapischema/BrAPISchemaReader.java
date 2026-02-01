@@ -9,6 +9,7 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import graphql.com.google.common.collect.Streams;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -37,18 +38,31 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
  * Utility class for reading BrAPI JSON Schema.
  */
 @AllArgsConstructor
+@Slf4j
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)?#\\/\\$defs\\/(\\w+)");
     private static final List<String> COMMON_MODULES = List.of("Schemas", "Parameters", "Requests");
 
+    private final BrAPISchemaReaderOptions options ;
     private final JsonSchemaFactory factory;
     private final ObjectMapper objectMapper;
 
     /**
      * Creates schema reader with a basic {@link ObjectMapper} and V202012 JSonSchema version
+     *
      */
     public BrAPISchemaReader() {
-        factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
+        this(BrAPISchemaReaderOptions.load());
+    }
+
+    /**
+     * Creates schema reader with a basic {@link ObjectMapper} and V202012 JSonSchema version
+     * @see BrAPISchemaReaderOptions the options for the reader
+     */
+    public BrAPISchemaReader(BrAPISchemaReaderOptions options) {
+        this.options = options ;
+
+        factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.valueOf(options.getSpecVersion()));
         objectMapper = new ObjectMapper();
     }
 
@@ -511,7 +525,7 @@ public class BrAPISchemaReader {
                         module, required.contains("additionalProperties")).onSuccessDoWithResult(properties::add)))
                 .mapOnCondition(jsonNode.has("properties"), () -> findChildNode(path, jsonNode, "properties", true)
                     .mapResult(JsonNode::fields)
-                    .mapResultToResponse(fields -> createProperties(path, fields, module, required))
+                    .mapResultToResponse(fields -> createProperties(path, name, fields, module, required))
                     .onSuccessDoWithResult(properties::addAll))
                 .onSuccessDo(() -> builder.properties(properties))
                 .mapResult(propertyList -> validateRequiredProperties(required, properties, name))
@@ -532,8 +546,31 @@ public class BrAPISchemaReader {
                         properties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.joining(", ")))));
         }
 
-        private Response<List<BrAPIObjectProperty>> createProperties(Path path, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
-            return Streams.stream(fields).map(field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey()))).collect(Response.toList());
+        private Response<List<BrAPIObjectProperty>> createProperties(Path path, String name, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
+            return Streams.stream(fields)
+                .map(
+                field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey())))
+                .collect(Response.toList())
+                .mapResultToResponse(properties -> validateProperties(path, name, properties));
+        }
+
+        private Response<List<BrAPIObjectProperty>> validateProperties(Path path, String objectName, List<BrAPIObjectProperty> properties) {
+            Set<String> seenNames = new HashSet<>();
+            for (BrAPIObjectProperty property : properties) {
+                if (!seenNames.add(property.getName())) {
+                    if (options.isWarningAboutDuplicateProperties()) {
+                        log.warn("Duplicate property name '{}' found in properties list for '{}' for path '{}'", objectName, property.getName(), path);
+                        continue;
+                    }
+
+                    if (options.isIgnoringDuplicateProperties()) {
+                        continue;
+                    }
+                    return Response.fail(Response.ErrorType.VALIDATION, path,
+                        String.format("Duplicate property name '%s' found in properties list.", property.getName()));
+                }
+            }
+            return Response.success(properties);
         }
 
         private Response<BrAPIObjectProperty> createProperty(Path path, JsonNode jsonNode, String name, String module, boolean required) {
