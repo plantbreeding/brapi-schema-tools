@@ -48,23 +48,8 @@ public class ValidateSubCommand  extends AbstractSubCommand {
 
         response.getAllErrors().forEach(this::printError);
 
-        if (throwExceptionOnFail) {
+        if (isThrowExceptionOnFail()) {
             throw new BrAPICommandException(message, response.getAllErrors()) ;
         }
-    }
-
-    private void printError(Response.Error error) {
-        switch (error.getType()) {
-
-            case VALIDATION -> {
-                System.err.print("Validation Error :");
-            }
-            case PERMISSION, OTHER -> {
-                System.err.print("Error :");
-            }
-        }
-        System.err.print('\t');
-
-        System.err.println(error.getMessage());
     }
 }
