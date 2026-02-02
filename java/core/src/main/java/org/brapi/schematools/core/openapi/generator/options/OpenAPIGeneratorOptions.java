@@ -9,6 +9,7 @@ import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -34,7 +35,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
+public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private SingleGetOptions singleGet;
@@ -88,7 +89,11 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      */
     public static OpenAPIGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("openapi-options.yaml", OpenAPIGeneratorOptions.class) ;
+            OpenAPIGeneratorOptions options = ConfigurationUtils.load("openapi-options.yaml", OpenAPIGeneratorOptions.class);
+
+            loadBrAPISchemaReaderOptions(options) ;
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -253,7 +258,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate a separate specification per module, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isSeparatingByModule() {
+    public final boolean isSeparatingByModule() {
         return separateByModule ;
     }
 
@@ -263,7 +268,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingEndpoint() {
+    public final boolean isGeneratingEndpoint() {
         return listGet.isGenerating() || post.isGenerating() || put.isGenerating() ;
     }
 
@@ -274,7 +279,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingEndpointFor(@NonNull String name) {
+    public final boolean isGeneratingEndpointFor(@NonNull String name) {
         return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) || put.isGeneratingEndpointFor(name) ;
     }
 
@@ -285,7 +290,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingEndpointFor(@NonNull BrAPIType type) {
+    public final boolean isGeneratingEndpointFor(@NonNull BrAPIType type) {
         return isGeneratingEndpointFor(type.getName()) ;
     }
 
@@ -296,7 +301,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingEndpointWithId() {
+    public final boolean isGeneratingEndpointWithId() {
         return singleGet.isGenerating() || put.isGenerating() || delete.isGenerating() ;
     }
 
@@ -308,7 +313,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
+    public final boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
         return singleGet.isGeneratingFor(name) || put.isGeneratingEndpointNameWithIdFor(name) || delete.isGeneratingFor(name) ;
     }
 
@@ -326,7 +331,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
 
 
     @JsonIgnore
-    public String getSupplementalSpecificationFor(@NonNull String name) {
+    public final String getSupplementalSpecificationFor(@NonNull String name) {
         return supplementalSpecificationFor.getOrDefault(name, supplementalSpecification) ;
     }
 
@@ -338,7 +343,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate a NewRequest schema, separate from the standard schema for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingNewRequestFor(@NonNull String name) {
+    public final boolean isGeneratingNewRequestFor(@NonNull String name) {
         return generateNewRequestFor.getOrDefault(name, generateNewRequest) ;
     }
 
@@ -360,7 +365,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the NewRequest schema name for a specific Primary Model
      */
     @JsonIgnore
-    public String getNewRequestNameFor(@NonNull String name) {
+    public final String getNewRequestNameFor(@NonNull String name) {
         return String.format(newRequestNameFormat, name) ;
     }
 
@@ -380,7 +385,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the Single Response schema name for a specific Primary Model
      */
     @JsonIgnore
-    public String getSingleResponseNameFor(@NonNull String name) {
+    public final String getSingleResponseNameFor(@NonNull String name) {
         return String.format(singleResponseNameFormat, name) ;
     }
 
@@ -459,7 +464,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the Primary Model
      * @return the Pluralised name for a specific Primary Model
      */
-    public String getPathItemNameFor(String name) {
+    public final String getPathItemNameFor(String name) {
         return pathItemNameFor.getOrDefault(name, String.format("/%s", toLowerCase(getPluralFor(name))));
     }
 
@@ -468,7 +473,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @param type the Primary Model
      * @return the path item name for a specific Primary Model
      */
-    public String getPathItemNameFor(BrAPIType type) {
+    public final String getPathItemNameFor(BrAPIType type) {
         return getPathItemNameFor(type.getName()) ;
     }
 
@@ -477,7 +482,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @param type the Primary Model
      * @return the path item name for a specific Primary Model
      */
-    public String getPathItemWithIdNameFor(BrAPIType type) {
+    public final String getPathItemWithIdNameFor(BrAPIType type) {
         return String.format("%s/{%s}", getPathItemNameFor(type), properties.getIdPropertyNameFor(type));
     }
 
@@ -517,7 +522,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for the Property
      */
     @JsonIgnore
-    public String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+    public final String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
         return getPathItemNameForProperty(typeWithProperty.getType(), typeWithProperty.getProperty()) ;
     }
 
@@ -529,7 +534,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public OpenAPIGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
+    public final OpenAPIGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
         Map<String, String> map = pathItemNameForProperty.get(typeName) ;
 
         if (map != null) {
@@ -552,7 +557,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public OpenAPIGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
+    public final OpenAPIGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
         return setPathItemNameForProperty(type.getName(), property.getName(), pathItemName) ;
     }
 
@@ -585,7 +590,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractGeneratorOptions setTagFor(String name, String tagName) {
+    public final AbstractGeneratorOptions setTagFor(String name, String tagName) {
         tagFor.put(name, tagName) ;
 
         return this ;
@@ -597,7 +602,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @param property the Object type property
      * @return {@code true} generator will create a separate Endpoint for the property, {@code false} otherwise
      */
-    public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
         return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
@@ -607,7 +612,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      * @param property the Object type property
      * @return the name of the Sub-path endpoint for a property
      */
-    public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
+    public final String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
         return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
     }
 
@@ -619,7 +624,7 @@ public class OpenAPIGeneratorOptions extends AbstractGeneratorOptions {
      *
      * @return {@code true} if controlled vocabulary endpoints should be generated
      */
-    public boolean isGeneratingControlledVocabularyEndpoints() {
+    public final boolean isGeneratingControlledVocabularyEndpoints() {
         return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
     }
 }

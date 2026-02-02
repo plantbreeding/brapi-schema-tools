@@ -64,7 +64,7 @@ public class PropertyOptions implements Options {
      * Get if this property is used as a foreign key link between entities
      * @return {@code true} if this property is used as a foreign key link between entities, {@code false} otherwise
      */
-    public boolean isLink() {
+    public final boolean isLink() {
         return link != null && link ;
     }
 
@@ -77,7 +77,7 @@ public class PropertyOptions implements Options {
      * for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isLinkFor(String name) {
+    public final boolean isLinkFor(String name) {
         return linkFor.getOrDefault(name, link) ;
     }
 
@@ -89,7 +89,7 @@ public class PropertyOptions implements Options {
      * @return {@code true} if this property is used as a foreign key link between entities
      * for a specific primary model, {@code false} otherwise
      */
-    public boolean isLinkFor(BrAPIType type) {
+    public final boolean isLinkFor(BrAPIType type) {
         return isLinkFor(type.getName()) ;
     }
 
@@ -101,7 +101,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setLinkFor(String name, Boolean isLink) {
+    public final PropertyOptions setLinkFor(String name, Boolean isLink) {
         linkFor.put(name, isLink) ;
 
         return this ;
@@ -115,7 +115,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setLinkFor(BrAPIType type, Boolean isLink) {
+    public final PropertyOptions setLinkFor(BrAPIType type, Boolean isLink) {
         return setLinkFor(type.getName(), isLink) ;
     }
 
@@ -127,7 +127,7 @@ public class PropertyOptions implements Options {
      * @return property name for a specific primary model
      */
     @JsonIgnore
-    public String getPropertyNameFor(String name) {
+    public final String getPropertyNameFor(String name) {
         return propertyFor.getOrDefault(name, String.format(nameFormat, toParameterCase(name))) ;
     }
 
@@ -138,7 +138,7 @@ public class PropertyOptions implements Options {
      * @param type the primary model
      * @return property name for a specific primary model
      */
-    public String getPropertyNameFor(BrAPIType type) {
+    public final String getPropertyNameFor(BrAPIType type) {
         return getPropertyNameFor(type.getName()) ;
     }
 
@@ -150,7 +150,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setPropertyNameFor(String name, String parameterName) {
+    public final PropertyOptions setPropertyNameFor(String name, String parameterName) {
         propertyFor.put(name, parameterName) ;
 
         return this ;
@@ -164,7 +164,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setPropertyNameFor(BrAPIType type, String parameterName) {
+    public final PropertyOptions setPropertyNameFor(BrAPIType type, String parameterName) {
         return setPropertyNameFor(type.getName(), parameterName) ;
     }
 
@@ -176,7 +176,7 @@ public class PropertyOptions implements Options {
      * @return property name for a specific primary model
      */
     @JsonIgnore
-    public String getPluralPropertyNameFor(String name) {
+    public final String getPluralPropertyNameFor(String name) {
         return propertyFor.getOrDefault(name, toPlural(String.format(nameFormat, toParameterCase(name)))) ;
     }
 
@@ -187,7 +187,7 @@ public class PropertyOptions implements Options {
      * @param type the primary model
      * @return property name for a specific primary model
      */
-    public String getPluralPropertyNameFor(BrAPIType type) {
+    public final String getPluralPropertyNameFor(BrAPIType type) {
         return getPluralPropertyNameFor(type.getName()) ;
     }
 
@@ -199,7 +199,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setPluralPropertyNameFor(String name, String parameterName) {
+    public final PropertyOptions setPluralPropertyNameFor(String name, String parameterName) {
         propertyFor.put(name, parameterName) ;
 
         return this ;
@@ -213,7 +213,7 @@ public class PropertyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PropertyOptions setPluralPropertyNameFor(BrAPIType type, String idParameter) {
+    public final PropertyOptions setPluralPropertyNameFor(BrAPIType type, String idParameter) {
         return setPluralPropertyNameFor(type.getName(), idParameter) ;
     }
 }

@@ -1,3 +1,5 @@
+generate: true
+descriptionFormat: TODO Description for %s
 pluralFor:
     AlleleMatrix: AlleleMatrix
 input:

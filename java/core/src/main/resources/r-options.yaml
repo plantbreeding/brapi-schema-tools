@@ -1,3 +1,5 @@
+generate: true
+descriptionFormat: TODO Description for %s
 overwrite: false
 addGeneratorComments: true
 pluralFor:

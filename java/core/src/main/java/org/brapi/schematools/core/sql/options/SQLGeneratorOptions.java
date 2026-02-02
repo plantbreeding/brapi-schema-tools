@@ -1,10 +1,13 @@
 package org.brapi.schematools.core.sql.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
-import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.sql.SQLGenerator;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -24,7 +27,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
+public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
     private Boolean overwrite;
     private Boolean addTableHeaderComments;
@@ -39,8 +42,6 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
     private Boolean dropTable;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
-    @Setter(AccessLevel.PRIVATE)
-    private BrAPISchemaReaderOptions brAPISchemaReader ;
 
     /**
      * Load the default options
@@ -51,13 +52,7 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
         try {
             SQLGeneratorOptions options = ConfigurationUtils.load("sql-options.yaml", SQLGeneratorOptions.class);
 
-            if (options.getBrAPISchemaReader() == null) {
-                options.setBrAPISchemaReader(BrAPISchemaReaderOptions.load());
-            } else {
-                options.setBrAPISchemaReader(
-                    BrAPISchemaReaderOptions.load().override(options.getBrAPISchemaReader())
-                ) ;
-            }
+            loadBrAPISchemaReaderOptions(options) ;
 
             return options ;
         } catch (IOException e) {
@@ -96,9 +91,7 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
         return super.validate()
             .assertNotNull(properties, "Properties Options are null")
             .merge(properties)
-            .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable")
-            .assertNotNull(brAPISchemaReader, "'brAPISchemaReader' options on %s is null", this.getClass().getSimpleName())
-            .merge(brAPISchemaReader);
+            .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable") ;
     }
 
     /**
@@ -160,10 +153,6 @@ public class SQLGeneratorOptions extends AbstractGeneratorSubOptions {
 
         if (overrideOptions.properties != null) {
             properties.override(overrideOptions.getProperties()) ;
-        }
-
-        if (overrideOptions.brAPISchemaReader != null) {
-            brAPISchemaReader.override(overrideOptions.brAPISchemaReader);
         }
 
         return this;

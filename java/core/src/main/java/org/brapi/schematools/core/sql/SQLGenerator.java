@@ -39,7 +39,7 @@ public class SQLGenerator {
      * @param outputPath the path of the output file or directory
      */
     public SQLGenerator(Path outputPath) {
-        this(new BrAPISchemaReader(), SQLGeneratorOptions.load(), outputPath) ;
+        this(SQLGeneratorOptions.load(), outputPath) ;
     }
 
     /**
@@ -49,7 +49,7 @@ public class SQLGenerator {
      * @param outputPath the path of the output file or directory
      */
     public SQLGenerator(SQLGeneratorOptions options, Path outputPath) {
-        this(new BrAPISchemaReader(), options, outputPath) ;
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options, outputPath) ;
     }
 
     /**
