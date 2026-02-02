@@ -641,15 +641,6 @@
                         }
                     },
                     {
-                        "name" : "germplasmDbId",
-                        "in" : "query",
-                        "description" : "The ID which uniquely identifies a germplasm",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -1207,15 +1198,6 @@
                         "name" : "sampleGroupDbId",
                         "in" : "query",
                         "description" : "The unique identifier for a group of related `Samples`",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "germplasmDbId",
-                        "in" : "query",
-                        "description" : "The ID which uniquely identifies a `Germplasm`",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -3866,7 +3848,7 @@
                     },
                     "germplasmDbIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a germplasm",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -4555,7 +4537,7 @@
                     },
                     "germplasmDbIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a `Germplasm`",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }

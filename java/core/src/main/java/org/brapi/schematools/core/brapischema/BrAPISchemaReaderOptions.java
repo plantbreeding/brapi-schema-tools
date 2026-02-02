@@ -105,7 +105,7 @@ public class BrAPISchemaReaderOptions implements Options {
      * @return {@code true} if the Reader should ignore duplicate Properties, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isIgnoringDuplicateProperties() {
+    public final boolean isIgnoringDuplicateProperties() {
         return ignoreDuplicateProperties != null && ignoreDuplicateProperties ;
     }
 
@@ -115,7 +115,7 @@ public class BrAPISchemaReaderOptions implements Options {
      * @return {@code true} if the Reader should ignore duplicate Properties, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isWarningAboutDuplicateProperties() {
+    public final boolean isWarningAboutDuplicateProperties() {
         return warnAboutDuplicateProperties != null && warnAboutDuplicateProperties ;
     }
 }

@@ -1,7 +1,6 @@
 package org.brapi.schematools.core.r;
 
 import lombok.extern.slf4j.Slf4j;
-import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.r.options.RGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;

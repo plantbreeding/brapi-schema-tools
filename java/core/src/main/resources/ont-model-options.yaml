@@ -1,1 +1,3 @@
 name: test
+generate: true
+descriptionFormat: TODO Description for %s

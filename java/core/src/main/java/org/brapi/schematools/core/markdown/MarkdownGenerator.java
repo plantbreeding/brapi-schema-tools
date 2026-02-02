@@ -39,7 +39,7 @@ public class MarkdownGenerator {
      * @param outputPath the path of the output file or directory
      */
     public MarkdownGenerator(Path outputPath) {
-        this(new BrAPISchemaReader(), MarkdownGeneratorOptions.load(), outputPath) ;
+        this(MarkdownGeneratorOptions.load(), outputPath) ;
     }
 
     /**
@@ -49,7 +49,7 @@ public class MarkdownGenerator {
      * @param outputPath the path of the output file or directory
      */
     public MarkdownGenerator(MarkdownGeneratorOptions options, Path outputPath) {
-        this(new BrAPISchemaReader(), options, outputPath) ;
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options, outputPath) ;
     }
 
     /**

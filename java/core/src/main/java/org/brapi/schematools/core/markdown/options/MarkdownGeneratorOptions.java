@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.markdown.MarkdownGenerator;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
+public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
 
     private Boolean overwrite;
     private Boolean addGeneratorComments;
@@ -38,7 +38,11 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      */
     public static MarkdownGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("markdown-options.yaml", MarkdownGeneratorOptions.class);
+            MarkdownGeneratorOptions options = ConfigurationUtils.load("markdown-options.yaml", MarkdownGeneratorOptions.class);
+
+            loadBrAPISchemaReaderOptions(options) ;
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -117,7 +121,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * @return {@code true} if the Generator should Overwrite exiting files, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isOverwritingExistingFiles() {
+    public final boolean isOverwritingExistingFiles() {
         return overwrite != null && overwrite;
     }
 
@@ -128,7 +132,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAddingGeneratorComments() {
+    public final boolean isAddingGeneratorComments() {
         return addGeneratorComments != null && addGeneratorComments;
     }
 
@@ -138,7 +142,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * @return {@code true} if the Generator Markdown for properties of an object class,
      * {@code false} otherwise
      */
-    public boolean isGeneratingForProperties() {
+    public final boolean isGeneratingForProperties() {
         return generateProperties != null && generateProperties;
     }
 
@@ -148,7 +152,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * @return {@code true} if the Generator Markdown for parameter object classes
      * {@code false} otherwise
      */
-    public boolean isGeneratingForParameters() {
+    public final boolean isGeneratingForParameters() {
         return generateParameterClasses != null && generateParameterClasses;
     }
 
@@ -158,7 +162,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * @return {@code true} if the Generator Markdown for request object classes
      * {@code false} otherwise
      */
-    public boolean isGeneratingForRequests() {
+    public final boolean isGeneratingForRequests() {
         return generateRequestClasses != null && generateRequestClasses;
     }
 
@@ -173,7 +177,7 @@ public class MarkdownGeneratorOptions extends AbstractGeneratorSubOptions {
      * {@code false} if there is a duplicate property then only one markdown file is created in the
      * root fields directory
      */
-    public boolean isGeneratingForDuplicateProperties() {
+    public final boolean isGeneratingForDuplicateProperties() {
         return generateDuplicateProperties != null && generateDuplicateProperties;
     }
 

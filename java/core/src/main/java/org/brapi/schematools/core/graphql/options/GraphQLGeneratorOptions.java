@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.graphql.GraphQLGenerator;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
+public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
     private InputOptions input ;
     private QueryTypeOptions queryType;
@@ -41,7 +41,11 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      */
     public static GraphQLGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class) ;
+            GraphQLGeneratorOptions options = ConfigurationUtils.load("graphql-options.yaml", GraphQLGeneratorOptions.class);
+
+            loadBrAPISchemaReaderOptions(options) ;
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -121,7 +125,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate the Query Type, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingQueryType() {
+    public final boolean isGeneratingQueryType() {
         return isGeneratingSingleQueries() || isGeneratingListQueries() || isGeneratingSearchQueries() ;
     }
 
@@ -131,7 +135,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate any single query, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingSingleQueries() {
+    public final boolean isGeneratingSingleQueries() {
         return queryType.getSingleQuery().isGenerating() ;
     }
 
@@ -142,7 +146,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate single query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingSingleQueryFor(String name) {
+    public final boolean isGeneratingSingleQueryFor(String name) {
         return queryType.getSingleQuery().isGeneratingFor(name) ;
     }
 
@@ -152,7 +156,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate any List Query, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingListQueries() {
+    public final boolean isGeneratingListQueries() {
         return queryType.getListQuery().isGenerating() ;
     }
 
@@ -163,7 +167,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate List Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingListQueryFor(String name) {
+    public final boolean isGeneratingListQueryFor(String name) {
         return queryType.getListQuery().isGeneratingFor(name) ;
     }
 
@@ -173,7 +177,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate any Search Query, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingSearchQueries() {
+    public final boolean isGeneratingSearchQueries() {
         return queryType.getSearchQuery().isGenerating() ;
     }
 
@@ -184,7 +188,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Search Query for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingSearchQueryFor(String name) {
+    public final boolean isGeneratingSearchQueryFor(String name) {
         return queryType.getSearchQuery().isGeneratingFor(name) ;
     }
 
@@ -193,7 +197,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate the Mutation Type, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingMutationType() {
+    public final boolean isGeneratingMutationType() {
         return isGeneratingCreateMutation() || isGeneratingUpdateMutation() || isGeneratingDeleteMutation();
     }
 
@@ -203,7 +207,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate New mutations, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingCreateMutation() {
+    public final boolean isGeneratingCreateMutation() {
         return mutationType.getCreateMutation().isGenerating() ;
     }
 
@@ -214,7 +218,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Create mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingCreateMutationFor(String name) {
+    public final boolean isGeneratingCreateMutationFor(String name) {
         return mutationType.getCreateMutation().isGeneratingFor(name) ;
     }
 
@@ -224,7 +228,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Update mutations, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingUpdateMutation() {
+    public final boolean isGeneratingUpdateMutation() {
         return mutationType.getUpdateMutation() != null && mutationType.getUpdateMutation().isGenerating() ;
     }
 
@@ -235,7 +239,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Update mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingUpdateMutationFor(String name) {
+    public final boolean isGeneratingUpdateMutationFor(String name) {
         return mutationType.getUpdateMutation().isGeneratingFor(name) ;
     }
 
@@ -245,7 +249,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Delete mutations, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingDeleteMutation() {
+    public final boolean isGeneratingDeleteMutation() {
         return mutationType.getDeleteMutation() != null && mutationType.getDeleteMutation().isGenerating() ;
     }
 
@@ -256,7 +260,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should generate Delete mutation for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingDeleteMutationFor(String name) {
+    public final boolean isGeneratingDeleteMutationFor(String name) {
         return mutationType.getUpdateMutation().isGeneratingFor(name) ;
     }
 
@@ -265,7 +269,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the built-in GraphQLID type should be used for IDs instead of GraphQLString, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isUsingIDType() {
+    public final boolean isUsingIDType() {
         return properties.getIds().isUsingIDType();
     }
 
@@ -314,7 +318,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the Single Query of specific primary model
      */
-    public String getSingleQueryNameFor(String name) {
+    public final String getSingleQueryNameFor(String name) {
         return getNameFor(this.queryType.getSingleQuery(), name) ;
     }
 
@@ -323,7 +327,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the List Query of specific primary model
      */
-    public String getListQueryNameFor(String name) {
+    public final String getListQueryNameFor(String name) {
         return getNameFor(this.queryType.getListQuery(), name) ;
     }
 
@@ -332,7 +336,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the Search Query of specific primary model
      */
-    public String getSearchQueryNameFor(String name) {
+    public final String getSearchQueryNameFor(String name) {
         return getNameFor(this.queryType.getSearchQuery(), name) ;
     }
 
@@ -341,7 +345,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the Create Mutation of specific primary model
      */
-    public String getCreateMutationNameFor(String name) {
+    public final String getCreateMutationNameFor(String name) {
         return getNameFor(this.mutationType.getCreateMutation(), name) ;
     }
 
@@ -350,7 +354,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the Update Mutation of specific primary model
      */
-    public String getUpdateMutationNameFor(String name) {
+    public final String getUpdateMutationNameFor(String name) {
         return getNameFor(this.mutationType.getUpdateMutation(), name) ;
     }
 
@@ -359,11 +363,11 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the primary model
      * @return the name of the Delete Mutation of specific primary model
      */
-    public String getDeleteMutationNameFor(String name) {
+    public final String getDeleteMutationNameFor(String name) {
         return getNameFor(this.mutationType.getDeleteMutation(), name) ;
     }
 
-    private String getNameFor(AbstractGraphQLOptions options, String name) {
+    private final String getNameFor(AbstractGraphQLOptions options, String name) {
         String newName = options.isPluralisingName() ? getPluralFor(name) : name;
 
         return options.getNameFor(newName) ;
@@ -375,7 +379,7 @@ public class GraphQLGeneratorOptions extends AbstractGeneratorOptions {
      * @param type the BrAPIClass
      * @return {@code true} if the possible types of a 'OneOf' type are merged into a single type.
      */
-    public boolean isMergingOneOfType(BrAPIClass type) {
+    public final boolean isMergingOneOfType(BrAPIClass type) {
         return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
     }
 

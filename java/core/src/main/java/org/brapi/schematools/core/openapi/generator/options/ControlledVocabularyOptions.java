@@ -118,7 +118,7 @@ public class ControlledVocabularyOptions implements Options {
      * @return {@code true} if the Endpoint specific BrAPI Property, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingFor(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+    public final boolean isGeneratingFor(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
         return isGeneratingFor(typeWithProperty.getType(), typeWithProperty.getProperty()) ;
     }
 
@@ -130,7 +130,7 @@ public class ControlledVocabularyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ControlledVocabularyOptions setGenerateFor(String typeName, String propertyName, boolean generate) {
+    public final ControlledVocabularyOptions setGenerateFor(String typeName, String propertyName, boolean generate) {
         Map<String, Boolean> map = generateFor.get(typeName) ;
 
         if (map != null) {
@@ -153,7 +153,7 @@ public class ControlledVocabularyOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ControlledVocabularyOptions setGenerateFor(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, boolean generate) {
+    public final ControlledVocabularyOptions setGenerateFor(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, boolean generate) {
         return setGenerateFor(type.getName(), property.getName(), generate) ;
     }
 

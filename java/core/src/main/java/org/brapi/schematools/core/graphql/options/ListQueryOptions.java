@@ -79,7 +79,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
      * @return {@code true} if any list query has paging. {@code false} otherwise
      */
     @JsonIgnore
-    public boolean hasPaging() {
+    public final boolean hasPaging() {
         return pagedDefault || paged.values().stream().anyMatch(paged -> paged) ;
     }
 

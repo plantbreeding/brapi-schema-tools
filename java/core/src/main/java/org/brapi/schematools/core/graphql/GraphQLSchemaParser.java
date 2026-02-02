@@ -46,7 +46,7 @@ public class GraphQLSchemaParser {
      * @throws JsonProcessingException if there is a problem reading the schema as a valid
      * JSON object.
      */
-    public GraphQLSchema parseJsonSchema(String jsonSchema) throws JsonProcessingException {
+    public final GraphQLSchema parseJsonSchema(String jsonSchema) throws JsonProcessingException {
         IntrospectionResultToSchema introspectionResultToSchema = new IntrospectionResultToSchema();
 
         Map<String, Object> map = objectMapper.readValue(jsonSchema, Map.class);

@@ -54,7 +54,7 @@ public class OpenAPIGenerator {
      * the default {@link OpenAPIGeneratorOptions}.
      */
     public OpenAPIGenerator() {
-        this(new BrAPISchemaReader(), new OpenAPIComponentsReader(), OpenAPIGeneratorOptions.load());
+        this(OpenAPIGeneratorOptions.load());
     }
 
     /**
@@ -64,7 +64,7 @@ public class OpenAPIGenerator {
      * @param options The options to be used in the generation.
      */
     public OpenAPIGenerator(OpenAPIGeneratorOptions options) {
-        this(new BrAPISchemaReader(), new OpenAPIComponentsReader(), options);
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), new OpenAPIComponentsReader(), options);
     }
 
     /**

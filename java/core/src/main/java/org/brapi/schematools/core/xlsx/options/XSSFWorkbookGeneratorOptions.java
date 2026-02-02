@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.options.Options;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 import org.brapi.schematools.core.xlsx.XSSFWorkbookGenerator;
@@ -22,7 +22,7 @@ import java.util.List;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class XSSFWorkbookGeneratorOptions implements Options {
+public class XSSFWorkbookGeneratorOptions extends AbstractMainGeneratorOptions {
 
     List<ColumnOption> dataClassProperties ;
     List<String> dataClassFieldHeaders ;
@@ -34,7 +34,11 @@ public class XSSFWorkbookGeneratorOptions implements Options {
      */
     public static XSSFWorkbookGeneratorOptions load() {
         try {
-            return ConfigurationUtils.load("xlsx-options.yaml", XSSFWorkbookGeneratorOptions.class) ;
+            XSSFWorkbookGeneratorOptions options = ConfigurationUtils.load("xlsx-options.yaml", XSSFWorkbookGeneratorOptions.class);
+
+            loadBrAPISchemaReaderOptions(options) ;
+
+            return options ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

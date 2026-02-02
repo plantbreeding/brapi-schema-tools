@@ -1,10 +1,13 @@
 package org.brapi.schematools.cli;
 
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
+import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -15,22 +18,24 @@ import java.util.List;
     name = "validate", mixinStandardHelpOptions = true,
     description = "Validates the BrAPI JSON schema"
 )
-public class ValidateSubCommand implements Runnable {
+public class ValidateSubCommand  extends AbstractSubCommand {
 
     @CommandLine.Parameters(index = "0", description = "The directory containing the BrAPI JSON schema")
     private Path schemaDirectory;
 
-    @CommandLine.Option(names = {"-x", "--throwExceptionOnFail"}, description = "Throw an exception on failure. False by default, if set to True if an exception is thrown when validation or generation fails.")
-    private boolean throwExceptionOnFail = false ;
+    @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
+    private Path optionsPath;
 
     @Override
-    public void run() {
-        BrAPISchemaReader schemaReader = new BrAPISchemaReader() ;
+    protected void execute() throws IOException {
+        BrAPISchemaReaderOptions options = optionsPath != null ?
+            BrAPISchemaReaderOptions.load(optionsPath) : BrAPISchemaReaderOptions.load();
+
+        BrAPISchemaReader schemaReader = new BrAPISchemaReader(options) ;
 
         schemaReader.readDirectories(schemaDirectory)
-                    .onFailDoWithResponse(this::printErrors)
-                    .onSuccessDo(() -> System.out.println("The BrAPI JSON schema is valid"));
-
+            .onFailDoWithResponse(this::printErrors)
+            .onSuccessDo(() -> System.out.println("The BrAPI JSON schema is valid"));
     }
 
     private void printErrors(Response<List<BrAPIClass>> response) {
