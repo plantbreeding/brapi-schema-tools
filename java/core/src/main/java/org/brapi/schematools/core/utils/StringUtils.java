@@ -404,9 +404,17 @@ public class StringUtils {
             return description;
         }
         String cleaned = description.replace("\r", "").replace("\n", " ");
-        int endIdx = cleaned.indexOf('.');
-        if (endIdx != -1) {
-            return cleaned.substring(0, endIdx + 1).trim();
+        int bracketDepth = 0;
+        int parenDepth = 0;
+        for (int i = 0; i < cleaned.length(); i++) {
+            char c = cleaned.charAt(i);
+            if (c == '[') bracketDepth++;
+            if (c == ']') bracketDepth = Math.max(0, bracketDepth - 1);
+            if (c == '(') parenDepth++;
+            if (c == ')') parenDepth = Math.max(0, parenDepth - 1);
+            if (c == '.' && bracketDepth == 0 && parenDepth == 0) {
+                return cleaned.substring(0, i + 1).trim();
+            }
         }
         return cleaned.trim();
     }

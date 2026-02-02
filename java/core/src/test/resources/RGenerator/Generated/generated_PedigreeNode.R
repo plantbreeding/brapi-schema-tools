@@ -36,7 +36,7 @@ PedigreeNodes <- R6Class(
     #' @param trialDbIds The ID which uniquely identifies a trial to search for
     #' @param trialNames The human readable name of a trial to search for
     #' @param germplasmPUIs List of Permanent Unique Identifiers to identify germplasm
-    #' @param accessionNumbers A collection of unique identifiers for materials or germplasm within a genebank  MCPD (v2.
+    #' @param accessionNumbers A collection of unique identifiers for materials or germplasm within a genebank  MCPD (v2.1) (ACCENUMB) 2.
     #' @param collections A specific panel/collection/population name this germplasm belongs to.
     #' @param familyCodes A familyCode representing the family this germplasm belongs to.
     #' @param instituteCodes The code for the institute that maintains the material.
@@ -170,7 +170,7 @@ PedigreeNodes <- R6Class(
     #' @param trialDbIds The ID which uniquely identifies a trial to search for
     #' @param trialNames The human readable name of a trial to search for
     #' @param germplasmPUIs List of Permanent Unique Identifiers to identify germplasm
-    #' @param accessionNumbers A collection of unique identifiers for materials or germplasm within a genebank  MCPD (v2.
+    #' @param accessionNumbers A collection of unique identifiers for materials or germplasm within a genebank  MCPD (v2.1) (ACCENUMB) 2.
     #' @param collections A specific panel/collection/population name this germplasm belongs to.
     #' @param familyCodes A familyCode representing the family this germplasm belongs to.
     #' @param instituteCodes The code for the institute that maintains the material.

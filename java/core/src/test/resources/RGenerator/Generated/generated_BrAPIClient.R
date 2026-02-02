@@ -16,7 +16,7 @@ BrAPIClient <- R6Class(
   
     #' @field alleleMatrix
     #' Get the AlleleMatrix R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' AlleleMatrix entities
     alleleMatrix = function() {
       if (is.null(private$.alleleMatrix)) {
         if (private$.verbosity > 0) {
@@ -29,7 +29,7 @@ BrAPIClient <- R6Class(
     },
     #' @field breedingMethods
     #' Get the BreedingMethods R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' BreedingMethod entities
     breedingMethods = function() {
       if (is.null(private$.breedingMethods)) {
         if (private$.verbosity > 0) {
@@ -42,7 +42,7 @@ BrAPIClient <- R6Class(
     },
     #' @field calls
     #' Get the Calls R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Call entities
     calls = function() {
       if (is.null(private$.calls)) {
         if (private$.verbosity > 0) {
@@ -55,7 +55,7 @@ BrAPIClient <- R6Class(
     },
     #' @field callSets
     #' Get the CallSets R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' CallSet entities
     callSets = function() {
       if (is.null(private$.callSets)) {
         if (private$.verbosity > 0) {
@@ -68,7 +68,7 @@ BrAPIClient <- R6Class(
     },
     #' @field crosses
     #' Get the Crosses R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Cross entities
     crosses = function() {
       if (is.null(private$.crosses)) {
         if (private$.verbosity > 0) {
@@ -81,7 +81,7 @@ BrAPIClient <- R6Class(
     },
     #' @field crossingProjects
     #' Get the CrossingProjects R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' CrossingProject entities
     crossingProjects = function() {
       if (is.null(private$.crossingProjects)) {
         if (private$.verbosity > 0) {
@@ -94,7 +94,7 @@ BrAPIClient <- R6Class(
     },
     #' @field events
     #' Get the Events R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Event entities
     events = function() {
       if (is.null(private$.events)) {
         if (private$.verbosity > 0) {
@@ -107,7 +107,7 @@ BrAPIClient <- R6Class(
     },
     #' @field genomeMaps
     #' Get the GenomeMaps R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' GenomeMap entities
     genomeMaps = function() {
       if (is.null(private$.genomeMaps)) {
         if (private$.verbosity > 0) {
@@ -120,7 +120,7 @@ BrAPIClient <- R6Class(
     },
     #' @field germplasm
     #' Get the Germplasm R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Germplasm entities
     germplasm = function() {
       if (is.null(private$.germplasm)) {
         if (private$.verbosity > 0) {
@@ -133,7 +133,7 @@ BrAPIClient <- R6Class(
     },
     #' @field germplasmAttributes
     #' Get the GermplasmAttributes R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' GermplasmAttribute entities
     germplasmAttributes = function() {
       if (is.null(private$.germplasmAttributes)) {
         if (private$.verbosity > 0) {
@@ -146,7 +146,7 @@ BrAPIClient <- R6Class(
     },
     #' @field germplasmAttributeValues
     #' Get the GermplasmAttributeValues R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' GermplasmAttributeValue entities
     germplasmAttributeValues = function() {
       if (is.null(private$.germplasmAttributeValues)) {
         if (private$.verbosity > 0) {
@@ -159,7 +159,7 @@ BrAPIClient <- R6Class(
     },
     #' @field images
     #' Get the Images R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Image entities
     images = function() {
       if (is.null(private$.images)) {
         if (private$.verbosity > 0) {
@@ -172,7 +172,7 @@ BrAPIClient <- R6Class(
     },
     #' @field lists
     #' Get the Lists R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' List entities
     lists = function() {
       if (is.null(private$.lists)) {
         if (private$.verbosity > 0) {
@@ -185,7 +185,7 @@ BrAPIClient <- R6Class(
     },
     #' @field locations
     #' Get the Locations R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Location entities
     locations = function() {
       if (is.null(private$.locations)) {
         if (private$.verbosity > 0) {
@@ -198,7 +198,7 @@ BrAPIClient <- R6Class(
     },
     #' @field markerPositions
     #' Get the MarkerPositions R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' MarkerPosition entities
     markerPositions = function() {
       if (is.null(private$.markerPositions)) {
         if (private$.verbosity > 0) {
@@ -211,7 +211,7 @@ BrAPIClient <- R6Class(
     },
     #' @field methods
     #' Get the Methods R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Method entities
     methods = function() {
       if (is.null(private$.methods)) {
         if (private$.verbosity > 0) {
@@ -224,7 +224,7 @@ BrAPIClient <- R6Class(
     },
     #' @field observations
     #' Get the Observations R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Observation entities
     observations = function() {
       if (is.null(private$.observations)) {
         if (private$.verbosity > 0) {
@@ -237,7 +237,7 @@ BrAPIClient <- R6Class(
     },
     #' @field observationUnits
     #' Get the ObservationUnits R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' ObservationUnit entities
     observationUnits = function() {
       if (is.null(private$.observationUnits)) {
         if (private$.verbosity > 0) {
@@ -250,7 +250,7 @@ BrAPIClient <- R6Class(
     },
     #' @field observationVariables
     #' Get the ObservationVariables R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' ObservationVariable entities
     observationVariables = function() {
       if (is.null(private$.observationVariables)) {
         if (private$.verbosity > 0) {
@@ -263,7 +263,7 @@ BrAPIClient <- R6Class(
     },
     #' @field ontologies
     #' Get the Ontologies R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Ontology entities
     ontologies = function() {
       if (is.null(private$.ontologies)) {
         if (private$.verbosity > 0) {
@@ -276,7 +276,7 @@ BrAPIClient <- R6Class(
     },
     #' @field pedigreeNodes
     #' Get the PedigreeNodes R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' PedigreeNode entities
     pedigreeNodes = function() {
       if (is.null(private$.pedigreeNodes)) {
         if (private$.verbosity > 0) {
@@ -289,7 +289,7 @@ BrAPIClient <- R6Class(
     },
     #' @field people
     #' Get the People R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Person entities
     people = function() {
       if (is.null(private$.people)) {
         if (private$.verbosity > 0) {
@@ -302,7 +302,7 @@ BrAPIClient <- R6Class(
     },
     #' @field plannedCrosses
     #' Get the PlannedCrosses R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' PlannedCross entities
     plannedCrosses = function() {
       if (is.null(private$.plannedCrosses)) {
         if (private$.verbosity > 0) {
@@ -315,7 +315,7 @@ BrAPIClient <- R6Class(
     },
     #' @field plates
     #' Get the Plates R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Plate entities
     plates = function() {
       if (is.null(private$.plates)) {
         if (private$.verbosity > 0) {
@@ -328,7 +328,7 @@ BrAPIClient <- R6Class(
     },
     #' @field programs
     #' Get the Programs R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Program entities
     programs = function() {
       if (is.null(private$.programs)) {
         if (private$.verbosity > 0) {
@@ -341,7 +341,7 @@ BrAPIClient <- R6Class(
     },
     #' @field references
     #' Get the References R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Reference entities
     references = function() {
       if (is.null(private$.references)) {
         if (private$.verbosity > 0) {
@@ -354,7 +354,7 @@ BrAPIClient <- R6Class(
     },
     #' @field referenceSets
     #' Get the ReferenceSets R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' ReferenceSet entities
     referenceSets = function() {
       if (is.null(private$.referenceSets)) {
         if (private$.verbosity > 0) {
@@ -367,7 +367,7 @@ BrAPIClient <- R6Class(
     },
     #' @field samples
     #' Get the Samples R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Sample entities
     samples = function() {
       if (is.null(private$.samples)) {
         if (private$.verbosity > 0) {
@@ -380,7 +380,7 @@ BrAPIClient <- R6Class(
     },
     #' @field scales
     #' Get the Scales R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Scale entities
     scales = function() {
       if (is.null(private$.scales)) {
         if (private$.verbosity > 0) {
@@ -393,7 +393,7 @@ BrAPIClient <- R6Class(
     },
     #' @field seasons
     #' Get the Seasons R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Season entities
     seasons = function() {
       if (is.null(private$.seasons)) {
         if (private$.verbosity > 0) {
@@ -406,7 +406,7 @@ BrAPIClient <- R6Class(
     },
     #' @field seedLots
     #' Get the SeedLots R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' SeedLot entities
     seedLots = function() {
       if (is.null(private$.seedLots)) {
         if (private$.verbosity > 0) {
@@ -419,7 +419,7 @@ BrAPIClient <- R6Class(
     },
     #' @field studies
     #' Get the Studies R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Study entities
     studies = function() {
       if (is.null(private$.studies)) {
         if (private$.verbosity > 0) {
@@ -432,7 +432,7 @@ BrAPIClient <- R6Class(
     },
     #' @field traits
     #' Get the Traits R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Trait entities
     traits = function() {
       if (is.null(private$.traits)) {
         if (private$.verbosity > 0) {
@@ -445,7 +445,7 @@ BrAPIClient <- R6Class(
     },
     #' @field trials
     #' Get the Trials R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Trial entities
     trials = function() {
       if (is.null(private$.trials)) {
         if (private$.verbosity > 0) {
@@ -458,7 +458,7 @@ BrAPIClient <- R6Class(
     },
     #' @field variants
     #' Get the Variants R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' Variant entities
     variants = function() {
       if (is.null(private$.variants)) {
         if (private$.verbosity > 0) {
@@ -471,7 +471,7 @@ BrAPIClient <- R6Class(
     },
     #' @field variantSets
     #' Get the VariantSets R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' VariantSet entities
     variantSets = function() {
       if (is.null(private$.variantSets)) {
         if (private$.verbosity > 0) {

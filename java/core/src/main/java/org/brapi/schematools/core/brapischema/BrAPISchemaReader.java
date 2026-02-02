@@ -89,7 +89,7 @@ public class BrAPISchemaReader {
      */
     public Response<BrAPIClass> readSchema(Path schemaPath, String module) throws BrAPISchemaReaderException {
         try {
-            return new Reader().createBrAPISchemas(schemaPath, module).mapResult(list -> list.get(0));
+            return new Reader().createBrAPISchemas(schemaPath, module).mapResult(List::getFirst);
         } catch (RuntimeException e) {
             throw new BrAPISchemaReaderException(e);
         }
@@ -115,6 +115,8 @@ public class BrAPISchemaReader {
 
     private class Reader {
 
+        private final Map<Path, JsonNode> schemaNodes = new HashMap<>();
+
         private Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) {
 
             try (Stream<Path> schemas = find(schemaDirectory, 3, this::schemaPathMatcher)) {
@@ -124,6 +126,22 @@ public class BrAPISchemaReader {
             } catch (RuntimeException | IOException e) {
                 return fail(Response.ErrorType.VALIDATION, schemaDirectory, String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
             }
+        }
+
+        private Response<List<BrAPIClass>> createBrAPISchemas(Path path, JsonNode json, String module) {
+            JsonNode defs = json.get("$defs");
+
+            if (defs != null) {
+                json = defs;
+            }
+
+            Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
+
+            return Stream.generate(() -> null)
+                .takeWhile(x -> iterator.hasNext())
+                .map(n -> iterator.next())
+                .map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module))
+                .collect(Response.toList());
         }
 
         private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
@@ -343,22 +361,6 @@ public class BrAPISchemaReader {
             }
         }
 
-        private final Map<Path, JsonNode> schemaNodes = new HashMap<>();
-
-        private Response<List<BrAPIClass>> createBrAPISchemas(Path path, JsonNode json, String module) {
-            JsonNode defs = json.get("$defs");
-
-            if (defs != null) {
-                json = defs;
-            }
-
-            Iterator<Map.Entry<String, JsonNode>> iterator = json.fields();
-
-            return Stream.generate(() -> null)
-                .takeWhile(x -> iterator.hasNext())
-                .map(n -> iterator.next()).map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module)).collect(Response.toList());
-        }
-
         private Response<BrAPIClass> createBrAPIClass(Path path, JsonNode jsonNode, String fallbackName, String module) {
             try {
                 return createType(path, jsonNode, fallbackName, module).mapResult(type -> (BrAPIClass) type);
@@ -556,6 +558,8 @@ public class BrAPISchemaReader {
 
         private Response<List<BrAPIObjectProperty>> validateProperties(Path path, String objectName, List<BrAPIObjectProperty> properties) {
             Set<String> seenNames = new HashSet<>();
+            LinkedList<BrAPIObjectProperty> duplicateProperties = new LinkedList<>();
+
             for (BrAPIObjectProperty property : properties) {
                 if (!seenNames.add(property.getName())) {
                     if (options.isWarningAboutDuplicateProperties()) {
@@ -569,9 +573,15 @@ public class BrAPISchemaReader {
                     if (!options.isIgnoringDuplicateProperties()) {
                         return Response.fail(Response.ErrorType.VALIDATION, path,
                                 String.format("Duplicate property name '%s' found in properties list for '%s'", property.getName(), objectName));
+                    } else {
+                        // Ignore duplicate by removing it
+                        duplicateProperties.add(property);
                     }
                 }
             }
+
+            properties.removeAll(duplicateProperties);
+
             return Response.success(properties);
         }
 

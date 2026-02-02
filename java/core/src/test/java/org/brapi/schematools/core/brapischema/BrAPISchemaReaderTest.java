@@ -1,15 +1,21 @@
 package org.brapi.schematools.core.brapischema;
 
+import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.model.BrAPIClass;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 class BrAPISchemaReaderTest {
 
     @Test
@@ -77,7 +84,7 @@ class BrAPISchemaReaderTest {
             assertFalse(listRequest.getMetadata().isPrimaryModel());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -121,7 +128,7 @@ class BrAPISchemaReaderTest {
             assertNotNull(listRequest.getMetadata());
             assertTrue(listRequest.getMetadata().isRequest());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -149,7 +156,7 @@ class BrAPISchemaReaderTest {
             assertNotNull(trialSchema.getMetadata());
             assertTrue(trialSchema.getMetadata().isPrimaryModel());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -176,7 +183,7 @@ class BrAPISchemaReaderTest {
             assertNotNull(studySchema.getMetadata());
             assertTrue(studySchema.getMetadata().isPrimaryModel());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -205,7 +212,7 @@ class BrAPISchemaReaderTest {
             assertNull(listTypeSchema.getMetadata());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
@@ -233,9 +240,94 @@ class BrAPISchemaReaderTest {
             assertTrue(listRequest.getMetadata().isRequest());
             assertFalse(listRequest.getMetadata().isPrimaryModel());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             fail(e.getMessage());
         }
     }
 
+    @Test
+    void readPlateRequest() {
+        // this should work
+        try {
+            Path path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPI-Schema/Requests/PlateRequest.json")).toURI());
+
+            List<BrAPIClass> schemas = new BrAPISchemaReader().
+                readSchema(path, String.join(System.lineSeparator(), Files.readAllLines(path, Charset.defaultCharset())), "BrAPI-Genotyping").
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
+
+            assertNotNull(schemas);
+
+            assertEquals(1, schemas.size());
+
+            BrAPIClass plateRequestSchema = schemas.getFirst();
+
+            assertNotNull(plateRequestSchema);
+            assertEquals("PlateRequest", plateRequestSchema.getName());
+            assertEquals("BrAPI-Genotyping", plateRequestSchema.getModule());
+            assertNotNull(plateRequestSchema.getMetadata());
+            assertTrue(plateRequestSchema.getMetadata().isRequest());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void readPlateRequestWithDuplicateProperties() {
+        // this should fail, so will pass :)
+        try {
+            Path path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPISchemaReader/DuplicateParameters")).toURI());
+
+            Response<List<BrAPIClass>> response = new BrAPISchemaReader().
+                readDirectories(path) ;
+
+            assertTrue(response.hasErrors());
+
+            assertEquals(1, response.getAllErrors().size());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void readPlateRequestWithDuplicatePropertiesIgnored() {
+        // this should pass
+        try {
+            Path path = Paths.get(Objects.requireNonNull(this.getClass().getResource("/BrAPISchemaReader/DuplicateParameters")).toURI());
+
+            List<BrAPIClass> schemas = new BrAPISchemaReader(BrAPISchemaReaderOptions.load().setIgnoreDuplicateProperties(true)).
+                readDirectories(path)
+                .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
+                .getResult();
+
+            assertNotNull(schemas);
+
+            assertEquals(6, schemas.size());
+
+            Map<String, BrAPIClass> map = schemas.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity())) ;
+
+            BrAPIClass plateRequestSchema = map.get("PlateRequest");
+
+            assertNotNull(plateRequestSchema);
+            assertEquals("PlateRequest", plateRequestSchema.getName());
+            assertNotNull(plateRequestSchema.getMetadata());
+            assertTrue(plateRequestSchema.getMetadata().isRequest());
+
+            Set<String> seenNames = new HashSet<>();
+
+            if (plateRequestSchema instanceof BrAPIObjectType brapiObjectType) {
+                for (BrAPIObjectProperty property : brapiObjectType.getProperties()) {
+                    if (!seenNames.add(property.getName())) {
+                        fail("Duplicate property name found: " + property.getName());
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
 }

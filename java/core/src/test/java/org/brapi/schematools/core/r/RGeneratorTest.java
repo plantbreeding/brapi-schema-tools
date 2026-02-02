@@ -55,6 +55,14 @@ class RGeneratorTest {
                     Files.createDirectories(build.getParent());
                     Files.writeString(build, actual);
                 }
+            }
+
+            for (Path path : result) {
+
+                String rFile = path.getFileName().toString();
+
+                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("RGenerator/Generated/"+ rFile).toURI())).getResultOrThrow();
+                String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
 
                 assertMultilineEqual(expected, actual);
             }
