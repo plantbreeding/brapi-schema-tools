@@ -46,12 +46,12 @@ Locations <- R6Class(
     #' @param abbreviations A list of shortened human readable names for a set of Locations
     #' @param altitudeMin The minimum altitude to search for
     #' @param altitudeMax The maximum altitude to search for
-    #' @param countryCodes [ISO_3166-1_alpha-3](https://en.
+    #' @param countryCodes [ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec
     #' @param countryNames The full name of the country to search for
     #' @param coordinates 
     #' @param instituteAddresses The street address of the institute to search for
     #' @param instituteNames The name of the institute to search for
-    #' @param locationTypes The type of location this represents (ex.
+    #' @param locationTypes The type of location this represents (ex. Breeding Location, Storage Location, etc)
     #' @param parentLocationDbIds The unique identifier for a Location &lt;br/&gt; The Parent Location defines the encompassing location that this location belongs to.
     #' @param parentLocationNames A human readable name for a location &lt;br/&gt; The Parent Location defines the encompassing location that this location belongs to.
     #' @param page The page number of results to return, starting from 0
@@ -140,12 +140,12 @@ Locations <- R6Class(
     #' @param abbreviations A list of shortened human readable names for a set of Locations
     #' @param altitudeMin The minimum altitude to search for
     #' @param altitudeMax The maximum altitude to search for
-    #' @param countryCodes [ISO_3166-1_alpha-3](https://en.
+    #' @param countryCodes [ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec
     #' @param countryNames The full name of the country to search for
     #' @param coordinates 
     #' @param instituteAddresses The street address of the institute to search for
     #' @param instituteNames The name of the institute to search for
-    #' @param locationTypes The type of location this represents (ex.
+    #' @param locationTypes The type of location this represents (ex. Breeding Location, Storage Location, etc)
     #' @param parentLocationDbIds The unique identifier for a Location &lt;br/&gt; The Parent Location defines the encompassing location that this location belongs to.
     #' @param parentLocationNames A human readable name for a location &lt;br/&gt; The Parent Location defines the encompassing location that this location belongs to.
     #' using the searchResult function

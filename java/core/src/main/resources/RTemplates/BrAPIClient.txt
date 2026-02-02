@@ -15,7 +15,7 @@ BrAPIClient <- R6Class(
   [# th:each="className,iterStat : ${classNames}"]
     #' @field [[${functionNames[iterStat.index]}]]
     #' Get the [[${className}]] R6 class object which can be used to call the BrAPI server for
-    #' [${entityNames[iterStat.index]}]] entities
+    #' [[${entityNames[iterStat.index]}]] entities
     [[${functionNames[iterStat.index]}]] = function() {
       if (is.null(private$.[[${functionNames[iterStat.index]}]])) {
         if (private$.verbosity > 0) {

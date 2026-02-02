@@ -57,7 +57,7 @@ ObservationUnits <- R6Class(
     #' @param observationLevels Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevel
     #' @param observationLevelRelationships Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevelRelationships
     #' @param includeObservations Use this parameter to include a list of observations embedded in each ObservationUnit object.
-    #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, .
+    #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of ObservationUnit objects.
@@ -171,7 +171,7 @@ ObservationUnits <- R6Class(
     #' @param observationLevels Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevel
     #' @param observationLevelRelationships Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevelRelationships
     #' @param includeObservations Use this parameter to include a list of observations embedded in each ObservationUnit object.
-    #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, .
+    #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
