@@ -228,5 +228,16 @@ class StringUtilsTest {
         assertEquals("", StringUtils.extractFirstLine(""));
         // Null input
         assertNull(StringUtils.extractFirstLine(null));
+        // Period inside square brackets
+        assertEquals("This is a test [with a period. inside brackets].", StringUtils.extractFirstLine("This is a test [with a period. inside brackets]. This is after."));
+        // Period inside parentheses
+        assertEquals("Sentence (with a period. inside parens).", StringUtils.extractFirstLine("Sentence (with a period. inside parens). Next sentence."));
+        // Periods inside both types of brackets
+        assertEquals("Start [a.b (c.d)].", StringUtils.extractFirstLine("Start [a.b (c.d)]. End."));
+        // Multiple nested brackets
+        assertEquals("A [b (c.d [e.f] g.h) i.j] k.", StringUtils.extractFirstLine("A [b (c.d [e.f] g.h) i.j] k. End."));
+        // Periods inside and outside brackets
+        assertEquals("First (ignore. this) sentence.", StringUtils.extractFirstLine("First (ignore. this) sentence. Second sentence."));
     }
+
 }
