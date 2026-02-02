@@ -3,7 +3,7 @@ package org.brapi.schematools.core.graphql.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.validiation.Validation;
 
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
@@ -16,7 +16,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractGraphQLOptions extends AbstractGeneratorSubOptions {
+public abstract class AbstractGraphQLOptions extends AbstractGeneratorOptions {
     private Boolean pluralisingName;
     @Getter(AccessLevel.PRIVATE)
     private String nameFormat;
@@ -67,7 +67,7 @@ public abstract class AbstractGraphQLOptions extends AbstractGeneratorSubOptions
      * Determines if the query or mutation should have a plurialised name
      * @return {@code true} if the query or mutation should have a plurialised name, <code>false </code> otherwise
      */
-    public boolean isPluralisingName() {
+    public final boolean isPluralisingName() {
         return pluralisingName != null && pluralisingName ;
     }
 }

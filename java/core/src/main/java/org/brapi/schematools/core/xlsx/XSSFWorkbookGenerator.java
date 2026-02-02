@@ -59,7 +59,7 @@ public class XSSFWorkbookGenerator {
      * @param outputPath the path of the output file or directory
      */
     public XSSFWorkbookGenerator(XSSFWorkbookGeneratorOptions options, Path outputPath) {
-        this(new BrAPISchemaReader(), options, outputPath) ;
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options, outputPath) ;
     }
 
     /**

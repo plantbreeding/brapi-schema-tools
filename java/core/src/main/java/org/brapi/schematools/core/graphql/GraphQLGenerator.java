@@ -61,7 +61,7 @@ public class GraphQLGenerator {
      * @param options The options to be used in the generation.
      */
     public GraphQLGenerator(GraphQLGeneratorOptions options) {
-        this(new BrAPISchemaReader(), options);
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options);
     }
 
     /**

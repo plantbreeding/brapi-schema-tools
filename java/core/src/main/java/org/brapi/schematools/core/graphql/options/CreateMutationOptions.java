@@ -38,7 +38,7 @@ public class CreateMutationOptions extends AbstractGraphQLOptions {
      * Determines if the mutation accepts multiple object or just one
      * @return {@code true} if the mutation accepts multiple object, <code>false </code> is the mutation accepts just one object
      */
-    public boolean isMultiple() {
+    public final boolean isMultiple() {
         return multiple != null && multiple ;
     }
 }

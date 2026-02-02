@@ -18,7 +18,7 @@ public abstract class AbstractSubCommand implements Runnable {
     private boolean stackTrace = false;
 
     @Override
-    public void run() {
+    public final void run() {
         try {
             err = new PrintWriter(System.err) ;
 

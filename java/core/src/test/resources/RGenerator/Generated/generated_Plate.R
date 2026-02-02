@@ -54,7 +54,6 @@ Plates <- R6Class(
     #' @param sampleDbIds The ID which uniquely identifies a sample
     #' @param sampleNames The human readable name of the sample
     #' @param sampleGroupDbIds The unique identifier for a group of related Samples
-    #' @param germplasmDbIds The ID which uniquely identifies a germplasm
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of Plate objects.
@@ -76,7 +75,6 @@ Plates <- R6Class(
         sampleDbIds = NULL,
         sampleNames = NULL,
         sampleGroupDbIds = NULL,
-        germplasmDbIds = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -129,9 +127,6 @@ Plates <- R6Class(
       if (!is.null(sampleGroupDbIds)) {
         queryParams$sampleGroupDbId <- sampleGroupDbIds
       }
-      if (!is.null(germplasmDbIds)) {
-        queryParams$germplasmDbId <- germplasmDbIds
-      }
       private$.client$perform_get_request("/plates", queryParams, page, pageSize)
     },
     #' @description
@@ -153,7 +148,6 @@ Plates <- R6Class(
     #' @param sampleDbIds The ID which uniquely identifies a sample
     #' @param sampleNames The human readable name of the sample
     #' @param sampleGroupDbIds The unique identifier for a group of related Samples
-    #' @param germplasmDbIds The ID which uniquely identifies a germplasm
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -176,7 +170,6 @@ Plates <- R6Class(
         sampleDbIds = NULL,
         sampleNames = NULL,
         sampleGroupDbIds = NULL,
-        germplasmDbIds = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -228,9 +221,6 @@ Plates <- R6Class(
       }
       if (!is.null(sampleGroupDbIds)) {
         queryParams$sampleGroupDbIds <- to_list(sampleGroupDbIds)
-      }
-      if (!is.null(germplasmDbIds)) {
-        queryParams$germplasmDbIds <- to_list(germplasmDbIds)
       }
       private$.client$perform_post_request("/search/plates", queryParams, page, pageSize)
     },

@@ -42,7 +42,7 @@ public class OntModelGenerator {
      * @param options The options to be used in the generation.
      */
     public OntModelGenerator(OntModelGeneratorOptions options) {
-        this(new BrAPISchemaReader(), options) ;
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options) ;
     }
 
     /**

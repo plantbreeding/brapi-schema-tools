@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class PutOptions extends AbstractOpenAPIOptions {
+public class PutOptions extends AbstractOpenAPISubOptions {
 
     private Boolean multiple;
     @Getter(AccessLevel.NONE)
@@ -67,7 +67,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PutOptions setMultipleFor(String name, boolean multiple) {
+    public final PutOptions setMultipleFor(String name, boolean multiple) {
         multipleFor.put(name, multiple) ;
 
         return this ;
@@ -81,7 +81,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public PutOptions setMultipleFor(BrAPIType type, boolean multiple) {
+    public final PutOptions setMultipleFor(BrAPIType type, boolean multiple) {
         return setMultipleFor(type.getName(), multiple) ;
     }
 
@@ -90,7 +90,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @param name the name of the primary model
      * @return {@code true} if generating a PUT endpoint with no ID parameter for a specific model, {@code false} otherwise
      */
-    public boolean isGeneratingEndpointFor(String name) {
+    public final boolean isGeneratingEndpointFor(String name) {
         return isGeneratingFor(name) && isMultipleFor(name) ;
     }
 
@@ -99,7 +99,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @param type the primary model
      * @return {@code true} if generating a PUT endpoint with no ID parameter for a specific model, {@code false} otherwise
      */
-    public boolean isGeneratingEndpointFor(BrAPIObjectType type) {
+    public final boolean isGeneratingEndpointFor(BrAPIObjectType type) {
         return isGeneratingEndpointFor(type.getName()) ;
     }
 
@@ -108,7 +108,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @param name the name of the primary model
      * @return {@code true} if generating a PUT endpoint with an ID parameter for a specific model, {@code false} otherwise
      */
-    public boolean isGeneratingEndpointNameWithIdFor(String name) {
+    public final boolean isGeneratingEndpointNameWithIdFor(String name) {
         return isGeneratingFor(name) && !isMultipleFor(name) ;
     }
 
@@ -117,7 +117,7 @@ public class PutOptions extends AbstractOpenAPIOptions {
      * @param type the primary model
      * @return {@code true} if generating a PUT endpoint with an ID parameter for a specific model, {@code false} otherwise
      */
-    public boolean isGeneratingEndpointNameWithIdFor(BrAPIObjectType type) {
+    public final boolean isGeneratingEndpointNameWithIdFor(BrAPIObjectType type) {
         return isGeneratingEndpointNameWithIdFor(type.getName()) ;
     }
 }

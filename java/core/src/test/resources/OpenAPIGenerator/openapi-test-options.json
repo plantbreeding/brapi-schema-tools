@@ -1,4 +1,6 @@
 {
+    "generate": true,
+    "descriptionFormat": "TODO, Description for %s",
     "separateByModule": true,
     "generateNewRequest": true,
     "generateNewRequestFor": {

@@ -20104,7 +20104,7 @@
         "deprecationReason" : null
       }, {
         "name" : "germplasmDbIds",
-        "description" : "The ID which uniquely identifies a germplasm",
+        "description" : "List of IDs which uniquely identify germplasm to search for",
         "type" : {
           "kind" : "LIST",
           "name" : null,
@@ -25954,7 +25954,7 @@
         "deprecationReason" : null
       }, {
         "name" : "germplasmDbIds",
-        "description" : "The ID which uniquely identifies a `Germplasm`",
+        "description" : "List of IDs which uniquely identify germplasm to search for",
         "type" : {
           "kind" : "LIST",
           "name" : null,

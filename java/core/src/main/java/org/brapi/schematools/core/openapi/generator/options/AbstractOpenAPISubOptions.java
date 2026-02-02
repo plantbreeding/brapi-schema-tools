@@ -3,7 +3,7 @@ package org.brapi.schematools.core.openapi.generator.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.validiation.Validation;
 
 
@@ -14,7 +14,7 @@ import org.brapi.schematools.core.validiation.Validation;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractOpenAPIOptions extends AbstractGeneratorSubOptions {
+public abstract class AbstractOpenAPISubOptions extends AbstractGeneratorOptions {
     private String summaryFormat;
 
     public Validation validate() {
@@ -25,7 +25,7 @@ public abstract class AbstractOpenAPIOptions extends AbstractGeneratorSubOptions
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideOptions the options which will be used to override this Options Object
      */
-    public void override(AbstractOpenAPIOptions overrideOptions) {
+    public void override(AbstractOpenAPISubOptions overrideOptions) {
         super.override(overrideOptions) ;
 
         if (overrideOptions.summaryFormat != null) {

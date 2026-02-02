@@ -92,7 +92,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public AbstractGraphQLQueryOptions setInputFor(String name, boolean hasInput) {
+    public final AbstractGraphQLQueryOptions setInputFor(String name, boolean hasInput) {
         input.put(name, hasInput) ;
 
         return this ;

@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class ListGetOptions extends AbstractOpenAPIOptions {
+public class ListGetOptions extends AbstractOpenAPISubOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
@@ -81,7 +81,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isPagedFor(String name) {
+    public final boolean isPagedFor(String name) {
         return paged.getOrDefault(name, pagedDefault) ;
     }
 
@@ -91,7 +91,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param type the primary model
      * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
      */
-    public boolean isPagedFor(BrAPIType type) {
+    public final boolean isPagedFor(BrAPIType type) {
         return isPagedFor(type.getName()) ;
     }
 
@@ -102,7 +102,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setPagingFor(String name, boolean paging) {
+    public final ListGetOptions setPagingFor(String name, boolean paging) {
         paged.put(name, paging) ;
 
         return this ;
@@ -115,7 +115,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setPagingFor(BrAPIType type, boolean paging) {
+    public final ListGetOptions setPagingFor(BrAPIType type, boolean paging) {
         return setPagingFor(type.getName(), paging) ;
     }
 
@@ -126,7 +126,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return {@code true} if the List Endpoint is paged for any model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean hasPageTokenFor(String name) {
+    public final boolean hasPageTokenFor(String name) {
         return pagedToken.getOrDefault(name, pagedTokenDefault) ;
     }
 
@@ -136,7 +136,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param type the model
      * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
      */
-    public boolean hasPageTokenFor(BrAPIType type) {
+    public final boolean hasPageTokenFor(BrAPIType type) {
         return hasPageTokenFor(type.getName()) ;
     }
 
@@ -147,7 +147,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setHasPageTokenFor(String name, boolean hasPageToken) {
+    public final ListGetOptions setHasPageTokenFor(String name, boolean hasPageToken) {
         pagedToken.put(name, hasPageToken) ;
 
         return this ;
@@ -160,7 +160,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setHasPageTokenFor(BrAPIType type, boolean hasPageToken) {
+    public final ListGetOptions setHasPageTokenFor(BrAPIType type, boolean hasPageToken) {
         return setHasPageTokenFor(type.getName(), hasPageToken) ;
     }
 
@@ -172,7 +172,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return {@code true} if the List Endpoint has an input for the primary model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean hasInputFor(String name) {
+    public final boolean hasInputFor(String name) {
         return inputFor.getOrDefault(name, pagedDefault) ;
     }
 
@@ -182,7 +182,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param type the primary model
      * @return {@code true} if the List Endpoint has an input for the primary model, {@code false} otherwise
      */
-    public boolean hasInputFor(BrAPIType type) {
+    public final boolean hasInputFor(BrAPIType type) {
         return hasInputFor(type.getName()) ;
     }
 
@@ -193,7 +193,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setInputFor(String name, boolean generate) {
+    public final ListGetOptions setInputFor(String name, boolean generate) {
         inputFor.put(name, generate) ;
 
         return this ;
@@ -206,7 +206,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setInputFor(BrAPIType type, boolean generate) {
+    public final ListGetOptions setInputFor(BrAPIType type, boolean generate) {
         return setInputFor(type.getName(), generate) ;
     }
 
@@ -216,7 +216,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param property The BrAPI property
      * @return <code>true</code> if the property from the Request is used in the List query
      */
-    public boolean isUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public final boolean isUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property) {
 
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
 
@@ -234,7 +234,7 @@ public class ListGetOptions extends AbstractOpenAPIOptions {
      * @param propertiesFromRequest <code>true</code> if the property from the Request is used in the List query
      * @return the options for chaining
      */
-    public ListGetOptions setUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property, Boolean propertiesFromRequest) {
+    public final ListGetOptions setUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property, Boolean propertiesFromRequest) {
 
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
 

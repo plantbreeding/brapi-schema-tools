@@ -3,7 +3,7 @@ package org.brapi.schematools.core.r.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.options.AbstractGeneratorSubOptions;
+import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.validiation.Validation;
 
 
@@ -14,7 +14,7 @@ import org.brapi.schematools.core.validiation.Validation;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractRGeneratorSubOptions extends AbstractGeneratorSubOptions {
+public abstract class AbstractRGeneratorSubOptions extends AbstractGeneratorOptions {
     private String summaryFormat;
 
     public Validation validate() {

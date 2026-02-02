@@ -3,12 +3,11 @@ package org.brapi.schematools.core.r.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
-import org.brapi.schematools.core.options.AbstractGeneratorOptions;
+import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -32,7 +31,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class RGeneratorOptions extends AbstractGeneratorOptions {
+public class RGeneratorOptions extends AbstractMainGeneratorOptions {
 
     private Boolean overwrite;
     private Boolean addGeneratorComments;
@@ -58,8 +57,6 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
     private Map<String, String> pathItemNameFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
-    @Setter(AccessLevel.PRIVATE)
-    private BrAPISchemaReaderOptions brAPISchemaReader ;
 
     /**
      * Load the default options
@@ -70,13 +67,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
         try {
             RGeneratorOptions options = ConfigurationUtils.load("r-options.yaml", RGeneratorOptions.class);
 
-            if (options.getBrAPISchemaReader() == null) {
-                options.setBrAPISchemaReader(BrAPISchemaReaderOptions.load());
-            } else {
-                options.setBrAPISchemaReader(
-                    BrAPISchemaReaderOptions.load().override(options.getBrAPISchemaReader())
-                ) ;
-            }
+            loadBrAPISchemaReaderOptions(options) ;
 
             return options ;
         } catch (IOException e) {
@@ -129,9 +120,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
             .merge(search)
             .merge(properties)
             .merge(controlledVocabulary)
-            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
-            .assertNotNull(brAPISchemaReader, "'brAPISchemaReader' options on %s is null", this.getClass().getSimpleName())
-            .merge(brAPISchemaReader);
+            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null") ;
     }
 
     /**
@@ -201,10 +190,6 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
             controlledVocabulary = overrideOptions.controlledVocabulary ;
         }
 
-        if (overrideOptions.brAPISchemaReader != null) {
-            brAPISchemaReader.override(overrideOptions.brAPISchemaReader);
-        }
-
         return this;
     }
 
@@ -214,7 +199,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Generator should Overwrite exiting files, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isOverwritingExistingFiles() {
+    public final boolean isOverwritingExistingFiles() {
         return overwrite != null && overwrite;
     }
 
@@ -225,23 +210,23 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isAddingGeneratorComments() {
+    public final boolean isAddingGeneratorComments() {
         return addGeneratorComments != null && addGeneratorComments;
     }
 
     /**
-     * Determines R class eR class is generated for a specific primary model
+     * Determines R class is generated for a specific primary model
      * @param name the name of the primary model
      * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull String name) {
-        return singleGet.isGeneratingFor(name) ||
+        return super.isGeneratingFor(name) && (singleGet.isGeneratingFor(name) ||
             listGet.isGeneratingFor(name) ||
             post.isGeneratingFor(name) ||
             put.isGeneratingFor(name) ||
             delete.isGeneratingFor(name) ||
-            search.isGeneratingFor(name) ;
+            search.isGeneratingFor(name)) ;
     }
 
     /**
@@ -250,7 +235,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @return {@code true} if the Endpoint/Query/Mutation is generated for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isGeneratingFor(BrAPIType type) {
+    public final boolean isGeneratingFor(BrAPIType type) {
        return singleGet.isGeneratingFor(type) ||
             listGet.isGeneratingFor(type) ||
             post.isGeneratingFor(type) ||
@@ -274,7 +259,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the Primary Model
      * @return the Pluralised name for a specific Primary Model
      */
-    public String getPathItemNameFor(String name) {
+    public final String getPathItemNameFor(String name) {
         return pathItemNameFor.getOrDefault(name, String.format("/%s", toLowerCase(getPluralFor(name))));
     }
 
@@ -283,7 +268,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param type the Primary Model
      * @return the path item name for a specific Primary Model
      */
-    public String getPathItemNameFor(BrAPIType type) {
+    public final String getPathItemNameFor(BrAPIType type) {
         return getPathItemNameFor(type.getName()) ;
     }
 
@@ -292,7 +277,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param name the name of the Primary Model
      * @return the path item name for a specific Primary Model
      */
-    public String getSearchPathItemNameFor(String name) {
+    public final String getSearchPathItemNameFor(String name) {
         return String.format("/search%s", getPathItemNameFor(name));
     }
 
@@ -301,7 +286,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param type the Primary Model
      * @return the path item name for a specific Primary Model
      */
-    public String getSearchPathItemNameFor(BrAPIType type) {
+    public final String getSearchPathItemNameFor(BrAPIType type) {
         return String.format("/search%s", getPathItemNameFor(type));
     }
 
@@ -341,7 +326,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @return the path item name for the Property
      */
     @JsonIgnore
-    public String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+    public final String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
         return getPathItemNameForProperty(typeWithProperty.getType(), typeWithProperty.getProperty()) ;
     }
 
@@ -353,7 +338,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public RGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
+    public final RGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
         Map<String, String> map = pathItemNameForProperty.get(typeName) ;
 
         if (map != null) {
@@ -376,7 +361,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public RGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
+    public final RGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
         return setPathItemNameForProperty(type.getName(), property.getName(), pathItemName) ;
     }
 
@@ -386,7 +371,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param property the Object type property
      * @return {@code true} generator will create a separate Endpoint for the property, {@code false} otherwise
      */
-    public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
         return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
@@ -396,7 +381,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      * @param property the Object type property
      * @return the name of the Sub-path endpoint for a property
      */
-    public String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
+    public final String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
         return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
     }
 
@@ -408,7 +393,7 @@ public class RGeneratorOptions extends AbstractGeneratorOptions {
      *
      * @return {@code true} if controlled vocabulary endpoints should be generated
      */
-    public boolean isGeneratingControlledVocabularyEndpoints() {
+    public final boolean isGeneratingControlledVocabularyEndpoints() {
         return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
     }
 }

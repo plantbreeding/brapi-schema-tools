@@ -55,7 +55,7 @@ public class IdsOptions implements Options {
      * Determines if the built-in GraphQLID type should be used for IDs instead of GraphQLString
      * @return {@code true} if the built-in GraphQLID type should be used for IDs instead of GraphQLString, {@code false} otherwise
      */
-    public boolean isUsingIDType() {
+    public final boolean isUsingIDType() {
         return useIDType;
     }
 
@@ -86,7 +86,7 @@ public class IdsOptions implements Options {
      * @return id parameter name for a specific primary model
      */
     @JsonIgnore
-    public String getIDFieldFor(String name) {
+    public final String getIDFieldFor(String name) {
         return fieldFor.getOrDefault(name, String.format(nameFormat, toParameterCase(name))) ;
     }
 
@@ -97,7 +97,7 @@ public class IdsOptions implements Options {
      * @return id parameter name for a specific primary model
      */
     @JsonIgnore
-    public String getIDFieldFor(@NonNull BrAPIType type) {
+    public final String getIDFieldFor(@NonNull BrAPIType type) {
         return getIDFieldFor(type.getName()) ;
     }
 
@@ -109,7 +109,7 @@ public class IdsOptions implements Options {
      * @return the options for chaining
      */
     @JsonIgnore
-    public IdsOptions setIDFieldFor(String name, String idField) {
+    public final IdsOptions setIDFieldFor(String name, String idField) {
         fieldFor.put(name, idField) ;
 
         return this ;
@@ -120,7 +120,7 @@ public class IdsOptions implements Options {
      * @param property The BrAPI property
      * @return the converted property name that is used to return an id
      */
-    public String getIdFieldFor(BrAPIObjectProperty property) {
+    public final String getIdFieldFor(BrAPIObjectProperty property) {
         return String.format("%sDbId", StringUtils.toSingular(property.getName())) ;
     }
 
@@ -129,7 +129,7 @@ public class IdsOptions implements Options {
      * @param property The BrAPI property
      * @return the converted property name that is used to return an array of ids
      */
-    public String getIdsFieldFor(BrAPIObjectProperty property) {
+    public final String getIdsFieldFor(BrAPIObjectProperty property) {
         return String.format("%sDbIds", StringUtils.toSingular(property.getName())) ;
     }
 }
