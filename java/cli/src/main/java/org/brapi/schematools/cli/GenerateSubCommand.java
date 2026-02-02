@@ -394,10 +394,10 @@ public class GenerateSubCommand extends AbstractSubCommand {
             System.out.println("Did not generate any R files");
         } else if (paths.size() == 1) {
             System.out.println("Generated '1' R file:");
-            System.out.println(paths.getFirst().toString());
+            System.out.println(paths.getFirst().toAbsolutePath().toString());
         } else {
             System.out.printf("Generated '%s' R files:%n", paths.size());
-            paths.forEach(path -> System.out.println(path.toString()));
+            paths.forEach(path -> System.out.println(path.toAbsolutePath().toString()));
         }
     }
 
