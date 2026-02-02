@@ -1,5 +1,6 @@
 package org.brapi.schematools.cli;
 
+import lombok.Getter;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+@Getter
 public abstract class AbstractSubCommand implements Runnable {
 
     private PrintWriter err ;

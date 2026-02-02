@@ -70,7 +70,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(String, String)}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(String, Boolean)}
      * to override this value.
      * @param name the name of the primary model
      * @return {@code true} if this property is used as a foreign key link between entities
@@ -83,7 +83,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets if this property is used specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(BrAPIType, String)}
+     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(BrAPIType, Boolean)}
      * to override this value.
      * @param type the primary model
      * @return {@code true} if this property is used as a foreign key link between entities

@@ -12,6 +12,7 @@ import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
+import org.brapi.schematools.core.r.RGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
- * Options for the {@link SQLGenerator}.
+ * Options for the {@link RGenerator}.
  */
 @Getter
 @Setter
