@@ -127,34 +127,34 @@ public class BrAPISchemaReader {
         }
 
         private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
-            return types.mapResult(this::dereference).mapResultToResponse(this::validate);
+            return types.mapResultToResponse(this::dereferenceAll).mapResultToResponse(this::validate);
         }
 
-        private List<BrAPIClass> dereference(List<BrAPIClass> types) {
+        private Response<List<BrAPIClass>> dereferenceAll(List<BrAPIClass> types) {
 
             Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
-            List<BrAPIClass> brAPIClasses = new ArrayList<>();
+            return types.stream().map(type -> dereference(type, typeMap)).collect(Response.toList()) ;
+        }
 
-            types.forEach(type -> {
-                if (type instanceof BrAPIAllOfType brAPIAllOfType) {
-                    BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder()
-                        .name(brAPIAllOfType.getName())
-                        .description(brAPIAllOfType.getDescription())
-                        .module(brAPIAllOfType.getModule())
-                        .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
-                        .interfaces(extractInterfaces(brAPIAllOfType, typeMap))
-                        .properties(extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap));
+        private Response<BrAPIClass> dereference(BrAPIClass type, Map<String, BrAPIType> typeMap) {
 
-                    brAPIAllOfType.getExamples().forEach(builder::example);
+            if (type instanceof BrAPIAllOfType brAPIAllOfType) {
+                BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder()
+                    .name(brAPIAllOfType.getName())
+                    .description(brAPIAllOfType.getDescription())
+                    .module(brAPIAllOfType.getModule())
+                    .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
+                    .interfaces(extractInterfaces(brAPIAllOfType, typeMap)) ;
 
-                    brAPIClasses.add(builder.build());
-                } else {
-                    brAPIClasses.add(type);
-                }
-            });
+                brAPIAllOfType.getExamples().forEach(builder::example);
 
-            return brAPIClasses;
+                return validateProperties(null, brAPIAllOfType.getName(), extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap))
+                    .onSuccessDoWithResult(builder::properties)
+                    .map(() -> success(builder.build())) ;
+            } else {
+                return success(type);
+            }
         }
 
         private Response<List<BrAPIClass>> validate(List<BrAPIClass> brAPIClasses) {
@@ -559,15 +559,17 @@ public class BrAPISchemaReader {
             for (BrAPIObjectProperty property : properties) {
                 if (!seenNames.add(property.getName())) {
                     if (options.isWarningAboutDuplicateProperties()) {
-                        log.warn("Duplicate property name '{}' found in properties list for '{}' for path '{}'", objectName, property.getName(), path);
-                        continue;
+                        if (path != null) {
+                            log.warn("Duplicate property name '{}' found in properties list for '{}' for path '{}'", property.getName(), objectName, path);
+                        } else {
+                            log.warn("Duplicate property name '{}' found in properties list for '{}'", property.getName(), objectName);
+                        }
                     }
 
-                    if (options.isIgnoringDuplicateProperties()) {
-                        continue;
+                    if (!options.isIgnoringDuplicateProperties()) {
+                        return Response.fail(Response.ErrorType.VALIDATION, path,
+                                String.format("Duplicate property name '%s' found in properties list for '%s'", property.getName(), objectName));
                     }
-                    return Response.fail(Response.ErrorType.VALIDATION, path,
-                        String.format("Duplicate property name '%s' found in properties list.", property.getName()));
                 }
             }
             return Response.success(properties);

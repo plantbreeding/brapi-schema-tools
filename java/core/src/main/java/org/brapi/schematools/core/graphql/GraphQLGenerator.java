@@ -51,7 +51,7 @@ public class GraphQLGenerator {
      * the default {@link GraphQLGeneratorOptions}.
      */
     public GraphQLGenerator() {
-        this(new BrAPISchemaReader(), GraphQLGeneratorOptions.load());
+        this(GraphQLGeneratorOptions.load());
     }
 
     /**

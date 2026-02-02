@@ -10,7 +10,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 
 /**
- * Provides general options for the generation of Endpoints
+ * Abstract base class for all GraphQL Sub Options
  */
 @Getter
 @Setter

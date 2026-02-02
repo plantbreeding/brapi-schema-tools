@@ -33,7 +33,7 @@ public class OntModelGenerator {
      * the default {@link OntModelGeneratorOptions}.
      */
     public OntModelGenerator() {
-        this(new BrAPISchemaReader(), OntModelGeneratorOptions.load()) ;
+        this(OntModelGeneratorOptions.load()) ;
     }
 
     /**

@@ -44,7 +44,7 @@ public class RGenerator {
      * @param outputPath the path of the output file or directory
      */
     public RGenerator(Path outputPath) {
-        this(new BrAPISchemaReader(), RGeneratorOptions.load(), outputPath) ;
+        this(RGeneratorOptions.load(), outputPath) ;
     }
 
     /**
@@ -54,7 +54,7 @@ public class RGenerator {
      * @param outputPath the path of the output file or directory
      */
     public RGenerator(RGeneratorOptions options, Path outputPath) {
-        this(new BrAPISchemaReader(), options, outputPath) ;
+        this(new BrAPISchemaReader(options.getBrAPISchemaReader()), options, outputPath) ;
     }
 
     /**

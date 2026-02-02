@@ -126,7 +126,11 @@ public class Response<T> {
      * @param <T> The type of the result
      */
     public static <T> Response<T> fail(ErrorType type, Path path, String message) {
-        return fail(type, "", String.format("In '%s' %s", path.toFile(), message));
+        if (path != null) {
+            return fail(type, "", String.format("In '%s' %s", path.toFile(), message));
+        } else {
+            return fail(type, message) ;
+        }
     }
 
     /**
