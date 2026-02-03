@@ -412,8 +412,8 @@
                 "properties" : {
                     "active" : {
                         "type" : [
-                            "boolean",
-                            "null"
+                            "null",
+                            "boolean"
                         ],
                         "description" : "A flag to indicate if a Study is currently active and ongoing"
                     },
@@ -423,22 +423,22 @@
                     },
                     "commonCropName" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "Common name for the crop associated with this study"
                     },
                     "culturalPractices" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study."
                     },
                     "dataLinks" : {
                         "type" : [
-                            "array",
-                            "null"
+                            "null",
+                            "array"
                         ],
                         "description" : "List of links to extra data files associated with this study. Extra data could include notes, images, and reference data.",
                         "items" : {
@@ -447,24 +447,24 @@
                     },
                     "documentationURL" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "format" : "uri",
                         "description" : "A URL to the human readable documentation of an object"
                     },
                     "endDate" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "format" : "date-time",
                         "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended"
                     },
                     "environmentParameters" : {
                         "type" : [
-                            "array",
-                            "null"
+                            "null",
+                            "array"
                         ],
                         "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units.\n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).",
                         "items" : {
@@ -477,8 +477,8 @@
                     },
                     "externalReferences" : {
                         "type" : [
-                            "array",
-                            "null"
+                            "null",
+                            "array"
                         ],
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                         "items" : {
@@ -495,8 +495,8 @@
                     },
                     "license" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "The usage license associated with the study data"
                     },
@@ -508,8 +508,8 @@
                     },
                     "observationLevels" : {
                         "type" : [
-                            "array",
-                            "null"
+                            "null",
+                            "array"
                         ],
                         "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "items" : {
@@ -518,15 +518,15 @@
                     },
                     "observationUnitsDescription" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study."
                     },
                     "seasons" : {
                         "type" : [
-                            "array",
-                            "null"
+                            "null",
+                            "array"
                         ],
                         "description" : "List of seasons over which this study was performed.",
                         "items" : {
@@ -535,23 +535,23 @@
                     },
                     "startDate" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "format" : "date-time",
                         "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started"
                     },
                     "studyCode" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "A short human readable code for a study"
                     },
                     "studyDescription" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study"
                     },
@@ -561,15 +561,15 @@
                     },
                     "studyPUI" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "A permanent unique identifier associated with this study data. For example, a URI or DOI"
                     },
                     "studyType" : {
                         "type" : [
-                            "string",
-                            "null"
+                            "null",
+                            "string"
                         ],
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc"
                     },
