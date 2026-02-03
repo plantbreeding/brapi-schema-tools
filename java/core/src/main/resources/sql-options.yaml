@@ -6,6 +6,7 @@ addTableColumnComments: true
 addGeneratorComments: true
 indent: 2
 descriptionFormat: TODO Description for %s
+generateLinkTables : true
 generateFor:
     AlleleMatrix: false
     MarkerPosition: false
@@ -146,3 +147,7 @@ properties:
             variants: none
 brAPISchemaReader:
     ignoreDuplicateProperties: true
+controlledVocabulary:
+    generate: true
+    summaryFormat: Controlled Vocabulary for ${property} of ${type}
+    descriptionFormat: Controlled Vocabulary for ${property} of ${type}

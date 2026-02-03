@@ -148,3 +148,7 @@ brAPISchemaReader:
     specVersion: V202012
     ignoreDuplicateProperties: false
     warnAboutDuplicateProperties: true
+controlledVocabulary:
+    generate: true
+    summaryFormat: Controlled Vocabulary for ${property} of ${type}
+    descriptionFormat: Controlled Vocabulary for ${property} of ${type}
