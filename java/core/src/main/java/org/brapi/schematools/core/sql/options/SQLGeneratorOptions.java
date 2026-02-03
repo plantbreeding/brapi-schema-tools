@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.openapi.generator.options.ControlledVocabularyOptions;
 import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.sql.SQLGenerator;
@@ -42,6 +43,9 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean dropTable;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
+    @Setter(AccessLevel.PRIVATE)
+    private ControlledVocabularyOptions controlledVocabulary;
+    private Boolean generateLinkTables;
 
     /**
      * Load the default options
@@ -91,6 +95,8 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
         return super.validate()
             .assertNotNull(properties, "Properties Options are null")
             .merge(properties)
+            .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
+            .merge(controlledVocabulary)
             .assertFlagsMutuallyExclusive(this, "ifNotExists", "dropTable") ;
     }
 
@@ -153,6 +159,14 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.properties != null) {
             properties.override(overrideOptions.getProperties()) ;
+        }
+
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary = overrideOptions.controlledVocabulary ;
+        }
+
+        if (overrideOptions.generateLinkTables != null) {
+            generateLinkTables = overrideOptions.generateLinkTables;
         }
 
         return this;
@@ -250,5 +264,16 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public boolean isAddingDropTable() {
         return dropTable != null && dropTable ;
+    }
+
+    /**
+     * Determines if the Generator create link tables for many-to-many relationships when the
+     * link type is {@link org.brapi.schematools.core.options.LinkType#SUB_QUERY}
+     *
+     * @return {@code true} if the Generator should add a 'DROP TABLE;, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingLinkTables() {
+        return generateLinkTables != null && generateLinkTables ;
     }
 }

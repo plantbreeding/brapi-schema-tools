@@ -24,6 +24,8 @@ import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 import static org.brapi.schematools.core.utils.StringUtils.escapeSingleSQLQuotes;
 import static org.brapi.schematools.core.utils.StringUtils.removeCarriageReturns;
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 
 @Slf4j
 public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
@@ -52,6 +54,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     private class Generator {
         private final BrAPIObjectType brAPIObjectType;
         private final List<LinkTable> linkTables = new ArrayList<>();
+        private final List<ControlledVocabularyTable> controlledVocabularyTables = new ArrayList<>();
         private int indent = 0 ;
 
         public Generator(BrAPIObjectType brAPIObjectType) {
@@ -59,35 +62,25 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         public Response<String> generate() {
+
+            if (brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getControlledVocabularyProperties() != null
+                && !brAPIObjectType.getMetadata().getControlledVocabularyProperties().isEmpty()) {
+                brAPIObjectType.getProperties()
+                    .stream()
+                    .filter(property -> brAPIObjectType.getMetadata().getControlledVocabularyProperties().contains(property.getName()))
+                    .map(property -> new ControlledVocabularyTable(brAPIObjectType, property))
+                    .forEach(controlledVocabularyTables::add) ;
+            }
+
             return createTableDefinition(
                 createTableName(brAPIObjectType),
                 () -> createTableDescription(brAPIObjectType),
                 () -> createColumnDefinitions(brAPIObjectType),
                 getTableDescription(brAPIObjectType),
                 findClusterColumns(brAPIObjectType)
-            ).conditionalMapResultToResponse(!linkTables.isEmpty(), this::appendLinkTableDefinitions);
-        }
-
-        private Response<String> appendLinkTableDefinitions(String ddl) {
-            StringBuilder builder = new StringBuilder(ddl);
-
-            appendNewLine(builder) ;
-
-            return linkTables.stream()
-                .map(this::appendLinkTableDefinition)
-                .collect(Response.toList())
-                .mapResult(result -> String.join(newLine(), result))
-                .mapResult(builder::append)
-                .mapResult(StringBuilder::toString);
-        }
-
-        private Response<String> appendLinkTableDefinition(LinkTable linkTable) {
-            return createTableDefinition(
-                createLinkTableFullName(linkTable),
-                () -> createTableDescription(linkTable),
-                () -> createColumnDefinitions(linkTable),
-                getLinkTableDescription(linkTable),
-                findClusterColumns(linkTable));
+            )
+                .conditionalMapResultToResponse(options.isGeneratingLinkTables() && !linkTables.isEmpty(), this::appendLinkTableDefinitions)
+                .conditionalMapResultToResponse(options.getControlledVocabulary().isGenerating() && !controlledVocabularyTables.isEmpty(), this::appendControlledVocabularyDefinitions);
         }
 
         private Response<String> createTableDefinition(String tableName,
@@ -232,18 +225,6 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return clusterColumns;
         }
 
-        private List<String> findClusterColumns(LinkTable linkTable) {
-            if (linkTable.getDereferenceItemType() instanceof BrAPIObjectType childBrAPIObjectType) {
-                List<BrAPIObjectProperty> linkProperties = new ArrayList<>(options.getProperties().getLinkPropertiesFor(childBrAPIObjectType));
-                linkProperties.addAll(options.getProperties().getLinkPropertiesFor(linkTable.getParentType()));
-
-                return linkProperties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.toList());
-
-            } else {
-                return Collections.emptyList() ;
-            }
-        }
-
         private LinkType getLinkPropertiesFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty brAPIObjectProperty, BrAPIType dereferenceType) {
             return options.getProperties().getLinkTypeFor(brAPIObjectType, brAPIObjectProperty, dereferenceType).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE);
         }
@@ -302,16 +283,56 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             return success(builder.toString());
         }
+        
+        private Response<LinkType> getLinkTypeFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
+            BrAPIType unwrappedType = unwrapType(property.getType());
+            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
+
+            return options.getProperties().getLinkTypeFor(brAPIObjectType, property, dereferencedType);
+        }
+
+        private Response<String> appendLinkTableDefinitions(String ddl) {
+            StringBuilder builder = new StringBuilder(ddl);
+
+            appendNewLine(builder) ;
+
+            return linkTables.stream()
+                .map(this::appendLinkTableDefinition)
+                .collect(Response.toList())
+                .mapResult(result -> String.join(newLine(), result))
+                .mapResult(builder::append)
+                .mapResult(StringBuilder::toString);
+        }
+
+        private Response<String> appendLinkTableDefinition(LinkTable linkTable) {
+            return createTableDefinition(
+                createLinkTableFullName(linkTable),
+                () -> createTableDescription(linkTable),
+                () -> createColumnDefinitions(linkTable),
+                getTableComment(linkTable),
+                findClusterColumns(linkTable));
+        }
+
+        private String createLinkTableFullName(LinkTable linkedTable) {
+            return metadata.getTablePrefix() != null ? 
+                metadata.getTablePrefix() + createLinkTableName(linkedTable) : createLinkTableName(linkedTable);
+        }
+
+        private String createLinkTableName(LinkTable linkedTable) {
+            return linkedTable.getDereferencedItemType().getName() + "By" + linkedTable.getParentType().getName();
+        }
 
         private Response<String> createColumnDefinitions(LinkTable linkTable) {
-            if (linkTable.getDereferenceItemType() instanceof BrAPIObjectType childBrAPIObjectType) {
+            if (linkTable.getDereferencedItemType() instanceof BrAPIObjectType childBrAPIObjectType) {
                 List<BrAPIObjectProperty> linkProperties = new ArrayList<>(options.getProperties().getLinkPropertiesFor(childBrAPIObjectType));
                 linkProperties.addAll(options.getProperties().getLinkPropertiesFor(linkTable.getParentType()));
 
                 return createLinkObjectDefinition(linkProperties);
 
             } else {
-                return fail(Response.ErrorType.VALIDATION, String.format("Cannot create link table column definitions from for '%s' to non-object type '%s'", linkTable.getParentType().getName(), linkTable.getDereferenceItemType().getName()));
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("Cannot create link table column definitions from for '%s' to non-object type '%s'",
+                        linkTable.getParentType().getName(), linkTable.getDereferencedItemType().getName()));
             }
         }
 
@@ -326,7 +347,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             builder.append(String.format("Creates a lookup table for property '%s' for '%s' to '%s'",
                 linkTable.getProperty().getName(),
                 linkTable.getParentType().getName(),
-                linkTable.getDereferenceItemType().getName()
+                linkTable.getDereferencedItemType().getName()
             )) ;
 
             appendNewLine(builder) ;
@@ -335,11 +356,80 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return success(builder.toString());
         }
 
-        private Response<LinkType> getLinkTypeFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
-            BrAPIType unwrappedType = unwrapType(property.getType());
-            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
+        private String getTableComment(LinkTable linkedTable) {
+            return String.format("Link table for %s to %s on property %s", linkedTable.getParentType().getName(), linkedTable.getDereferencedItemType().getName(), linkedTable.getProperty().getName());
+        }
 
-            return options.getProperties().getLinkTypeFor(brAPIObjectType, property, dereferencedType);
+        private List<String> findClusterColumns(LinkTable linkTable) {
+            if (linkTable.getDereferencedItemType() instanceof BrAPIObjectType childBrAPIObjectType) {
+                List<BrAPIObjectProperty> linkProperties = new ArrayList<>(options.getProperties().getLinkPropertiesFor(childBrAPIObjectType));
+                linkProperties.addAll(options.getProperties().getLinkPropertiesFor(linkTable.getParentType()));
+
+                return linkProperties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.toList());
+
+            } else {
+                return Collections.emptyList() ;
+            }
+        }
+
+        private Response<String> appendControlledVocabularyDefinitions(String ddl) {
+            StringBuilder builder = new StringBuilder(ddl);
+
+            appendNewLine(builder) ;
+
+            return controlledVocabularyTables.stream()
+                .map(this::appendControlledVocabularyDefinition)
+                .collect(Response.toList())
+                .mapResult(result -> String.join(newLine(), result))
+                .mapResult(builder::append)
+                .mapResult(StringBuilder::toString);
+        }
+
+        private Response<String> appendControlledVocabularyDefinition(ControlledVocabularyTable controlledVocabularyTable) {
+            return createTableDefinition(
+                createControlledVocabularyFullName(controlledVocabularyTable),
+                () -> createTableDescription(controlledVocabularyTable),
+                () -> createColumnDefinitions(controlledVocabularyTable),
+                getTableComment(controlledVocabularyTable),
+                findClusterColumns(controlledVocabularyTable));
+        }
+
+        private String createControlledVocabularyFullName(ControlledVocabularyTable controlledVocabularyTable) {
+            return metadata.getTablePrefix() != null ? 
+                metadata.getTablePrefix() + createControlledVocabularyName(controlledVocabularyTable) : createControlledVocabularyName(controlledVocabularyTable);
+        }
+
+        private String createControlledVocabularyName(ControlledVocabularyTable controlledVocabularyTable) {
+            return toSentenceCase(toPlural(controlledVocabularyTable.getProperty().getName())) ;
+        }
+
+        private Response<String> createColumnDefinitions(ControlledVocabularyTable controlledVocabularyTable) {
+            
+            return createColumnDefinition(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty()) ;
+        }
+
+        private Response<String> createTableDescription(ControlledVocabularyTable controlledVocabularyTable) {
+
+            StringBuilder builder = new StringBuilder();
+
+            appendNewLine(builder) ;
+            builder.append(SQLGenerator.COMMENT_START);
+
+            appendNewLine(builder) ;
+            builder.append(options.getControlledVocabulary().getDescriptionFor(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty()));
+
+            appendNewLine(builder) ;
+            builder.append(SQLGenerator.COMMENT_END);
+
+            return success(builder.toString());
+        }
+
+        private String getTableComment(ControlledVocabularyTable controlledVocabularyTable) {
+            return String.format("Controlled Vocabulary table for property %s on %s", controlledVocabularyTable.getProperty().getName(), controlledVocabularyTable.getParentType().getName());
+        }
+
+        private List<String> findClusterColumns(ControlledVocabularyTable controlledVocabularyTable) {
+            return Collections.emptyList() ;
         }
 
         private Response<String> addColumnComment(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property, String columnDefinition) {
@@ -429,7 +519,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(brAPIObjectType);
 
             if (linkPropertiesFor.isEmpty()) {
-                return fail(Response.ErrorType.VALIDATION, String.format("No link properties for property '%s' in '%s' with item type '%s'", property.getName(), parentType.getName(), brAPIObjectType.getName()));
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("No link properties for property '%s' in '%s' with item type '%s'",
+                        property.getName(), parentType.getName(), brAPIObjectType.getName()));
             }
 
             return createLinkObjectDefinition(linkPropertiesFor);
@@ -578,18 +670,6 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                     fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded array type '%s'", itemType.getName()));
             };
         }
-
-        private String createLinkTableFullName(LinkTable linkedTable) {
-            return metadata.getTablePrefix() != null ? metadata.getTablePrefix() + createLinkTableName(linkedTable) : createLinkTableName(linkedTable);
-        }
-
-        private String createLinkTableName(LinkTable linkedTable) {
-            return linkedTable.getDereferenceItemType().getName() + "By" + linkedTable.getParentType().getName();
-        }
-
-        private String getLinkTableDescription(LinkTable linkedTable) {
-            return String.format("Link table for %s to %s on property %s", linkedTable.getParentType().getName(), linkedTable.getDereferenceItemType().getName(), linkedTable.getProperty().getName());
-        }
     }
 
     @AllArgsConstructor
@@ -597,6 +677,13 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     private static class LinkTable {
         private final BrAPIObjectType parentType;
         private final BrAPIObjectProperty property;
-        private final BrAPIType dereferenceItemType;
+        private final BrAPIType dereferencedItemType;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private static class ControlledVocabularyTable {
+        private final BrAPIObjectType parentType;
+        private final BrAPIObjectProperty property;
     }
 }

@@ -32,6 +32,8 @@ import static java.util.Collections.singletonList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.validateBrAPIMetadata;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.mergeMetadata;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
@@ -162,7 +164,7 @@ public class BrAPISchemaReader {
                     .name(brAPIAllOfType.getName())
                     .description(brAPIAllOfType.getDescription())
                     .module(brAPIAllOfType.getModule())
-                    .metadata(brAPIAllOfType.getMetadata() != null ? brAPIAllOfType.getMetadata().toBuilder().build() : null)
+                    .metadata(mergeBrAPITypeMetadata(brAPIAllOfType, typeMap))
                     .interfaces(extractInterfaces(brAPIAllOfType, typeMap)) ;
 
                 brAPIAllOfType.getExamples().forEach(builder::example);
@@ -174,6 +176,7 @@ public class BrAPISchemaReader {
                 return success(type);
             }
         }
+
 
         private Response<List<BrAPIClass>> validate(List<BrAPIClass> brAPIClasses) {
             Map<String, BrAPIClass> classesMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
@@ -205,28 +208,6 @@ public class BrAPISchemaReader {
             } else {
                 return success(brAPIType);
             }
-        }
-
-        private Response<BrAPIMetadata> validateBrAPIMetadata(BrAPIClass brAPIClass) {
-            BrAPIMetadata metadata = brAPIClass.getMetadata();
-
-            if (metadata != null) {
-                int i = 0;
-                if (metadata.isPrimaryModel()) {
-                    ++i;
-                }
-                if (metadata.isRequest()) {
-                    ++i;
-                }
-                if (metadata.isParameters()) {
-                    ++i;
-                }
-                if (i > 1) {
-                    return fail(Response.ErrorType.VALIDATION, String.format("In class '%s', 'primaryModel', 'request', 'properties', 'interface' are mutually exclusive, only one can be set to to true", brAPIClass.getName()));
-                }
-            }
-
-            return success(metadata);
         }
 
         private Response<BrAPIObjectProperty> validateProperty(Map<String, BrAPIClass> classesMap, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
@@ -289,7 +270,6 @@ public class BrAPISchemaReader {
         }
 
         private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
-
             if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
                 properties.addAll(brAPIObjectType.getProperties());
             } else {
@@ -324,6 +304,27 @@ public class BrAPISchemaReader {
             return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isInterfaceClass();
         }
 
+        private BrAPIMetadata mergeBrAPITypeMetadata(BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
+            if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType.getMetadata() ;
+            } else {
+                if (brAPIType instanceof BrAPIAllOfType brAPIAllOfType) {
+                    BrAPIMetadata metadata = brAPIAllOfType.getMetadata() ;
+
+                    for(BrAPIType type : brAPIAllOfType.getAllTypes()) {
+                        metadata = mergeMetadata(metadata, mergeBrAPITypeMetadata(type, typeMap)) ;
+                    }
+
+                    return metadata ;
+                } else {
+                    if (brAPIType instanceof BrAPIReferenceType brAPIReferenceType) {
+                        return mergeBrAPITypeMetadata(typeMap.get(brAPIReferenceType.getName()), typeMap);
+                    }
+                }
+            }
+
+            return null;
+        }
 
         private Response<List<BrAPIClass>> createBrAPISchemas(Path path) {
             return createBrAPISchemas(path, findModule(path));

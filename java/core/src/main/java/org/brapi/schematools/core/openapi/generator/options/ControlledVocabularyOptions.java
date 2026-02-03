@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 
 /**
- * Provides options for the generation of Controlled Vocabulary Endpoints
+ * Provides options for the generation of Controlled Vocabulary
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
