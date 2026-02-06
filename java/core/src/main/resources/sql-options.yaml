@@ -7,6 +7,8 @@ addGeneratorComments: true
 indent: 2
 descriptionFormat: TODO Description for %s
 generateLinkTables : true
+snakeCaseTableNames : false
+pluralTableNames : true
 generateFor:
     AlleleMatrix: false
     MarkerPosition: false

@@ -26,6 +26,7 @@ import static org.brapi.schematools.core.utils.StringUtils.escapeSingleSQLQuotes
 import static org.brapi.schematools.core.utils.StringUtils.removeCarriageReturns;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
+import static org.brapi.schematools.core.utils.StringUtils.toSnakeCase;
 
 @Slf4j
 public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
@@ -73,7 +74,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             }
 
             return createTableDefinition(
-                createTableName(brAPIObjectType),
+                createTableNameFullName(brAPIObjectType),
                 () -> createTableDescription(brAPIObjectType),
                 () -> createColumnDefinitions(brAPIObjectType),
                 getTableDescription(brAPIObjectType),
@@ -195,8 +196,23 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             indent -= options.getIndentSize() ;
         }
 
+        private String createTableNameFullName(BrAPIObjectType brAPIObjectType) {
+            return metadata.getTablePrefix() != null ?
+                metadata.getTablePrefix() + createTableName(brAPIObjectType) : createTableName(brAPIObjectType);
+        }
+
         private String createTableName(BrAPIObjectType brAPIObjectType) {
-            return metadata.getTablePrefix() != null ? metadata.getTablePrefix() + brAPIObjectType.getName() : brAPIObjectType.getName();
+            String name = brAPIObjectType.getName() ;
+
+            if (options.isUsingPluralTableNames()) {
+                name = toPlural(name) ;
+            }
+
+            if (options.isUsingSnakeCaseTableNames()) {
+                name = toSnakeCase(name) ;
+            }
+
+            return name ;
         }
 
         private String getTableDescription(BrAPIObjectType brAPIObjectType) {
@@ -319,7 +335,13 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private String createLinkTableName(LinkTable linkedTable) {
-            return linkedTable.getDereferencedItemType().getName() + "By" + linkedTable.getParentType().getName();
+            String name = linkedTable.getDereferencedItemType().getName() + "By" + linkedTable.getParentType().getName();
+
+            if (options.isUsingSnakeCaseTableNames()) {
+                name = toSnakeCase(name) ;
+            }
+
+            return name ;
         }
 
         private Response<String> createColumnDefinitions(LinkTable linkTable) {
@@ -387,20 +409,30 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> appendControlledVocabularyDefinition(ControlledVocabularyTable controlledVocabularyTable) {
             return createTableDefinition(
-                createControlledVocabularyFullName(controlledVocabularyTable),
+                createControlledVocabularyFullTableName(controlledVocabularyTable),
                 () -> createTableDescription(controlledVocabularyTable),
                 () -> createColumnDefinitions(controlledVocabularyTable),
                 getTableComment(controlledVocabularyTable),
                 findClusterColumns(controlledVocabularyTable));
         }
 
-        private String createControlledVocabularyFullName(ControlledVocabularyTable controlledVocabularyTable) {
+        private String createControlledVocabularyFullTableName(ControlledVocabularyTable controlledVocabularyTable) {
             return metadata.getTablePrefix() != null ? 
-                metadata.getTablePrefix() + createControlledVocabularyName(controlledVocabularyTable) : createControlledVocabularyName(controlledVocabularyTable);
+                metadata.getTablePrefix() + createControlledVocabularyTableName(controlledVocabularyTable) : createControlledVocabularyTableName(controlledVocabularyTable);
         }
 
-        private String createControlledVocabularyName(ControlledVocabularyTable controlledVocabularyTable) {
-            return toSentenceCase(toPlural(controlledVocabularyTable.getProperty().getName())) ;
+        private String createControlledVocabularyTableName(ControlledVocabularyTable controlledVocabularyTable) {
+            String name = toSentenceCase(controlledVocabularyTable.getProperty().getName()) ;
+
+            if (options.isUsingPluralTableNames()) {
+                name = toPlural(name) ;
+            }
+
+            if (options.isUsingSnakeCaseTableNames()) {
+                name = toSnakeCase(name) ;
+            }
+
+            return name ;
         }
 
         private Response<String> createColumnDefinitions(ControlledVocabularyTable controlledVocabularyTable) {
