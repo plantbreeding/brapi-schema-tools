@@ -31,9 +31,7 @@ import static java.nio.file.Files.find;
 import static java.util.Collections.singletonList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.validateBrAPIMetadata;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.mergeMetadata;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.*;
 import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
