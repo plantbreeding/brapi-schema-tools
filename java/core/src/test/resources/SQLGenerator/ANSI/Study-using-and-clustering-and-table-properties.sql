@@ -2,7 +2,7 @@
 /* 
 A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.
  */
-CREATE TABLE brapi_Study (
+CREATE TABLE brapi_Studies (
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',

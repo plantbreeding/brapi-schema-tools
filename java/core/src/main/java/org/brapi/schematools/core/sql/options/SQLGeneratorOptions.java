@@ -46,6 +46,8 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private ControlledVocabularyOptions controlledVocabulary;
     private Boolean generateLinkTables;
+    private Boolean snakeCaseTableNames;
+    private Boolean pluralTableNames;
 
     /**
      * Load the default options
@@ -169,6 +171,14 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             generateLinkTables = overrideOptions.generateLinkTables;
         }
 
+        if (overrideOptions.snakeCaseTableNames != null) {
+            snakeCaseTableNames = overrideOptions.snakeCaseTableNames;
+        }
+
+        if (overrideOptions.pluralTableNames != null) {
+            pluralTableNames = overrideOptions.pluralTableNames;
+        }
+
         return this;
     }
 
@@ -270,10 +280,31 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
      * Determines if the Generator create link tables for many-to-many relationships when the
      * link type is {@link org.brapi.schematools.core.options.LinkType#SUB_QUERY}
      *
-     * @return {@code true} if the Generator should add a 'DROP TABLE;, {@code false} otherwise
+     * @return {@code true} if the Generator create link tables for many-to-many relationships when the
+     * link type is {@link org.brapi.schematools.core.options.LinkType#SUB_QUERY}, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isGeneratingLinkTables() {
         return generateLinkTables != null && generateLinkTables ;
+    }
+
+    /**
+     * Determines if the Generator should use snake_case table names for all tables
+     *
+     * @return {@code true} if the Generator should use snake_case table names for all tables, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isUsingSnakeCaseTableNames() {
+        return snakeCaseTableNames != null && snakeCaseTableNames ;
+    }
+
+    /**
+     * Determines if the Generator should use plural table names for entity tables
+     *
+     * @return {@code true} if the Generator should use plural table names for /** tables, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isUsingPluralTableNames() {
+        return pluralTableNames != null && pluralTableNames ;
     }
 }
