@@ -22,7 +22,7 @@ import static org.brapi.schematools.core.options.LinkType.ID;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
-import static org.brapi.schematools.core.utils.StringUtils.escapeSingleSQLQuotes;
+import static org.brapi.schematools.core.utils.StringUtils.escapeQuotes;
 import static org.brapi.schematools.core.utils.StringUtils.removeCarriageReturns;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
@@ -140,22 +140,30 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             appendNewLine(builder) ;
             builder.append(") ");
 
-            if (options.isClustering()) {
-
-                if (!clusterColumns.isEmpty()) {
-                    appendNewLine(builder) ;
-                    builder.append("CLUSTER BY (");
-                    builder.append(String.join(",", clusterColumns));
-                    builder.append(")");
-                } else {
-                    log.warn("No clustering columns found for table {}", tableName);
-                }
-            }
-
             if (tableUsing != null) {
                 appendNewLine(builder) ;
                 builder.append("USING ");
                 builder.append(tableUsing);
+            }
+
+            if (options.isClustering()) {
+
+                List<String> columns = clusterColumns;
+
+                if (clusterColumns.size() > 4) {
+                    log.warn("Clustering on more than 4 columns is not supported in many SQL dialects, table {} has {} clustering columns. Removing extra ones. ", tableName, clusterColumns.size());
+
+                    columns = clusterColumns.subList(0, 4) ;
+                }
+
+                if (!columns.isEmpty()) {
+                    appendNewLine(builder) ;
+                    builder.append("CLUSTER BY (");
+                    builder.append(String.join(",", columns));
+                    builder.append(")");
+                } else {
+                    log.warn("No clustering columns found for table {}", tableName);
+                }
             }
 
             if (tableProperties != null && !tableProperties.isEmpty()) {
@@ -169,7 +177,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 appendNewLine(builder) ;
                 builder.append("COMMENT '");
 
-                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(description)));
+                builder.append(removeCarriageReturns(escapeQuotes(description)));
 
                 builder.append("'");
             }
@@ -217,9 +225,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private String getTableDescription(BrAPIObjectType brAPIObjectType) {
             if (brAPIObjectType.getDescription() != null) {
-                return removeCarriageReturns(escapeSingleSQLQuotes(brAPIObjectType.getDescription()));
+                return removeCarriageReturns(escapeQuotes(brAPIObjectType.getDescription()));
             } else {
-                return removeCarriageReturns(escapeSingleSQLQuotes(options.getDescriptionFor(brAPIObjectType)));
+                return removeCarriageReturns(escapeQuotes(options.getDescriptionFor(brAPIObjectType)));
             }
         }
 
@@ -229,12 +237,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             options.getProperties().getLinkPropertiesFor(brAPIObjectType).forEach(brAPIObjectProperty -> clusterColumns.add(brAPIObjectProperty.getName()));
 
-            for (BrAPIObjectProperty brAPIObjectProperty : brAPIObjectType.getProperties()) {
+            if (options.isClusteringForeignKeys()) {
+                for (BrAPIObjectProperty brAPIObjectProperty : brAPIObjectType.getProperties()) {
 
-                BrAPIType dereferenceType = brAPIClassCache.dereferenceType(brAPIObjectProperty.getType());
+                    BrAPIType dereferenceType = brAPIClassCache.dereferenceType(brAPIObjectProperty.getType());
 
-                if (dereferenceType instanceof BrAPIObjectType brAPIObjectPropertyObjectType && ID.equals(getLinkPropertiesFor(brAPIObjectType, brAPIObjectProperty, dereferenceType))) {
-                    options.getProperties().getLinkPropertiesFor(brAPIObjectPropertyObjectType).forEach(linkProperty -> clusterColumns.add(linkProperty.getName()));
+                    if (dereferenceType instanceof BrAPIObjectType brAPIObjectPropertyObjectType && ID.equals(getLinkPropertiesFor(brAPIObjectType, brAPIObjectProperty, dereferenceType))) {
+                        options.getProperties().getLinkPropertiesFor(brAPIObjectPropertyObjectType).forEach(linkProperty -> clusterColumns.add(linkProperty.getName()));
+                    }
                 }
             }
 
@@ -471,9 +481,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             builder.append(" COMMENT '");
 
             if (property.getDescription() != null) {
-                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(property.getDescription())));
+                builder.append(removeCarriageReturns(escapeQuotes(property.getDescription())));
             } else {
-                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
+                builder.append(removeCarriageReturns(escapeQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
             }
 
             builder.append("'");

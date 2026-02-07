@@ -377,11 +377,7 @@ public class StringUtils {
     }
 
     public static String escapeQuotes(String inputString) {
-        return inputString.replaceAll("\"", "\"").replaceAll("'", "''") ;
-    }
-
-    public static String escapeSingleSQLQuotes(String inputString) {
-        return inputString.replaceAll("'", "''") ;
+        return inputString.replaceAll("\"", "\\\"").replaceAll("'", "\\\\'") ;
     }
 
     public static String escapeSpecialCharacters(String inputString) {

@@ -9,6 +9,7 @@ descriptionFormat: TODO Description for %s
 generateLinkTables : true
 snakeCaseTableNames : false
 pluralTableNames : true
+clusterForeignKeys : false
 generateFor:
     AlleleMatrix: false
     MarkerPosition: false
