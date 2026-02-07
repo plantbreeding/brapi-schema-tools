@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
-import org.brapi.schematools.core.ontmodel.OntModelGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -10,9 +10,9 @@ import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
+import org.brapi.schematools.core.r.RGenerator;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
-import org.brapi.schematools.core.r.RGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;

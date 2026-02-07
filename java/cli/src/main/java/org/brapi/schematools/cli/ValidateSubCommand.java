@@ -3,7 +3,6 @@ package org.brapi.schematools.cli;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReaderOptions;
 import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import picocli.CommandLine;
 
