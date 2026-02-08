@@ -15,6 +15,7 @@ import org.openapitools.openapidiff.core.OpenApiCompare;
 import org.openapitools.openapidiff.core.compare.OpenApiDiffOptions;
 import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.openapitools.openapidiff.core.model.ChangedOperation;
+import org.openapitools.openapidiff.core.model.ChangedParameter;
 import org.openapitools.openapidiff.core.model.ChangedSchema;
 import org.openapitools.openapidiff.core.model.Endpoint;
 import org.openapitools.openapidiff.core.output.AsciidocRender;
@@ -220,13 +221,60 @@ public class OpenAPIComparator {
     private ChangedOpenApi filterDiff(ChangedOpenApi changedOpenApi) {
         return new ChangedOpenApi(createOptions())
             .setChangedExtensions(changedOpenApi.getChangedExtensions()) // TODO
-            .setChangedOperations(changedOpenApi.getChangedOperations().stream().filter(this::keepChangedOperation).toList())
-            .setChangedSchemas(changedOpenApi.getChangedSchemas().stream().filter(this::keepChangedSchema).toList())
+            .setChangedOperations(changedOpenApi.getChangedOperations().stream().filter(this::keepChangedOperation).map(this::filterChangedOperation).toList())
+            .setChangedSchemas(changedOpenApi.getChangedSchemas().stream().filter(this::keepChangedSchema).map(this::filterChangedSchema).toList())
             .setMissingEndpoints(changedOpenApi.getMissingEndpoints().stream().filter(this::keepMissingEndpoint).toList())
             .setNewEndpoints(changedOpenApi.getNewEndpoints().stream().filter(this::keepNewEndpoint).toList())
             .setNewSpecOpenApi(changedOpenApi.getNewSpecOpenApi())
             .setOldSpecOpenApi(changedOpenApi.getOldSpecOpenApi()) ;
     }
+
+
+    private ChangedOperation filterChangedOperation(ChangedOperation changedOperation) {
+        if (options.isIgnoringDescriptionChanges() && changedOperation.getDescription() != null) {
+            changedOperation.setDescription(null);
+        }
+
+        if (changedOperation.getSummary() != null) {
+            changedOperation.setSummary(null);
+        }
+
+        if (changedOperation.getRequestBody() != null) {
+            changedOperation.getRequestBody().setDescription(null);
+
+        }
+
+        if (changedOperation.getApiResponses() != null) {
+            changedOperation.getApiResponses().getChanged().values().forEach(changedResponse -> changedResponse.setDescription(null));
+        }
+
+        if (changedOperation.getParameters() != null) {
+            changedOperation.getParameters().getChanged().forEach(this::filterChangedParameter);
+        }
+
+        return changedOperation ;
+    }
+
+    private ChangedParameter filterChangedParameter(ChangedParameter changedParameter) {
+        if (changedParameter.getDescription() != null) {
+            changedParameter.setDescription(null);
+        }
+
+        return changedParameter ;
+    }
+
+    private ChangedSchema filterChangedSchema(ChangedSchema changedSchema) {
+        if (changedSchema.getDescription() != null) {
+            changedSchema.setDescription(null);
+        }
+
+        if (changedSchema.getChangedProperties() != null) {
+            changedSchema.getChangedProperties().values().forEach(this::filterChangedSchema);
+        }
+
+        return changedSchema ;
+    }
+
 
     private JsonNode filterDiff(JsonNode diff) {
 

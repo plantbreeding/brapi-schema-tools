@@ -10,3 +10,4 @@ markdown:
 ignoreMissingEndpoints:
     - /vendor/\S+
 ignoreDepreciatedEndpoints: true
+ignoreDescriptionChanges: true

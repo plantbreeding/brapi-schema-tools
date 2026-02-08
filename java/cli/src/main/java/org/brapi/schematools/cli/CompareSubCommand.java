@@ -106,7 +106,7 @@ public class CompareSubCommand extends AbstractSubCommand {
 
                 if (Files.isDirectory(child)) {
                     if (compareDirectory(child)) {
-                        compare(openAPIComparator, child, sibling, outputPath);
+                        compare(openAPIComparator, child, sibling, outputPath.resolve(child.getFileName()));
                     }
                 } else if (Files.isRegularFile(child)) {
                     if (child.getFileName().toString().endsWith(".yaml") || child.getFileName().toString().endsWith(".json")) {

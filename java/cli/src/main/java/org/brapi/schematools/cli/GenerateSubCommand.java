@@ -54,7 +54,6 @@ import static org.brapi.schematools.core.utils.OpenAPIUtils.OUTPUT_FORMAT_YAML;
     description = "Generates Various outputs from a BrAPI JSON schema, including OpenAPI Specification or GraphQL Schema"
 )
 public class GenerateSubCommand extends AbstractSubCommand {
-    //private PrintWriter out ;
 
     private static final OutputFormat DEFAULT_FORMAT = OutputFormat.OPEN_API;
 
