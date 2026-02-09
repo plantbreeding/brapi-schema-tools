@@ -150,7 +150,7 @@ public class RGenerator {
                 context.setVariable("update", options.getPut().isGeneratingFor(brAPIObjectType));
                 context.setVariable("delete", options.getDelete().isGeneratingFor(brAPIObjectType));
 
-                BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", brAPIObjectType.getName()));
+                BrAPIClass requestSchema = brAPIClassCache.getBrAPIRequestClass(brAPIObjectType);
 
                 if (requestSchema instanceof BrAPIObjectType requestObjectType) {
                     context.setVariable("requestArguments", requestObjectType.getProperties().stream().map(BrAPIObjectProperty::getName).toList()) ;

@@ -43,7 +43,7 @@ listGet:
         AlleleMatrix: false
         ServerInfo: false
     pagedDefault: true
-    paged:
+    pagedFor:
         BreedingMethod: false
     inputFor:
         BreedingMethod: false

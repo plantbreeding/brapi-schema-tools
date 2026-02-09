@@ -12,7 +12,9 @@ import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.validiation.ValidatableAgainstCache;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
@@ -35,7 +37,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
+public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions implements ValidatableAgainstCache {
 
     @Setter(AccessLevel.PRIVATE)
     private SingleGetOptions singleGet;
@@ -251,6 +253,46 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
             .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null") ;
+    }
+
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+
+        Validation validation = Validation.valid() ;
+
+        generateNewRequestFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
+                        name,
+                        this.getClass().getSimpleName()
+                    )) ;
+        }) ;
+
+        pathItemNameFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        tagFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        validation.merge(singleGet.validateAgainstCache(brAPIClassCache))
+            .merge(listGet.validateAgainstCache(brAPIClassCache))
+            .merge(post.validateAgainstCache(brAPIClassCache))
+            .merge(put.validateAgainstCache(brAPIClassCache))
+            .merge(delete.validateAgainstCache(brAPIClassCache))
+            .merge(search.validateAgainstCache(brAPIClassCache))
+            .merge(properties.validateAgainstCache(brAPIClassCache))
+            .merge(controlledVocabulary.validateAgainstCache(brAPIClassCache)) ;
+
+        return validation ;
     }
 
     /**

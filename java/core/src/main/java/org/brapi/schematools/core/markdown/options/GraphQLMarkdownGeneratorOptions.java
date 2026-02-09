@@ -251,13 +251,13 @@ public class GraphQLMarkdownGeneratorOptions implements Options {
     public String getDescriptionForListQuery(GraphQLFieldDefinition query, GraphQLOutputType dataType, GraphQLInputType inputType) {
         if (dataType != null) {
             if (inputType != null) {
-                return String.format("The %s query returns a %s, which is a paged list of %s values that matches the filters provided %s Input.",
+                return String.format("The %s query returns a %s, which is a pagedFor list of %s values that matches the filters provided %s Input.",
                     query.getName(),
                     getMarkdownLink(query.getType(), "../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"),
                     getMarkdownLink(dataType, "../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"),
                     getMarkdownLink(inputType, "../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"));
             } else {
-                return String.format("The %s query returns a %s, which is a paged list of %s values.",
+                return String.format("The %s query returns a %s, which is a pagedFor list of %s values.",
                     query.getName(),
                     getMarkdownLink(query.getType(), "../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"),
                     getMarkdownLink(dataType, "../../" + typeDefinitionsDirectory + "/" + descriptionsDirectory + "/"));

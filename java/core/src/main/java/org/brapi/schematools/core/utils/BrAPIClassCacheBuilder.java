@@ -7,6 +7,8 @@ import org.brapi.schematools.core.model.*;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.isPrimaryModel;
+
 /**
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of
@@ -23,29 +25,29 @@ import java.util.function.Predicate;
 public class BrAPIClassCacheBuilder {
     /**
      * Creates the cache
-     * @param brAPIClasses the list of possible classes to be cached.
+     * @param brAPIClasses the iterable of possible classes to be cached.
      * @return the cache of classes
      */
-    public static BrAPIClassCache createCache(List<BrAPIClass> brAPIClasses) {
+    public static BrAPIClassCache createCache(Iterable<BrAPIClass> brAPIClasses) {
         return new BrAPIClassCache(brAPIClass -> true, brAPIClasses) ;
     }
 
     /**
      * Creates the cache with a cache predicate that determines if a class is added to the cache.
      * @param cachePredicate the cache predicate that determines if a class is added to the cache.
-     * @param brAPIClasses the list of possible classes to be cached.
+     * @param brAPIClasses the iterable of possible classes to be cached.
      * @return the cache of classes
      */
-    public static BrAPIClassCache createCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+    public static BrAPIClassCache createCache(Predicate<BrAPIClass> cachePredicate, Iterable<BrAPIClass> brAPIClasses) {
         return new BrAPIClassCache(cachePredicate, brAPIClasses) ;
     }
 
     /**
      * Creates the cache of classes as a Map
-     * @param brAPIClasses the list of possible classes to be cached.
+     * @param brAPIClasses the iterable of possible classes to be cached.
      * @return the cache of classes as a Map
      */
-    public static Map<String, BrAPIClass> createMap(List<BrAPIClass> brAPIClasses) {
+    public static Map<String, BrAPIClass> createMap(Iterable<BrAPIClass> brAPIClasses) {
         return createCache(brAPIClasses).getBrAPIClassMap() ;
     }
 
@@ -55,16 +57,17 @@ public class BrAPIClassCacheBuilder {
      * @param brAPIClasses the list of possible classes to be cached.
      * @return the cache of classes as a Map
      */
-    public static Map<String, BrAPIClass> createMap(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+    public static Map<String, BrAPIClass> createMap(Predicate<BrAPIClass> cachePredicate, Iterable<BrAPIClass> brAPIClasses) {
         return createCache(cachePredicate, brAPIClasses).getBrAPIClassMap() ;
     }
 
     public static class BrAPIClassCache {
+        private static final String REQUEST_NAME_FORMAT = "%sRequest" ;
         private final Predicate<BrAPIClass> cachePredicate ;
         @Getter(AccessLevel.PRIVATE)
         private final Map<String, BrAPIClass> brAPIClassMap ;
 
-        public BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+        public BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, Iterable<BrAPIClass> brAPIClasses) {
             this.cachePredicate = cachePredicate ;
             brAPIClassMap = new TreeMap<>();
 
@@ -153,6 +156,36 @@ public class BrAPIClassCacheBuilder {
          */
         public boolean containsBrAPIClass(String name) {
             return brAPIClassMap.containsKey(name) ;
+        }
+
+        /**
+         * Determines if the cache contains a BrAPIClass by name, and it is a primary model
+         * @param name the name of the BrAPIClass
+         * @return {@code true} if there is a BrAPIClass by this the provided name, and it is a primary model
+         * {@code false} otherwise
+         */
+        public boolean containsPrimaryModel(String name) {
+            BrAPIClass brAPIClass = brAPIClassMap.get(name) ;
+
+            return brAPIClass != null && isPrimaryModel(brAPIClass);
+        }
+
+        /**
+         * Gets the BrAPI Request class for a BrAPI Class
+         * @param name the name of the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIClass getBrAPIRequestClass(String name) {
+            return brAPIClassMap.get(String.format(REQUEST_NAME_FORMAT, name));
+        }
+
+        /**
+         * Gets the BrAPI Request class for a BrAPI Class
+         * @param brAPIClass the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIClass getBrAPIRequestClass(BrAPIClass brAPIClass) {
+            return brAPIClassMap.get(String.format(REQUEST_NAME_FORMAT, brAPIClass.getName()));
         }
     }
 }

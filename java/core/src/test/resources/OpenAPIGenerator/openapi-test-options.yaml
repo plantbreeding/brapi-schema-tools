@@ -49,7 +49,7 @@ listGet:
     generateFor:
         AlleleMatrix: false
     pagedDefault: true
-    paged:
+    pagedFor:
         BreedingMethod: false
     inputFor:
         BreedingMethod: false

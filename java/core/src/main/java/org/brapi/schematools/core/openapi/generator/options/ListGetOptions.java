@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -20,7 +22,7 @@ import java.util.Map;
 public class ListGetOptions extends AbstractOpenAPISubOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> paged = new HashMap<>();
+    private Map<String, Boolean> pagedFor = new HashMap<>();
     private Boolean pagedTokenDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> pagedToken = new HashMap<>();
@@ -32,7 +34,7 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName())
@@ -51,7 +53,7 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
             setPagedDefault(overrideOptions.pagedDefault);
         }
 
-        paged.putAll(overrideOptions.paged);
+        pagedFor.putAll(overrideOptions.pagedFor);
 
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedDefault(overrideOptions.pagedTokenDefault);
@@ -74,44 +76,94 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
         }
     }
 
-    /**
-     * Determines if the List Endpoint is paged for any primary model. Returns {@code true} if
-     * {@link ListGetOptions#paged} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
-     * @param name the name of the primary model
-     * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
-     */
-    @JsonIgnore
-    public final boolean isPagedFor(String name) {
-        return paged.getOrDefault(name, pagedDefault) ;
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        pagedFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'pagedFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        inputFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'inputFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        propertyFromRequestFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'propertyFromRequestFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+
+            BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(name);
+            validation.assertNotNull(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Can not find Request class for '%s' set for 'propertyFromRequestFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+
+            if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                propertyFromRequestFor.get(name).keySet().forEach(propertyName -> {
+                    validation.assertTrue(brAPIObjectType.getProperties().stream().anyMatch(property -> propertyName.equals(property.getName())),
+                        String.format("Invalid Property name '%s' for BrAPIObjectType '%s' set for 'propertyFromRequestFor' on %s. Possible properties are: '%s'",
+                            propertyName,
+                            requestClass.getName(),
+                            this.getClass().getSimpleName(),
+                            String.join(", ",
+                                brAPIObjectType.getProperties().stream().map(BrAPIObjectProperty::getName).toList())));
+                }) ;
+            }
+        }) ;
+
+        return validation ;
     }
 
     /**
-     * Determines if the List Endpoint is paged for any primary model. Returns {@code true} if
-     * {@link ListGetOptions#paged} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * Determines if the List Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link ListGetOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * @param name the name of the primary model
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isPagedFor(String name) {
+        return pagedFor.getOrDefault(name, pagedDefault) ;
+    }
+
+    /**
+     * Determines if the List Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link ListGetOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
      * @param type the primary model
-     * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
      */
     public final boolean isPagedFor(BrAPIType type) {
         return isPagedFor(type.getName()) ;
     }
 
     /**
-     * Sets if the Endpoint is paged for a specific primary model.
+     * Sets if the Endpoint is pagedFor for a specific primary model.
      * @param name the name of the primary model
-     * @param paging {@code true} if the Endpoint is paged for a specific primary model, {@code false}
+     * @param paging {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore
     public final ListGetOptions setPagingFor(String name, boolean paging) {
-        paged.put(name, paging) ;
+        pagedFor.put(name, paging) ;
 
         return this ;
     }
 
     /**
-     * Sets if the Endpoint is paged for a specific primary model.
+     * Sets if the Endpoint is pagedFor for a specific primary model.
      * @param type the primary model
-     * @param paging {@code true} if the Endpoint is paged for a specific primary model, {@code false}
+     * @param paging {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore
@@ -123,7 +175,7 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
      * Determines if the List Endpoint use a page token for a model. Returns {@code true} if
      * {@link ListGetOptions#pagedToken} is set to {@code true} for any type or uses {@link ListGetOptions#pagedTokenDefault}
      * @param name the name of the model
-     * @return {@code true} if the List Endpoint is paged for any model, {@code false} otherwise
+     * @return {@code true} if the List Endpoint is pagedFor for any model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasPageTokenFor(String name) {
@@ -134,7 +186,7 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
      * Determines if the List Endpoint use a page token for a model. Returns {@code true} if
      * {@link ListGetOptions#pagedToken} is set to {@code true} for any type or uses {@link ListGetOptions#pagedTokenDefault}
      * @param type the model
-     * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
      */
     public final boolean hasPageTokenFor(BrAPIType type) {
         return hasPageTokenFor(type.getName()) ;

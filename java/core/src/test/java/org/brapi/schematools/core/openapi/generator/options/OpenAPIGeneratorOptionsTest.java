@@ -5,16 +5,23 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
+import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -68,6 +75,26 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         checkDefaultOptions(options);
 
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
+    }
+
+    @Test
+    void validateAgainstCache() {
+        try {
+            Map<String, BrAPIClass> schemas = new BrAPISchemaReader().
+                readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult().stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+
+            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas.values()));
+
+            validation.getErrors().forEach(error -> log.error(error.getMessage()));
+
+            assertTrue(validation.isValid());
+
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
     }
 
     @Test

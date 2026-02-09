@@ -249,7 +249,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 Files.createDirectories(outputPath.getParent());
 
                 if (!isOverwritingExistingFiles() && Files.isRegularFile(outputPath)) {
-                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Output file '%s' already exists was not overwritten", outputPath));
+                    return Response.fail(Response.ErrorType.VALIDATION, String.format("Output file '%s' already exists was not overwritten. Use the options '-r' or '--overwrite' to overwrite an existing file", outputPath));
                 }
 
                 return Response.success(new PrintWriter(new FileOutputStream(outputPath.toFile())));

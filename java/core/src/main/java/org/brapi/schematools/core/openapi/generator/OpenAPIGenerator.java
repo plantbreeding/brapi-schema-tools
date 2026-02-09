@@ -193,16 +193,22 @@ public class OpenAPIGenerator {
         }
 
         public Response<List<OpenAPI>> generate() {
-            return generateSpecifications(brAPIClassCache.getBrAPICClasses());
+            return options.validateAgainstCache(brAPIClassCache)
+                .asResponse()
+                .map(() -> generateSpecifications(brAPIClassCache.getBrAPICClasses()));
         }
 
         public Response<List<OpenAPI>> generate(Collection<String> classNames) {
             if (classNames != null && !classNames.isEmpty()) {
                 Collection<BrAPIClass> values = brAPIClassCache.getBrAPICClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
 
-                return generateSpecifications(values);
+                return options.validateAgainstCache(brAPIClassCache)
+                    .asResponse()
+                    .map(() -> generateSpecifications(values));
             } else {
-                return generateSpecifications(brAPIClassCache.getBrAPICClasses());
+                return options.validateAgainstCache(brAPIClassCache)
+                    .asResponse()
+                    .map(() -> generateSpecifications(brAPIClassCache.getBrAPICClasses()));
             }
         }
 
@@ -504,6 +510,17 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(typeWithProperty.getType()));
 
+            List<Parameter> parameters = new ArrayList<>();
+
+            if (options.getControlledVocabulary().isPagedFor(typeWithProperty.getType(), typeWithProperty.getProperty())) {
+                parameters.add(new Parameter().$ref("#/components/parameters/page"));
+                parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+            }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.parameters(parameters);
+
             pathItem.setGet(operation);
 
             return createListApiResponses(typeWithProperty)
@@ -521,6 +538,8 @@ public class OpenAPIGenerator {
                 }
 
                 ApiResponse apiResponse = createApiResponse(name, new ObjectSchema().$ref(createSchemaRef(type.getName()))) ;
+
+                apiResponse.description("OK") ;
 
                 responses.put(name, apiResponse);
 
@@ -551,6 +570,8 @@ public class OpenAPIGenerator {
                     addProperty("data", new ArraySchema().items(new Schema().$ref(createSchemaRef(type.getName())))).
                     addRequiredItem("data")
                 )  ;
+
+                apiResponse.description("OK") ;
 
                 responses.put(name, apiResponse);
 
@@ -667,9 +688,8 @@ public class OpenAPIGenerator {
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-
             if (options.getListGet().hasInputFor(type)) {
-                BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
 
                 if (requestClass == null) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", type.getName(), createPathItemName(type)));
@@ -706,7 +726,7 @@ public class OpenAPIGenerator {
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
             if (options.getListGet().hasInputFor(type)) {
-                BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type) ;
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
                     List<String> subQueryProperties = requestClass.getMetadata() != null && requestClass.getMetadata().getSubQueryProperties() != null ? requestClass.getMetadata().getSubQueryProperties() : new ArrayList<>() ;
@@ -755,7 +775,7 @@ public class OpenAPIGenerator {
         private Response<Operation> getOperationResponse(BrAPIObjectType type, Operation operation) {
             String requestBodyName = options.isGeneratingNewRequestFor(type) ? options.getNewRequestNameFor(type) : type.getName();
 
-            operation.requestBody(createRequestBody(new ArraySchema().$ref(String.format("#/components/schemas/%s", requestBodyName))));
+            operation.requestBody(createRequestBody(new ArraySchema().items(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName)))));
 
             operation.addTagsItem(options.getTagFor(type));
 
@@ -770,9 +790,13 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
             operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
 
+            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
             operation.addTagsItem(options.getTagFor(type));
 
-            return createSingleApiResponses(type)
+            return createIdGetParameterFor(type)
+                .onSuccessDoWithResult(operation::addParametersItem)
+                .map(() -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -791,7 +815,9 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(type));
 
-            return createSingleApiResponses(type)
+            return createIdGetParameterFor(type)
+                .onSuccessDoWithResult(operation::addParametersItem)
+                .map(() -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -817,7 +843,9 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(type));
 
-            return createSingleApiResponses(type)
+            return createIdGetParameterFor(type)
+                .onSuccessDoWithResult(operation::addParametersItem)
+                .map(() -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -939,7 +967,8 @@ public class OpenAPIGenerator {
         private Response<ApiResponses> createSingleApiResponses(BrAPIType type) {
             if (type instanceof BrAPIObjectType) {
                 return success(addStandardApiResponses(new ApiResponses()
-                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sSingleResponse", type.getName())))));
+                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sSingleResponse", type.getName()))))
+                    .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound")));
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Can not create a List API Response for '%s' which is a '%s'", type.getName(), type.getClass().getSimpleName()));
             }
@@ -1008,6 +1037,24 @@ public class OpenAPIGenerator {
 
             operation.responses(createSearchGetResponseRefs(type));
             operation.addTagsItem(options.getTagFor(type));
+
+            List<Parameter> parameters = new ArrayList<>();
+
+            parameters.add(new Parameter().
+                name(options.getSearch().getSearchIdFieldName()).
+                in("path").
+                description(options.getSearch().getSearchIdFieldName()).
+                required(true).
+                schema(new StringSchema()));
+
+            if (options.getSearch().isPagedFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/page"));
+                parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+            }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.parameters(parameters);
 
             pathItem.setGet(operation);
 
@@ -1147,7 +1194,7 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {
-            BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = brAPIClassCache.getBrAPIRequestClass(type);
 
             String name = options.getSearchRequestNameFor(type);
 

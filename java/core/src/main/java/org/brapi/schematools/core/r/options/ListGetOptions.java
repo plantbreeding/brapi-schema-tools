@@ -20,7 +20,7 @@ import java.util.Map;
 public class ListGetOptions extends AbstractRGeneratorSubOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> paged = new HashMap<>();
+    private Map<String, Boolean> pagedFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
     private Boolean propertiesFromRequest ;
@@ -29,7 +29,7 @@ public class ListGetOptions extends AbstractRGeneratorSubOptions {
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertiesFromRequest,  "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFromRequestFor,  "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName()) ;
@@ -46,7 +46,7 @@ public class ListGetOptions extends AbstractRGeneratorSubOptions {
             setPagedDefault(overrideOptions.pagedDefault);
         }
 
-        paged.putAll(overrideOptions.paged);
+        pagedFor.putAll(overrideOptions.pagedFor);
         inputFor.putAll(overrideOptions.inputFor);
         if (overrideOptions.propertiesFromRequest != null) {
             setPropertiesFromRequest(overrideOptions.propertiesFromRequest);
@@ -63,43 +63,43 @@ public class ListGetOptions extends AbstractRGeneratorSubOptions {
     }
 
     /**
-     * Determines if the List Endpoint is paged for any primary model. Returns {@code true} if
-     * {@link ListGetOptions#paged} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * Determines if the List Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link ListGetOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
      * @param name the name of the primary model
-     * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isPagedFor(String name) {
-        return paged.getOrDefault(name, pagedDefault) ;
+        return pagedFor.getOrDefault(name, pagedDefault) ;
     }
 
     /**
-     * Determines if the List Endpoint is paged for any primary model. Returns {@code true} if
-     * {@link ListGetOptions#paged} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * Determines if the List Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link ListGetOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
      * @param type the primary model
-     * @return {@code true} if the List Endpoint is paged for any primary model, {@code false} otherwise
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
      */
     public boolean isPagedFor(BrAPIType type) {
         return isPagedFor(type.getName()) ;
     }
 
     /**
-     * Sets if the Endpoint is paged for a specific primary model.
+     * Sets if the Endpoint is pagedFor for a specific primary model.
      * @param name the name of the primary model
-     * @param generate {@code true} if the Endpoint is paged for a specific primary model, {@code false}
+     * @param generate {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore
     public ListGetOptions setPagingFor(String name, boolean generate) {
-        paged.put(name, generate) ;
+        pagedFor.put(name, generate) ;
 
         return this ;
     }
 
     /**
-     * Sets if the Endpoint is paged for a specific primary model.
+     * Sets if the Endpoint is pagedFor for a specific primary model.
      * @param type the primary model
-     * @param generate {@code true} if the Endpoint is paged for a specific primary model, {@code false}
+     * @param generate {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
      * @return the options for chaining
      */
     @JsonIgnore

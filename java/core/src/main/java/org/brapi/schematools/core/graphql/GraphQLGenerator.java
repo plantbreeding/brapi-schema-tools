@@ -458,13 +458,13 @@ public class GraphQLGenerator {
         }
 
         private Response<GraphQLNamedInputType> createInputObjectTypeForListQuery(BrAPIClass type) {
-            BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = brAPIClassCache.getBrAPIRequestClass(type);
 
             return createInputTypeFromClass(options.getQueryInputTypeNameFor(type), Objects.requireNonNullElse(requestSchema, type));
         }
 
         private Response<GraphQLNamedInputType> createInputObjectTypeForSearchQuery(BrAPIClass type) {
-            BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
+            BrAPIClass requestSchema = brAPIClassCache.getBrAPIRequestClass(type) ;
 
             return createInputTypeFromClass(options.getQueryInputTypeNameFor(type), Objects.requireNonNullElse(requestSchema, type));
         }
@@ -849,7 +849,7 @@ public class GraphQLGenerator {
             String name = String.format(options.getQueryType().getListQuery().getResponseTypeNameForType(graphQLObjectType.getName()));
 
             if (objectOutputTypes.containsKey(name)) {
-                // TODO possible that the cache version is paged and this is not, and vise versa.
+                // TODO possible that the cache version is pagedFor and this is not, and vise versa.
                 return objectOutputTypes.get(name);
             }
 

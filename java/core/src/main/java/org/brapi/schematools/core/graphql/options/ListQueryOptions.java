@@ -22,7 +22,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     private Boolean pagedDefault;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> paged = new HashMap<>();
+    private Map<String, Boolean> pagedFor = new HashMap<>();
 
     private String pagingInputName;
     private String pageInputTypeName;
@@ -33,7 +33,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
         return Validation.valid()
             .assertNotNull(dataFieldName, "'dataFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagingInputName, "'pagingInputName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pageInputTypeName, "'pageInputTypeName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pageTypeName, "'pageTypeName' option on %s is null", this.getClass().getSimpleName())
@@ -55,7 +55,7 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
             setPagedDefault(overrideOptions.pagedDefault); ;
         }
 
-        paged.putAll(overrideOptions.paged);
+        pagedFor.putAll(overrideOptions.pagedFor);
 
         if (overrideOptions.pagingInputName != null) {
             setPagingInputName(overrideOptions.pagingInputName); ;
@@ -80,24 +80,24 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
      */
     @JsonIgnore
     public final boolean hasPaging() {
-        return pagedDefault || paged.values().stream().anyMatch(paged -> paged) ;
+        return pagedDefault || pagedFor.values().stream().anyMatch(paged -> paged) ;
     }
 
 
     /**
-     * Determines if the Query is paged for a specific primary model
+     * Determines if the Query is pagedFor for a specific primary model
      * @param name the name of the primary model
-     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
+     * @return {@code true} if the Query is pagedFor for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault) ;
+        return pagedFor.getOrDefault(name, pagedDefault) ;
     }
 
     /**
-     * Determines if the Query is paged for a specific primary model
+     * Determines if the Query is pagedFor for a specific primary model
      * @param type the primary model
-     * @return {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
+     * @return {@code true} if the Query is pagedFor for a specific primary model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull BrAPIType type) {
@@ -105,14 +105,14 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
     }
 
     /**
-     * Sets if the Query is paged for a specific primary model
+     * Sets if the Query is pagedFor for a specific primary model
      * @param name the name of the primary model
-     * @param hasInput {@code true} if the Query is paged for a specific primary model, {@code false} otherwise
+     * @param hasInput {@code true} if the Query is pagedFor for a specific primary model, {@code false} otherwise
      * @return the options for chaining
      */
     @JsonIgnore
     public final ListQueryOptions setPagedFor(String name, boolean hasInput) {
-        paged.put(name, hasInput) ;
+        pagedFor.put(name, hasInput) ;
 
         return this ;
     }

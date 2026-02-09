@@ -1,8 +1,12 @@
 package org.brapi.schematools.core.openapi.comparator;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -85,7 +89,7 @@ public class OpenAPIComparator {
     public Response<ChangedOpenApi> openApiCompare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             try {
-                return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
+                return filterJSONDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile()));
             } catch (Exception e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
                     String.format("Can not compare, Path 1: '%s' Path 2: '%s' due to exception: %s", firstPath, secondPath, e.getMessage()));
@@ -118,9 +122,9 @@ public class OpenAPIComparator {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             try { // uses file extension to determine if YAML or not, should replace with a better way
                 if (firstPath.getFileName().toString().endsWith(".yaml") || secondPath.getFileName().toString().endsWith(".yaml")) {
-                    return Response.success(filterDiff(JsonDiffCompare.fromFilesYAML(firstPath, secondPath)));
+                    return Response.success(filterJSONDiff(JsonDiffCompare.fromFilesYAML(firstPath, secondPath)));
                 } else {
-                    return Response.success(filterDiff(JsonDiffCompare.fromFilesJSON(firstPath, secondPath)));
+                    return Response.success(filterJSONDiff(JsonDiffCompare.fromFilesJSON(firstPath, secondPath)));
                 }
 
             } catch (Exception e) {
@@ -184,7 +188,7 @@ public class OpenAPIComparator {
      */
     public Response<ChangedOpenApi> compare(String firstContent, String secondContent) {
         if (StringUtils.isNotBlank(firstContent) && StringUtils.isNotBlank(secondContent)) {
-            return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions()))) ;
+            return filterJSONDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions())) ;
         } else {
             if (!StringUtils.isNotBlank(firstContent) && !StringUtils.isNotBlank(secondContent)) {
                 return Response.fail(Response.ErrorType.VALIDATION, "Both input content need to be non blank");
@@ -218,33 +222,34 @@ public class OpenAPIComparator {
         return OpenApiDiffOptions.builder().build();
     }
 
-    private ChangedOpenApi filterDiff(ChangedOpenApi changedOpenApi) {
-        return new ChangedOpenApi(createOptions())
+    private Response<ChangedOpenApi> filterJSONDiff(ChangedOpenApi changedOpenApi) {
+
+        /*ChangedOpenApi updatedChangedOpenApi = new ChangedOpenApi(createOptions())
             .setChangedExtensions(changedOpenApi.getChangedExtensions()) // TODO
             .setChangedOperations(changedOpenApi.getChangedOperations().stream().filter(this::keepChangedOperation).map(this::filterChangedOperation).toList())
             .setChangedSchemas(changedOpenApi.getChangedSchemas().stream().filter(this::keepChangedSchema).map(this::filterChangedSchema).toList())
             .setMissingEndpoints(changedOpenApi.getMissingEndpoints().stream().filter(this::keepMissingEndpoint).toList())
             .setNewEndpoints(changedOpenApi.getNewEndpoints().stream().filter(this::keepNewEndpoint).toList())
             .setNewSpecOpenApi(changedOpenApi.getNewSpecOpenApi())
-            .setOldSpecOpenApi(changedOpenApi.getOldSpecOpenApi()) ;
-    }
+            .setOldSpecOpenApi(changedOpenApi.getOldSpecOpenApi());*/
 
+        return Response.success(changedOpenApi);
+    }
 
     private ChangedOperation filterChangedOperation(ChangedOperation changedOperation) {
         if (options.isIgnoringDescriptionChanges() && changedOperation.getDescription() != null) {
             changedOperation.setDescription(null);
         }
 
-        if (changedOperation.getSummary() != null) {
+        if (options.isIgnoringDescriptionChanges() && changedOperation.getSummary() != null) {
             changedOperation.setSummary(null);
         }
 
-        if (changedOperation.getRequestBody() != null) {
+        if (options.isIgnoringDescriptionChanges() && changedOperation.getRequestBody() != null) {
             changedOperation.getRequestBody().setDescription(null);
-
         }
 
-        if (changedOperation.getApiResponses() != null) {
+        if (options.isIgnoringDescriptionChanges() && changedOperation.getApiResponses() != null) {
             changedOperation.getApiResponses().getChanged().values().forEach(changedResponse -> changedResponse.setDescription(null));
         }
 
@@ -256,7 +261,7 @@ public class OpenAPIComparator {
     }
 
     private ChangedParameter filterChangedParameter(ChangedParameter changedParameter) {
-        if (changedParameter.getDescription() != null) {
+        if (options.isIgnoringDescriptionChanges() && changedParameter.getDescription() != null) {
             changedParameter.setDescription(null);
         }
 
@@ -264,7 +269,7 @@ public class OpenAPIComparator {
     }
 
     private ChangedSchema filterChangedSchema(ChangedSchema changedSchema) {
-        if (changedSchema.getDescription() != null) {
+        if (options.isIgnoringDescriptionChanges() && changedSchema.getDescription() != null) {
             changedSchema.setDescription(null);
         }
 
@@ -276,7 +281,7 @@ public class OpenAPIComparator {
     }
 
 
-    private JsonNode filterDiff(JsonNode diff) {
+    private JsonNode filterJSONDiff(JsonNode diff) {
 
         DocumentContext jsonContext = JsonPath.using(jsonpathConfig).parse(diff);
         jsonContext.delete("$.[?(@.op == 'replace' && @.path == '/info/title')]");

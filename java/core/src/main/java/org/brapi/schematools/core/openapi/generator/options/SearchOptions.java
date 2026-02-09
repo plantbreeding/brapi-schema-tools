@@ -7,6 +7,9 @@ import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.validiation.Validation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 /**
@@ -18,14 +21,22 @@ public class SearchOptions extends AbstractOpenAPISubOptions {
 
     @Getter(AccessLevel.PUBLIC)
     private String searchIdFieldName;
+    @Getter(AccessLevel.PUBLIC)
+    private String searchIdFieldDescription;
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
+    private Boolean pagedDefault;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> pagedFor = new HashMap<>();
 
     public Validation validate() {
         return Validation.valid()
             .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(searchIdFieldDescription, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -39,6 +50,10 @@ public class SearchOptions extends AbstractOpenAPISubOptions {
             setSearchIdFieldName(overrideOptions.searchIdFieldName);
         }
 
+        if (overrideOptions.searchIdFieldDescription != null) {
+            setSearchIdFieldName(overrideOptions.searchIdFieldDescription);
+        }
+
         if (overrideOptions.submitDescriptionFormat != null) {
             setSubmitDescriptionFormat(overrideOptions.submitDescriptionFormat);
         }
@@ -46,6 +61,12 @@ public class SearchOptions extends AbstractOpenAPISubOptions {
         if (overrideOptions.retrieveDescriptionFormat != null) {
             setRetrieveDescriptionFormat(overrideOptions.retrieveDescriptionFormat);
         }
+
+        if (overrideOptions.pagedDefault != null) {
+            setPagedDefault(overrideOptions.pagedDefault);
+        }
+
+        pagedFor.putAll(overrideOptions.pagedFor);
     }
 
     /**
@@ -67,4 +88,50 @@ public class SearchOptions extends AbstractOpenAPISubOptions {
     public final String getRetrieveDescriptionFormat(BrAPIType type) {
         return String.format(retrieveDescriptionFormat, type.getName(), toParameterCase(type.getName())) ;
     }
+
+    /**
+     * Determines if the Search Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link SearchOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * @param name the name of the primary model
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isPagedFor(String name) {
+        return pagedFor.getOrDefault(name, pagedDefault) ;
+    }
+
+    /**
+     * Determines if the Search Endpoint is pagedFor for any primary model. Returns {@code true} if
+     * {@link SearchOptions#pagedFor} is set to {@code true} for any type or uses {@link ListGetOptions#pagedDefault}
+     * @param type the primary model
+     * @return {@code true} if the List Endpoint is pagedFor for any primary model, {@code false} otherwise
+     */
+    public final boolean isPagedFor(BrAPIType type) {
+        return isPagedFor(type.getName()) ;
+    }
+
+    /**
+     * Sets if the Endpoint is pagedFor for a specific primary model.
+     * @param name the name of the primary model
+     * @param paging {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final SearchOptions setPagingFor(String name, boolean paging) {
+        pagedFor.put(name, paging) ;
+
+        return this ;
+    }
+
+    /**
+     * Sets if the Endpoint is pagedFor for a specific primary model.
+     * @param type the primary model
+     * @param paging {@code true} if the Endpoint is pagedFor for a specific primary model, {@code false}
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final SearchOptions setPagingFor(BrAPIType type, boolean paging) {
+        return setPagingFor(type.getName(), paging) ;
+    }
+
 }

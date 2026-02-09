@@ -27,7 +27,7 @@ queryType:
         responseTypeNameFormat: "%sListResponse"
         dataFieldName: data
         pagedDefault: true
-        paged:
+        pagedFor:
             BreedingMethod: false
         input:
             BreedingMethod: false
