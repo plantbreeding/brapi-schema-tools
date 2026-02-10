@@ -79,6 +79,8 @@ listGet:
         BreedingMethod: false
     propertiesFromRequest: true
     propertyFromRequestFor:
+        AdditionalInfo:
+            additionalProperties: false
         CallSet:
             commonCropNames: false
             germplasmNames: false
@@ -136,6 +138,7 @@ listGet:
             dateModifiedRangeEnd: false
             listOwnerNames: false
             listOwnerPersonDbIds: false
+            programNames: false
         Method:
             programNames: false
         Image:
@@ -182,6 +185,8 @@ listGet:
             programNames: false
             studyNames: false
             trialNames: false
+        ObservationUnitLevelRelationship:
+            observationUnit: false
         ObservationVariable:
             dataTypes: false
             programNames: false
@@ -214,6 +219,7 @@ listGet:
         Program:
             leadPersonDbIds: false
             leadPersonNames: false
+            objectives: false
         Reference:
             germplasmDbIds: false
             germplasmNames: false

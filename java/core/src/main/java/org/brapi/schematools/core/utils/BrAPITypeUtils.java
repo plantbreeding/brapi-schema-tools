@@ -38,6 +38,34 @@ public class BrAPITypeUtils {
     }
 
     /**
+     * Determines if a BrAPI Class is a Request class
+     * @param brAPIClass the BrAPI Class to be checked
+     * @return {@code true} if the BrAPI Class is a Request class
+     */
+    public static boolean isRequest(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isRequest() ;
+    }
+
+
+    /**
+     * Determines if a BrAPI Class is an Interface class
+     * @param brAPIClass the BrAPI Class to be checked
+     * @return {@code true} if the BrAPI Class is an Interface class
+     */
+    public static boolean isInterfaceClass(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isInterfaceClass() ;
+    }
+
+    /**
+     * Determines if a BrAPI Class is a Parameters class
+     * @param brAPIClass the BrAPI Class to be checked
+     * @return {@code true} if the BrAPI Class is a Parameters class
+     */
+    public static boolean isParameters(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isParameters() ;
+    }
+
+    /**
      * Unwraps a BrAPIType, by finding the inner type
      *
      * @param type the type to be unwrapped
@@ -125,4 +153,6 @@ public class BrAPITypeUtils {
             return second;
         }
     }
+
+
 }

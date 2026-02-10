@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.isPrimaryModel;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
 
 /**
  * Creates a cache of {@link BrAPIClass}es.
@@ -186,6 +187,30 @@ public class BrAPIClassCacheBuilder {
          */
         public BrAPIClass getBrAPIRequestClass(BrAPIClass brAPIClass) {
             return brAPIClassMap.get(String.format(REQUEST_NAME_FORMAT, brAPIClass.getName()));
+        }
+
+        /**
+         * Gets the BrAPI Object for a BrAPI Request Class, if is not a BrAPI Request Class
+         * it returns the input object if possible or {code}null{code}.
+         *
+         * @param brAPIClass the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIObjectType getBrAPIObjectForRequestClass(BrAPIClass brAPIClass) {
+
+            BrAPIClass type = brAPIClass ;
+
+            if (isRequest(brAPIClass)) {
+                if (brAPIClass.getName().endsWith("Request")) {
+                    type = brAPIClassMap.get(brAPIClass.getName().substring(0, brAPIClass.getName().length() - 7));
+                }
+            }
+
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType;
+            }
+
+            return null ;
         }
     }
 }

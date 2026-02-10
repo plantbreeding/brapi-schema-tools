@@ -44,6 +44,42 @@ class BrAPITypeUtilsTest {
     }
 
     @Test
+    void isRequest() {
+        BrAPIObjectType c1 = BrAPIObjectType.builder().build();
+        assertFalse(BrAPITypeUtils.isRequest(c1));
+
+        BrAPIObjectType c2 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().request(false).build()).build();
+        assertFalse(BrAPITypeUtils.isRequest(c2));
+
+        BrAPIObjectType c3 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().request(true).build()).build();
+        assertTrue(BrAPITypeUtils.isRequest(c3));
+    }
+
+    @Test
+    void isInterfaceClass() {
+        BrAPIObjectType c1 = BrAPIObjectType.builder().build();
+        assertFalse(BrAPITypeUtils.isInterfaceClass(c1));
+
+        BrAPIObjectType c2 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().interfaceClass(false).build()).build();
+        assertFalse(BrAPITypeUtils.isInterfaceClass(c2));
+
+        BrAPIObjectType c3 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().interfaceClass(true).build()).build();
+        assertTrue(BrAPITypeUtils.isInterfaceClass(c3));
+    }
+
+    @Test
+    void isParameters() {
+        BrAPIObjectType c1 = BrAPIObjectType.builder().build();
+        assertFalse(BrAPITypeUtils.isParameters(c1));
+
+        BrAPIObjectType c2 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().parameters(false).build()).build();
+        assertFalse(BrAPITypeUtils.isParameters(c2));
+
+        BrAPIObjectType c3 = BrAPIObjectType.builder().metadata(BrAPIMetadata.builder().parameters(true).build()).build();
+        assertTrue(BrAPITypeUtils.isParameters(c3));
+    }
+
+    @Test
     void unwrapType() {
         BrAPIType objectType = BrAPIObjectType.builder().build();
         assertSame(objectType, BrAPITypeUtils.unwrapType(objectType));

@@ -97,7 +97,7 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
         }) ;
 
         propertyFromRequestFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid Primary Model name '%s' set for 'propertyFromRequestFor' on %s",
                     name,
                     this.getClass().getSimpleName()
@@ -269,11 +269,21 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
      * @return <code>true</code> if the property from the Request is used in the List query
      */
     public final boolean isUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+        return isUsingPropertyFromRequestFor(type.getName(), property.getName()) ;
+    }
 
-        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
+    /**
+     * Gets whether a property from the Request is used in the List query
+     * @param typeName The BrAPI Object type name
+     * @param propertyName The BrAPI property name
+     * @return <code>true</code> if the property from the Request is used in the List query
+     */
+    public final boolean isUsingPropertyFromRequestFor(String typeName, String propertyName) {
+
+        Map<String, Boolean> map = propertyFromRequestFor.get(typeName) ;
 
         if (map != null) {
-            return map.getOrDefault(property.getName(), propertiesFromRequest) ;
+            return map.getOrDefault(propertyName, propertiesFromRequest) ;
         }
 
         return propertiesFromRequest ;
