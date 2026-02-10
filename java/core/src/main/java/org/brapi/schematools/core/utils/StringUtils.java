@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.com.google.common.collect.ImmutableList;
 import graphql.com.google.common.collect.ImmutableSet;
-import org.atteo.evo.inflector.English;
 import org.brapi.schematools.core.response.Response;
 
 import java.io.BufferedReader;
@@ -30,39 +28,40 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
 
-    private static final List<Replacer> singularisations = ImmutableList.of(
-        replace("(.*)people$").with("$1person"),
-        replace("(.*)People$").with("$1Person"),
-        replace("oxen$").with("ox"),
-        replace("children$").with("child"),
-        replace("feet$").with("foot"),
-        replace("teeth$").with("tooth"),
-        replace("geese$").with("goose"),
-        replace("(.*)ives?$").with("$1ife"),
-        replace("(.*)ves?$").with("$1f"),
-        replace("(.*)men$").with("$1man"),
-        replace("(.+[aeiou])ys$").with("$1y"),
-        replace("(.+[^aeiou])ies$").with("$1y"),
-        replace("(.+)zes$").with("$1"),
-        replace("([m|l])ice$").with("$1ouse"),
-        replace("(.+)matrices$").with("$1matrix"),
-        replace("(.+)Matrices$").with("$1Matrix"),
-        replace("indices$").with("index"),
-        replace("(.+[^aeiou])ices$").with("$1ice"),
-        replace("(.*)ices$").with("$1ex"),
-        replace("(octop|vir)i$").with("$1us"),
-        replace("bases$").with("base"),
-        replace("(.+(s|x|sh|ch))es$").with("$1"),
-        replace("(.+)s$").with("$1")
+    /**
+     * Nouns that are the same in singular and plural form, so should not be pluralised or singularised
+     */
+    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm", "species", "series", "sheep", "deer", "fish", "bison", "moose", "swine", "offspring", "salmon", "trout", "hovercraft", "spacecraft");
+
+    /**
+     * Custom plural mappings for irregular plurals
+     */
+    private static final Map<String, String> customPlurals = Map.of(
+        "matrix", "matrices",
+        "person", "people",
+        "child", "children",
+        "mouse", "mice",
+        "goose", "geese",
+        "foot", "feet",
+        "tooth", "teeth",
+        "man", "men",
+        "woman", "women"
     );
 
-    private static final List<Replacer> pluralisations = ImmutableList.of(
-        replace("(.*)matrix$").with("$1matrices"),
-        replace("(.*)Matrix$").with("$1Matrices"),
-        replace("(.*)person$").with("$1people"),
-        replace("(.*)Person$").with("$1People")
+    /**
+     * Custom singular mappings (reverse of customPlurals)
+     */
+    private static final Map<String, String> customSingulars = Map.of(
+        "matrices", "matrix",
+        "people", "person",
+        "children", "child",
+        "mice", "mouse",
+        "geese", "goose",
+        "feet", "foot",
+        "teeth", "tooth",
+        "men", "man",
+        "women", "woman"
     );
 
     /**
@@ -75,52 +74,328 @@ public class StringUtils {
     }
 
     /**
-     * Converts the noun from its plural form to its singular form
+     * Tests if a word is plural using rule-based pattern matching.
      *
-     * @param value a noun to be converted
-     * @return singular form of a plural noun
+     * @param word the word to test
+     * @return {@code true} if the word is plural, {@code false} if singular or unknown
      */
-    public static String toSingular(String value) {
-        if (value == null) {
-            return null;
+    public static boolean isPlural(String word) {
+        if (word == null || word.isEmpty()) {
+            return false;
         }
 
-        if (unpluralisables.contains(value.toLowerCase())) {
-            return value;
+        if (unpluralisables.contains(word.toLowerCase())) {
+            return true; // These words are both singular and plural
         }
 
-        for (final Replacer singularization : singularisations) {
-            if (singularization.matches(value)) {
-                return singularization.replace();
-            }
+        // Check if this is a compound camelCase word (e.g., DataMatrices, dataMatrices)
+        // Split on uppercase letter transitions
+        Pattern camelCasePattern = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+        String[] parts = camelCasePattern.split(word);
+
+        if (parts.length > 1) {
+            // It's a compound word - check only the last part
+            String lastPart = parts[parts.length - 1];
+            return isPlural(lastPart);
         }
 
-        return value ;
+        // Single word - use rule-based checking
+        return looksLikePlural(word.toLowerCase());
     }
 
     /**
-     * Converts the noun from its singular form to its plural form
+     * Check if a word looks like a plural based on common patterns
      *
-     * @param value a noun to be converted
-     * @return plural form of a singular noun
+     * @param lowerWord the lowercase word to check
+     * @return true if it looks like a plural
      */
-    public static String toPlural(String value) {
-        if (value == null) {
+    private static boolean looksLikePlural(String lowerWord) {
+        // Check custom plurals
+        if (customPlurals.containsValue(lowerWord)) {
+            return true;
+        }
+
+        // Common plural endings
+        return lowerWord.endsWith("s") || lowerWord.endsWith("es") ||
+               lowerWord.endsWith("ies") || lowerWord.endsWith("ves") ||
+               lowerWord.endsWith("i") || lowerWord.endsWith("a");
+    }
+
+    /**
+     * Tests if a word is singular using rule-based pattern matching.
+     *
+     * @param word the word to test
+     * @return {@code true} if the word is singular, {@code false} if plural or unknown
+     */
+    public static boolean isSingular(String word) {
+        if (word == null || word.isEmpty()) {
+            return false;
+        }
+
+        if (unpluralisables.contains(word.toLowerCase())) {
+            return true; // These words are both singular and plural
+        }
+
+        // Check if this is a compound camelCase word (e.g., DataMatrix, dataMatrix)
+        // Split on uppercase letter transitions
+        Pattern camelCasePattern = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+        String[] parts = camelCasePattern.split(word);
+
+        if (parts.length > 1) {
+            // It's a compound word - check only the last part
+            String lastPart = parts[parts.length - 1];
+            return isSingular(lastPart);
+        }
+
+        // Single word - use rule-based checking
+        return !looksLikePlural(word.toLowerCase());
+    }
+
+    /**
+     * Converts a plural noun to singular using rule-based approach.
+     *
+     * @param word the word to convert
+     * @return the singular form of the word
+     */
+    public static String toSingular(String word) {
+        if (word == null) {
             return null;
         }
 
-        if (unpluralisables.contains(value.toLowerCase())) {
-            return value;
+        if (unpluralisables.contains(word.toLowerCase())) {
+            return word;
         }
 
-        for (final Replacer pluralisation : pluralisations) {
-            if (pluralisation.matches(value)) {
-                return pluralisation.replace();
-            }
-        }
+        // Check if this is a compound camelCase word (e.g., DataMatrices, dataMatrices)
+        // Split on uppercase letter transitions
+        Pattern camelCasePattern = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+        String[] parts = camelCasePattern.split(word);
 
-        return English.plural(value);
+        if (parts.length > 1) {
+            // It's a compound word - singularize only the last part
+            String lastPart = parts[parts.length - 1];
+            String singularizedLastPart = singularizeSingleWord(lastPart);
+            parts[parts.length - 1] = singularizedLastPart;
+            return String.join("", parts);
+        } else {
+            // It's a single word - singularize normally
+            return singularizeSingleWord(word);
+        }
     }
+
+    /**
+     * Helper method to singularize a single word (not compound) using rule-based approach.
+     *
+     * @param word the single word to singularize
+     * @return the singular form of the word
+     */
+    private static String singularizeSingleWord(String word) {
+        if (word == null || word.isEmpty()) {
+            return word;
+        }
+
+        // Check if word starts with uppercase to preserve case
+        boolean startsWithUpperCase = Character.isUpperCase(word.charAt(0));
+
+        // Get the lowercase version for lookup
+        String lowerWord = word.toLowerCase();
+
+        // Check custom singular mappings first
+        String singularForm = customSingulars.get(lowerWord);
+
+        if (singularForm == null) {
+            // Apply reverse pluralization rules
+            singularForm = applySingularizationRules(lowerWord);
+        }
+
+        // Preserve original case
+        if (startsWithUpperCase) {
+            return capitalise(singularForm);
+        }
+        return singularForm;
+    }
+
+    /**
+     * Apply reverse pluralization rules to singularize a word
+     *
+     * @param word the lowercase plural word
+     * @return the singular form
+     */
+    private static String applySingularizationRules(String word) {
+        // Words ending in 'ies' -> change to 'y'
+        if (word.endsWith("ies") && word.length() > 3) {
+            return word.substring(0, word.length() - 3) + "y";
+        }
+
+        // Words ending in 'ves' -> change to 'f' or 'fe'
+        if (word.endsWith("ves")) {
+            return word.substring(0, word.length() - 3) + "f";
+        }
+
+        // Words ending in 'ses', 'shes', 'ches', 'xes', 'zes' -> remove 'es'
+        if ((word.endsWith("ses") && !word.endsWith("sses")) ||
+            word.endsWith("shes") || word.endsWith("ches") ||
+            word.endsWith("xes") || word.endsWith("zes")) {
+            return word.substring(0, word.length() - 2);
+        }
+
+        // Words ending in 'sses' -> remove 'es'
+        if (word.endsWith("sses")) {
+            return word.substring(0, word.length() - 2);
+        }
+
+        // Words ending in 'i' (plural of 'us')
+        if (word.endsWith("i") && word.length() > 2) {
+            return word.substring(0, word.length() - 1) + "us";
+        }
+
+        // Words ending in 'a' (plural of 'on')
+        if (word.endsWith("a") && word.length() > 2) {
+            return word.substring(0, word.length() - 1) + "on";
+        }
+
+        // Words ending in 's' -> remove 's'
+        if (word.endsWith("s") && word.length() > 1) {
+            return word.substring(0, word.length() - 1);
+        }
+
+        // Default: return as is
+        return word;
+    }
+
+    /**
+     * Converts a singular noun to plural using rule-based approach.
+     *
+     * @param word the word to convert
+     * @return the plural form of the word
+     */
+    public static String toPlural(String word) {
+        if (word == null) {
+            return null;
+        }
+
+        if (unpluralisables.contains(word.toLowerCase())) {
+            return word;
+        }
+
+        // Check if this is a compound camelCase word (e.g., DataMatrix, dataMatrix)
+        // Split on uppercase letter transitions
+        Pattern camelCasePattern = Pattern.compile("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
+        String[] parts = camelCasePattern.split(word);
+
+        if (parts.length > 1) {
+            // It's a compound word - pluralize only the last part
+            int lastIndex = parts.length - 1;
+            String lastPart = parts[lastIndex];
+            String pluralizedLastPart = pluralizeSingleWord(lastPart);
+
+            // Rebuild the word with the pluralized last part
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < lastIndex; i++) {
+                result.append(parts[i]);
+            }
+            result.append(pluralizedLastPart);
+
+            return result.toString();
+        } else {
+            // It's a single word - pluralize normally
+            return pluralizeSingleWord(word);
+        }
+    }
+
+    /**
+     * Helper method to pluralize a single word (not compound) using custom rules.
+     *
+     * @param word the single word to pluralize
+     * @return the plural form of the word
+     */
+    private static String pluralizeSingleWord(String word) {
+        if (word == null || word.isEmpty()) {
+            return word;
+        }
+
+        // Check if word starts with uppercase to preserve case
+        boolean startsWithUpperCase = Character.isUpperCase(word.charAt(0));
+
+        // Get the lowercase version for lookup
+        String lowerWord = word.toLowerCase();
+
+        // Check custom plural mappings first
+        String pluralForm = customPlurals.get(lowerWord);
+
+        if (pluralForm == null) {
+            // Apply pluralization rules
+            pluralForm = applyPluralizationRules(lowerWord);
+        }
+
+        // Preserve original case
+        if (startsWithUpperCase) {
+            pluralForm = capitalise(pluralForm);
+        }
+
+        return pluralForm;
+    }
+
+    /**
+     * Apply standard English pluralization rules
+     *
+     * @param word the lowercase word to pluralize
+     * @return the pluralized form
+     */
+    private static String applyPluralizationRules(String word) {
+        // Irregular plurals that end in 'y'
+        if (word.endsWith("y") && word.length() > 1 && !isVowel(word.charAt(word.length() - 2))) {
+            return word.substring(0, word.length() - 1) + "ies";
+        }
+
+        // Words ending in s, ss, sh, ch, x, z
+        if (word.endsWith("s") || word.endsWith("ss") || word.endsWith("sh") ||
+            word.endsWith("ch") || word.endsWith("x") || word.endsWith("z")) {
+            return word + "es";
+        }
+
+        // Words ending in 'o' preceded by a consonant
+        if (word.endsWith("o") && word.length() > 1 && !isVowel(word.charAt(word.length() - 2))) {
+            return word + "es";
+        }
+
+        // Words ending in 'f' or 'fe'
+        if (word.endsWith("f")) {
+            return word.substring(0, word.length() - 1) + "ves";
+        }
+        if (word.endsWith("fe")) {
+            return word.substring(0, word.length() - 2) + "ves";
+        }
+
+        // Words ending in 'us'
+        if (word.endsWith("us")) {
+            return word.substring(0, word.length() - 2) + "i";
+        }
+
+        // Words ending in 'is'
+        if (word.endsWith("is")) {
+            return word.substring(0, word.length() - 2) + "es";
+        }
+
+        // Words ending in 'on'
+        if (word.endsWith("on")) {
+            return word.substring(0, word.length() - 2) + "a";
+        }
+
+        // Default: just add 's'
+        return word + "s";
+    }
+
+    /**
+     * Check if a character is a vowel
+     *
+     * @param c the character to check
+     * @return true if the character is a vowel
+     */
+    private static boolean isVowel(char c) {
+        return "aeiouAEIOU".indexOf(c) >= 0;
+    }
+
 
     /**
      * Creates a valid name for use in GraphQL
@@ -307,7 +582,7 @@ public class StringUtils {
      * If the strings are not JSON use the {@link #isJSONEqual(String, String)} method.
      * @param expected the expected JSON string
      * @param actual the actual JSON string
-     * @return <code>true</code> if actual string is equal to the expected string
+     * @return <code>true</code> if actual string is equal to the expected string, <code>false</code> otherwise
      * @throws JsonProcessingException if the strings cannot be converted to JSON nodes.
      */
     public static boolean isJSONEqual(String expected, String actual) throws JsonProcessingException {
@@ -413,41 +688,5 @@ public class StringUtils {
             }
         }
         return cleaned.trim();
-    }
-
-    static class Replacer {
-        final Pattern pattern;
-        final String replacement;
-        Matcher m;
-
-        static class Builder {
-            private final Pattern pattern;
-
-            Builder(Pattern pattern) {
-                this.pattern = pattern;
-            }
-
-            Replacer with(String replacement) {
-                return new Replacer(pattern, replacement);
-            }
-        }
-
-        private Replacer(Pattern pattern, String replacement) {
-            this.pattern = pattern;
-            this.replacement = replacement;
-        }
-
-        boolean matches(String word) {
-            m = pattern.matcher(word);
-            return m.matches();
-        }
-
-        String replace() {
-            return m.replaceFirst(replacement);
-        }
-    }
-
-    static Replacer.Builder replace(String pattern) {
-        return new Replacer.Builder(Pattern.compile(pattern));
     }
 }

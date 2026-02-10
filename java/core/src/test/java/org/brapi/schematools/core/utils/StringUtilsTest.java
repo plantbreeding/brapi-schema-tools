@@ -27,6 +27,27 @@ class StringUtilsTest {
     }
 
     @Test
+    void isSingular() {
+        assertTrue(StringUtils.isSingular("DataMatrix")) ;
+        assertFalse(StringUtils.isSingular("DataMatrices")); ;
+        assertTrue(StringUtils.isSingular("Person")) ;
+        assertFalse(StringUtils.isSingular("People")) ;
+        assertTrue(StringUtils.isSingular("Germplasm")) ;
+        assertTrue(StringUtils.isSingular("Germplasm")) ;
+        assertTrue(StringUtils.isSingular("Study")) ;
+        assertFalse(StringUtils.isSingular("Studies")) ;
+        assertTrue(StringUtils.isSingular("dataMatrix")) ;
+        assertFalse(StringUtils.isSingular("dataMatrices")) ;
+        assertFalse(StringUtils.isSingular("people")) ;
+        assertTrue(StringUtils.isSingular("germplasm")) ;
+        assertTrue(StringUtils.isSingular("germplasm")) ;
+        assertTrue(StringUtils.isSingular("study")) ;
+        assertFalse(StringUtils.isSingular("studies")) ;
+        assertTrue(StringUtils.isSingular("trial")) ;
+        assertFalse(StringUtils.isSingular("trials")) ;
+    }
+
+    @Test
     void toSingular() {
         assertEquals("DataMatrix", StringUtils.toSingular("DataMatrices")) ;
         assertEquals("Person", StringUtils.toSingular("People")) ;
@@ -37,6 +58,28 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toSingular("germplasm")) ;
         assertEquals("study", StringUtils.toSingular("studies")) ;
         assertEquals("trial", StringUtils.toSingular("trials")) ;
+    }
+
+    @Test
+    void isPlural() {
+        assertTrue(StringUtils.isPlural("DataMatrices")) ;
+        assertFalse(StringUtils.isPlural("DataMatrix")) ;
+        assertTrue(StringUtils.isPlural("People")) ;
+        assertFalse(StringUtils.isPlural("Person")) ;
+        assertTrue(StringUtils.isPlural("Germplasm")) ;
+        assertTrue(StringUtils.isPlural("Germplasm")) ;
+        assertTrue(StringUtils.isPlural("Studies")) ;
+        assertFalse(StringUtils.isPlural("Study")) ;
+        assertTrue(StringUtils.isPlural("dataMatrices")) ;
+        assertFalse(StringUtils.isPlural("dataMatrix")) ;
+        assertTrue(StringUtils.isPlural("people")) ;
+        assertFalse(StringUtils.isPlural("person")) ;
+        assertTrue(StringUtils.isPlural("germplasm")) ;
+        assertTrue(StringUtils.isPlural("germplasm")) ;
+        assertTrue(StringUtils.isPlural("studies")) ;
+        assertFalse(StringUtils.isPlural("study")) ;
+        assertTrue(StringUtils.isPlural("trials")) ;
+        assertFalse(StringUtils.isPlural("trial")) ;
     }
 
     @Test

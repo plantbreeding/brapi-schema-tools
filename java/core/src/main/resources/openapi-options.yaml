@@ -101,6 +101,7 @@ listGet:
             trialNames: false
         Germplasm:
             familyCodes: false
+            programNames: false
             studyNames: false
             instituteCodes: false
             trialNames: false
@@ -120,8 +121,14 @@ listGet:
             trialDbIds: false
             trialNames: false
         GermplasmAttributeValue:
+            dataTypes: false
+            germplasmNames: false
             methodDbIds: false
+            ontologyDbIds: false
+            programNames: false
             scaleDbIds: false
+            traitClasses: false
+            traitDbIds: false
         List:
             dateCreatedRangeStart: false
             dateCreatedRangeEnd: false
@@ -132,6 +139,7 @@ listGet:
         Method:
             programNames: false
         Image:
+            programNames: false
             imageFileNames: false
             imageFileSizeMax: false
             imageFileSizeMin: false
@@ -155,6 +163,7 @@ listGet:
             instituteNames: false
         ObservationUnit:
             germplasmNames: false
+            locationNames: false
             observationLevels: false
             observationLevelRelationships: false
             observationVariableDbIds: false
@@ -165,12 +174,14 @@ listGet:
             trialNames: false
         Observation:
             germplasmNames: false
+            locationNames: false
+            observationLevels: false
+            observationLevelRelationships: false
             observationVariableNames: false
             observationVariablePUIs: false
             programNames: false
             studyNames: false
-            observationLevels: false
-            observationLevelRelationships: false
+            trialNames: false
         ObservationVariable:
             dataTypes: false
             programNames: false
@@ -277,6 +288,8 @@ search:
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
     pagedDefault: true
+    pagedFor:
+        AlleleMatrix: false
     generateFor:
         BreedingMethod: false
         Cross: false

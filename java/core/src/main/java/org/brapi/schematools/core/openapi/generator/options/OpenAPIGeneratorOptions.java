@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.brapi.schematools.core.utils.StringUtils.isPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
@@ -498,7 +499,11 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions implem
      */
     @JsonIgnore
     public final String getSingularForProperty(@NonNull String propertyName) {
-        return toSingular(propertyName) ;
+        if (isPlural(propertyName)) {
+            return toSingular(propertyName) ;
+        } else {
+            return propertyName ;
+        }
     }
 
     /**

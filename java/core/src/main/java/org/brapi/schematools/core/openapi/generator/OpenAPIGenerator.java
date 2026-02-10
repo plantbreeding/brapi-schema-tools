@@ -219,22 +219,22 @@ public class OpenAPIGenerator {
                     collect(Collectors.groupingBy(BrAPIClass::getModule, toList()));
                 List<BrAPIClass> commonClasses = classesByModule.remove(BRAPI_COMMON);
 
-                Response<List<OpenAPI>> res = classesByModule.entrySet().stream().
-                    map(entry -> {
+                List<BrAPIClass> classesWithNoModule = classes.stream().filter(type -> Objects.isNull(type.getModule())).toList();
+
+                return classesByModule.entrySet().stream().
+                    peek(entry -> {
                         if (commonClasses != null) {
                             entry.getValue().addAll(commonClasses);
+                            entry.getValue().addAll(classesWithNoModule);
                         }
-                        return entry;
                     }).
                     map(entry -> generateSpecifications(metadata.getTitleFor(entry.getKey()),
                         options.getSupplementalSpecificationFor(metadata.getTitleFor(entry.getKey())),
                         entry.getValue())).
                     collect(Response.toList());
-                return res;
             } else {
                 return generateSpecifications(metadata.getTitle(),
-                    options.getSupplementalSpecification(),
-                    classes.stream().filter(type -> Objects.nonNull(type.getModule())).toList()).
+                    options.getSupplementalSpecification(), classes).
                     mapResult(Collections::singletonList);
             }
         }
@@ -672,8 +672,7 @@ public class OpenAPIGenerator {
             List<Parameter> parameters = new ArrayList<>();
 
             if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
-                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
-                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId")); // TODO depreciated, remove?
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId"));
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
             }
 
@@ -1012,6 +1011,10 @@ public class OpenAPIGenerator {
 
             operation.setSummary(metadata.getSearch().getSummaryOrDefault(type.getName(), options.getSearch().getSummaryFor(type)));
             operation.setDescription(metadata.getSearch().getDescriptionOrDefault(type.getName(), options.getSearch().getSubmitDescriptionFormat(type)));
+
+            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchRequestNameFor(type)))));
 
             operation.responses(createSearchPostResponseRefs(type));
             operation.addTagsItem(options.getTagFor(type));
