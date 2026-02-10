@@ -30,38 +30,49 @@ public class StringUtils {
 
 
     /**
-     * Nouns that are the same in singular and plural form, so should not be pluralised or singularised
+     * Nouns that are the same in singular and plural form (both singular AND plural)
      */
-    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm", "species", "series", "sheep", "deer", "fish", "bison", "moose", "swine", "offspring", "salmon", "trout", "hovercraft", "spacecraft");
+    private static final Set<String> unchangeables = ImmutableSet.of("germplasm", "species", "series", "sheep", "deer", "fish", "bison", "moose", "swine", "offspring", "salmon", "trout", "hovercraft", "spacecraft");
+
+    /**
+     * Nouns that are always plural (no singular form)
+     */
+    private static final Set<String> pluralOnly = ImmutableSet.of();
 
     /**
      * Custom plural mappings for irregular plurals
      */
-    private static final Map<String, String> customPlurals = Map.of(
-        "matrix", "matrices",
-        "person", "people",
-        "child", "children",
-        "mouse", "mice",
-        "goose", "geese",
-        "foot", "feet",
-        "tooth", "teeth",
-        "man", "men",
-        "woman", "women"
+    private static final Map<String, String> customPlurals = Map.ofEntries(
+        Map.entry("matrix", "matrices"),
+        Map.entry("person", "people"),
+        Map.entry("child", "children"),
+        Map.entry("mouse", "mice"),
+        Map.entry("goose", "geese"),
+        Map.entry("foot", "feet"),
+        Map.entry("tooth", "teeth"),
+        Map.entry("man", "men"),
+        Map.entry("woman", "women"),
+        Map.entry("genus", "genera"),
+        Map.entry("phylum", "phyla"),
+        Map.entry("taxon", "taxa")
     );
 
     /**
      * Custom singular mappings (reverse of customPlurals)
      */
-    private static final Map<String, String> customSingulars = Map.of(
-        "matrices", "matrix",
-        "people", "person",
-        "children", "child",
-        "mice", "mouse",
-        "geese", "goose",
-        "feet", "foot",
-        "teeth", "tooth",
-        "men", "man",
-        "women", "woman"
+    private static final Map<String, String> customSingulars = Map.ofEntries(
+        Map.entry("matrices", "matrix"),
+        Map.entry("people", "person"),
+        Map.entry("children", "child"),
+        Map.entry("mice", "mouse"),
+        Map.entry("geese", "goose"),
+        Map.entry("feet", "foot"),
+        Map.entry("teeth", "tooth"),
+        Map.entry("men", "man"),
+        Map.entry("women", "woman"),
+        Map.entry("genera", "genus"),
+        Map.entry("phyla", "phylum"),
+        Map.entry("taxa", "taxon")
     );
 
     /**
@@ -84,8 +95,16 @@ public class StringUtils {
             return false;
         }
 
-        if (unpluralisables.contains(word.toLowerCase())) {
-            return true; // These words are both singular and plural
+        String lowerWord = word.toLowerCase();
+
+        // Words that are both singular and plural
+        if (unchangeables.contains(lowerWord)) {
+            return true;
+        }
+
+        // Words that are only plural
+        if (pluralOnly.contains(lowerWord)) {
+            return true;
         }
 
         // Check if this is a compound camelCase word (e.g., DataMatrices, dataMatrices)
@@ -100,7 +119,7 @@ public class StringUtils {
         }
 
         // Single word - use rule-based checking
-        return looksLikePlural(word.toLowerCase());
+        return looksLikePlural(lowerWord);
     }
 
     /**
@@ -113,6 +132,11 @@ public class StringUtils {
         // Check custom plurals
         if (customPlurals.containsValue(lowerWord)) {
             return true;
+        }
+
+        // Words ending in 'us' are typically singular (genus, focus, etc.)
+        if (lowerWord.endsWith("us")) {
+            return false;
         }
 
         // Common plural endings
@@ -132,8 +156,16 @@ public class StringUtils {
             return false;
         }
 
-        if (unpluralisables.contains(word.toLowerCase())) {
-            return true; // These words are both singular and plural
+        String lowerWord = word.toLowerCase();
+
+        // Words that are both singular and plural
+        if (unchangeables.contains(lowerWord)) {
+            return true;
+        }
+
+        // Words that are only plural (never singular)
+        if (pluralOnly.contains(lowerWord)) {
+            return false;
         }
 
         // Check if this is a compound camelCase word (e.g., DataMatrix, dataMatrix)
@@ -148,7 +180,7 @@ public class StringUtils {
         }
 
         // Single word - use rule-based checking
-        return !looksLikePlural(word.toLowerCase());
+        return !looksLikePlural(lowerWord);
     }
 
     /**
@@ -162,7 +194,15 @@ public class StringUtils {
             return null;
         }
 
-        if (unpluralisables.contains(word.toLowerCase())) {
+        String lowerWord = word.toLowerCase();
+
+        // Words that don't change
+        if (unchangeables.contains(lowerWord) || pluralOnly.contains(lowerWord)) {
+            return word;
+        }
+
+        // If the word is already a known singular, return it unchanged
+        if (customSingulars.containsValue(lowerWord)) {
             return word;
         }
 
@@ -249,13 +289,8 @@ public class StringUtils {
             return word.substring(0, word.length() - 1) + "us";
         }
 
-        // Words ending in 'a' (plural of 'on')
-        if (word.endsWith("a") && word.length() > 2) {
-            return word.substring(0, word.length() - 1) + "on";
-        }
-
-        // Words ending in 's' -> remove 's'
-        if (word.endsWith("s") && word.length() > 1) {
+        // Words ending in 's' -> remove 's' (but not if it ends in 'us' which is typically singular)
+        if (word.endsWith("s") && !word.endsWith("us") && !word.endsWith("ss") && word.length() > 1) {
             return word.substring(0, word.length() - 1);
         }
 
@@ -274,7 +309,15 @@ public class StringUtils {
             return null;
         }
 
-        if (unpluralisables.contains(word.toLowerCase())) {
+        String lowerWord = word.toLowerCase();
+
+        // Words that don't change
+        if (unchangeables.contains(lowerWord) || pluralOnly.contains(lowerWord)) {
+            return word;
+        }
+
+        // If the word is already a known plural, return it unchanged
+        if (customPlurals.containsValue(lowerWord)) {
             return word;
         }
 
@@ -377,10 +420,6 @@ public class StringUtils {
             return word.substring(0, word.length() - 2) + "es";
         }
 
-        // Words ending in 'on'
-        if (word.endsWith("on")) {
-            return word.substring(0, word.length() - 2) + "a";
-        }
 
         // Default: just add 's'
         return word + "s";

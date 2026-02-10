@@ -2547,7 +2547,7 @@
       "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100.",
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "crosDbIds",
+        "name" : "crossDbIds",
         "description" : "The cross for the germplasm using in this content mixture",
         "args" : [ ],
         "type" : {
@@ -2762,7 +2762,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "plannedCrosDbIds",
+        "name" : "plannedCrossDbIds",
         "description" : "The Cross that was used in the planning of this one.",
         "args" : [ ],
         "type" : {
@@ -2820,7 +2820,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "crosDbIds",
+        "name" : "crossDbIds",
         "description" : "a custom attributes associated with a cross",
         "args" : [ ],
         "type" : {
@@ -14591,7 +14591,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "crosDbIds",
+        "name" : "crossDbIds",
         "description" : "the unique identifier for a cross",
         "args" : [ ],
         "type" : {
@@ -20402,7 +20402,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "crosDbIds",
+        "name" : "crossDbIds",
         "description" : "The Cross associated with this Pollination Event",
         "args" : [ ],
         "type" : {

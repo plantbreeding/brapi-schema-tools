@@ -24,7 +24,7 @@ class RGeneratorTest {
     void generate() {
         Response<List<Path>> response = null;
         try {
-            response = new RGenerator(RGeneratorOptions.load().setOverwrite(true), Paths.get("build/test-output/R/Generated"))
+            response = new RGenerator(RGeneratorOptions.load().setOverwrite(true).setAddGeneratorComments(false), Paths.get("build/test-output/R/Generated"))
                 .generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);

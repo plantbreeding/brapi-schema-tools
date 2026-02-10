@@ -50,15 +50,6 @@
                         }
                     },
                     {
-                        "name" : "programName",
-                        "in" : "query",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "studyDbId",
                         "in" : "query",
                         "description" : "List of study identifiers to search for",
@@ -68,27 +59,9 @@
                         }
                     },
                     {
-                        "name" : "studyName",
-                        "in" : "query",
-                        "description" : "List of study names to filter search results",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "trialDbId",
                         "in" : "query",
                         "description" : "The ID which uniquely identifies a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "trialName",
-                        "in" : "query",
-                        "description" : "The human readable name of a trial to search for",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -122,24 +95,6 @@
                         }
                     },
                     {
-                        "name" : "familyCode",
-                        "in" : "query",
-                        "description" : "A familyCode representing the family this germplasm belongs to.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "instituteCode",
-                        "in" : "query",
-                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "binomialName",
                         "in" : "query",
                         "description" : "List of the full binomial name (scientific name) to identify a germplasm",
@@ -149,7 +104,7 @@
                         }
                     },
                     {
-                        "name" : "genu",
+                        "name" : "genus",
                         "in" : "query",
                         "description" : "List of Genus names to identify germplasm",
                         "required" : false,
@@ -158,7 +113,7 @@
                         }
                     },
                     {
-                        "name" : "specy",
+                        "name" : "species",
                         "in" : "query",
                         "description" : "List of Species names to identify germplasm",
                         "required" : false,
@@ -192,9 +147,6 @@
                         "schema" : {
                             "type" : "string"
                         }
-                    },
-                    {
-                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
@@ -242,7 +194,10 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "$ref" : "#/components/schemas/GermplasmNewRequest"
+                                "type" : "array",
+                                "items" : {
+                                    "$ref" : "#/components/schemas/GermplasmNewRequest"
+                                }
                             }
                         }
                     }
@@ -270,6 +225,20 @@
                 ],
                 "summary" : "Get the details of a specific Germplasm",
                 "description" : "Get details for a Germplasm",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmSingleResponse"
@@ -282,6 +251,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },
@@ -294,6 +266,15 @@
                 "parameters" : [
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
                     }
                 ],
                 "requestBody" : {
@@ -317,6 +298,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -328,6 +312,20 @@
                 ],
                 "summary" : "Submit a search request for `Germplasm`",
                 "description" : "Submit a search request for `Germplasm`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/germplasm/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/GermplasmSearchRequest"
+                            }
+                        }
+                    }
+                },
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmListResponse"
@@ -354,6 +352,26 @@
                 ],
                 "summary" : "Submit a search request for `Germplasm`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/germplasm/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "description" : "Get the results of a `Germplasm` search request <br/>\nClients should submit a search request using the corresponding `POST /search/germplasm` endpoint.\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse this endpoint to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
+                "parameters" : [
+                    {
+                        "name" : "searchResultsDbId",
+                        "in" : "path",
+                        "description" : "searchResultsDbId",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmListResponse"

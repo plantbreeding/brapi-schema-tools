@@ -33,18 +33,32 @@ class StringUtilsTest {
         assertTrue(StringUtils.isSingular("Person")) ;
         assertFalse(StringUtils.isSingular("People")) ;
         assertTrue(StringUtils.isSingular("Germplasm")) ;
-        assertTrue(StringUtils.isSingular("Germplasm")) ;
         assertTrue(StringUtils.isSingular("Study")) ;
         assertFalse(StringUtils.isSingular("Studies")) ;
         assertTrue(StringUtils.isSingular("dataMatrix")) ;
         assertFalse(StringUtils.isSingular("dataMatrices")) ;
         assertFalse(StringUtils.isSingular("people")) ;
         assertTrue(StringUtils.isSingular("germplasm")) ;
-        assertTrue(StringUtils.isSingular("germplasm")) ;
         assertTrue(StringUtils.isSingular("study")) ;
         assertFalse(StringUtils.isSingular("studies")) ;
         assertTrue(StringUtils.isSingular("trial")) ;
         assertFalse(StringUtils.isSingular("trials")) ;
+        // Latin-derived scientific terms (from ThoughtCo article)
+        assertTrue(StringUtils.isSingular("species")) ;
+        assertTrue(StringUtils.isSingular("genus")) ;
+        assertFalse(StringUtils.isSingular("genera")) ;
+        assertTrue(StringUtils.isSingular("phylum")) ;
+        assertFalse(StringUtils.isSingular("phyla")) ;
+        assertTrue(StringUtils.isSingular("taxon")) ;
+        assertFalse(StringUtils.isSingular("taxa")) ;
+        assertTrue(StringUtils.isSingular("location")) ;
+        assertTrue(StringUtils.isSingular("Location")) ;
+        assertFalse(StringUtils.isSingular("locations")) ;
+        assertFalse(StringUtils.isSingular("Locations")) ;
+        assertTrue(StringUtils.isSingular("observation")) ;
+        assertTrue(StringUtils.isSingular("Observation")) ;
+        assertFalse(StringUtils.isSingular("observations")) ;
+        assertFalse(StringUtils.isSingular("Observations")) ;
     }
 
     @Test
@@ -58,6 +72,18 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toSingular("germplasm")) ;
         assertEquals("study", StringUtils.toSingular("studies")) ;
         assertEquals("trial", StringUtils.toSingular("trials")) ;
+        assertEquals("Location", StringUtils.toSingular("Locations")) ;
+        assertEquals("location", StringUtils.toSingular("locations")) ;
+        assertEquals("Observation", StringUtils.toSingular("Observations")) ;
+        assertEquals("observation", StringUtils.toSingular("observations")) ;
+        // Latin-derived scientific terms (from ThoughtCo article)
+        assertEquals("species", StringUtils.toSingular("species")) ;
+        assertEquals("genus", StringUtils.toSingular("genus")) ;
+        assertEquals("genus", StringUtils.toSingular("genera")) ;
+        assertEquals("phylum", StringUtils.toSingular("phylum")) ;
+        assertEquals("phylum", StringUtils.toSingular("phyla")) ;
+        assertEquals("taxon", StringUtils.toSingular("taxon")) ;
+        assertEquals("taxon", StringUtils.toSingular("taxa")) ;
     }
 
     @Test
@@ -80,6 +106,22 @@ class StringUtilsTest {
         assertFalse(StringUtils.isPlural("study")) ;
         assertTrue(StringUtils.isPlural("trials")) ;
         assertFalse(StringUtils.isPlural("trial")) ;
+        assertFalse(StringUtils.isPlural("location")) ;
+        assertFalse(StringUtils.isPlural("Location")) ;
+        assertTrue(StringUtils.isPlural("locations")) ;
+        assertTrue(StringUtils.isPlural("Locations")) ;
+        assertFalse(StringUtils.isPlural("observation")) ;
+        assertFalse(StringUtils.isPlural("Observation")) ;
+        assertTrue(StringUtils.isPlural("observations")) ;
+        assertTrue(StringUtils.isPlural("Observations")) ;
+        // Latin-derived scientific terms (from ThoughtCo article)
+        assertTrue(StringUtils.isPlural("species")) ;
+        assertFalse(StringUtils.isPlural("genus")) ;
+        assertTrue(StringUtils.isPlural("genera")) ;
+        assertFalse(StringUtils.isPlural("phylum")) ;
+        assertTrue(StringUtils.isPlural("phyla")) ;
+        assertFalse(StringUtils.isPlural("taxon")) ;
+        assertTrue(StringUtils.isPlural("taxa")) ;
     }
 
     @Test
@@ -93,6 +135,18 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toPlural("germplasm")) ;
         assertEquals("studies", StringUtils.toPlural("study")) ;
         assertEquals("trials", StringUtils.toPlural("trial")) ;
+        assertEquals("Locations", StringUtils.toPlural("Location")) ;
+        assertEquals("locations", StringUtils.toPlural("location")) ;
+        assertEquals("Observations", StringUtils.toPlural("Observation")) ;
+        assertEquals("observations", StringUtils.toPlural("observation")) ;
+        // Latin-derived scientific terms (from ThoughtCo article)
+        assertEquals("species", StringUtils.toPlural("species")) ;
+        assertEquals("genera", StringUtils.toPlural("genus")) ;
+        assertEquals("genera", StringUtils.toPlural("genera")) ;
+        assertEquals("phyla", StringUtils.toPlural("phylum")) ;
+        assertEquals("phyla", StringUtils.toPlural("phyla")) ;
+        assertEquals("taxa", StringUtils.toPlural("taxon")) ;
+        assertEquals("taxa", StringUtils.toPlural("taxa")) ;
     }
 
     @Test
