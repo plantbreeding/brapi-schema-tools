@@ -84,6 +84,7 @@ class StringUtilsTest {
         assertEquals("phylum", StringUtils.toSingular("phyla")) ;
         assertEquals("taxon", StringUtils.toSingular("taxon")) ;
         assertEquals("taxon", StringUtils.toSingular("taxa")) ;
+        assertEquals("objective", StringUtils.toSingular("objectives")) ;
     }
 
     @Test

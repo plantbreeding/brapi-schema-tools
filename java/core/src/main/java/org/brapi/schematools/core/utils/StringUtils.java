@@ -262,14 +262,25 @@ public class StringUtils {
      * @return the singular form
      */
     private static String applySingularizationRules(String word) {
-        // Words ending in 'ies' -> change to 'y'
+        // Words ending in 'ies' -> change to 'y' (but only if preceded by a consonant)
+        // This handles: studies -> study, but not objectives (which should just lose 's')
         if (word.endsWith("ies") && word.length() > 3) {
-            return word.substring(0, word.length() - 3) + "y";
+            char beforeIes = word.charAt(word.length() - 4);
+            // Check if it's a consonant (not a vowel)
+            if (!isVowel(beforeIes)) {
+                return word.substring(0, word.length() - 3) + "y";
+            }
         }
 
         // Words ending in 'ves' -> change to 'f' or 'fe'
-        if (word.endsWith("ves")) {
-            return word.substring(0, word.length() - 3) + "f";
+        // But only if there's a consonant before 'ves' (wolves, knives)
+        // Not for words like objectives (vowel before ves)
+        if (word.endsWith("ves") && word.length() > 3) {
+            char beforeVes = word.charAt(word.length() - 4);
+            // Check if it's a consonant (not a vowel)
+            if (!isVowel(beforeVes)) {
+                return word.substring(0, word.length() - 3) + "f";
+            }
         }
 
         // Words ending in 'ses', 'shes', 'ches', 'xes', 'zes' -> remove 'es'
@@ -298,9 +309,9 @@ public class StringUtils {
         return word;
     }
 
+
     /**
-     * Converts a singular noun to plural using rule-based approach.
-     *
+     * Creates a valid name for use in GraphQL
      * @param word the word to convert
      * @return the plural form of the word
      */
