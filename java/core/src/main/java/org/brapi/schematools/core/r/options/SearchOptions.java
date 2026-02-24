@@ -22,7 +22,7 @@ public class SearchOptions extends AbstractRGeneratorSubOptions {
     private String retrieveDescriptionFormat;
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(retrieveDescriptionFormat,  "'retrieveDescriptionFormat' option on %s is null", this.getClass().getSimpleName()) ;

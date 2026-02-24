@@ -17,7 +17,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class SearchOptions extends AbstractOpenAPISubOptions {
+public class SearchOptions extends AbstractOpenAPIRequestSubOptions {
 
     @Getter(AccessLevel.PUBLIC)
     private String searchIdFieldName;
@@ -30,7 +30,7 @@ public class SearchOptions extends AbstractOpenAPISubOptions {
     private Map<String, Boolean> pagedFor = new HashMap<>();
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(searchIdFieldDescription, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat, "'submitDescriptionFormat' option on %s is null", this.getClass().getSimpleName())

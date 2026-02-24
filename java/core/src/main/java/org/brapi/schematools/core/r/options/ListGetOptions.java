@@ -27,7 +27,7 @@ public class ListGetOptions extends AbstractRGeneratorSubOptions {
     private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName())
@@ -169,26 +169,4 @@ public class ListGetOptions extends AbstractRGeneratorSubOptions {
         return propertiesFromRequest ;
     }
 
-    /**
-     * Gets whether a property from the Request is used in the List query
-     * @param type The BrAPI Object type
-     * @param property The BrAPI property
-     * @param propertiesFromRequest <code>true</code> if the property from the Request is used in the List query
-     * @return the options for chaining
-     */
-    public ListGetOptions setUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property, Boolean propertiesFromRequest) {
-
-        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
-
-        if (map != null) {
-            map.put(property.getName(), propertiesFromRequest) ;
-            return this ;
-        } else {
-            map = new HashMap<>() ;
-            map.put(property.getName(), propertiesFromRequest) ;
-            propertyFromRequestFor.put(type.getName(), map) ;
-
-            return this ;
-        }
-    }
 }

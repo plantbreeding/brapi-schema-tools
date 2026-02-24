@@ -111,7 +111,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             appendNewLine(builder) ;
 
             if (options.isAddingDropTable()) {
-                builder.append("DROP TABLE ");
+                builder.append("DROP TABLE IF EXISTS ");
                 builder.append(tableName);
                 builder.append("; ");
                 appendNewLine(builder) ;

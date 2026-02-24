@@ -68,7 +68,7 @@ public class XSSFWorkbookGeneratorOptions extends AbstractMainGeneratorOptions {
 
     public Validation validate() {
 
-        return Validation.valid()
+        return super.validate()
             .merge(dataClassProperties)
             .assertNotNull(dataClassFieldHeaders, "'dataClassFieldHeaders' option on %s is null", this.getClass().getSimpleName())
             .merge(dataClassFieldProperties) ;

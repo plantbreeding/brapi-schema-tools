@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class ListGetOptions extends AbstractOpenAPISubOptions {
+public class ListGetOptions extends AbstractOpenAPIRequestSubOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> pagedFor = new HashMap<>();
@@ -28,18 +28,14 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
     private Map<String, Boolean> pagedToken = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
-    private Boolean propertiesFromRequest ;
-    private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedFor, "'pagedFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertiesFromRequest,  "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFromRequestFor,  "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(inputFor,  "'inputFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -62,18 +58,6 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
         pagedToken.putAll(overrideOptions.pagedToken);
 
         inputFor.putAll(overrideOptions.inputFor);
-        if (overrideOptions.propertiesFromRequest != null) {
-            setPropertiesFromRequest(overrideOptions.propertiesFromRequest);
-        }
-        if (overrideOptions.propertyFromRequestFor != null) {
-            overrideOptions.propertyFromRequestFor.forEach((key, value) -> {
-                if (propertyFromRequestFor.containsKey(key)) {
-                    propertyFromRequestFor.get(key).putAll(value) ;
-                } else {
-                    propertyFromRequestFor.put(key, new HashMap<>(value)) ;
-                }
-            });
-        }
     }
 
     @Override
@@ -94,33 +78,6 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
                     name,
                     this.getClass().getSimpleName()
                 )) ;
-        }) ;
-
-        propertyFromRequestFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
-                String.format("Invalid Primary Model name '%s' set for 'propertyFromRequestFor' on %s",
-                    name,
-                    this.getClass().getSimpleName()
-                )) ;
-
-            BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(name);
-            validation.assertNotNull(brAPIClassCache.containsPrimaryModel(name),
-                String.format("Can not find Request class for '%s' set for 'propertyFromRequestFor' on %s",
-                    name,
-                    this.getClass().getSimpleName()
-                )) ;
-
-            if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
-                propertyFromRequestFor.get(name).keySet().forEach(propertyName -> {
-                    validation.assertTrue(brAPIObjectType.getProperties().stream().anyMatch(property -> propertyName.equals(property.getName())),
-                        String.format("Invalid Property name '%s' for BrAPIObjectType '%s' set for 'propertyFromRequestFor' on %s. Possible properties are: '%s'",
-                            propertyName,
-                            requestClass.getName(),
-                            this.getClass().getSimpleName(),
-                            String.join(", ",
-                                brAPIObjectType.getProperties().stream().map(BrAPIObjectProperty::getName).toList())));
-                }) ;
-            }
         }) ;
 
         return validation ;
@@ -262,53 +219,4 @@ public class ListGetOptions extends AbstractOpenAPISubOptions {
         return setInputFor(type.getName(), generate) ;
     }
 
-    /**
-     * Gets whether a property from the Request is used in the List query
-     * @param type The BrAPI Object type
-     * @param property The BrAPI property
-     * @return <code>true</code> if the property from the Request is used in the List query
-     */
-    public final boolean isUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return isUsingPropertyFromRequestFor(type.getName(), property.getName()) ;
-    }
-
-    /**
-     * Gets whether a property from the Request is used in the List query
-     * @param typeName The BrAPI Object type name
-     * @param propertyName The BrAPI property name
-     * @return <code>true</code> if the property from the Request is used in the List query
-     */
-    public final boolean isUsingPropertyFromRequestFor(String typeName, String propertyName) {
-
-        Map<String, Boolean> map = propertyFromRequestFor.get(typeName) ;
-
-        if (map != null) {
-            return map.getOrDefault(propertyName, propertiesFromRequest) ;
-        }
-
-        return propertiesFromRequest ;
-    }
-
-    /**
-     * Gets whether a property from the Request is used in the List query
-     * @param type The BrAPI Object type
-     * @param property The BrAPI property
-     * @param propertiesFromRequest <code>true</code> if the property from the Request is used in the List query
-     * @return the options for chaining
-     */
-    public final ListGetOptions setUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property, Boolean propertiesFromRequest) {
-
-        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName()) ;
-
-        if (map != null) {
-            map.put(property.getName(), propertiesFromRequest) ;
-            return this ;
-        } else {
-            map = new HashMap<>() ;
-            map.put(property.getName(), propertiesFromRequest) ;
-            propertyFromRequestFor.put(type.getName(), map) ;
-
-            return this ;
-        }
-    }
 }

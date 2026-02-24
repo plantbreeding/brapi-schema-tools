@@ -311,6 +311,24 @@ search:
         SeedLot: false
         #ServerInfo: false
         Trait: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        Observation:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds:  false
+        ObservationUnit:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds: false
 post:
     generate: true
     summaryFormat: Create new %s

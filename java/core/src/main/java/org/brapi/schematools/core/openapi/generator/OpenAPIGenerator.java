@@ -35,8 +35,11 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
+import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
  * Generates an OpenAPI Specification from a BrAPI JSON Schema.
@@ -855,7 +858,26 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
             operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
 
-            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+            List<Parameter> parameters = new ArrayList<>();
+
+            if (options.getListGet().hasInputFor(type) && type instanceof BrAPIObjectType brAPIObjectType) {
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(brAPIObjectType) ;
+
+                if (requestClass instanceof BrAPIObjectType requestObjectType) {
+                    List<String> subQueryProperties = requestClass.getMetadata() != null && requestClass.getMetadata().getSubQueryProperties() != null ? requestClass.getMetadata().getSubQueryProperties() : new ArrayList<>() ;
+
+                    requestObjectType.getProperties().stream()
+                        .filter(property -> subQueryProperties.contains(property.getName()))
+                        .map(this::createListGetParameter)
+                        .collect(Response.toList())
+                        .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                        .map(() -> success(parameters));
+                }
+            }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.parameters(parameters);
 
             operation.addTagsItem(options.getTagFor(parentType));
 
@@ -1213,6 +1235,7 @@ public class OpenAPIGenerator {
                 updateExamples(objectSchema, brAPIObjectType);
 
                 return createProperties(objectSchema, type, brAPIObjectType.getProperties().stream().toList())
+                    .mapResult(properties -> properties.entrySet().stream().filter(entry -> options.getSearch().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
                     .mapResult(properties -> objectSchema.properties(properties));
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));

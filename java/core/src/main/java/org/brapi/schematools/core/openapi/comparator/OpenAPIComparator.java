@@ -1,12 +1,8 @@
 package org.brapi.schematools.core.openapi.comparator;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -24,7 +20,6 @@ import org.openapitools.openapidiff.core.model.ChangedSchema;
 import org.openapitools.openapidiff.core.model.Endpoint;
 import org.openapitools.openapidiff.core.output.AsciidocRender;
 import org.openapitools.openapidiff.core.output.HtmlRender;
-import org.openapitools.openapidiff.core.output.MarkdownRender;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -354,7 +349,7 @@ public class OpenAPIComparator {
 
     private Response<Path> renderMarkdown(ChangedOpenApi diff, Path outputPath) {
         try {
-            MarkdownRender markdownRender = new MarkdownRender();
+            MarkdownRenderModified markdownRender = new MarkdownRenderModified();
             markdownRender.setShowChangedMetadata(options.getMarkdown().isShowingChangedMetadata());
             FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
