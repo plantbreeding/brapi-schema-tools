@@ -39,7 +39,7 @@ CREATE TABLE brapi_Studies (
   experimentalDesign 
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
-      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply ''none''.'
+      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'.'
     > COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
@@ -66,7 +66,7 @@ CREATE TABLE brapi_Studies (
     ARRAY<
       STRUCT<
         levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
-        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`\'s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
       >
     > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',
@@ -83,8 +83,8 @@ CREATE TABLE brapi_Studies (
   trialName STRING COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.'
 ) 
-CLUSTER BY (studyDbId,studyName,studyPUI,locationDbId,locationName,trialDbId,trialName,trialPUI)
 USING delta
+CLUSTER BY (studyDbId,studyName,studyPUI)
 TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
 
@@ -98,8 +98,8 @@ CREATE TABLE brapi_ContactByStudy (
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) 
-CLUSTER BY (contactDbId,studyDbId,studyName,studyPUI)
 USING delta
+CLUSTER BY (contactDbId,studyDbId,studyName,studyPUI)
 TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'Link table for Study to Contact on property contacts';
 
@@ -115,7 +115,7 @@ CREATE TABLE brapi_ObservationVariableByStudy (
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) 
-CLUSTER BY (observationVariableDbId,observationVariableName,observationVariablePUI,studyDbId,studyName,studyPUI)
 USING delta
+CLUSTER BY (observationVariableDbId,observationVariableName,observationVariablePUI,studyDbId)
 TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'Link table for Study to ObservationVariable on property observationVariables';

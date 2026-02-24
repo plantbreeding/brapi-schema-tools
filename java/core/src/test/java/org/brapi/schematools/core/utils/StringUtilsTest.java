@@ -186,17 +186,9 @@ class StringUtilsTest {
 
     @Test
     void testEscapeQuotes() {
-        assertEquals("\\\" '' SimpleText123 ", StringUtils.escapeQuotes("\\\" ' SimpleText123 "));
+        assertEquals("\\\" \\' SimpleText123 ", StringUtils.escapeQuotes("\\\" ' SimpleText123 "));
         assertEquals(
-            "`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
-            StringUtils.escapeQuotes("`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`'s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ")) ;
-    }
-
-    @Test
-    void testEscapeSingleSQLQuotes() {
-        assertEquals("'' SimpleText123 ", StringUtils.escapeSingleSQLQuotes("' SimpleText123 "));
-        assertEquals(
-            "`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+            "`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`\\'s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
             StringUtils.escapeQuotes("`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`'s lower numbers \nare at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9). \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ")) ;
     }
 

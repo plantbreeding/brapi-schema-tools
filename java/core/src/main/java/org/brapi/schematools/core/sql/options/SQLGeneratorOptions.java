@@ -48,6 +48,7 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean generateLinkTables;
     private Boolean snakeCaseTableNames;
     private Boolean pluralTableNames;
+    private Boolean clusterForeignKeys;
 
     /**
      * Load the default options
@@ -179,6 +180,10 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             pluralTableNames = overrideOptions.pluralTableNames;
         }
 
+        if (overrideOptions.clusterForeignKeys != null) {
+            clusterForeignKeys = overrideOptions.clusterForeignKeys;
+        }
+
         return this;
     }
 
@@ -301,10 +306,19 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     /**
      * Determines if the Generator should use plural table names for entity tables
      *
-     * @return {@code true} if the Generator should use plural table names for /** tables, {@code false} otherwise
+     * @return {@code true} if the Generator should use plural table names for tables, {@code false} otherwise
      */
     @JsonIgnore
     public boolean isUsingPluralTableNames() {
         return pluralTableNames != null && pluralTableNames ;
+    }
+
+    /**
+     * Determines if the Generator should cluster key for foreign keys. If there are more than 4 cluster keys, the extra ones will be ignored
+     *
+     * @return {@code true} if the Generator should cluster key for foreign keys, {@code false} otherwise
+     */
+    public boolean isClusteringForeignKeys() {
+        return clusterForeignKeys != null && clusterForeignKeys ;
     }
 }
