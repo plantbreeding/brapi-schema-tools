@@ -193,16 +193,16 @@ public class OpenAPIGenerator {
         }
 
         public Response<List<OpenAPI>> generate() {
-            return generateSpecifications(brAPIClassCache.getBrAPICClasses());
+            return generateSpecifications(brAPIClassCache.getBrAPIClasses());
         }
 
         public Response<List<OpenAPI>> generate(Collection<String> classNames) {
             if (classNames != null && !classNames.isEmpty()) {
-                Collection<BrAPIClass> values = brAPIClassCache.getBrAPICClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
+                Collection<BrAPIClass> values = brAPIClassCache.getBrAPIClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
 
                 return generateSpecifications(values);
             } else {
-                return generateSpecifications(brAPIClassCache.getBrAPICClasses());
+                return generateSpecifications(brAPIClassCache.getBrAPIClasses());
             }
         }
 

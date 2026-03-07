@@ -17,6 +17,7 @@ public class BrAPIObjectProperty {
     @Singular
     List<Object> examples ;
     BrAPIType type;
+    boolean deprecated;
     boolean required;
     boolean nullable;
     String referencedAttribute;

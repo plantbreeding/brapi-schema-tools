@@ -22,9 +22,12 @@ import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.openapi.generator.OpenAPIWriter;
 import org.brapi.schematools.core.openapi.generator.metadata.OpenAPIGeneratorMetadata;
 import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
-import org.brapi.schematools.core.r.RGenerator;
-import org.brapi.schematools.core.r.metadata.RGeneratorMetadata;
-import org.brapi.schematools.core.r.options.RGeneratorOptions;
+import org.brapi.schematools.core.python.PythonGenerator;
+import org.brapi.schematools.core.python.metadata.PythonGeneratorMetadata;
+import org.brapi.schematools.core.python.options.PythonGeneratorOptions;
+import org.brapi.schematools.core.r6.RGenerator;
+import org.brapi.schematools.core.r6.metadata.RGeneratorMetadata;
+import org.brapi.schematools.core.r6.options.RGeneratorOptions;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.SQLGenerator;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
@@ -125,7 +128,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                 generateMarkdown(options);
             }
-            case R -> {
+            case R6 -> {
                 if (isNotGeneratingIntoSeparateFiles()) {
                     handleError("The 'separate' option is not available for R file generation.");
                 }
@@ -139,6 +142,21 @@ public class GenerateSubCommand extends AbstractSubCommand {
                 }
 
                 generateR(options, metadata);
+            }
+            case PYTHON -> {
+                if (isNotGeneratingIntoSeparateFiles()) {
+                    handleError("The 'separate' option is not available for Python file generation.");
+                }
+                PythonGeneratorOptions options = optionsPath != null ?
+                    PythonGeneratorOptions.load(optionsPath) : PythonGeneratorOptions.load();
+                PythonGeneratorMetadata metadata = metadataPath != null ?
+                    PythonGeneratorMetadata.load(metadataPath) : PythonGeneratorMetadata.load();
+
+                if (overwrite != null) {
+                    options.setOverwrite(overwrite);
+                }
+
+                generatePython(options, metadata);
             }
             case SQL -> {
                 if (isNotGeneratingIntoSeparateFiles()) {
@@ -325,9 +343,9 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                     Files.createDirectories(outputPath);
 
-                    MarkdownGenerator markdownGenerator = new MarkdownGenerator(options, outputPath);
+                    MarkdownGenerator generator = new MarkdownGenerator(options, outputPath);
 
-                    Response<List<Path>> response = markdownGenerator.generate(schemaDirectory);
+                    Response<List<Path>> response = generator.generate(schemaDirectory);
 
                     response
                         .onSuccessDoWithResult(this::outputMarkdownPaths)
@@ -375,9 +393,9 @@ public class GenerateSubCommand extends AbstractSubCommand {
 
                     Files.createDirectories(outputPath);
 
-                    RGenerator rGenerator = new RGenerator(options, outputPath);
+                    RGenerator generator = new RGenerator(options, outputPath);
 
-                    Response<List<Path>> response = rGenerator.generate(schemaDirectory, metadata);
+                    Response<List<Path>> response = generator.generate(schemaDirectory, metadata);
 
                     response.onSuccessDoWithResult(this::outputRPaths).onFailDoWithResponse(this::printRErrors);
                 }
@@ -406,6 +424,55 @@ public class GenerateSubCommand extends AbstractSubCommand {
             printErrors("There was 1 error generating the R file(s)", response.getAllErrors());
         } else {
             printErrors(String.format("There were %d errors generating the R file(s)", response.getAllErrors().size()), response.getAllErrors());
+        }
+    }
+
+    private void generatePython(PythonGeneratorOptions options, PythonGeneratorMetadata metadata) {
+        try {
+            if (outputPath != null) {
+                if (Files.isRegularFile(outputPath)) {
+                    handleError("For Python generation the output path must be a directory");
+                } else {
+
+                    if (overwrite && Files.exists(outputPath)) {
+                        log.info("Overwriting existing Python files in output directory '{}'", outputPath);
+                        deleteFiles(outputPath, metadata.getFilePrefix()) ;
+                        deleteFiles(outputPath.resolve(options.getEntitiesDirectory()), metadata.getFilePrefix()) ;
+                    }
+
+                    Files.createDirectories(outputPath);
+
+                    PythonGenerator generator = new PythonGenerator(options, outputPath);
+
+                    Response<List<Path>> response = generator.generate(schemaDirectory, metadata);
+
+                    response.onSuccessDoWithResult(this::outputPythonPaths).onFailDoWithResponse(this::printPythonErrors);
+                }
+            } else {
+                handleError("For Python generation the output directory must be provided");
+            }
+        } catch (IOException exception) {
+            handleException(exception);
+        }
+    }
+
+    private void outputPythonPaths(List<Path> paths) {
+        if (paths.isEmpty()) {
+            System.out.println("Did not generate any Python files");
+        } else if (paths.size() == 1) {
+            System.out.println("Generated '1' Python file:");
+            System.out.println(paths.getFirst().toAbsolutePath().toString());
+        } else {
+            System.out.printf("Generated '%s' Python files:%n", paths.size());
+            paths.forEach(path -> System.out.println(path.toAbsolutePath().toString()));
+        }
+    }
+
+    private void printPythonErrors(Response<List<Path>> response) {
+        if (response.getAllErrors().size() == 1) {
+            printErrors("There was 1 error generating the Python file(s)", response.getAllErrors());
+        } else {
+            printErrors(String.format("There were %d errors generating the Python file(s)", response.getAllErrors().size()), response.getAllErrors());
         }
     }
 
@@ -527,10 +594,20 @@ public class GenerateSubCommand extends AbstractSubCommand {
     }
 
     public static void deleteFiles(Path dir, String prefix) throws IOException {
-        try (var files = Files.list(dir)) {
-            for (Path path : files.toList()) {
-                if (Files.isRegularFile(path) && path.getFileName().toString().startsWith(prefix)) {
-                    Files.delete(path);
+        if (prefix != null) {
+            try (var files = Files.list(dir)) {
+                for (Path path : files.toList()) {
+                    if (Files.isRegularFile(path) && path.getFileName().toString().startsWith(prefix)) {
+                        Files.delete(path);
+                    }
+                }
+            }
+        } else {
+            try (var files = Files.list(dir)) {
+                for (Path path : files.toList()) {
+                    if (Files.isRegularFile(path)) {
+                        Files.delete(path);
+                    }
                 }
             }
         }

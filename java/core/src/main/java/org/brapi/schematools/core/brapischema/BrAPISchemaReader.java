@@ -140,8 +140,17 @@ public class BrAPISchemaReader {
             return Stream.generate(() -> null)
                 .takeWhile(x -> iterator.hasNext())
                 .map(n -> iterator.next())
+                .filter(entry -> isGeneratingSchema(path, entry.getValue()))
                 .map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module))
                 .collect(Response.toList());
+        }
+
+        private boolean isGeneratingSchema(Path path, JsonNode jsonNode) {
+            if (options.isIgnoringDepreciatedSchemas()) {
+                findBooleanChildValue(path, jsonNode, "deprecated", false, false).getResult();
+            }
+
+            return true ;
         }
 
         private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
@@ -373,10 +382,6 @@ public class BrAPISchemaReader {
         }
 
         private Response<BrAPIType> createType(Path path, JsonNode jsonNode, String fallbackName, String module) {
-            if (jsonNode.has("allOf")) {
-                return createAllOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
-            }
-
             if (jsonNode.has("oneOf")) {
                 return createOneOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
             }
@@ -443,7 +448,6 @@ public class BrAPISchemaReader {
                         return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Unknown type(s) '%s' in node '%s'", types, jsonNode));
 
                     }));
-
         }
 
         private Response<String> findNameFromTitle(Path path, JsonNode jsonNode) {
@@ -508,6 +512,9 @@ public class BrAPISchemaReader {
                 .module(module)
                 .interfaces(new ArrayList<>());
 
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(builder::deprecated);
+
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
@@ -549,10 +556,19 @@ public class BrAPISchemaReader {
 
         private Response<List<BrAPIObjectProperty>> createProperties(Path path, String name, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
             return Streams.stream(fields)
+                .filter(field -> isGeneratingProperty(path, field.getValue()))
                 .map(
                 field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey())))
                 .collect(Response.toList())
                 .mapResultToResponse(properties -> validateProperties(path, name, properties));
+        }
+
+        private boolean isGeneratingProperty(Path path, JsonNode jsonNode) {
+            if (options.isIgnoringDepreciatedProperties()) {
+                findBooleanChildValue(path, jsonNode, "deprecated", false, false).getResult();
+            }
+
+            return true ;
         }
 
         private Response<List<BrAPIObjectProperty>> validateProperties(Path path, String objectName, List<BrAPIObjectProperty> properties) {
@@ -589,6 +605,9 @@ public class BrAPISchemaReader {
             BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = BrAPIObjectProperty.builder().
                 name(name).
                 required(required);
+
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(builder::deprecated);
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -636,6 +655,9 @@ public class BrAPISchemaReader {
                 name(name).
                 module(module);
 
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(builder::deprecated);
+
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
@@ -660,6 +682,9 @@ public class BrAPISchemaReader {
             BrAPIOneOfType.BrAPIOneOfTypeBuilder builder = BrAPIOneOfType.builder().
                 name(name).
                 module(module);
+
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(builder::deprecated);
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -686,6 +711,9 @@ public class BrAPISchemaReader {
                 name(name).
                 type(type).
                 module(module);
+
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(builder::deprecated);
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
