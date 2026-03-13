@@ -21,11 +21,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toSnakeCase;
+import static org.brapi.schematools.core.python.PythonTypeUtils.findPyType;
 
 /**
  * Generates Python Client from a BrAPI JSON Schema.
@@ -100,63 +100,47 @@ public class PythonGenerator {
 
                 List<Path> paths = new ArrayList<>();
 
-                return createBrapiClient(brAPIClassCache.getPrimaryClasses())
-                    .onSuccessDoWithResult(paths::add)
+                return brAPIClassCache.getPrimaryClasses()
+                    .stream()
+                    .map(this::createPrimaryModel)
+                    .collect(Response.toList())
+                    .mapResultToResponse(this::createBrapiClient)
+                    .onSuccessDoWithResult(paths::addAll)
                     .map(() -> createCommonClasses(brAPIClassCache.getAllDependencies()))
                     .onSuccessDoWithResult(paths::add)
-                    .map(() -> brAPIClassCache.getPrimaryClasses()
-                        .stream()
-                        .map(this::createPythonEntityClass)
-                        .collect(Response.mergeLists()))
-                    .onSuccessDoWithResult(paths::addAll)
                     .map(() -> success(paths));
             } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
         }
 
-        private Response<Path> createBrapiClient(List<BrAPIClass> entityClasses) {
+        private Response<List<Path>> createBrapiClient(List<ClassModel> entityClasses) {
             Context context = new Context();
 
-            List<Map<String, String>> entries = entityClasses.stream()
-                .filter(c -> c instanceof BrAPIObjectType)
-                .map(c -> {
-                    String entityName     = c.getName();
-                    String entityLower    = StringUtils.toParameterCase(entityName);
-                    String queryClassName = entityName + "Query";
-                    String moduleLower    = StringUtils.toLowerCase(entityName);
-                    return Map.of(
-                        "entityName",     entityName,
-                        "functionName",   entityLower,
-                        "queryClassName", queryClassName,
-                        "moduleName",     moduleLower
-                    );
-                }).toList();
-
-            // Import lines: ".entities.germplasm import GermplasmQuery"
-            List<String> imports = entries.stream()
-                .map(e -> ".entities." + e.get("moduleName") + " import " + e.get("queryClassName"))
-                .toList();
-
-            context.setVariable("entries", entries);
-            context.setVariable("imports", imports);
+            context.setVariable("entityClasses", entityClasses);
 
             String text = templateEngine.process("BrapiClient.txt", context);
-            return writeToFile(
-                outputPath.resolve(metadata.getFilePrefix() + "client.py"),
-                "BrapiClient",
-                text
-            );
+
+            List<Path> paths = new ArrayList<>();
+
+            return writeToFile(outputPath.resolve(metadata.getFilePrefix() + "client.py"), "BrapiClient", text)
+                .onSuccessDoWithResult(paths::add)
+                .map(() -> entityClasses
+                    .stream()
+                    .map(this::createPythonEntityClass)
+                    .collect(Response.toList()))
+                .onSuccessDoWithResult(paths::addAll)
+                .map(() -> success(paths));
         }
 
-        private Response<Path> createCommonClasses(List<BrAPIClass> commonClasses) {
+        private Response<Path> createCommonClasses(List<BrAPIClass> brAPIClasses) {
             Context context = new Context();
 
-            List<ClassModel> commonModels = commonClasses.stream()
+            List<ClassModel> commonClasses = brAPIClasses.stream()
                 .map(this::createClassModel)
                 .toList();
 
-            context.setVariable("commonModels", commonModels);
+            context.setVariable("commonClasses", commonClasses);
 
             String text = templateEngine.process("CommonClasses.txt", context);
             return writeToFile(
@@ -166,28 +150,55 @@ public class PythonGenerator {
             );
         }
 
-        private Response<List<Path>> createPythonEntityClass(BrAPIClass brAPIClass) {
+        private Response<Path> createPythonEntityClass(ClassModel primaryModel) {
+            Context context = new Context();
+
+            context.setVariable("brapiSchemaToolsVersion", options.getSchemaToolsVersion());
+
+            String fileName = metadata.getFilePrefix() + toSnakeCase(primaryModel.getName()) + ".py";
+            context.setVariable("fileName", fileName);
+            context.setVariable("commonModule", metadata.getFilePrefix() + "common");
+            context.setVariable("primaryModel", primaryModel);
+
+            // makes the template easier to read
+            context.setVariable("entityName", primaryModel.getName());
+            context.setVariable("queryClassName", primaryModel.getQueryClassName());
+            context.setVariable("queryFunctionName", primaryModel.getQueryFunctionName());
+            context.setVariable("entityNameSnakeCase", primaryModel.getNameSnakeCase());
+            context.setVariable("entityPluralNameSnakeCase", primaryModel.getPluralNameSnakeCase());
+
+            context.setVariable("idArgumentName", primaryModel.getIdArgumentName());
+            context.setVariable("idPropertyName", primaryModel.getIdPropertyName());
+
+
+            context.setVariable("commonDependencies", primaryModel.getCommonDependencies());
+            context.setVariable("exclusiveDependencies", primaryModel.getExclusiveDependencies());
+            context.setVariable("primaryDependencies", primaryModel.getPrimaryDependencies());
+            context.setVariable("flattenConfig", primaryModel.getFlattenConfig());
+            context.setVariable("endpoints", primaryModel.getEndpoints());
+            context.setVariable("pluralToSingularGetParams", primaryModel.getPluralToSingularGetParams());
+            context.setVariable("unchangedGetParams", primaryModel.getUnchangedGetParams());
+            context.setVariable("ignoreGetParams", primaryModel.getIgnoreGetParams());
+
+            context.setVariable("filters", primaryModel.getFilters());
+            context.setVariable("exampleFilters", primaryModel.getExampleFilters());
+
+            String text = templateEngine.process("EntityClass.txt", context);
+
+            return writeToFile(createPathForEntityClass(fileName), primaryModel.getName(), text);
+        }
+
+        private Response<ClassModel> createPrimaryModel(BrAPIClass brAPIClass) {
 
             if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
-                BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", brAPIObjectType.getName()));
-                BrAPIObjectType requestObject = null;
-
-                if (requestClass != null) {
-                    if (requestClass instanceof BrAPIObjectType) {
-                        requestObject = (BrAPIObjectType) requestClass;
-                    } else {
-                        return fail(Response.ErrorType.VALIDATION, String.format("Request schema for '%s' is not an object type", brAPIObjectType.getName()));
-                    }
-                }
+                ClassModel.ClassModelBuilder builder = ClassModel.builder()
+                    .name(brAPIObjectType.getName())
+                    .queryFunctionName(StringUtils.toSnakeCase(brAPIObjectType.getName()))
+                    .nameSnakeCase(StringUtils.toSnakeCase(brAPIObjectType.getName()))
+                    .pluralNameSnakeCase(StringUtils.toSnakeCase(options.getPluralFor(brAPIObjectType)))
+                    .docstring(brAPIClass.getDescription()) ;
 
                 try {
-                    Context context = new Context();
-
-                    context.setVariable("brapiSchemaToolsVersion", options.getSchemaToolsVersion());
-
-                    context.setVariable("entityName", brAPIObjectType.getName());
-                    context.setVariable("entityNameSnakeCase", StringUtils.toSnakeCase(brAPIObjectType.getName()));
-
                     List<ClassModelField> requiredFields = new ArrayList<>();
                     List<ClassModelField> scalarFields = new ArrayList<>();
                     List<ClassModelField> nestedListFields = new ArrayList<>();
@@ -196,9 +207,9 @@ public class PythonGenerator {
                     brAPIObjectType.getProperties().forEach(property -> {
                         if (property.getType() instanceof BrAPIPrimitiveType primitiveType) {
                             if (property.isRequired()) {
-                                requiredFields.add(ClassModelField.builder().name(property.getName()).type(PythonTypeUtils.findPyType(primitiveType)).build());
+                                requiredFields.add(ClassModelField.builder().name(property.getName()).type(findPyType(primitiveType).getResultOrThrow()).build());
                             } else {
-                                scalarFields.add(ClassModelField.builder().name(property.getName()).type(PythonTypeUtils.findPyType(primitiveType)).build());
+                                scalarFields.add(ClassModelField.builder().name(property.getName()).type(findPyType(primitiveType).getResultOrThrow()).build());
                             }
                         } else if (property.getType() instanceof BrAPIArrayType arrayType) {
                             if (arrayType.getItems() instanceof BrAPIArrayType) {
@@ -220,101 +231,142 @@ public class PythonGenerator {
                         }
                     });
 
-                    context.setVariable("getAll", options.getListGet().isGeneratingFor(brAPIObjectType));
-                    context.setVariable("search", options.getSearch().isGeneratingFor(brAPIObjectType));
-                    context.setVariable("create", options.getPost().isGeneratingFor(brAPIObjectType));
-                    context.setVariable("update", options.getPut().isGeneratingFor(brAPIObjectType));
-                    context.setVariable("delete", options.getDelete().isGeneratingFor(brAPIObjectType));
-                    context.setVariable("delete", options.getTable().isGeneratingFor(brAPIObjectType));
-
-                    context.setVariable("primaryModel", ClassModel.builder()
-                        .docstring(brAPIClass.getDescription())
-                        .requiredFields(requiredFields)
+                    builder.requiredFields(requiredFields)
                         .scalarFields(scalarFields)
                         .nestedListFields(nestedListFields)
-                        .relationshipFields(relationshipFields)
+                        .relationshipFields(relationshipFields);
+
+                    List<ClassModel> exclusiveDependencies = new ArrayList<>(brAPIClassCache.getExclusiveDependencies(brAPIObjectType.getName())
+                        .stream()
+                        .map(this::createClassModel).toList());
+
+                    builder.exclusiveDependencies(exclusiveDependencies);
+
+                    List<Dependency> commonDependencies = new ArrayList<>(brAPIClassCache.getCommonDependencies(brAPIObjectType.getName())
+                        .stream()
+                        .map(b -> Dependency.builder()
+                            .name(b.getName())
+                            .module(metadata.getFilePrefix() + "common")
+                            .build()).toList());
+
+                    builder.commonDependencies(commonDependencies);
+
+                    List<Dependency> primaryDependencies = brAPIClassCache.getPrimaryDependencies(brAPIObjectType.getName())
+                        .stream()
+                        .map(b -> Dependency.builder()
+                            .name(b.getName())
+                            .module(metadata.getFilePrefix() + toSnakeCase(b.getName()))
+                            .build()).toList();
+
+                    builder.primaryDependencies(primaryDependencies);
+
+                    builder.flattenConfig(FlattenConfig.builder()
+                        .relationshipFields(List.of())
+                        .relationshipFields(List.of())
                         .build());
-
-                    List<ClassModel> exclusiveDependencies = brAPIClassCache.getExclusiveDependencies(brAPIObjectType.getName())
-                        .stream()
-                        .map(this::createClassModel).toList() ;
-
-                    context.setVariable("exclusiveDependencies", exclusiveDependencies);
-
-                    List<ClassModel> commonDependencies = brAPIClassCache.getCommonDependencies(brAPIObjectType.getName())
-                        .stream()
-                        .map(this::createClassModel).toList() ;
-
-                    context.setVariable("commonDependencies", commonDependencies);
-
-                    context.setVariable("flattenConfig", FlattenConfig.builder()
-                        .relationshipFields(List.of())
-                        .relationshipFields(List.of())
-                        .build()) ;
 
                     Endpoints.EndpointsBuilder endpoints = Endpoints.builder();
 
-                    if (options.getSingleGet().isGeneratingFor(brAPIObjectType)
-                        || options.getListGet().isGeneratingFor(brAPIObjectType)
-                        || options.getPost().isGeneratingFor(brAPIObjectType)
-                        || options.getPut().isGeneratingFor(brAPIObjectType)
-                        || options.getDelete().isGeneratingFor(brAPIObjectType)) {
+                    if (options.getSingleGet().isGeneratingFor(brAPIObjectType) ||
+                        options.getPost().isGeneratingFor(brAPIObjectType) ||
+                        options.getPut().isGeneratingFor(brAPIObjectType) ||
+                        options.getPost().isGeneratingFor(brAPIObjectType)) {
+                        endpoints.crud(options.getPathItemNameFor(brAPIClass));
+
+                        builder.idPropertyName(options.getProperties().getIdPropertyFor(brAPIClass).getResultOrThrow().getName());
+                        builder.idArgumentName(StringUtils.toSnakeCase(options.getProperties().getIdPropertyFor(brAPIClass).getResultOrThrow().getName()));
+                    }
+
+                    if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
                         endpoints.crud(options.getPathItemNameFor(brAPIClass));
                     }
 
                     if (options.getSearch().isGeneratingFor(brAPIObjectType)) {
-                        endpoints.search(options.getPathItemNameFor(brAPIClass));
+                        endpoints.search(options.getSearchPathItemNameFor(brAPIClass));
                     }
 
                     if (options.getTable().isGeneratingFor(brAPIObjectType)) {
                         endpoints.table(options.getPathItemNameFor(brAPIClass));
                     }
 
-                    context.setVariable("endpoints", endpoints.build()) ;
+                    endpoints.get(options.getSingleGet().isGeneratingFor(brAPIObjectType));
+                    endpoints.list(options.getListGet().isGeneratingFor(brAPIObjectType));
+                    endpoints.create(options.getPost().isGeneratingFor(brAPIObjectType));
+                    endpoints.createMany(options.getPost().isGeneratingFor(brAPIObjectType));
+                    endpoints.update(options.getPut().isGeneratingFor(brAPIObjectType));
+                    endpoints.delete(options.getDelete().isGeneratingFor(brAPIObjectType));
 
-                    ArrayList<FilterMethod> filterMethods = new ArrayList<>();
+                    builder.endpoints(endpoints.build());
+
+                    List<Filter> filters = new ArrayList<>();
+
+                    List<PropertyMapping> pluralToSingularGetParams = new ArrayList<>();
+                    List<PropertyMapping> unchangedGetParams = new ArrayList<>();
+                    List<PropertyMapping> ignoreGetParams = new ArrayList<>();
+
+                    builder.queryClassName(String.format("%sQuery", brAPIObjectType.getName()));
+
+                    BrAPIClass requestClass = brAPIClassCache.getBrAPIClass(String.format("%sRequest", brAPIObjectType.getName()));
 
                     if (requestClass != null) {
-                        requestObject.getProperties().forEach(property -> {
-                            filterMethods.add(FilterMethod.builder()
-                                .methodName(property.getName())
-                                .argName(property.getName())
-                                .groupComment(property.getName())
-                                //.exampleArg()
-                                .docstring(property.getDescription())
-                                .type(findType(property))
-                                .build());
-                        });
+                        if (requestClass instanceof BrAPIObjectType requestObject) {
+                            exclusiveDependencies.addAll(brAPIClassCache.getExclusiveDependencies(requestObject.getName())
+                                .stream()
+                                .map(this::createClassModel).toList()) ;
+
+                            builder.exclusiveDependencies(exclusiveDependencies);
+
+                            commonDependencies.addAll(brAPIClassCache.getCommonDependencies(requestObject.getName())
+                                .stream()
+                                .map(b -> Dependency.builder()
+                                    .name(b.getName())
+                                    .module(metadata.getFilePrefix() + "common")
+                                    .build()).toList());
+
+                            builder.commonDependencies(commonDependencies);
+
+                            requestObject.getProperties().forEach(property -> filters.add(createFilterMethod(property)));
+
+                            if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
+                                requestObject.getProperties()
+                                    .forEach(property -> {
+                                        PropertyMapping propertyMapping = PropertyMapping.builder()
+                                            .pluralName(property.getName())
+                                            .singularName(options.getSingularForProperty(property.getName()))
+                                            .build();
+
+                                        if (options.getListGet().isUsingPropertyFromRequestFor(brAPIObjectType, property)) {
+                                            if (propertyMapping.isUnchanged()) {
+                                                unchangedGetParams.add(propertyMapping);
+                                            } else {
+                                                pluralToSingularGetParams.add(propertyMapping);
+                                            }
+                                        } else {
+                                            ignoreGetParams.add(propertyMapping);
+                                        }
+                                    });
+                            }
+
+                        } else {
+                            return fail(Response.ErrorType.VALIDATION, String.format("Request schema for '%s' is not an object type", brAPIObjectType.getName()));
+                        }
                     }
 
-                    context.setVariable("filterMethods", filterMethods) ;
+                    builder.filters(filters);
+                    builder.pluralToSingularGetParams(pluralToSingularGetParams);
+                    builder.unchangedGetParams(unchangedGetParams);
+                    builder.ignoreGetParams(ignoreGetParams);
 
-                    context.setVariable("bulkFilterParams", List.of()) ;
+                    List<Filter> exampleFilters = filters.stream().filter(f -> f.getExampleArg() != null || f.getExampleArgs() != null).toList();
 
-                    /* context.setVariable("moduleName", brAPIObjectType.getModule());
-                    context.setVariable("entityPath", options.getPathItemNameFor(brAPIClass));
-                    context.setVariable("searchPath", options.getSearchPathItemNameFor(brAPIClass));
+                    if (!exampleFilters.isEmpty()) {
+                        builder.exampleFilters(exampleFilters.subList(0, Math.min(3, filters.size())));
+                    } else {
+                        builder.exampleFilters(List.of());
+                    }
 
-                    BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(
-                        String.format("%sRequest", brAPIObjectType.getName()));
+                    return success(builder.build()) ;
 
-                    if (requestSchema instanceof BrAPIObjectType requestObjectType) {
-                        context.setVariable("requestArguments",
-                            requestObjectType.getProperties().stream()
-                                .map(BrAPIObjectProperty::getName).toList());
-                        context.setVariable("queryParameters",
-                            requestObjectType.getProperties().stream()
-                                .map(BrAPIObjectProperty::getName)
-                                .map(options::getSingularForProperty).toList());
-                        context.setVariable("argumentDescriptions",
-                            requestObjectType.getProperties().stream()
-                                .map(this::getDescription).toList());
-                    }*/
-
-                    String text = templateEngine.process("EntityClass.txt", context);
-
-                    return writeToFile(createPathForEntityClass(brAPIObjectType), brAPIObjectType.getName(), text)
-                        .mapResult(List::of);
                 } catch (RuntimeException e) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Error processing class '%s': %s", brAPIClass.getName(), e.getMessage()));
                 }
@@ -322,6 +374,61 @@ public class PythonGenerator {
                 return fail(Response.ErrorType.VALIDATION,
                     brAPIClass.getName() + " is not an object class");
             }
+        }
+
+        private Filter createFilterMethod(BrAPIObjectProperty property) {
+
+            Filter.FilterBuilder builder = Filter.builder()
+                .methodName(toSnakeCase(property.getName()))
+                .paramName(property.getName())
+                .argName(toSnakeCase(property.getName()))
+                .groupComment(property.getName())
+                .docstring(property.getDescription())
+                .required(property.isRequired())
+                .type(findType(property));
+
+            if (property.getType() instanceof BrAPIArrayType brAPIArrayType) {
+                builder.itemType(findType(brAPIArrayType.getItems()).getResultOrThrow());
+            }
+
+            if (!property.getExamples().isEmpty()) {
+                switch (property.getType()) {
+                    case BrAPIPrimitiveType primitiveType -> {
+                        if (primitiveType.getName().equals(BrAPIPrimitiveType.STRING)) {
+                            builder.exampleArg(String.format("\"%s\"", property.getExamples().getFirst().toString()));
+                        } else {
+                            builder.exampleArg(property.getExamples().getFirst().toString());
+                        }
+                    }
+                    case BrAPIEnumType enumType -> {
+                        if (enumType.getType().equals(BrAPIPrimitiveType.STRING)) {
+                            builder.exampleArg(String.format("\"%s\"", property.getExamples().getFirst().toString()));
+                        } else {
+                            builder.exampleArg(property.getExamples().getFirst().toString());
+                        }
+                    }
+                    case BrAPIArrayType brAPIArrayType -> {
+                        if (brAPIArrayType.getItems().getName().equals(BrAPIPrimitiveType.STRING)) {
+                            builder.exampleArg(String.format("\"%s\"", property.getExamples().getFirst().toString()));
+                            builder.exampleArgs(String.format("[\"%s\"]", property.getExamples().getFirst().toString()));
+                            if (property.getExamples().size() > 1) {
+                                builder.exampleArg2(String.format("\"%s\"", property.getExamples().get(1).toString()));
+                                builder.exampleMultipleArgs(String.format("[\"%s\", \"%s\"]", property.getExamples().getFirst().toString(), property.getExamples().get(1).toString()));
+                            }
+                        } else {
+                            builder.exampleArg(property.getExamples().getFirst().toString());
+                            builder.exampleArgs(String.format("[%s]", property.getExamples().getFirst().toString()));
+                            if (property.getExamples().size() > 1) {
+                                builder.exampleArg2(String.format("%s", property.getExamples().get(1).toString()));
+                                builder.exampleMultipleArgs(String.format("[%s, %s]", property.getExamples().getFirst().toString(), property.getExamples().get(1).toString()));
+                            }
+                        }
+                    }
+                    case null, default -> builder.exampleArg(property.getExamples().getFirst().toString());
+                }
+            }
+
+            return builder.build();
         }
 
         private ClassModel createClassModel(BrAPIClass brAPIClass) {
@@ -339,13 +446,16 @@ public class PythonGenerator {
                     .filter(property -> !property.isRequired())
                     .filter(property -> property.getType() instanceof BrAPIPrimitiveType)
                     .map(this::createModelField).toList());
+            } else {
+                builder.requiredFields(List.of());
+                builder.scalarFields(List.of());
             }
 
-            return builder.build() ;
+            return builder.build();
         }
 
         private ClassModelField createModelField(BrAPIObjectProperty property) {
-            return ClassModelField.builder().name(property.getName()).type(findType(property)).build() ;
+            return ClassModelField.builder().name(property.getName()).type(findType(property)).build();
         }
 
         private boolean isGenerating(BrAPIClass brAPIClass) {
@@ -355,23 +465,43 @@ public class PythonGenerator {
 
         private String findType(BrAPIObjectProperty property) {
 
-            BrAPIType type = property.getType() ;
+            BrAPIType type = property.getType();
 
             if (type instanceof BrAPIPrimitiveType primitiveType) {
-                return PythonTypeUtils.findPyType(primitiveType);
+                return findPyType(primitiveType).getResultOrThrow();
             } else if (type instanceof BrAPIArrayType arrayType) {
                 if (arrayType.getItems() instanceof BrAPIArrayType) {
                     throw new RuntimeException(String.format("Properties '%s' with 2+ dimensions are not supported yet", property.getName()));
                 }
-                return arrayType.getItems().getName() + "[]";
+                return String.format("List[%s]", findType(arrayType.getItems()).getResultOrThrow());
             } else if (property.getType() instanceof BrAPIObjectType objectType) {
-                return objectType.getName() ;
+                return objectType.getName();
             } else if (property.getType() instanceof BrAPIReferenceType referenceType) {
-                return referenceType.getName() ;
+                return referenceType.getName();
             } else if (property.getType() instanceof BrAPIEnumType enumType) {
-                return enumType.getName() ;
+                return enumType.getName();
             } else {
                 throw new RuntimeException(String.format("Property '%s' with type '%s' not supported yet", property.getName(), property.getType().getName()));
+            }
+        }
+
+        private Response<String> findType(BrAPIType type) {
+
+            if (type instanceof BrAPIPrimitiveType primitiveType) {
+                return findPyType(primitiveType);
+            } else if (type instanceof BrAPIArrayType arrayType) {
+                if (arrayType.getItems() instanceof BrAPIArrayType) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("Type '%s' with 2+ dimensions are not supported yet", type.getName()));
+                }
+                return success(String.format("List[%s]", findType(arrayType.getItems())));
+            } else if (type instanceof BrAPIObjectType objectType) {
+                return success(objectType.getName());
+            } else if (type instanceof BrAPIReferenceType referenceType) {
+                return success(referenceType.getName());
+            } else if (type instanceof BrAPIEnumType enumType) {
+                return success(enumType.getName());
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("Type '%s' not supported yet", type.getName()));
             }
         }
 
@@ -379,8 +509,8 @@ public class PythonGenerator {
             return StringUtils.extractFirstLine(brAPIObjectProperty.getDescription());
         }
 
-        private Path createPathForEntityClass(BrAPIObjectType brAPIObjectType) {
-            return outputPath.resolve(options.getEntitiesDirectory()).resolve(metadata.getFilePrefix() + toSnakeCase(brAPIObjectType.getName()) + ".py");
+        private Path createPathForEntityClass(String fileName) {
+            return outputPath.resolve(options.getEntitiesDirectory()).resolve(fileName);
         }
 
         private Response<Path> writeToFile(Path path, String name, String text) {
