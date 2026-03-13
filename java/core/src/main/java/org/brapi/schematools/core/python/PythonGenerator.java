@@ -106,7 +106,7 @@ public class PythonGenerator {
                     .collect(Response.toList())
                     .mapResultToResponse(this::createBrapiClient)
                     .onSuccessDoWithResult(paths::addAll)
-                    .map(() -> createCommonClasses(brAPIClassCache.getAllDependencies()))
+                    .map(() -> createCommonClasses(brAPIClassCache.getAllNonPrimaryDependencies()))
                     .onSuccessDoWithResult(paths::add)
                     .map(() -> success(paths));
             } catch (Exception e) {
@@ -218,7 +218,7 @@ public class PythonGenerator {
                             nestedListFields.add(ClassModelField.builder()
                                 .name(property.getName())
                                 .type(arrayType.getName())
-                                .itemType(arrayType.getItems().getName())
+                                .itemType(findType(arrayType.getItems()).getResultOrThrow())
                                 .build());
                         } else if (property.getType() instanceof BrAPIObjectType objectType) {
                             relationshipFields.add(ClassModelField.builder().name(property.getName()).type(objectType.getName()).build());

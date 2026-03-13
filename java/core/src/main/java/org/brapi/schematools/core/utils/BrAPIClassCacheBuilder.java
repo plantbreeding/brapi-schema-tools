@@ -12,18 +12,21 @@ import java.util.stream.Collectors;
 /**
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of classes and caches those in the list of primary classes if they pass the provided cachePredicate.
- * Classes that do not pass the cachePredicate are not added to the list of primary classes, but are still included in the list of all classes.
- * Additional classes are added to the cache as dependent class as follows
+ * Classes that do not pass the cachePredicate are not added to the list of primary classes, but are still included
+ * in the list of all classes, can can be found in {@link BrAPIClassCache#getAllBrAPIClasses()}
+ * Additional classes are added to the cache as dependent classes as follows
  * For {@link BrAPIObjectType} utility checks the properties and
  * tries to cache any that are the return type of these properties {@link BrAPIClass}es.
  * If an {@link BrAPIArrayType} is encountered then the {@see BrAPIArrayType#getItems()} is
- * checked recursively to be included in the cache.
+ * checked to be included in the cache.
  * For {@link BrAPIOneOfType} it is added to the cache and any of {@see BrAPIOneOfType#getPossibleTypes()}
- * are checked recursively to be included in the cache.
+ * are checked to be included in the cache.
  * {@link BrAPIAllOfType} are ignored.
+ *  Primary lasses are available from {@link BrAPIClassCache#getPrimaryClasses()}
  * Cached classes are available from {@link BrAPIClassCache#getBrAPIClasses()}
  * or {@link BrAPIClassCache#getBrAPIClassesAsSet()}
- * Additional dependent classes are available from {@link BrAPIClassCache#getAllDependencies()}
+ * All dependent classes are available from {@link BrAPIClassCache#getAllNonPrimaryDependencies()},
+ * these are classes that were not in the original list by are referenced by those in the list
  * All classes the BrAPIClasses that were originally passed to the cache regardless of if they
  * passed the {@link BrAPIClassCache#cachePredicate}
  *
@@ -40,40 +43,19 @@ public class BrAPIClassCacheBuilder {
     }
 
     /**
-     * Creates the cache with a cache predicate that determines if a class is added to the cache.
+     * Creates the cache with a cache predicate that determines if a class is added to the cache as a primary class.
      *
-     * @param cachePredicate the cache predicate that determines if a class is added to the cache.
-     * @param brAPIClasses   the list of possible classes to be cached.
+     * @param cachePredicate the cache predicate that determines if a class is added to the cache as a primary class.
+     * @param brAPIClasses   the list of classes to be cached.
      * @return the cache of classes
      */
     public static BrAPIClassCache createCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
         return new BrAPIClassCache(cachePredicate, brAPIClasses);
     }
 
-    /**
-     * Creates the cache of classes as a Map
-     *
-     * @param brAPIClasses the list of possible classes to be cached.
-     * @return the cache of classes as a Map
-     */
-    public static Map<String, BrAPIClass> createMap(List<BrAPIClass> brAPIClasses) {
-        return createCache(brAPIClasses).getBrAPIClassMap();
-    }
-
-    /**
-     * Creates the cache of classes as a Map with a cache predicate that determines if a class is added to the cache.
-     *
-     * @param cachePredicate the cache predicate that determines if a class is added to the cache.
-     * @param brAPIClasses   the list of possible classes to be cached.
-     * @return the cache of classes as a Map
-     */
-    public static Map<String, BrAPIClass> createMap(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
-        return createCache(cachePredicate, brAPIClasses).getBrAPIClassMap();
-    }
-
     public static class BrAPIClassCache {
-        private final Map<String, BrAPIClass> allBrAPIClasses;
         private final Predicate<BrAPIClass> cachePredicate;
+        private final Map<String, BrAPIClass> inputClassMap;
         @Getter(AccessLevel.PRIVATE)
         private final Map<String, BrAPIClass> brAPIClassMap;
         // Contains as keys type names, and elements a list of classes that is used by that type
@@ -86,12 +68,14 @@ public class BrAPIClassCacheBuilder {
         @Getter
         private final List<BrAPIClass> primaryClasses;
         @Getter
-        private final List<BrAPIClass> allDependencies;
+        private final List<BrAPIClass> allNonPrimaryDependencies;
 
         public BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
-            allBrAPIClasses = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+            this.inputClassMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
+
             this.cachePredicate = cachePredicate;
             brAPIClassMap = new TreeMap<>();
+
             usedBy = new TreeMap<>();
             dependsOn = new TreeMap<>();
             primaryClasses = new ArrayList<>();
@@ -101,12 +85,17 @@ public class BrAPIClassCacheBuilder {
             exclusiveDependencies = new TreeMap<>();
             commonDependencies = new TreeMap<>();
             primaryDependencies = new TreeMap<>();
-            allDependencies = new ArrayList<>();
+            allNonPrimaryDependencies = new ArrayList<>();
 
             usedBy.forEach((key, value) -> {
                 BrAPIClass dependentClass = brAPIClassMap.get(key);
 
-                if (!cachePredicate.test(dependentClass)) {
+                if (isPrimaryClass(dependentClass)) {
+                    for (String element : value) {
+                        primaryDependencies.computeIfAbsent(element, k -> new TreeSet<>()).add(dependentClass);
+                    }
+
+                } else {
                     if (value.size() == 1) {
                         exclusiveDependencies.computeIfAbsent(value.iterator().next(), k -> new TreeSet<>()).add(dependentClass);
                     } else {
@@ -115,23 +104,24 @@ public class BrAPIClassCacheBuilder {
                         }
                     }
 
-                    allDependencies.add(dependentClass);
-                } else {
-                    for (String element : value) {
-                        primaryDependencies.computeIfAbsent(element, k -> new TreeSet<>()).add(dependentClass);
-                    }
+                    allNonPrimaryDependencies.add(dependentClass);
                 }
             });
         }
 
+        private boolean isPrimaryClass(BrAPIClass brAPIClass) {
+            return inputClassMap.containsKey(brAPIClass.getName()) && cachePredicate.test(brAPIClass) ;
+        }
+
         /**
          * Get the class by name, which includes all classes even those that did not match the {@link #cachePredicate}
+         * and dependent classes
          *
          * @param typeName the class name
          * @return the requested class
          */
         public BrAPIClass getBrAPIClass(String typeName) {
-            return allBrAPIClasses.get(typeName);
+            return brAPIClassMap.get(typeName);
         }
 
         /**
@@ -142,7 +132,7 @@ public class BrAPIClassCacheBuilder {
          */
         public BrAPIType dereferenceType(BrAPIType type) {
             if (type instanceof BrAPIReferenceType) {
-                return allBrAPIClasses.get(type.getName());
+                return brAPIClassMap.get(type.getName());
             } else {
                 return type;
             }
@@ -177,11 +167,11 @@ public class BrAPIClassCacheBuilder {
                     return cacheType(brAPIArrayType.getItems());
                 }
                 case BrAPIReferenceType brAPIReferenceType -> {
-                    BrAPIClass brAPIClass = allBrAPIClasses.get(brAPIReferenceType.getName());
+                    // check in the cache, if not fall back to the input classes
+                    BrAPIClass brAPIClass = brAPIClassMap.getOrDefault(brAPIReferenceType.getName(), inputClassMap.get(brAPIReferenceType.getName()));
                     if (brAPIClass == null) {
                         throw new IllegalStateException("No BrAPIClass with name " + brAPIReferenceType.getName() + " found");
                     }
-                    brAPIClassMap.put(brAPIClass.getName(), brAPIClass);
                     return brAPIClass;
                 }
                 default -> {
@@ -211,39 +201,38 @@ public class BrAPIClassCacheBuilder {
         }
 
         /**
-         * Gets the All the BrAPIClasses that were originally passed to the cache regardless of if they
-         * passed the {@link #cachePredicate}
+         * Gets the BrAPIClasses in the cache as a new list. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
          *
-         * @return all the BrAPIClasses that were originally passed to the cache regardless of if they
-         * passed the {@link #cachePredicate}
-         */
-        public List<BrAPIClass> getAllBrAPIClasses() {
-            return new ArrayList<>(allBrAPIClasses.values());
-        }
-
-        /**
-         * Gets the BrAPIClasses in the cache as a new list. Includes primary classes
-         * that passed the {@link #cachePredicate} and any dependent classes.
-         *
-         * @return the BrAPIClasses in the cache as a new list, including dependent classes
+         * @return all the BrAPIClasses in the cache as a new list, including dependent classes
          */
         public List<BrAPIClass> getBrAPIClasses() {
             return new ArrayList<>(brAPIClassMap.values());
         }
 
         /**
-         * Gets the BrAPIClasses in the cache as a new set. Includes primary classes
-         * that passed the {@link #cachePredicate} and any dependent classes.
+         * Gets the BrAPIClasses in the cache as a new set. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
          *
-         * @return the BrAPIClasses in the cache as a new set, including dependent classes
+         * @return all the BrAPIClasses in the cache as a new list, including dependent classes
          */
         public Set<BrAPIClass> getBrAPIClassesAsSet() {
             return new TreeSet<>(brAPIClassMap.values());
         }
 
         /**
-         * Determines if the cache contains a BrAPIClass by name. Includes primary classes
-         * that passed the {@link #cachePredicate} and any dependent classes.
+         * Gets the BrAPIClasses in the cache as a new map. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
+         *
+         * @return all the BrAPIClasses in the cache as a new map, including dependent classes
+         */
+        public Map<String, BrAPIClass> getBrAPIClassesAsMap() {
+            return new TreeMap<>(brAPIClassMap) ;
+        }
+
+        /**
+         * Determines if the cache contains a BrAPIClass by name. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
          *
          * @param name the name of the BrAPIClass
          * @return {@code true} if there is a BrAPIClass by this the provided name
@@ -255,8 +244,8 @@ public class BrAPIClassCacheBuilder {
 
         /**
          * Gets the BrAPIClass that are dependencies use by the specified BrAPIClass,
-         * but also used by other BrAPIClasses
-         * and are not part of those that passed the {@link #cachePredicate}.
+         * but also used by at least one other BrAPIClass
+         * and are not in of those originally passed to the cache
          *
          * @param name the name of the BrAPIClass
          * @return the common dependencies for the specified BrAPIClass
@@ -267,7 +256,7 @@ public class BrAPIClassCacheBuilder {
 
         /**
          * Gets the BrAPIClass that are dependencies exclusively for the specified BrAPIClass,
-         * but are not part of those that passed the {@link #cachePredicate}.
+         * but are not in of those originally passed to the cache
          *
          * @param name the name of the BrAPIClass
          * @return the exclusive dependencies for the specified BrAPIClass
