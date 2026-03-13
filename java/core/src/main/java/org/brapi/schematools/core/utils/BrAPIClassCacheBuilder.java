@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of classes and caches those in the list of primary classes if they pass the provided cachePredicate.
+ * Classes that do not pass the cachePredicate are not added to the list of primary classes, but are still included in the list of all classes.
  * Additional classes are added to the cache as dependent class as follows
  * For {@link BrAPIObjectType} utility checks the properties and
  * tries to cache any that are the return type of these properties {@link BrAPIClass}es.
@@ -81,6 +82,7 @@ public class BrAPIClassCacheBuilder {
         private final Map<String, Set<String>> usedBy;
         private final Map<String, Set<BrAPIClass>> exclusiveDependencies;
         private final Map<String, Set<BrAPIClass>> commonDependencies;
+        private final Map<String, Set<BrAPIClass>> primaryDependencies;
         @Getter
         private final List<BrAPIClass> primaryClasses;
         @Getter
@@ -94,21 +96,29 @@ public class BrAPIClassCacheBuilder {
             dependsOn = new TreeMap<>();
             primaryClasses = new ArrayList<>();
 
-            brAPIClasses.stream().filter(cachePredicate).forEach(this::cacheClass);
+            brAPIClasses.forEach(this::cacheClass);
 
             exclusiveDependencies = new TreeMap<>();
             commonDependencies = new TreeMap<>();
+            primaryDependencies = new TreeMap<>();
             allDependencies = new ArrayList<>();
 
             usedBy.forEach((key, value) -> {
                 BrAPIClass dependentClass = brAPIClassMap.get(key);
 
-                if (value.size() == 1) {
-                    exclusiveDependencies.computeIfAbsent(value.iterator().next(), k -> new TreeSet<>()).add(dependentClass);
+                if (!cachePredicate.test(dependentClass)) {
+                    if (value.size() == 1) {
+                        exclusiveDependencies.computeIfAbsent(value.iterator().next(), k -> new TreeSet<>()).add(dependentClass);
+                    } else {
+                        for (String element : value) {
+                            commonDependencies.computeIfAbsent(element, k -> new TreeSet<>()).add(dependentClass);
+                        }
+                    }
+
+                    allDependencies.add(dependentClass);
                 } else {
-                    commonDependencies.computeIfAbsent(value.iterator().next(), k -> new TreeSet<>()).add(dependentClass);
-                    if (!cachePredicate.test(dependentClass)) {
-                        allDependencies.add(dependentClass);
+                    for (String element : value) {
+                        primaryDependencies.computeIfAbsent(element, k -> new TreeSet<>()).add(dependentClass);
                     }
                 }
             });
@@ -138,11 +148,11 @@ public class BrAPIClassCacheBuilder {
             }
         }
 
-        private BrAPIClass cacheClass(BrAPIClass brAPIClass) {
-            primaryClasses.add(brAPIClass);
+        private void cacheClass(BrAPIClass brAPIClass) {
+            if (cachePredicate.test(brAPIClass)) {
+                primaryClasses.add(brAPIClass);
+            }
             cacheType(brAPIClass);
-
-            return brAPIClass;
         }
 
         private BrAPIType cacheType(BrAPIType brAPIType) {
@@ -249,7 +259,7 @@ public class BrAPIClassCacheBuilder {
          * and are not part of those that passed the {@link #cachePredicate}.
          *
          * @param name the name of the BrAPIClass
-         * @return the BrAPIClasses the exclusive dependencies for the specified BrAPIClass
+         * @return the common dependencies for the specified BrAPIClass
          */
         public Set<BrAPIClass> getCommonDependencies(String name) {
             return commonDependencies.getOrDefault(name, new TreeSet<>());
@@ -260,10 +270,20 @@ public class BrAPIClassCacheBuilder {
          * but are not part of those that passed the {@link #cachePredicate}.
          *
          * @param name the name of the BrAPIClass
-         * @return the BrAPIClasses the exclusive dependencies for the specified BrAPIClass
+         * @return the exclusive dependencies for the specified BrAPIClass
          */
         public Set<BrAPIClass> getExclusiveDependencies(String name) {
             return exclusiveDependencies.getOrDefault(name, new TreeSet<>());
+        }
+
+        /**
+         * Gets dependencies of the BrAPIClass that also passed the {@link #cachePredicate}.
+         *
+         * @param name the name of the BrAPIClass
+         * @return dependencies of the BrAPIClass that also passed the {@link #cachePredicate}.
+         */
+        public Set<BrAPIClass> getPrimaryDependencies(String name) {
+            return primaryDependencies.getOrDefault(name, new TreeSet<>());
         }
 
         /**

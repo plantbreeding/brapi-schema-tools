@@ -65,6 +65,9 @@ class StringUtilsTest {
         assertEquals("trial", StringUtils.toSnakeCase("trial")) ;
         assertEquals("breeding_method", StringUtils.toSnakeCase("BreedingMethod")) ;
         assertEquals("inventory_lot_attribute_value", StringUtils.toSnakeCase("InventoryLotAttributeValue")) ;
+        assertEquals("germplasm_puis", StringUtils.toSnakeCase("germplasmPUIs")) ;
+        assertEquals("germplasm_pui", StringUtils.toSnakeCase("germplasmPUI")) ;
+        assertEquals("brapi_schema_tools", StringUtils.toSnakeCase("BrAPISchemaTools")) ;
     }
 
     @Test

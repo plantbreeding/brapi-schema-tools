@@ -118,7 +118,7 @@ public class ListGetOptions extends AbstractPythonGeneratorSubOptions {
      * @return {@code true} if the property should be exposed as a query parameter
      */
     @JsonIgnore
-    public boolean isPropertyFromRequest(BrAPIObjectType type, BrAPIObjectProperty property) {
+    public boolean isUsingPropertyFromRequestFor(BrAPIObjectType type, BrAPIObjectProperty property) {
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
         if (map != null) {
             return map.getOrDefault(property.getName(), propertiesFromRequest);

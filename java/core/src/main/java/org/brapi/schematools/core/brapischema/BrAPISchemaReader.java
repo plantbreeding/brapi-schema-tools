@@ -382,6 +382,10 @@ public class BrAPISchemaReader {
         }
 
         private Response<BrAPIType> createType(Path path, JsonNode jsonNode, String fallbackName, String module) {
+            if (jsonNode.has("allOf")) {
+                return createAllOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+            }
+
             if (jsonNode.has("oneOf")) {
                 return createOneOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
             }
@@ -518,8 +522,12 @@ public class BrAPISchemaReader {
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
-            findValue(path, jsonNode, "example", false).
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
                 ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 
             findChildValues(path, jsonNode, "examples", false).
                 ifPresentDoWithResult(examples -> examples.forEach(builder::example));
@@ -612,6 +620,16 @@ public class BrAPISchemaReader {
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
+                ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
+            findChildValues(path, jsonNode, "examples", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
             findStringChildValue(path, jsonNode, "referencedAttribute", false).
                 onSuccessDoWithResult(builder::referencedAttribute);
 
@@ -660,6 +678,16 @@ public class BrAPISchemaReader {
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
+
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
+                ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
+            findChildValues(path, jsonNode, "examples", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 
             return findChildNode(path, jsonNode, "allOf", true).
                 mapResult(node -> childNodes(path, node)).
@@ -748,12 +776,13 @@ public class BrAPISchemaReader {
             }
         }
 
-        private Response<Object> findValue(Path path, JsonNode parentNode, String fieldName, boolean required) {
+        private Response<Object> findChildValue(Path path, JsonNode parentNode, String fieldName, boolean required) {
             return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
                 if (jsonNode instanceof ValueNode) {
                     return findValue(path, jsonNode).or(() -> fail(Response.ErrorType.VALIDATION, path,
                             String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
                 }
+
                 return required ?
                     fail(Response.ErrorType.VALIDATION, path,
                         String.format("Child node type '%s' was not ValueNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
@@ -780,7 +809,7 @@ public class BrAPISchemaReader {
         private Response<List<Object>> findChildValues(Path path, JsonNode parentNode, String fieldName, boolean required) {
             return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
                 if (jsonNode instanceof ArrayNode arrayNode) {
-                    return StreamSupport.stream(arrayNode.spliterator(), false).map(jn -> findValue(path, jsonNode)).collect(Response.toList()).or(() -> fail(Response.ErrorType.VALIDATION, path,
+                    return StreamSupport.stream(arrayNode.spliterator(), false).map(jn -> findValue(path, jn)).collect(Response.toList()).or(() -> fail(Response.ErrorType.VALIDATION, path,
                         String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
                 }
                 return required ?

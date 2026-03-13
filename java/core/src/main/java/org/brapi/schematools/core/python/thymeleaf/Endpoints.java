@@ -9,4 +9,11 @@ public class Endpoints {
     String crud ;
     String search ;
     String table;
+
+    boolean get ;
+    boolean list ;
+    boolean create ;
+    boolean createMany;
+    boolean update ;
+    boolean delete;
 }

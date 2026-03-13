@@ -61,7 +61,6 @@ public class PythonGeneratorOptions extends AbstractMainGeneratorOptions {
     private Map<String, String> pathItemNameFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
-    private Boolean includeDepreciated;
 
     /**
      * Load the default options.
@@ -196,10 +195,6 @@ public class PythonGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.controlledVocabulary != null) {
             controlledVocabulary = overrideOptions.controlledVocabulary;
-        }
-
-        if (overrideOptions.includeDepreciated != null) {
-            includeDepreciated = overrideOptions.includeDepreciated;
         }
 
         return this;
@@ -420,14 +415,5 @@ public class PythonGeneratorOptions extends AbstractMainGeneratorOptions {
      */
     public final boolean isGeneratingControlledVocabularyEndpoints() {
         return controlledVocabulary != null && controlledVocabulary.isGenerating();
-    }
-
-    /**
-     * Determines whether depreciated if depreciated endpoints and entities should be included in the generation.
-     *
-     * @return {@code true} if depreciated endpoints and entities should be included in the generation, {@code false} otherwise
-     */
-    public final boolean isIncludingDepreciated() {
-        return includeDepreciated != null && includeDepreciated;
     }
 }
