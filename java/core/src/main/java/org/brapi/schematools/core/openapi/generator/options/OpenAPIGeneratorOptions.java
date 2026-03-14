@@ -9,7 +9,7 @@ import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
-import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
+import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
@@ -35,7 +35,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
-public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
+public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private SingleGetOptions singleGet;
@@ -74,11 +74,6 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
     private String listResponseNameFormat;
     @Getter(AccessLevel.PRIVATE)
     private String searchRequestNameFormat;
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, String> pathItemNameFor = new HashMap<>();
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
@@ -197,31 +192,14 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
             searchRequestNameFormat = overrideOptions.searchRequestNameFormat ;
         }
 
-        if (overrideOptions.pathItemNameFor != null) {
-            pathItemNameFor.putAll(overrideOptions.pathItemNameFor) ;
-        }
-
-        if (overrideOptions.pathItemNameForProperty != null) {
-            overrideOptions.pathItemNameForProperty.forEach((key, value) -> {
-                if (pathItemNameForProperty.containsKey(key)) {
-                    pathItemNameForProperty.get(key).putAll(value) ;
-                } else {
-                    pathItemNameForProperty.put(key, new HashMap<>(value)) ;
-                }
-            });
-        }
-
         if (overrideOptions.tagFor != null) {
             tagFor.putAll(overrideOptions.tagFor) ;
-        }
-
-        if (overrideOptions.controlledVocabulary != null) {
-            controlledVocabulary = overrideOptions.controlledVocabulary ;
         }
 
         return this ;
     }
 
+    @Override
     public Validation validate() {
         return super.validate()
             .assertNotNull(singleGet, "Single Get Endpoint Options are null")
@@ -249,7 +227,6 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
             .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
-            .assertNotNull(pathItemNameFor,  "'pathItemNameFor' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null") ;
     }
 
@@ -420,7 +397,7 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Gets the name for the List Response for a specific Primary Model
+     * Gets the name for the List Response for a specific Primary Model and property
      * @param typeWithProperty the Primary Model and the Property
      * @return the List Response name for a specific Primary Model
      */
@@ -450,31 +427,13 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Gets the singular name for pluralised property name
+     * Gets the singular name for a pluralised property name
      * @param propertyName the pluralised property name
-     * @return the Pluralise name for a specific Primary Model
+     * @return the singular name for the property
      */
     @JsonIgnore
     public final String getSingularForProperty(@NonNull String propertyName) {
         return toSingular(propertyName) ;
-    }
-
-    /**
-     * Gets the path item name for a specific Primary Model
-     * @param name the name of the Primary Model
-     * @return the Pluralised name for a specific Primary Model
-     */
-    public final String getPathItemNameFor(String name) {
-        return pathItemNameFor.getOrDefault(name, String.format("/%s", toLowerCase(getPluralFor(name))));
-    }
-
-    /**
-     * Gets the path item name for a specific Primary Model
-     * @param type the Primary Model
-     * @return the path item name for a specific Primary Model
-     */
-    public final String getPathItemNameFor(BrAPIType type) {
-        return getPathItemNameFor(type.getName()) ;
     }
 
     /**
@@ -487,83 +446,7 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Gets the path item name for a specific BrAPI Property
-     * @param typeName the name of the primary model
-     * @param propertyName the name of the property
-     * @return the path item name for the Property
-     */
-    @JsonIgnore
-    public final String getPathItemNameForProperty(@NonNull String typeName, @NonNull String propertyName) {
-        Map<String, String> map = pathItemNameForProperty.get(typeName) ;
-
-        String defaultPathItemNameForProperty = String.format("%s/%s", getPathItemNameFor(typeName), toPlural(propertyName)) ;
-
-        if (map != null) {
-            return map.getOrDefault(propertyName, defaultPathItemNameForProperty) ;
-        }
-
-        return defaultPathItemNameForProperty ;
-    }
-
-    /**
-     * Gets the path item name for a specific BrAPI Property
-     * @param type the primary model
-     * @param property the property
-     * @return the path item name for the Property
-     */
-    @JsonIgnore
-    public final String getPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
-        return getPathItemNameForProperty(type.getName(), property.getName()) ;
-    }
-
-    /**
-     * Gets the path item name for a specific BrAPI Property
-     * @param typeWithProperty the primary model with the property
-     * @return the path item name for the Property
-     */
-    @JsonIgnore
-    public final String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
-        return getPathItemNameForProperty(typeWithProperty.getType(), typeWithProperty.getProperty()) ;
-    }
-
-    /**
-     * Sets the path item name for a specific BrAPI Property
-     * @param typeName the name of the primary model
-     * @param propertyName the name of the property
-     * @param pathItemName the path item name
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public final OpenAPIGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
-        Map<String, String> map = pathItemNameForProperty.get(typeName) ;
-
-        if (map != null) {
-            map.put(propertyName, pathItemName) ;
-            return this ;
-        } else {
-            map = new HashMap<>() ;
-            map.put(propertyName, pathItemName) ;
-            pathItemNameForProperty.put(typeName, map) ;
-
-            return this ;
-        }
-    }
-
-    /**
-     * Sets the path item name for a specific BrAPI Property
-     * @param type the primary model
-     * @param property the property
-     * @param pathItemName the path item name
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public final OpenAPIGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
-        return setPathItemNameForProperty(type.getName(), property.getName(), pathItemName) ;
-    }
-
-    /**
-     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
-     * Use {@link #setTagFor(String, String)} to override this value.
+     * Gets the tag name for a specific Primary Model.
      * @param name the name of the Primary Model
      * @return the tag name for a specific Primary Model
      */
@@ -573,8 +456,7 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Gets the tag name for a specific Primary Model. If not set {@link #getPluralFor(String)} will be used.
-     * Use {@link #setTagFor(String, String)} to override this value.
+     * Gets the tag name for a specific Primary Model.
      * @param type the Primary Model
      * @return the tag name for a specific Primary Model
      */
@@ -596,34 +478,12 @@ public class OpenAPIGeneratorOptions extends AbstractMainGeneratorOptions {
         return this ;
     }
 
-    /**
-     * Determines if a specific property should be exposed as a separate Endpoint
-     * @param type the Object type
-     * @param property the Object type property
-     * @return {@code true} generator will create a separate Endpoint for the property, {@code false} otherwise
-     */
+    @Override
     public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
         return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
-    /**
-     * Gets the name of the Sub-path endpoint for a property
-     * @param pathItemName the path prefix
-     * @param property the Object type property
-     * @return the name of the Sub-path endpoint for a property
-     */
-    public final String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
-        return String.format("%s/%s", pathItemName, toLowerCase(property.getName())) ;
-    }
-
-    /**
-     * Determines Controlled vocabulary endpoints should be generated. Any entity which as a
-     * property that is indicated in the metadata that it returns a controlled vocabulary
-     * will have an endpoint generated in the format /{entity-plural}/{property-name-plural}
-     * for example /attributes/categories
-     *
-     * @return {@code true} if controlled vocabulary endpoints should be generated
-     */
+    @Override
     public final boolean isGeneratingControlledVocabularyEndpoints() {
         return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
     }

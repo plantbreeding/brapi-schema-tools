@@ -1,0 +1,245 @@
+package org.brapi.schematools.core.options;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
+import org.brapi.schematools.core.validiation.Validation;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
+import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+
+/**
+ * Abstract base class for generator options that produce REST-style endpoints
+ * (e.g. OpenAPI, R, Python). Holds the shared endpoint-independent options and
+ * path-item helper methods that are otherwise duplicated across those generators.
+ */
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Accessors(chain = true)
+public abstract class AbstractRESTGeneratorOptions extends AbstractMainGeneratorOptions {
+
+    private Boolean overwrite;
+    private Boolean addGeneratorComments;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> pathItemNameFor = new HashMap<>();
+
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
+
+    // -------------------------------------------------------------------------
+    // validate
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null");
+    }
+
+    // -------------------------------------------------------------------------
+    // override
+    // -------------------------------------------------------------------------
+
+    /**
+     * Overrides the values in this Options Object from the provided Options Object if they are non-null.
+     *
+     * @param overrideOptions the options which will be used to override this Options Object
+     * @return this options for method chaining
+     */
+    public AbstractRESTGeneratorOptions override(AbstractRESTGeneratorOptions overrideOptions) {
+        super.override(overrideOptions);
+
+        if (overrideOptions.overwrite != null) {
+            overwrite = overrideOptions.overwrite;
+        }
+
+        if (overrideOptions.addGeneratorComments != null) {
+            addGeneratorComments = overrideOptions.addGeneratorComments;
+        }
+
+        if (overrideOptions.pathItemNameFor != null) {
+            pathItemNameFor.putAll(overrideOptions.pathItemNameFor);
+        }
+
+        if (overrideOptions.pathItemNameForProperty != null) {
+            overrideOptions.pathItemNameForProperty.forEach((key, value) -> {
+                if (pathItemNameForProperty.containsKey(key)) {
+                    pathItemNameForProperty.get(key).putAll(value);
+                } else {
+                    pathItemNameForProperty.put(key, new HashMap<>(value));
+                }
+            });
+        }
+
+        return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Convenience methods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Determines if the Generator should overwrite existing files.
+     *
+     * @return {@code true} if the Generator should overwrite existing files, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isOverwritingExistingFiles() {
+        return overwrite != null && overwrite;
+    }
+
+    /**
+     * Determines if the Generator should add generator comments to each generated file.
+     *
+     * @return {@code true} if the Generator should add generator comments, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isAddingGeneratorComments() {
+        return addGeneratorComments != null && addGeneratorComments;
+    }
+
+    /**
+     * Gets the path item name for a specific Primary Model.
+     *
+     * @param name the name of the Primary Model
+     * @return the path item name for a specific Primary Model
+     */
+    public final String getPathItemNameFor(String name) {
+        return pathItemNameFor.getOrDefault(name, String.format("/%s", toLowerCase(getPluralFor(name))));
+    }
+
+    /**
+     * Gets the path item name for a specific Primary Model.
+     *
+     * @param type the Primary Model
+     * @return the path item name for a specific Primary Model
+     */
+    public final String getPathItemNameFor(BrAPIType type) {
+        return getPathItemNameFor(type.getName());
+    }
+
+    /**
+     * Gets the search path item name for a specific Primary Model.
+     *
+     * @param name the name of the Primary Model
+     * @return the search path item name for a specific Primary Model
+     */
+    public final String getSearchPathItemNameFor(String name) {
+        return String.format("/search%s", getPathItemNameFor(name));
+    }
+
+    /**
+     * Gets the search path item name for a specific Primary Model.
+     *
+     * @param type the Primary Model
+     * @return the search path item name for a specific Primary Model
+     */
+    public final String getSearchPathItemNameFor(BrAPIType type) {
+        return String.format("/search%s", getPathItemNameFor(type));
+    }
+
+    /**
+     * Gets the path item name for a specific BrAPI Property.
+     *
+     * @param typeName     the name of the primary model
+     * @param propertyName the name of the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public final String getPathItemNameForProperty(@NonNull String typeName, @NonNull String propertyName) {
+        Map<String, String> map = pathItemNameForProperty.get(typeName);
+        String defaultName = String.format("%s/%s", getPathItemNameFor(typeName), toPlural(propertyName));
+        return map != null ? map.getOrDefault(propertyName, defaultName) : defaultName;
+    }
+
+    /**
+     * Gets the path item name for a specific BrAPI Property.
+     *
+     * @param type     the primary model
+     * @param property the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public final String getPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
+        return getPathItemNameForProperty(type.getName(), property.getName());
+    }
+
+    /**
+     * Gets the path item name for a specific BrAPI Property.
+     *
+     * @param typeWithProperty the primary model with the property
+     * @return the path item name for the Property
+     */
+    @JsonIgnore
+    public final String getPathItemNameForProperty(@NonNull BrAPIObjectTypeWithProperty typeWithProperty) {
+        return getPathItemNameForProperty(typeWithProperty.getType(), typeWithProperty.getProperty());
+    }
+
+    /**
+     * Sets the path item name for a specific BrAPI Property.
+     *
+     * @param typeName     the name of the primary model
+     * @param propertyName the name of the property
+     * @param pathItemName the path item name
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final AbstractRESTGeneratorOptions setPathItemNameForProperty(String typeName, String propertyName, String pathItemName) {
+        pathItemNameForProperty
+            .computeIfAbsent(typeName, k -> new HashMap<>())
+            .put(propertyName, pathItemName);
+        return this;
+    }
+
+    /**
+     * Sets the path item name for a specific BrAPI Property.
+     *
+     * @param type         the primary model
+     * @param property     the property
+     * @param pathItemName the path item name
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final AbstractRESTGeneratorOptions setPathItemNameForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property, String pathItemName) {
+        return setPathItemNameForProperty(type.getName(), property.getName(), pathItemName);
+    }
+
+    /**
+     * Determines if a specific property should be exposed as a separate sub-path endpoint.
+     *
+     * @param type     the Object type
+     * @param property the Object type property
+     * @return {@code true} if a separate endpoint will be created for the property, {@code false} otherwise
+     */
+    public abstract boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property);
+
+    /**
+     * Gets the name of the sub-path endpoint for a property.
+     *
+     * @param pathItemName the path prefix
+     * @param property     the Object type property
+     * @return the name of the sub-path endpoint for the property
+     */
+    public final String getSubPathItemNameFor(String pathItemName, BrAPIObjectProperty property) {
+        return String.format("%s/%s", pathItemName, toLowerCase(property.getName()));
+    }
+
+    /**
+     * Determines whether controlled vocabulary endpoints should be generated.
+     *
+     * @return {@code true} if controlled vocabulary endpoints should be generated, {@code false} otherwise
+     */
+    public abstract boolean isGeneratingControlledVocabularyEndpoints();
+}
+
