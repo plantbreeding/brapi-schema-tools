@@ -155,7 +155,7 @@ class ImageQuery(BaseQuery[Image]):
     pattern) so the same base query can be forked::
 
         base = client.image.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.image.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -207,7 +207,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ImageQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ImageQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -216,17 +216,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.image
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.image
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -438,60 +438,60 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- observationDbIds ---
 
-    def observation_db_ids(self, observation_db_ids: Union[str, List[str]]) -> "ImageQuery":
+    def observation_dbids(self, observation_dbids: Union[str, List[str]]) -> "ImageQuery":
         """A list of observation Ids this image is associated with to search for
 
         Example::
             client.image
-                .observation_db_ids("47326456")
+                .observation_dbids("47326456")
                 .fetch()
                 .to_df()
             
             client.image
-                .observation_db_ids(["47326456", "fc9823ac"])
+                .observation_dbids(["47326456", "fc9823ac"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationDbIds", observation_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationDbIds", observation_dbids)  # type: ignore[return-value]
 
     # --- imageDbIds ---
 
-    def image_db_ids(self, image_db_ids: Union[str, List[str]]) -> "ImageQuery":
+    def image_dbids(self, image_dbids: Union[str, List[str]]) -> "ImageQuery":
         """A list of image Ids to search for
 
         Example::
             client.image
-                .image_db_ids("564b64a6")
+                .image_dbids("564b64a6")
                 .fetch()
                 .to_df()
             
             client.image
-                .image_db_ids(["564b64a6", "0d122d1d"])
+                .image_dbids(["564b64a6", "0d122d1d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("imageDbIds", image_db_ids)  # type: ignore[return-value]
+        return self._set_param("imageDbIds", image_dbids)  # type: ignore[return-value]
 
     # --- observationUnitDbIds ---
 
-    def observation_unit_db_ids(self, observation_unit_db_ids: Union[str, List[str]]) -> "ImageQuery":
+    def observation_unit_dbids(self, observation_unit_dbids: Union[str, List[str]]) -> "ImageQuery":
         """A set of observation unit identifiers to search for.
 
         Example::
             client.image
-                .observation_unit_db_ids("f5e4b273")
+                .observation_unit_dbids("f5e4b273")
                 .fetch()
                 .to_df()
             
             client.image
-                .observation_unit_db_ids(["f5e4b273", "328c9424"])
+                .observation_unit_dbids(["f5e4b273", "328c9424"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationUnitDbIds", observation_unit_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationUnitDbIds", observation_unit_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -499,7 +499,7 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
         descriptive_ontology_terms: Optional[List[str]] = None,
         image_file_names: Optional[List[str]] = None,
@@ -514,9 +514,9 @@ Use `GET /programs` to find the list of available programs on a server.
         image_width_max: Optional[int] = None,
         image_width_min: Optional[int] = None,
         mime_types: Optional[List[str]] = None,
-        observation_db_ids: Optional[List[str]] = None,
-        image_db_ids: Optional[List[str]] = None,
-        observation_unit_db_ids: Optional[List[str]] = None,
+        observation_dbids: Optional[List[str]] = None,
+        image_dbids: Optional[List[str]] = None,
+        observation_unit_dbids: Optional[List[str]] = None,
     ) -> "ImageQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -528,7 +528,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.image
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -559,7 +559,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.image
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .search()
                     .to_df()
@@ -618,7 +618,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.image
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -661,19 +661,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, image_db_id: str) -> "Image":
+    def get_by_id(self, image_dbid: str) -> "Image":
         """
         Retrieve a single Image by its database ID.
 
         Calls ``GET /images/{imageDbId}``.
 
         Args:
-            image_db_id: The ``imageDbId`` to retrieve.
+            image_dbid: The ``imageDbId`` to retrieve.
 
         Returns:
             A single ``Image`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{image_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{image_dbid}")
         return Image(**record)
     def create(
         self,
@@ -702,14 +702,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        image_db_id: str,
+        image_dbid: str,
         image: Union["Image", Dict[str, Any]],
     ) -> "Image":
         """
         Update a Image record using ``PUT //images/{imageDbId}``.
 
         Args:
-            image_db_id: The ``imageDbId`` of the record to update.
+            image_dbid: The ``imageDbId`` of the record to update.
             Image: A ``Image`` instance or plain dict with updated fields.
 
         Returns:
@@ -720,7 +720,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(image, Image)
             else image
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{image_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{image_dbid}", body)
         return Image(**record)
 
 

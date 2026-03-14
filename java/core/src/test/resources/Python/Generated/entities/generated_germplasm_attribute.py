@@ -159,12 +159,12 @@ class GermplasmAttributeQuery(BaseQuery[GermplasmAttribute]):
     All filter methods return a new ``GermplasmAttributeQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.germplasm_attribute.germplasm_db_ids("e9c6edd7")
+        base = client.germplasm_attribute.germplasm_dbids("e9c6edd7")
         q1   = base.germplasm_names("A0000003")
         q2   = base.common_crop_names("Tomatillo")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.germplasm_attribute.germplasm_db_ids("e9c6edd7").germplasm_db_ids("1b1df4a6")  # one value as time
-        q4 = client.germplasm_attribute.germplasm_db_ids(["e9c6edd7", "1b1df4a6", ...])  # list
+        q3 = client.germplasm_attribute.germplasm_dbids("e9c6edd7").germplasm_dbids("1b1df4a6")  # one value as time
+        q4 = client.germplasm_attribute.germplasm_dbids(["e9c6edd7", "1b1df4a6", ...])  # list
         
     Materialise with::
 
@@ -189,22 +189,22 @@ class GermplasmAttributeQuery(BaseQuery[GermplasmAttribute]):
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.germplasm_attribute
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -250,7 +250,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -259,17 +259,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.germplasm_attribute
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -294,22 +294,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """List of study identifiers to search for
 
         Example::
             client.germplasm_attribute
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -332,22 +332,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.germplasm_attribute
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -370,61 +370,61 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbId ---
 
-    def study_db_id(self, study_db_id: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def study_dbid(self, study_dbid: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 
 &lt;br&gt;The unique ID of a studies to filter on
 
         Example::
             client.germplasm_attribute
-                .study_db_id("5bcac0ae")
+                .study_dbid("5bcac0ae")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .study_db_id(["5bcac0ae", "7f48e22d"])
+                .study_dbid(["5bcac0ae", "7f48e22d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbId", study_db_id)  # type: ignore[return-value]
+        return self._set_param("studyDbId", study_dbid)  # type: ignore[return-value]
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """List of ontology IDs to search for
 
         Example::
             client.germplasm_attribute
-                .ontology_db_ids("f44f7b23")
+                .ontology_dbids("f44f7b23")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .ontology_db_ids(["f44f7b23", "a26b576e"])
+                .ontology_dbids(["f44f7b23", "a26b576e"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- methodDbIds ---
 
-    def method_db_ids(self, method_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def method_dbids(self, method_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """List of methods to filter search results
 
         Example::
             client.germplasm_attribute
-                .method_db_ids("07e34f83")
+                .method_dbids("07e34f83")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .method_db_ids(["07e34f83", "d3d5517a"])
+                .method_dbids(["07e34f83", "d3d5517a"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodDbIds", method_db_ids)  # type: ignore[return-value]
+        return self._set_param("methodDbIds", method_dbids)  # type: ignore[return-value]
 
     # --- methodNames ---
 
@@ -448,41 +448,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- methodPUIs ---
 
-    def method_pu_is(self, method_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def method_puis(self, method_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of a Method, usually in the form of a URI
 
         Example::
             client.germplasm_attribute
-                .method_pu_is("http://my-traits.com/trait/CO_123:0000212")
+                .method_puis("http://my-traits.com/trait/CO_123:0000212")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .method_pu_is(["http://my-traits.com/trait/CO_123:0000212", "http://my-traits.com/trait/CO_123:0003557"])
+                .method_puis(["http://my-traits.com/trait/CO_123:0000212", "http://my-traits.com/trait/CO_123:0003557"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodPUIs", method_pu_is)  # type: ignore[return-value]
+        return self._set_param("methodPUIs", method_puis)  # type: ignore[return-value]
 
     # --- scaleDbIds ---
 
-    def scale_db_ids(self, scale_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def scale_dbids(self, scale_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The unique identifier for a Scale
 
         Example::
             client.germplasm_attribute
-                .scale_db_ids("a13ecffa")
+                .scale_dbids("a13ecffa")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .scale_db_ids(["a13ecffa", "7e1afe4f"])
+                .scale_dbids(["a13ecffa", "7e1afe4f"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scaleDbIds", scale_db_ids)  # type: ignore[return-value]
+        return self._set_param("scaleDbIds", scale_dbids)  # type: ignore[return-value]
 
     # --- scaleNames ---
 
@@ -506,22 +506,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- scalePUIs ---
 
-    def scale_pu_is(self, scale_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def scale_puis(self, scale_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of a Scale, usually in the form of a URI
 
         Example::
             client.germplasm_attribute
-                .scale_pu_is("http://my-traits.com/trait/CO_123:0000336")
+                .scale_puis("http://my-traits.com/trait/CO_123:0000336")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .scale_pu_is(["http://my-traits.com/trait/CO_123:0000336", "http://my-traits.com/trait/CO_123:0000560"])
+                .scale_puis(["http://my-traits.com/trait/CO_123:0000336", "http://my-traits.com/trait/CO_123:0000560"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scalePUIs", scale_pu_is)  # type: ignore[return-value]
+        return self._set_param("scalePUIs", scale_puis)  # type: ignore[return-value]
 
     # --- dataTypes ---
 
@@ -563,22 +563,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitDbIds ---
 
-    def trait_db_ids(self, trait_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def trait_dbids(self, trait_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The unique identifier for a Trait
 
         Example::
             client.germplasm_attribute
-                .trait_db_ids("ef81147b")
+                .trait_dbids("ef81147b")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .trait_db_ids(["ef81147b", "78d82fad"])
+                .trait_dbids(["ef81147b", "78d82fad"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitDbIds", trait_db_ids)  # type: ignore[return-value]
+        return self._set_param("traitDbIds", trait_dbids)  # type: ignore[return-value]
 
     # --- traitNames ---
 
@@ -602,22 +602,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitPUIs ---
 
-    def trait_pu_is(self, trait_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def trait_puis(self, trait_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of a Trait, usually in the form of a URI
 
         Example::
             client.germplasm_attribute
-                .trait_pu_is("http://my-traits.com/trait/CO_123:0000456")
+                .trait_puis("http://my-traits.com/trait/CO_123:0000456")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .trait_pu_is(["http://my-traits.com/trait/CO_123:0000456", "http://my-traits.com/trait/CO_123:0000820"])
+                .trait_puis(["http://my-traits.com/trait/CO_123:0000456", "http://my-traits.com/trait/CO_123:0000820"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitPUIs", trait_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitPUIs", trait_puis)  # type: ignore[return-value]
 
     # --- traitAttributes ---
 
@@ -640,23 +640,23 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitAttributePUIs ---
 
-    def trait_attribute_pu_is(self, trait_attribute_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def trait_attribute_puis(self, trait_attribute_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI
 &lt;br/&gt;A trait can be decomposed as &quot;Trait&quot; = &quot;Entity&quot; + &quot;Attribute&quot;, the attribute is the observed feature (or characteristic) of the entity e.g., for &quot;grain colour&quot;, attribute = &quot;colour&quot;
 
         Example::
             client.germplasm_attribute
-                .trait_attribute_pu_is("http://my-traits.com/trait/CO_123:0008336")
+                .trait_attribute_puis("http://my-traits.com/trait/CO_123:0008336")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .trait_attribute_pu_is(["http://my-traits.com/trait/CO_123:0008336", "http://my-traits.com/trait/CO_123:0001092"])
+                .trait_attribute_puis(["http://my-traits.com/trait/CO_123:0008336", "http://my-traits.com/trait/CO_123:0001092"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitAttributePUIs", trait_attribute_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitAttributePUIs", trait_attribute_puis)  # type: ignore[return-value]
 
     # --- traitEntities ---
 
@@ -679,42 +679,42 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitEntityPUIs ---
 
-    def trait_entity_pu_is(self, trait_entity_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def trait_entity_puis(self, trait_entity_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI
 &lt;br/&gt;A trait can be decomposed as &quot;Trait&quot; = &quot;Entity&quot; + &quot;Attribute&quot;, the entity is the part of the plant that the trait refers to e.g., for &quot;grain colour&quot;, entity = &quot;grain&quot; 
 
         Example::
             client.germplasm_attribute
-                .trait_entity_pu_is("http://my-traits.com/trait/CO_123:0004098")
+                .trait_entity_puis("http://my-traits.com/trait/CO_123:0004098")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .trait_entity_pu_is(["http://my-traits.com/trait/CO_123:0004098", "http://my-traits.com/trait/CO_123:0002366"])
+                .trait_entity_puis(["http://my-traits.com/trait/CO_123:0004098", "http://my-traits.com/trait/CO_123:0002366"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitEntityPUIs", trait_entity_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitEntityPUIs", trait_entity_puis)  # type: ignore[return-value]
 
     # --- attributeDbIds ---
 
-    def attribute_db_ids(self, attribute_db_ids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def attribute_dbids(self, attribute_dbids: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """List of Germplasm Attribute IDs to search for
 
         Example::
             client.germplasm_attribute
-                .attribute_db_ids("2ef15c9f")
+                .attribute_dbids("2ef15c9f")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .attribute_db_ids(["2ef15c9f", "318e7f7d"])
+                .attribute_dbids(["2ef15c9f", "318e7f7d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("attributeDbIds", attribute_db_ids)  # type: ignore[return-value]
+        return self._set_param("attributeDbIds", attribute_dbids)  # type: ignore[return-value]
 
     # --- attributeNames ---
 
@@ -737,22 +737,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- attributePUIs ---
 
-    def attribute_pu_is(self, attribute_pu_is: Union[str, List[str]]) -> "GermplasmAttributeQuery":
+    def attribute_puis(self, attribute_puis: Union[str, List[str]]) -> "GermplasmAttributeQuery":
         """The Permanent Unique Identifier of an Attribute, usually in the form of a URI
 
         Example::
             client.germplasm_attribute
-                .attribute_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                .attribute_puis("http://my-traits.com/trait/CO_123:0008012")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute
-                .attribute_pu_is(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
+                .attribute_puis(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("attributePUIs", attribute_pu_is)  # type: ignore[return-value]
+        return self._set_param("attributePUIs", attribute_puis)  # type: ignore[return-value]
 
     # --- attributeCategories ---
 
@@ -778,35 +778,35 @@ Use `GET /programs` to find the list of available programs on a server.
     def filter(
         self,
         *,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        study_db_id: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        method_db_ids: Optional[List[str]] = None,
+        study_dbid: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        method_dbids: Optional[List[str]] = None,
         method_names: Optional[List[str]] = None,
-        method_pu_is: Optional[List[str]] = None,
-        scale_db_ids: Optional[List[str]] = None,
+        method_puis: Optional[List[str]] = None,
+        scale_dbids: Optional[List[str]] = None,
         scale_names: Optional[List[str]] = None,
-        scale_pu_is: Optional[List[str]] = None,
+        scale_puis: Optional[List[str]] = None,
         data_types: Optional[List[TraitDataType]] = None,
         trait_classes: Optional[List[str]] = None,
-        trait_db_ids: Optional[List[str]] = None,
+        trait_dbids: Optional[List[str]] = None,
         trait_names: Optional[List[str]] = None,
-        trait_pu_is: Optional[List[str]] = None,
+        trait_puis: Optional[List[str]] = None,
         trait_attributes: Optional[List[str]] = None,
-        trait_attribute_pu_is: Optional[List[str]] = None,
+        trait_attribute_puis: Optional[List[str]] = None,
         trait_entities: Optional[List[str]] = None,
-        trait_entity_pu_is: Optional[List[str]] = None,
-        attribute_db_ids: Optional[List[str]] = None,
+        trait_entity_puis: Optional[List[str]] = None,
+        attribute_dbids: Optional[List[str]] = None,
         attribute_names: Optional[List[str]] = None,
-        attribute_pu_is: Optional[List[str]] = None,
+        attribute_puis: Optional[List[str]] = None,
         attribute_categories: Optional[List[str]] = None,
     ) -> "GermplasmAttributeQuery":
         """
@@ -818,7 +818,7 @@ Use `GET /programs` to find the list of available programs on a server.
             (
                 client.germplasm_attribute
                     .filter(
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                         common_crop_names=["Tomatillo"],
                    )
@@ -849,7 +849,7 @@ Use `GET /programs` to find the list of available programs on a server.
 
             df = (
                 client.germplasm_attribute
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .common_crop_names("Tomatillo")
                     .search()
@@ -908,7 +908,7 @@ Use `GET /programs` to find the list of available programs on a server.
 
             df = (
                 client.germplasm_attribute
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .common_crop_names("Tomatillo")
                     .list()
@@ -952,19 +952,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, attribute_db_id: str) -> "GermplasmAttribute":
+    def get_by_id(self, attribute_dbid: str) -> "GermplasmAttribute":
         """
         Retrieve a single GermplasmAttribute by its database ID.
 
         Calls ``GET /attributes/{attributeDbId}``.
 
         Args:
-            attribute_db_id: The ``attributeDbId`` to retrieve.
+            attribute_dbid: The ``attributeDbId`` to retrieve.
 
         Returns:
             A single ``GermplasmAttribute`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{attribute_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{attribute_dbid}")
         return GermplasmAttribute(**record)
     def create(
         self,
@@ -993,14 +993,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        attribute_db_id: str,
+        attribute_dbid: str,
         germplasm_attribute: Union["GermplasmAttribute", Dict[str, Any]],
     ) -> "GermplasmAttribute":
         """
         Update a GermplasmAttribute record using ``PUT //attributes/{attributeDbId}``.
 
         Args:
-            attribute_db_id: The ``attributeDbId`` of the record to update.
+            attribute_dbid: The ``attributeDbId`` of the record to update.
             GermplasmAttribute: A ``GermplasmAttribute`` instance or plain dict with updated fields.
 
         Returns:
@@ -1011,7 +1011,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(germplasm_attribute, GermplasmAttribute)
             else germplasm_attribute
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{attribute_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{attribute_dbid}", body)
         return GermplasmAttribute(**record)
 
 

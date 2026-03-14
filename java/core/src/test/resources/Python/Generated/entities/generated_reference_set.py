@@ -151,7 +151,7 @@ class ReferenceSetQuery(BaseQuery[ReferenceSet]):
     pattern) so the same base query can be forked::
 
         base = client.reference_set.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.reference_set.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -203,22 +203,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "ReferenceSetQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.reference_set
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -241,7 +241,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ReferenceSetQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -250,17 +250,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.reference_set
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -285,22 +285,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "ReferenceSetQuery":
         """List of study identifiers to search for
 
         Example::
             client.reference_set
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -323,22 +323,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "ReferenceSetQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.reference_set
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -380,22 +380,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- assemblyPUIs ---
 
-    def assembly_pu_is(self, assembly_pu_is: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def assembly_puis(self, assembly_puis: Union[str, List[str]]) -> "ReferenceSetQuery":
         """If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).
 
         Example::
             client.reference_set
-                .assembly_pu_is("doi:10.15454/312953986E3")
+                .assembly_puis("doi:10.15454/312953986E3")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .assembly_pu_is(["doi:10.15454/312953986E3", "doi:10.15454/312953986E3"])
+                .assembly_puis(["doi:10.15454/312953986E3", "doi:10.15454/312953986E3"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("assemblyPUIs", assembly_pu_is)  # type: ignore[return-value]
+        return self._set_param("assemblyPUIs", assembly_puis)  # type: ignore[return-value]
 
     # --- md5checksums ---
 
@@ -413,22 +413,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- referenceSetDbIds ---
 
-    def reference_set_db_ids(self, reference_set_db_ids: Union[str, List[str]]) -> "ReferenceSetQuery":
+    def reference_set_dbids(self, reference_set_dbids: Union[str, List[str]]) -> "ReferenceSetQuery":
         """The `ReferenceSets` to search.
 
         Example::
             client.reference_set
-                .reference_set_db_ids("32a19dd7")
+                .reference_set_dbids("32a19dd7")
                 .fetch()
                 .to_df()
             
             client.reference_set
-                .reference_set_db_ids(["32a19dd7", "2c182c18"])
+                .reference_set_dbids(["32a19dd7", "2c182c18"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("referenceSetDbIds", reference_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("referenceSetDbIds", reference_set_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -436,18 +436,18 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
         accessions: Optional[List[str]] = None,
-        assembly_pu_is: Optional[List[str]] = None,
+        assembly_puis: Optional[List[str]] = None,
         md5checksums: Optional[List[str]] = None,
-        reference_set_db_ids: Optional[List[str]] = None,
+        reference_set_dbids: Optional[List[str]] = None,
     ) -> "ReferenceSetQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -459,7 +459,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.reference_set
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -490,7 +490,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.reference_set
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -549,7 +549,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.reference_set
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -592,19 +592,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, reference_set_db_id: str) -> "ReferenceSet":
+    def get_by_id(self, reference_set_dbid: str) -> "ReferenceSet":
         """
         Retrieve a single ReferenceSet by its database ID.
 
         Calls ``GET /referencesets/{referenceSetDbId}``.
 
         Args:
-            reference_set_db_id: The ``referenceSetDbId`` to retrieve.
+            reference_set_dbid: The ``referenceSetDbId`` to retrieve.
 
         Returns:
             A single ``ReferenceSet`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{reference_set_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{reference_set_dbid}")
         return ReferenceSet(**record)
 
 

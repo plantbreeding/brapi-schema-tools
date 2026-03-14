@@ -146,14 +146,14 @@ class OntologyQuery(BaseQuery[Ontology]):
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "OntologyQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "OntologyQuery":
         """The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology 
 
   Use `GET /ontologies` to find the list of available ontologies on a server.
 
         
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- ontologyNames ---
 
@@ -169,7 +169,7 @@ class OntologyQuery(BaseQuery[Ontology]):
     def filter(
         self,
         *,
-        ontology_db_ids: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
         ontology_names: Optional[List[str]] = None,
     ) -> "OntologyQuery":
         """
@@ -248,19 +248,19 @@ class OntologyQuery(BaseQuery[Ontology]):
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, ontology_db_id: str) -> "Ontology":
+    def get_by_id(self, ontology_dbid: str) -> "Ontology":
         """
         Retrieve a single Ontology by its database ID.
 
         Calls ``GET /ontologies/{ontologyDbId}``.
 
         Args:
-            ontology_db_id: The ``ontologyDbId`` to retrieve.
+            ontology_dbid: The ``ontologyDbId`` to retrieve.
 
         Returns:
             A single ``Ontology`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{ontology_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{ontology_dbid}")
         return Ontology(**record)
     def create(
         self,
@@ -289,14 +289,14 @@ class OntologyQuery(BaseQuery[Ontology]):
 
     def update(
         self,
-        ontology_db_id: str,
+        ontology_dbid: str,
         ontology: Union["Ontology", Dict[str, Any]],
     ) -> "Ontology":
         """
         Update a Ontology record using ``PUT //ontologies/{ontologyDbId}``.
 
         Args:
-            ontology_db_id: The ``ontologyDbId`` of the record to update.
+            ontology_dbid: The ``ontologyDbId`` of the record to update.
             Ontology: A ``Ontology`` instance or plain dict with updated fields.
 
         Returns:
@@ -307,7 +307,7 @@ class OntologyQuery(BaseQuery[Ontology]):
             if isinstance(ontology, Ontology)
             else ontology
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{ontology_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{ontology_dbid}", body)
         return Ontology(**record)
 
 

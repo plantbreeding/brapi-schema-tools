@@ -138,7 +138,7 @@ class CrossingProjectQuery(BaseQuery[CrossingProject]):
     pattern) so the same base query can be forked::
 
         base = client.crossing_project.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.crossing_project.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -190,7 +190,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "CrossingProjectQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "CrossingProjectQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -199,17 +199,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.crossing_project
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.crossing_project
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -234,12 +234,12 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- crossingProjectDbIds ---
 
-    def crossing_project_db_ids(self, crossing_project_db_ids: Union[str, List[str]]) -> "CrossingProjectQuery":
+    def crossing_project_dbids(self, crossing_project_dbids: Union[str, List[str]]) -> "CrossingProjectQuery":
         """Search for Crossing Projects with this unique id
 
         
         """
-        return self._set_param("crossingProjectDbIds", crossing_project_db_ids)  # type: ignore[return-value]
+        return self._set_param("crossingProjectDbIds", crossing_project_dbids)  # type: ignore[return-value]
 
     # --- crossingProjectNames ---
 
@@ -265,9 +265,9 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        crossing_project_db_ids: Optional[List[str]] = None,
+        crossing_project_dbids: Optional[List[str]] = None,
         crossing_project_names: Optional[List[str]] = None,
         include_potential_parents: Optional[bool] = None,
     ) -> "CrossingProjectQuery":
@@ -281,7 +281,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.crossing_project
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -319,7 +319,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.crossing_project
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -362,19 +362,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, crossing_project_db_id: str) -> "CrossingProject":
+    def get_by_id(self, crossing_project_dbid: str) -> "CrossingProject":
         """
         Retrieve a single CrossingProject by its database ID.
 
         Calls ``GET /crossingprojects/{crossingProjectDbId}``.
 
         Args:
-            crossing_project_db_id: The ``crossingProjectDbId`` to retrieve.
+            crossing_project_dbid: The ``crossingProjectDbId`` to retrieve.
 
         Returns:
             A single ``CrossingProject`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{crossing_project_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{crossing_project_dbid}")
         return CrossingProject(**record)
     def create(
         self,
@@ -403,14 +403,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        crossing_project_db_id: str,
+        crossing_project_dbid: str,
         crossing_project: Union["CrossingProject", Dict[str, Any]],
     ) -> "CrossingProject":
         """
         Update a CrossingProject record using ``PUT //crossingprojects/{crossingProjectDbId}``.
 
         Args:
-            crossing_project_db_id: The ``crossingProjectDbId`` of the record to update.
+            crossing_project_dbid: The ``crossingProjectDbId`` of the record to update.
             CrossingProject: A ``CrossingProject`` instance or plain dict with updated fields.
 
         Returns:
@@ -421,7 +421,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(crossing_project, CrossingProject)
             else crossing_project
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{crossing_project_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{crossing_project_dbid}", body)
         return CrossingProject(**record)
 
 

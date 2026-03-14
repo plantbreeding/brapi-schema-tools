@@ -165,7 +165,7 @@ class PlateQuery(BaseQuery[Plate]):
     pattern) so the same base query can be forked::
 
         base = client.plate.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.plate.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -217,22 +217,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "PlateQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.plate
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.plate
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -255,7 +255,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "PlateQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -264,17 +264,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.plate
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.plate
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -299,22 +299,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "PlateQuery":
         """List of study identifiers to search for
 
         Example::
             client.plate
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.plate
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -337,22 +337,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "PlateQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.plate
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.plate
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -375,41 +375,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- observationUnitDbIds ---
 
-    def observation_unit_db_ids(self, observation_unit_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def observation_unit_dbids(self, observation_unit_dbids: Union[str, List[str]]) -> "PlateQuery":
         """The ID which uniquely identifies an observation unit
 
         Example::
             client.plate
-                .observation_unit_db_ids("3cd0ca36")
+                .observation_unit_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.plate
-                .observation_unit_db_ids(["3cd0ca36", "983f3b14"])
+                .observation_unit_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationUnitDbIds", observation_unit_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationUnitDbIds", observation_unit_dbids)  # type: ignore[return-value]
 
     # --- plateDbIds ---
 
-    def plate_db_ids(self, plate_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def plate_dbids(self, plate_dbids: Union[str, List[str]]) -> "PlateQuery":
         """The ID which uniquely identifies a plate of samples
 
         Example::
             client.plate
-                .plate_db_ids("0cac98b8")
+                .plate_dbids("0cac98b8")
                 .fetch()
                 .to_df()
             
             client.plate
-                .plate_db_ids(["0cac98b8", "b96125fb"])
+                .plate_dbids(["0cac98b8", "b96125fb"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("plateDbIds", plate_db_ids)  # type: ignore[return-value]
+        return self._set_param("plateDbIds", plate_dbids)  # type: ignore[return-value]
 
     # --- plateNames ---
 
@@ -451,22 +451,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- sampleDbIds ---
 
-    def sample_db_ids(self, sample_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def sample_dbids(self, sample_dbids: Union[str, List[str]]) -> "PlateQuery":
         """The ID which uniquely identifies a sample
 
         Example::
             client.plate
-                .sample_db_ids("3bece2ca")
+                .sample_dbids("3bece2ca")
                 .fetch()
                 .to_df()
             
             client.plate
-                .sample_db_ids(["3bece2ca", "dd286cc6"])
+                .sample_dbids(["3bece2ca", "dd286cc6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("sampleDbIds", sample_db_ids)  # type: ignore[return-value]
+        return self._set_param("sampleDbIds", sample_dbids)  # type: ignore[return-value]
 
     # --- sampleNames ---
 
@@ -489,22 +489,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- sampleGroupDbIds ---
 
-    def sample_group_db_ids(self, sample_group_db_ids: Union[str, List[str]]) -> "PlateQuery":
+    def sample_group_dbids(self, sample_group_dbids: Union[str, List[str]]) -> "PlateQuery":
         """The unique identifier for a group of related Samples
 
         Example::
             client.plate
-                .sample_group_db_ids("45e1e2d7")
+                .sample_group_dbids("45e1e2d7")
                 .fetch()
                 .to_df()
             
             client.plate
-                .sample_group_db_ids(["45e1e2d7", "6cc6dd28"])
+                .sample_group_dbids(["45e1e2d7", "6cc6dd28"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("sampleGroupDbIds", sample_group_db_ids)  # type: ignore[return-value]
+        return self._set_param("sampleGroupDbIds", sample_group_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -512,21 +512,21 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        observation_unit_db_ids: Optional[List[str]] = None,
-        plate_db_ids: Optional[List[str]] = None,
+        observation_unit_dbids: Optional[List[str]] = None,
+        plate_dbids: Optional[List[str]] = None,
         plate_names: Optional[List[str]] = None,
         plate_barcodes: Optional[List[str]] = None,
-        sample_db_ids: Optional[List[str]] = None,
+        sample_dbids: Optional[List[str]] = None,
         sample_names: Optional[List[str]] = None,
-        sample_group_db_ids: Optional[List[str]] = None,
+        sample_group_dbids: Optional[List[str]] = None,
     ) -> "PlateQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -538,7 +538,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.plate
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -569,7 +569,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.plate
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -628,7 +628,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.plate
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -671,19 +671,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, plate_db_id: str) -> "Plate":
+    def get_by_id(self, plate_dbid: str) -> "Plate":
         """
         Retrieve a single Plate by its database ID.
 
         Calls ``GET /plates/{plateDbId}``.
 
         Args:
-            plate_db_id: The ``plateDbId`` to retrieve.
+            plate_dbid: The ``plateDbId`` to retrieve.
 
         Returns:
             A single ``Plate`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{plate_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{plate_dbid}")
         return Plate(**record)
     def create(
         self,

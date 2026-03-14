@@ -130,7 +130,7 @@ class MethodQuery(BaseQuery[Method]):
     pattern) so the same base query can be forked::
 
         base = client.method.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.method.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -182,18 +182,18 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "MethodQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "MethodQuery":
         """The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology 
 
   Use `GET /ontologies` to find the list of available ontologies on a server.
 
         
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "MethodQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "MethodQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -202,17 +202,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.method
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.method
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -237,41 +237,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- methodDbIds ---
 
-    def method_db_ids(self, method_db_ids: Union[str, List[str]]) -> "MethodQuery":
+    def method_dbids(self, method_dbids: Union[str, List[str]]) -> "MethodQuery":
         """The unique identifier for a method.
 
         Example::
             client.method
-                .method_db_ids("3cd0ca36")
+                .method_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.method
-                .method_db_ids(["3cd0ca36", "983f3b14"])
+                .method_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodDbIds", method_db_ids)  # type: ignore[return-value]
+        return self._set_param("methodDbIds", method_dbids)  # type: ignore[return-value]
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "MethodQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "MethodQuery":
         """The unique identifier for an observation variable.
 
         Example::
             client.method
-                .observation_variable_db_ids("3cd0ca36")
+                .observation_variable_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.method
-                .observation_variable_db_ids(["3cd0ca36", "983f3b14"])
+                .observation_variable_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -279,11 +279,11 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        method_db_ids: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        method_dbids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
     ) -> "MethodQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -295,7 +295,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.method
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -333,7 +333,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.method
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -376,19 +376,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, method_db_id: str) -> "Method":
+    def get_by_id(self, method_dbid: str) -> "Method":
         """
         Retrieve a single Method by its database ID.
 
         Calls ``GET /methods/{methodDbId}``.
 
         Args:
-            method_db_id: The ``methodDbId`` to retrieve.
+            method_dbid: The ``methodDbId`` to retrieve.
 
         Returns:
             A single ``Method`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{method_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{method_dbid}")
         return Method(**record)
     def create(
         self,
@@ -417,14 +417,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        method_db_id: str,
+        method_dbid: str,
         method: Union["Method", Dict[str, Any]],
     ) -> "Method":
         """
         Update a Method record using ``PUT //methods/{methodDbId}``.
 
         Args:
-            method_db_id: The ``methodDbId`` of the record to update.
+            method_dbid: The ``methodDbId`` of the record to update.
             Method: A ``Method`` instance or plain dict with updated fields.
 
         Returns:
@@ -435,7 +435,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(method, Method)
             else method
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{method_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{method_dbid}", body)
         return Method(**record)
 
 

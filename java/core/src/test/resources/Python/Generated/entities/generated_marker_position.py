@@ -122,12 +122,12 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
     All filter methods return a new ``MarkerPositionQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.marker_position.map_db_ids("7e6fa8aa")
+        base = client.marker_position.map_dbids("7e6fa8aa")
         q1   = base.linkage_group_names("Chromosome 2")
-        q2   = base.variant_db_ids("a0caa928")
+        q2   = base.variant_dbids("a0caa928")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.marker_position.map_db_ids("7e6fa8aa").map_db_ids("bedc418c")  # one value as time
-        q4 = client.marker_position.map_db_ids(["7e6fa8aa", "bedc418c", ...])  # list
+        q3 = client.marker_position.map_dbids("7e6fa8aa").map_dbids("bedc418c")  # one value as time
+        q4 = client.marker_position.map_dbids(["7e6fa8aa", "bedc418c", ...])  # list
         
     Materialise with::
 
@@ -152,22 +152,22 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
 
     # --- mapDbIds ---
 
-    def map_db_ids(self, map_db_ids: Union[str, List[str]]) -> "MarkerPositionQuery":
+    def map_dbids(self, map_dbids: Union[str, List[str]]) -> "MarkerPositionQuery":
         """A list of IDs which uniquely identify `GenomeMaps` within the given database server
 
         Example::
             client.marker_position
-                .map_db_ids("7e6fa8aa")
+                .map_dbids("7e6fa8aa")
                 .fetch()
                 .to_df()
             
             client.marker_position
-                .map_db_ids(["7e6fa8aa", "bedc418c"])
+                .map_dbids(["7e6fa8aa", "bedc418c"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("mapDbIds", map_db_ids)  # type: ignore[return-value]
+        return self._set_param("mapDbIds", map_dbids)  # type: ignore[return-value]
 
     # --- linkageGroupNames ---
 
@@ -190,22 +190,22 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
 
     # --- variantDbIds ---
 
-    def variant_db_ids(self, variant_db_ids: Union[str, List[str]]) -> "MarkerPositionQuery":
+    def variant_dbids(self, variant_dbids: Union[str, List[str]]) -> "MarkerPositionQuery":
         """A list of IDs which uniquely identify `Variants` within the given database server
 
         Example::
             client.marker_position
-                .variant_db_ids("a0caa928")
+                .variant_dbids("a0caa928")
                 .fetch()
                 .to_df()
             
             client.marker_position
-                .variant_db_ids(["a0caa928", "f8894a26"])
+                .variant_dbids(["a0caa928", "f8894a26"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantDbIds", variant_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantDbIds", variant_dbids)  # type: ignore[return-value]
 
     # --- minPosition ---
 
@@ -240,9 +240,9 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
     def filter(
         self,
         *,
-        map_db_ids: Optional[List[str]] = None,
+        map_dbids: Optional[List[str]] = None,
         linkage_group_names: Optional[List[str]] = None,
-        variant_db_ids: Optional[List[str]] = None,
+        variant_dbids: Optional[List[str]] = None,
         min_position: Optional[int] = None,
         max_position: Optional[int] = None,
     ) -> "MarkerPositionQuery":
@@ -255,9 +255,9 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
             (
                 client.marker_position
                     .filter(
-                        map_db_ids=["7e6fa8aa"],
+                        map_dbids=["7e6fa8aa"],
                         linkage_group_names=["Chromosome 2"],
-                        variant_db_ids=["a0caa928"],
+                        variant_dbids=["a0caa928"],
                    )
                     .fetch()
                     .to_df()
@@ -286,9 +286,9 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
 
             df = (
                 client.marker_position
-                    .map_db_ids("7e6fa8aa")
+                    .map_dbids("7e6fa8aa")
                     .linkage_group_names("Chromosome 2")
-                    .variant_db_ids("a0caa928")
+                    .variant_dbids("a0caa928")
                     .search()
                     .to_df()
             )
@@ -345,9 +345,9 @@ class MarkerPositionQuery(BaseQuery[MarkerPosition]):
 
             df = (
                 client.marker_position
-                    .map_db_ids("7e6fa8aa")
+                    .map_dbids("7e6fa8aa")
                     .linkage_group_names("Chromosome 2")
-                    .variant_db_ids("a0caa928")
+                    .variant_dbids("a0caa928")
                     .list()
                     .to_df()
             )

@@ -137,7 +137,7 @@ class TraitQuery(BaseQuery[Trait]):
     pattern) so the same base query can be forked::
 
         base = client.trait.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.trait.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -189,18 +189,18 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "TraitQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "TraitQuery":
         """The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology 
 
   Use `GET /ontologies` to find the list of available ontologies on a server.
 
         
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "TraitQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "TraitQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -209,17 +209,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.trait
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.trait
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -244,41 +244,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitDbIds ---
 
-    def trait_db_ids(self, trait_db_ids: Union[str, List[str]]) -> "TraitQuery":
+    def trait_dbids(self, trait_dbids: Union[str, List[str]]) -> "TraitQuery":
         """The unique identifier for a trait.
 
         Example::
             client.trait
-                .trait_db_ids("3cd0ca36")
+                .trait_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.trait
-                .trait_db_ids(["3cd0ca36", "983f3b14"])
+                .trait_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitDbIds", trait_db_ids)  # type: ignore[return-value]
+        return self._set_param("traitDbIds", trait_dbids)  # type: ignore[return-value]
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "TraitQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "TraitQuery":
         """The unique identifier for an observation variable.
 
         Example::
             client.trait
-                .observation_variable_db_ids("3cd0ca36")
+                .observation_variable_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.trait
-                .observation_variable_db_ids(["3cd0ca36", "983f3b14"])
+                .observation_variable_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -286,11 +286,11 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        trait_db_ids: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        trait_dbids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
     ) -> "TraitQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -302,7 +302,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.trait
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -340,7 +340,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.trait
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -383,19 +383,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, trait_db_id: str) -> "Trait":
+    def get_by_id(self, trait_dbid: str) -> "Trait":
         """
         Retrieve a single Trait by its database ID.
 
         Calls ``GET /traits/{traitDbId}``.
 
         Args:
-            trait_db_id: The ``traitDbId`` to retrieve.
+            trait_dbid: The ``traitDbId`` to retrieve.
 
         Returns:
             A single ``Trait`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{trait_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{trait_dbid}")
         return Trait(**record)
     def create(
         self,
@@ -424,14 +424,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        trait_db_id: str,
+        trait_dbid: str,
         trait: Union["Trait", Dict[str, Any]],
     ) -> "Trait":
         """
         Update a Trait record using ``PUT //traits/{traitDbId}``.
 
         Args:
-            trait_db_id: The ``traitDbId`` of the record to update.
+            trait_dbid: The ``traitDbId`` of the record to update.
             Trait: A ``Trait`` instance or plain dict with updated fields.
 
         Returns:
@@ -442,7 +442,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(trait, Trait)
             else trait
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{trait_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{trait_dbid}", body)
         return Trait(**record)
 
 

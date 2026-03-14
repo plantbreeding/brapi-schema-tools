@@ -172,12 +172,12 @@ class ObservationVariableQuery(BaseQuery[ObservationVariable]):
     All filter methods return a new ``ObservationVariableQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.observation_variable.observation_variable_db_ids("a646187d")
+        base = client.observation_variable.observation_variable_dbids("a646187d")
         q1   = base.observation_variable_names("Plant Height in meters")
-        q2   = base.observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+        q2   = base.observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.observation_variable.observation_variable_db_ids("a646187d").observation_variable_db_ids("6d23513b")  # one value as time
-        q4 = client.observation_variable.observation_variable_db_ids(["a646187d", "6d23513b", ...])  # list
+        q3 = client.observation_variable.observation_variable_dbids("a646187d").observation_variable_dbids("6d23513b")  # one value as time
+        q4 = client.observation_variable.observation_variable_dbids(["a646187d", "6d23513b", ...])  # list
         
     Materialise with::
 
@@ -202,22 +202,22 @@ class ObservationVariableQuery(BaseQuery[ObservationVariable]):
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The DbIds of Variables to search for
 
         Example::
             client.observation_variable
-                .observation_variable_db_ids("a646187d")
+                .observation_variable_dbids("a646187d")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .observation_variable_db_ids(["a646187d", "6d23513b"])
+                .observation_variable_dbids(["a646187d", "6d23513b"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- observationVariableNames ---
 
@@ -240,22 +240,22 @@ class ObservationVariableQuery(BaseQuery[ObservationVariable]):
 
     # --- observationVariablePUIs ---
 
-    def observation_variable_pu_is(self, observation_variable_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def observation_variable_puis(self, observation_variable_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
 
         Example::
             client.observation_variable
-                .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .observation_variable_pu_is(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
+                .observation_variable_puis(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariablePUIs", observation_variable_pu_is)  # type: ignore[return-value]
+        return self._set_param("observationVariablePUIs", observation_variable_puis)  # type: ignore[return-value]
 
     # --- commonCropNames ---
 
@@ -282,7 +282,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -291,17 +291,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.observation_variable
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -326,22 +326,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """List of study identifiers to search for
 
         Example::
             client.observation_variable
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -364,22 +364,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.observation_variable
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -402,61 +402,61 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbId ---
 
-    def study_db_id(self, study_db_id: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def study_dbid(self, study_dbid: Union[str, List[str]]) -> "ObservationVariableQuery":
         """**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 
 &lt;br&gt;The unique ID of a studies to filter on
 
         Example::
             client.observation_variable
-                .study_db_id("5bcac0ae")
+                .study_dbid("5bcac0ae")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .study_db_id(["5bcac0ae", "7f48e22d"])
+                .study_dbid(["5bcac0ae", "7f48e22d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbId", study_db_id)  # type: ignore[return-value]
+        return self._set_param("studyDbId", study_dbid)  # type: ignore[return-value]
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """List of ontology IDs to search for
 
         Example::
             client.observation_variable
-                .ontology_db_ids("f44f7b23")
+                .ontology_dbids("f44f7b23")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .ontology_db_ids(["f44f7b23", "a26b576e"])
+                .ontology_dbids(["f44f7b23", "a26b576e"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- methodDbIds ---
 
-    def method_db_ids(self, method_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def method_dbids(self, method_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """List of methods to filter search results
 
         Example::
             client.observation_variable
-                .method_db_ids("07e34f83")
+                .method_dbids("07e34f83")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .method_db_ids(["07e34f83", "d3d5517a"])
+                .method_dbids(["07e34f83", "d3d5517a"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodDbIds", method_db_ids)  # type: ignore[return-value]
+        return self._set_param("methodDbIds", method_dbids)  # type: ignore[return-value]
 
     # --- methodNames ---
 
@@ -480,41 +480,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- methodPUIs ---
 
-    def method_pu_is(self, method_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def method_puis(self, method_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of a Method, usually in the form of a URI
 
         Example::
             client.observation_variable
-                .method_pu_is("http://my-traits.com/trait/CO_123:0000212")
+                .method_puis("http://my-traits.com/trait/CO_123:0000212")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .method_pu_is(["http://my-traits.com/trait/CO_123:0000212", "http://my-traits.com/trait/CO_123:0003557"])
+                .method_puis(["http://my-traits.com/trait/CO_123:0000212", "http://my-traits.com/trait/CO_123:0003557"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodPUIs", method_pu_is)  # type: ignore[return-value]
+        return self._set_param("methodPUIs", method_puis)  # type: ignore[return-value]
 
     # --- scaleDbIds ---
 
-    def scale_db_ids(self, scale_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def scale_dbids(self, scale_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The unique identifier for a Scale
 
         Example::
             client.observation_variable
-                .scale_db_ids("a13ecffa")
+                .scale_dbids("a13ecffa")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .scale_db_ids(["a13ecffa", "7e1afe4f"])
+                .scale_dbids(["a13ecffa", "7e1afe4f"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scaleDbIds", scale_db_ids)  # type: ignore[return-value]
+        return self._set_param("scaleDbIds", scale_dbids)  # type: ignore[return-value]
 
     # --- scaleNames ---
 
@@ -538,22 +538,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- scalePUIs ---
 
-    def scale_pu_is(self, scale_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def scale_puis(self, scale_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of a Scale, usually in the form of a URI
 
         Example::
             client.observation_variable
-                .scale_pu_is("http://my-traits.com/trait/CO_123:0000336")
+                .scale_puis("http://my-traits.com/trait/CO_123:0000336")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .scale_pu_is(["http://my-traits.com/trait/CO_123:0000336", "http://my-traits.com/trait/CO_123:0000560"])
+                .scale_puis(["http://my-traits.com/trait/CO_123:0000336", "http://my-traits.com/trait/CO_123:0000560"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scalePUIs", scale_pu_is)  # type: ignore[return-value]
+        return self._set_param("scalePUIs", scale_puis)  # type: ignore[return-value]
 
     # --- dataTypes ---
 
@@ -595,22 +595,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitDbIds ---
 
-    def trait_db_ids(self, trait_db_ids: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def trait_dbids(self, trait_dbids: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The unique identifier for a Trait
 
         Example::
             client.observation_variable
-                .trait_db_ids("ef81147b")
+                .trait_dbids("ef81147b")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .trait_db_ids(["ef81147b", "78d82fad"])
+                .trait_dbids(["ef81147b", "78d82fad"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitDbIds", trait_db_ids)  # type: ignore[return-value]
+        return self._set_param("traitDbIds", trait_dbids)  # type: ignore[return-value]
 
     # --- traitNames ---
 
@@ -634,22 +634,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitPUIs ---
 
-    def trait_pu_is(self, trait_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def trait_puis(self, trait_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of a Trait, usually in the form of a URI
 
         Example::
             client.observation_variable
-                .trait_pu_is("http://my-traits.com/trait/CO_123:0000456")
+                .trait_puis("http://my-traits.com/trait/CO_123:0000456")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .trait_pu_is(["http://my-traits.com/trait/CO_123:0000456", "http://my-traits.com/trait/CO_123:0000820"])
+                .trait_puis(["http://my-traits.com/trait/CO_123:0000456", "http://my-traits.com/trait/CO_123:0000820"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitPUIs", trait_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitPUIs", trait_puis)  # type: ignore[return-value]
 
     # --- traitAttributes ---
 
@@ -672,23 +672,23 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitAttributePUIs ---
 
-    def trait_attribute_pu_is(self, trait_attribute_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def trait_attribute_puis(self, trait_attribute_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI
 &lt;br/&gt;A trait can be decomposed as &quot;Trait&quot; = &quot;Entity&quot; + &quot;Attribute&quot;, the attribute is the observed feature (or characteristic) of the entity e.g., for &quot;grain colour&quot;, attribute = &quot;colour&quot;
 
         Example::
             client.observation_variable
-                .trait_attribute_pu_is("http://my-traits.com/trait/CO_123:0008336")
+                .trait_attribute_puis("http://my-traits.com/trait/CO_123:0008336")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .trait_attribute_pu_is(["http://my-traits.com/trait/CO_123:0008336", "http://my-traits.com/trait/CO_123:0001092"])
+                .trait_attribute_puis(["http://my-traits.com/trait/CO_123:0008336", "http://my-traits.com/trait/CO_123:0001092"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitAttributePUIs", trait_attribute_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitAttributePUIs", trait_attribute_puis)  # type: ignore[return-value]
 
     # --- traitEntities ---
 
@@ -711,56 +711,56 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- traitEntityPUIs ---
 
-    def trait_entity_pu_is(self, trait_entity_pu_is: Union[str, List[str]]) -> "ObservationVariableQuery":
+    def trait_entity_puis(self, trait_entity_puis: Union[str, List[str]]) -> "ObservationVariableQuery":
         """The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI
 &lt;br/&gt;A trait can be decomposed as &quot;Trait&quot; = &quot;Entity&quot; + &quot;Attribute&quot;, the entity is the part of the plant that the trait refers to e.g., for &quot;grain colour&quot;, entity = &quot;grain&quot; 
 
         Example::
             client.observation_variable
-                .trait_entity_pu_is("http://my-traits.com/trait/CO_123:0004098")
+                .trait_entity_puis("http://my-traits.com/trait/CO_123:0004098")
                 .fetch()
                 .to_df()
             
             client.observation_variable
-                .trait_entity_pu_is(["http://my-traits.com/trait/CO_123:0004098", "http://my-traits.com/trait/CO_123:0002366"])
+                .trait_entity_puis(["http://my-traits.com/trait/CO_123:0004098", "http://my-traits.com/trait/CO_123:0002366"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitEntityPUIs", trait_entity_pu_is)  # type: ignore[return-value]
+        return self._set_param("traitEntityPUIs", trait_entity_puis)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
     def filter(
         self,
         *,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
         observation_variable_names: Optional[List[str]] = None,
-        observation_variable_pu_is: Optional[List[str]] = None,
+        observation_variable_puis: Optional[List[str]] = None,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        study_db_id: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        method_db_ids: Optional[List[str]] = None,
+        study_dbid: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        method_dbids: Optional[List[str]] = None,
         method_names: Optional[List[str]] = None,
-        method_pu_is: Optional[List[str]] = None,
-        scale_db_ids: Optional[List[str]] = None,
+        method_puis: Optional[List[str]] = None,
+        scale_dbids: Optional[List[str]] = None,
         scale_names: Optional[List[str]] = None,
-        scale_pu_is: Optional[List[str]] = None,
+        scale_puis: Optional[List[str]] = None,
         data_types: Optional[List[TraitDataType]] = None,
         trait_classes: Optional[List[str]] = None,
-        trait_db_ids: Optional[List[str]] = None,
+        trait_dbids: Optional[List[str]] = None,
         trait_names: Optional[List[str]] = None,
-        trait_pu_is: Optional[List[str]] = None,
+        trait_puis: Optional[List[str]] = None,
         trait_attributes: Optional[List[str]] = None,
-        trait_attribute_pu_is: Optional[List[str]] = None,
+        trait_attribute_puis: Optional[List[str]] = None,
         trait_entities: Optional[List[str]] = None,
-        trait_entity_pu_is: Optional[List[str]] = None,
+        trait_entity_puis: Optional[List[str]] = None,
     ) -> "ObservationVariableQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -771,9 +771,9 @@ Use `GET /programs` to find the list of available programs on a server.
             (
                 client.observation_variable
                     .filter(
-                        observation_variable_db_ids=["a646187d"],
+                        observation_variable_dbids=["a646187d"],
                         observation_variable_names=["Plant Height in meters"],
-                        observation_variable_pu_is=["http://my-traits.com/trait/CO_123:0008012"],
+                        observation_variable_puis=["http://my-traits.com/trait/CO_123:0008012"],
                    )
                     .fetch()
                     .to_df()
@@ -802,9 +802,9 @@ Use `GET /programs` to find the list of available programs on a server.
 
             df = (
                 client.observation_variable
-                    .observation_variable_db_ids("a646187d")
+                    .observation_variable_dbids("a646187d")
                     .observation_variable_names("Plant Height in meters")
-                    .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                    .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                     .search()
                     .to_df()
             )
@@ -861,9 +861,9 @@ Use `GET /programs` to find the list of available programs on a server.
 
             df = (
                 client.observation_variable
-                    .observation_variable_db_ids("a646187d")
+                    .observation_variable_dbids("a646187d")
                     .observation_variable_names("Plant Height in meters")
-                    .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                    .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                     .list()
                     .to_df()
             )
@@ -905,19 +905,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, observation_variable_db_id: str) -> "ObservationVariable":
+    def get_by_id(self, observation_variable_dbid: str) -> "ObservationVariable":
         """
         Retrieve a single ObservationVariable by its database ID.
 
         Calls ``GET /variables/{observationVariableDbId}``.
 
         Args:
-            observation_variable_db_id: The ``observationVariableDbId`` to retrieve.
+            observation_variable_dbid: The ``observationVariableDbId`` to retrieve.
 
         Returns:
             A single ``ObservationVariable`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{observation_variable_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{observation_variable_dbid}")
         return ObservationVariable(**record)
     def create(
         self,
@@ -946,14 +946,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        observation_variable_db_id: str,
+        observation_variable_dbid: str,
         observation_variable: Union["ObservationVariable", Dict[str, Any]],
     ) -> "ObservationVariable":
         """
         Update a ObservationVariable record using ``PUT //variables/{observationVariableDbId}``.
 
         Args:
-            observation_variable_db_id: The ``observationVariableDbId`` of the record to update.
+            observation_variable_dbid: The ``observationVariableDbId`` of the record to update.
             ObservationVariable: A ``ObservationVariable`` instance or plain dict with updated fields.
 
         Returns:
@@ -964,7 +964,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(observation_variable, ObservationVariable)
             else observation_variable
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{observation_variable_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{observation_variable_dbid}", body)
         return ObservationVariable(**record)
 
 

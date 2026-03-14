@@ -292,117 +292,117 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
 
     # --- germplasmPUIs ---
 
-    def germplasm_pu_is(self, germplasm_pu_is: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def germplasm_puis(self, germplasm_puis: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of permanent unique identifiers associated with `Germplasm`
 
         Example::
             client.allele_matrix
-                .germplasm_pu_is("a03202ec")
+                .germplasm_puis("a03202ec")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .germplasm_pu_is(["a03202ec", "274e4f63"])
+                .germplasm_puis(["a03202ec", "274e4f63"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmPUIs", germplasm_pu_is)  # type: ignore[return-value]
+        return self._set_param("germplasmPUIs", germplasm_puis)  # type: ignore[return-value]
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of IDs which uniquely identify `Germplasm` within the given database server
 
         Example::
             client.allele_matrix
-                .germplasm_db_ids("a03202ec")
+                .germplasm_dbids("a03202ec")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .germplasm_db_ids(["a03202ec", "274e4f63"])
+                .germplasm_dbids(["a03202ec", "274e4f63"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- sampleDbIds ---
 
-    def sample_db_ids(self, sample_db_ids: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def sample_dbids(self, sample_dbids: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of IDs which uniquely identify `Samples` within the given database server
 
         Example::
             client.allele_matrix
-                .sample_db_ids("a03202ec")
+                .sample_dbids("a03202ec")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .sample_db_ids(["a03202ec", "274e4f63"])
+                .sample_dbids(["a03202ec", "274e4f63"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("sampleDbIds", sample_db_ids)  # type: ignore[return-value]
+        return self._set_param("sampleDbIds", sample_dbids)  # type: ignore[return-value]
 
     # --- callSetDbIds ---
 
-    def call_set_db_ids(self, call_set_db_ids: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def call_set_dbids(self, call_set_dbids: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of IDs which uniquely identify `CallSets` within the given database server
 
         Example::
             client.allele_matrix
-                .call_set_db_ids("a03202ec")
+                .call_set_dbids("a03202ec")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .call_set_db_ids(["a03202ec", "274e4f63"])
+                .call_set_dbids(["a03202ec", "274e4f63"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("callSetDbIds", call_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("callSetDbIds", call_set_dbids)  # type: ignore[return-value]
 
     # --- variantDbIds ---
 
-    def variant_db_ids(self, variant_db_ids: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def variant_dbids(self, variant_dbids: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of IDs which uniquely identify `Variants` within the given database server
 
         Example::
             client.allele_matrix
-                .variant_db_ids("bba0b258")
+                .variant_dbids("bba0b258")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .variant_db_ids(["bba0b258", "ff97d4f0"])
+                .variant_dbids(["bba0b258", "ff97d4f0"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantDbIds", variant_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantDbIds", variant_dbids)  # type: ignore[return-value]
 
     # --- variantSetDbIds ---
 
-    def variant_set_db_ids(self, variant_set_db_ids: Union[str, List[str]]) -> "AlleleMatrixQuery":
+    def variant_set_dbids(self, variant_set_dbids: Union[str, List[str]]) -> "AlleleMatrixQuery":
         """A list of IDs which uniquely identify `VariantSets` within the given database server
 
         Example::
             client.allele_matrix
-                .variant_set_db_ids("407c0508")
+                .variant_set_dbids("407c0508")
                 .fetch()
                 .to_df()
             
             client.allele_matrix
-                .variant_set_db_ids(["407c0508", "49e24dfc"])
+                .variant_set_dbids(["407c0508", "49e24dfc"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantSetDbIds", variant_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantSetDbIds", variant_set_dbids)  # type: ignore[return-value]
 
     # --- expandHomozygotes ---
 
@@ -471,12 +471,12 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
         data_matrix_abbreviations: Optional[List[str]] = None,
         position_ranges: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        germplasm_pu_is: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
-        sample_db_ids: Optional[List[str]] = None,
-        call_set_db_ids: Optional[List[str]] = None,
-        variant_db_ids: Optional[List[str]] = None,
-        variant_set_db_ids: Optional[List[str]] = None,
+        germplasm_puis: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
+        sample_dbids: Optional[List[str]] = None,
+        call_set_dbids: Optional[List[str]] = None,
+        variant_dbids: Optional[List[str]] = None,
+        variant_set_dbids: Optional[List[str]] = None,
         expand_homozygotes: Optional[bool] = None,
         sep_phased: Optional[str] = None,
         sep_unphased: Optional[str] = None,

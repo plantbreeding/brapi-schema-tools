@@ -193,7 +193,7 @@ class TrialQuery(BaseQuery[Trial]):
     pattern) so the same base query can be forked::
 
         base = client.trial.common_crop_names("Tomatillo")
-        q1   = base.location_db_ids("b28911cf")
+        q1   = base.location_dbids("b28911cf")
         q2   = base.location_names("Location Alpha")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.trial.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -245,22 +245,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- locationDbIds ---
 
-    def location_db_ids(self, location_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def location_dbids(self, location_dbids: Union[str, List[str]]) -> "TrialQuery":
         """The location ids to search for
 
         Example::
             client.trial
-                .location_db_ids("b28911cf")
+                .location_dbids("b28911cf")
                 .fetch()
                 .to_df()
             
             client.trial
-                .location_db_ids(["b28911cf", "5071d1e4"])
+                .location_dbids(["b28911cf", "5071d1e4"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("locationDbIds", location_db_ids)  # type: ignore[return-value]
+        return self._set_param("locationDbIds", location_dbids)  # type: ignore[return-value]
 
     # --- locationNames ---
 
@@ -283,22 +283,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "TrialQuery":
         """The DbIds of Variables to search for
 
         Example::
             client.trial
-                .observation_variable_db_ids("a646187d")
+                .observation_variable_dbids("a646187d")
                 .fetch()
                 .to_df()
             
             client.trial
-                .observation_variable_db_ids(["a646187d", "6d23513b"])
+                .observation_variable_dbids(["a646187d", "6d23513b"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- observationVariableNames ---
 
@@ -321,26 +321,26 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- observationVariablePUIs ---
 
-    def observation_variable_pu_is(self, observation_variable_pu_is: Union[str, List[str]]) -> "TrialQuery":
+    def observation_variable_puis(self, observation_variable_puis: Union[str, List[str]]) -> "TrialQuery":
         """The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
 
         Example::
             client.trial
-                .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                 .fetch()
                 .to_df()
             
             client.trial
-                .observation_variable_pu_is(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
+                .observation_variable_puis(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariablePUIs", observation_variable_pu_is)  # type: ignore[return-value]
+        return self._set_param("observationVariablePUIs", observation_variable_puis)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "TrialQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -349,17 +349,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.trial
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.trial
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -384,22 +384,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "TrialQuery":
         """List of study identifiers to search for
 
         Example::
             client.trial
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.trial
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -422,22 +422,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "TrialQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.trial
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.trial
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -474,22 +474,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- contactDbIds ---
 
-    def contact_db_ids(self, contact_db_ids: Union[str, List[str]]) -> "TrialQuery":
+    def contact_dbids(self, contact_dbids: Union[str, List[str]]) -> "TrialQuery":
         """List of contact entities associated with this trial
 
         Example::
             client.trial
-                .contact_db_ids("e0f70c2a")
+                .contact_dbids("e0f70c2a")
                 .fetch()
                 .to_df()
             
             client.trial
-                .contact_db_ids(["e0f70c2a", "b82f0967"])
+                .contact_dbids(["e0f70c2a", "b82f0967"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("contactDbIds", contact_db_ids)  # type: ignore[return-value]
+        return self._set_param("contactDbIds", contact_dbids)  # type: ignore[return-value]
 
     # --- searchDateRangeStart ---
 
@@ -531,22 +531,22 @@ Return a Trial entity if any of the following cases are true
 
     # --- trialPUIs ---
 
-    def trial_pu_is(self, trial_pu_is: Union[str, List[str]]) -> "TrialQuery":
+    def trial_puis(self, trial_puis: Union[str, List[str]]) -> "TrialQuery":
         """A permanent identifier for a trial. Could be DOI or other URI formatted identifier.
 
         Example::
             client.trial
-                .trial_pu_is("https://doi.org/01093190")
+                .trial_puis("https://doi.org/01093190")
                 .fetch()
                 .to_df()
             
             client.trial
-                .trial_pu_is(["https://doi.org/01093190", "https://doi.org/11192409"])
+                .trial_puis(["https://doi.org/01093190", "https://doi.org/11192409"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialPUIs", trial_pu_is)  # type: ignore[return-value]
+        return self._set_param("trialPUIs", trial_puis)  # type: ignore[return-value]
 
     # --- sortBy ---
 
@@ -572,22 +572,22 @@ Return a Trial entity if any of the following cases are true
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        location_db_ids: Optional[List[str]] = None,
+        location_dbids: Optional[List[str]] = None,
         location_names: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
         observation_variable_names: Optional[List[str]] = None,
-        observation_variable_pu_is: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        observation_variable_puis: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
         active: Optional[bool] = None,
-        contact_db_ids: Optional[List[str]] = None,
+        contact_dbids: Optional[List[str]] = None,
         search_date_range_start: Optional[date] = None,
         search_date_range_end: Optional[date] = None,
-        trial_pu_is: Optional[List[str]] = None,
+        trial_puis: Optional[List[str]] = None,
         sort_by: Optional[SortBy] = None,
         sort_order: Optional[SortOrder] = None,
     ) -> "TrialQuery":
@@ -601,7 +601,7 @@ Return a Trial entity if any of the following cases are true
                 client.trial
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        location_db_ids=["b28911cf"],
+                        location_dbids=["b28911cf"],
                         location_names=["Location Alpha"],
                    )
                     .fetch()
@@ -632,7 +632,7 @@ Return a Trial entity if any of the following cases are true
             df = (
                 client.trial
                     .common_crop_names("Tomatillo")
-                    .location_db_ids("b28911cf")
+                    .location_dbids("b28911cf")
                     .location_names("Location Alpha")
                     .search()
                     .to_df()
@@ -691,7 +691,7 @@ Return a Trial entity if any of the following cases are true
             df = (
                 client.trial
                     .common_crop_names("Tomatillo")
-                    .location_db_ids("b28911cf")
+                    .location_dbids("b28911cf")
                     .location_names("Location Alpha")
                     .list()
                     .to_df()
@@ -734,19 +734,19 @@ Return a Trial entity if any of the following cases are true
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, trial_db_id: str) -> "Trial":
+    def get_by_id(self, trial_dbid: str) -> "Trial":
         """
         Retrieve a single Trial by its database ID.
 
         Calls ``GET /trials/{trialDbId}``.
 
         Args:
-            trial_db_id: The ``trialDbId`` to retrieve.
+            trial_dbid: The ``trialDbId`` to retrieve.
 
         Returns:
             A single ``Trial`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{trial_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{trial_dbid}")
         return Trial(**record)
     def create(
         self,
@@ -775,14 +775,14 @@ Return a Trial entity if any of the following cases are true
 
     def update(
         self,
-        trial_db_id: str,
+        trial_dbid: str,
         trial: Union["Trial", Dict[str, Any]],
     ) -> "Trial":
         """
         Update a Trial record using ``PUT //trials/{trialDbId}``.
 
         Args:
-            trial_db_id: The ``trialDbId`` of the record to update.
+            trial_dbid: The ``trialDbId`` of the record to update.
             Trial: A ``Trial`` instance or plain dict with updated fields.
 
         Returns:
@@ -793,7 +793,7 @@ Return a Trial entity if any of the following cases are true
             if isinstance(trial, Trial)
             else trial
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{trial_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{trial_dbid}", body)
         return Trial(**record)
 
 

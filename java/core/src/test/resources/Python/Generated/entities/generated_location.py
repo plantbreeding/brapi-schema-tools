@@ -163,7 +163,7 @@ class LocationQuery(BaseQuery[Location]):
     pattern) so the same base query can be forked::
 
         base = client.location.common_crop_names("Tomatillo")
-        q1   = base.location_db_ids("b28911cf")
+        q1   = base.location_dbids("b28911cf")
         q2   = base.location_names("Location Alpha")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.location.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -215,22 +215,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- locationDbIds ---
 
-    def location_db_ids(self, location_db_ids: Union[str, List[str]]) -> "LocationQuery":
+    def location_dbids(self, location_dbids: Union[str, List[str]]) -> "LocationQuery":
         """The location ids to search for
 
         Example::
             client.location
-                .location_db_ids("b28911cf")
+                .location_dbids("b28911cf")
                 .fetch()
                 .to_df()
             
             client.location
-                .location_db_ids(["b28911cf", "5071d1e4"])
+                .location_dbids(["b28911cf", "5071d1e4"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("locationDbIds", location_db_ids)  # type: ignore[return-value]
+        return self._set_param("locationDbIds", location_dbids)  # type: ignore[return-value]
 
     # --- locationNames ---
 
@@ -253,7 +253,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "LocationQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "LocationQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -262,17 +262,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.location
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.location
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -448,24 +448,24 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- parentLocationDbIds ---
 
-    def parent_location_db_ids(self, parent_location_db_ids: Union[str, List[str]]) -> "LocationQuery":
+    def parent_location_dbids(self, parent_location_dbids: Union[str, List[str]]) -> "LocationQuery":
         """The unique identifier for a Location
 &lt;br/&gt; The Parent Location defines the encompassing location that this location belongs to. 
 For example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.
 
         Example::
             client.location
-                .parent_location_db_ids("b28911cf")
+                .parent_location_dbids("b28911cf")
                 .fetch()
                 .to_df()
             
             client.location
-                .parent_location_db_ids(["b28911cf", "5071d1e4"])
+                .parent_location_dbids(["b28911cf", "5071d1e4"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("parentLocationDbIds", parent_location_db_ids)  # type: ignore[return-value]
+        return self._set_param("parentLocationDbIds", parent_location_dbids)  # type: ignore[return-value]
 
     # --- parentLocationNames ---
 
@@ -494,9 +494,9 @@ For example, an Institution might have multiple Field Stations inside it and eac
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        location_db_ids: Optional[List[str]] = None,
+        location_dbids: Optional[List[str]] = None,
         location_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
         abbreviations: Optional[List[str]] = None,
         altitude_min: Optional[float] = None,
@@ -507,7 +507,7 @@ For example, an Institution might have multiple Field Stations inside it and eac
         institute_addresses: Optional[List[str]] = None,
         institute_names: Optional[List[str]] = None,
         location_types: Optional[List[str]] = None,
-        parent_location_db_ids: Optional[List[str]] = None,
+        parent_location_dbids: Optional[List[str]] = None,
         parent_location_names: Optional[List[str]] = None,
     ) -> "LocationQuery":
         """
@@ -520,7 +520,7 @@ For example, an Institution might have multiple Field Stations inside it and eac
                 client.location
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        location_db_ids=["b28911cf"],
+                        location_dbids=["b28911cf"],
                         location_names=["Location Alpha"],
                    )
                     .fetch()
@@ -551,7 +551,7 @@ For example, an Institution might have multiple Field Stations inside it and eac
             df = (
                 client.location
                     .common_crop_names("Tomatillo")
-                    .location_db_ids("b28911cf")
+                    .location_dbids("b28911cf")
                     .location_names("Location Alpha")
                     .search()
                     .to_df()
@@ -610,7 +610,7 @@ For example, an Institution might have multiple Field Stations inside it and eac
             df = (
                 client.location
                     .common_crop_names("Tomatillo")
-                    .location_db_ids("b28911cf")
+                    .location_dbids("b28911cf")
                     .location_names("Location Alpha")
                     .list()
                     .to_df()
@@ -653,19 +653,19 @@ For example, an Institution might have multiple Field Stations inside it and eac
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, location_db_id: str) -> "Location":
+    def get_by_id(self, location_dbid: str) -> "Location":
         """
         Retrieve a single Location by its database ID.
 
         Calls ``GET /locations/{locationDbId}``.
 
         Args:
-            location_db_id: The ``locationDbId`` to retrieve.
+            location_dbid: The ``locationDbId`` to retrieve.
 
         Returns:
             A single ``Location`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{location_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{location_dbid}")
         return Location(**record)
     def create(
         self,
@@ -694,14 +694,14 @@ For example, an Institution might have multiple Field Stations inside it and eac
 
     def update(
         self,
-        location_db_id: str,
+        location_dbid: str,
         location: Union["Location", Dict[str, Any]],
     ) -> "Location":
         """
         Update a Location record using ``PUT //locations/{locationDbId}``.
 
         Args:
-            location_db_id: The ``locationDbId`` of the record to update.
+            location_dbid: The ``locationDbId`` of the record to update.
             Location: A ``Location`` instance or plain dict with updated fields.
 
         Returns:
@@ -712,7 +712,7 @@ For example, an Institution might have multiple Field Stations inside it and eac
             if isinstance(location, Location)
             else location
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{location_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{location_dbid}", body)
         return Location(**record)
 
 

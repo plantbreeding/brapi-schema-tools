@@ -198,7 +198,7 @@ class VariantSetQuery(BaseQuery[VariantSet]):
     pattern) so the same base query can be forked::
 
         base = client.variant_set.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.variant_set.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -250,7 +250,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -259,17 +259,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.variant_set
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -294,22 +294,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """List of study identifiers to search for
 
         Example::
             client.variant_set
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -332,22 +332,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.variant_set
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -370,98 +370,98 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- callSetDbIds ---
 
-    def call_set_db_ids(self, call_set_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def call_set_dbids(self, call_set_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The unique identifier representing a CallSet
 
         Example::
             client.variant_set
-                .call_set_db_ids("9569cfc4")
+                .call_set_dbids("9569cfc4")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .call_set_db_ids(["9569cfc4", "da1e888c"])
+                .call_set_dbids(["9569cfc4", "da1e888c"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("callSetDbIds", call_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("callSetDbIds", call_set_dbids)  # type: ignore[return-value]
 
     # --- variantDbIds ---
 
-    def variant_db_ids(self, variant_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def variant_dbids(self, variant_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The unique identifier representing a Variant
 
         Example::
             client.variant_set
-                .variant_db_ids("c80f068b")
+                .variant_dbids("c80f068b")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .variant_db_ids(["c80f068b", "eb7c5f50"])
+                .variant_dbids(["c80f068b", "eb7c5f50"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantDbIds", variant_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantDbIds", variant_dbids)  # type: ignore[return-value]
 
     # --- variantSetDbIds ---
 
-    def variant_set_db_ids(self, variant_set_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def variant_set_dbids(self, variant_set_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The unique identifier representing a VariantSet
 
         Example::
             client.variant_set
-                .variant_set_db_ids("b2903842")
+                .variant_set_dbids("b2903842")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .variant_set_db_ids(["b2903842", "dcbb8558"])
+                .variant_set_dbids(["b2903842", "dcbb8558"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantSetDbIds", variant_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantSetDbIds", variant_set_dbids)  # type: ignore[return-value]
 
     # --- referenceDbIds ---
 
-    def reference_db_ids(self, reference_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def reference_dbids(self, reference_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The unique identifier representing a genotype Reference
 
         Example::
             client.variant_set
-                .reference_db_ids("89ab4d17")
+                .reference_dbids("89ab4d17")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .reference_db_ids(["89ab4d17", "74d3b63d"])
+                .reference_dbids(["89ab4d17", "74d3b63d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("referenceDbIds", reference_db_ids)  # type: ignore[return-value]
+        return self._set_param("referenceDbIds", reference_dbids)  # type: ignore[return-value]
 
     # --- referenceSetDbIds ---
 
-    def reference_set_db_ids(self, reference_set_db_ids: Union[str, List[str]]) -> "VariantSetQuery":
+    def reference_set_dbids(self, reference_set_dbids: Union[str, List[str]]) -> "VariantSetQuery":
         """The unique identifier representing a genotype ReferenceSet
 
         Example::
             client.variant_set
-                .reference_set_db_ids("d3b63d4d")
+                .reference_set_dbids("d3b63d4d")
                 .fetch()
                 .to_df()
             
             client.variant_set
-                .reference_set_db_ids(["d3b63d4d", "3b63d74b"])
+                .reference_set_dbids(["d3b63d4d", "3b63d74b"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("referenceSetDbIds", reference_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("referenceSetDbIds", reference_set_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -469,17 +469,17 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        call_set_db_ids: Optional[List[str]] = None,
-        variant_db_ids: Optional[List[str]] = None,
-        variant_set_db_ids: Optional[List[str]] = None,
-        reference_db_ids: Optional[List[str]] = None,
-        reference_set_db_ids: Optional[List[str]] = None,
+        call_set_dbids: Optional[List[str]] = None,
+        variant_dbids: Optional[List[str]] = None,
+        variant_set_dbids: Optional[List[str]] = None,
+        reference_dbids: Optional[List[str]] = None,
+        reference_set_dbids: Optional[List[str]] = None,
     ) -> "VariantSetQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -491,7 +491,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.variant_set
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -522,7 +522,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.variant_set
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .search()
                     .to_df()
@@ -581,7 +581,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.variant_set
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -624,19 +624,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, variant_set_db_id: str) -> "VariantSet":
+    def get_by_id(self, variant_set_dbid: str) -> "VariantSet":
         """
         Retrieve a single VariantSet by its database ID.
 
         Calls ``GET /variantsets/{variantSetDbId}``.
 
         Args:
-            variant_set_db_id: The ``variantSetDbId`` to retrieve.
+            variant_set_dbid: The ``variantSetDbId`` to retrieve.
 
         Returns:
             A single ``VariantSet`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{variant_set_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{variant_set_dbid}")
         return VariantSet(**record)
 
 

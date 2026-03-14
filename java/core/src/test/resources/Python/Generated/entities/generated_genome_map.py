@@ -159,7 +159,7 @@ class GenomeMapQuery(BaseQuery[GenomeMap]):
     pattern) so the same base query can be forked::
 
         base = client.genome_map.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.genome_map.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -211,7 +211,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "GenomeMapQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "GenomeMapQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -220,17 +220,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.genome_map
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.genome_map
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -255,22 +255,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "GenomeMapQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "GenomeMapQuery":
         """List of study identifiers to search for
 
         Example::
             client.genome_map
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.genome_map
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -293,22 +293,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "GenomeMapQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "GenomeMapQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.genome_map
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.genome_map
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -331,21 +331,21 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- mapDbIds ---
 
-    def map_db_ids(self, map_db_ids: Union[str, List[str]]) -> "GenomeMapQuery":
+    def map_dbids(self, map_dbids: Union[str, List[str]]) -> "GenomeMapQuery":
         """The ID which uniquely identifies a `GenomeMap`
 
         
         """
-        return self._set_param("mapDbIds", map_db_ids)  # type: ignore[return-value]
+        return self._set_param("mapDbIds", map_dbids)  # type: ignore[return-value]
 
     # --- mapPUIs ---
 
-    def map_pu_is(self, map_pu_is: Union[str, List[str]]) -> "GenomeMapQuery":
+    def map_puis(self, map_puis: Union[str, List[str]]) -> "GenomeMapQuery":
         """The DOI or other permanent identifier for a `GenomeMap`
 
         
         """
-        return self._set_param("mapPUIs", map_pu_is)  # type: ignore[return-value]
+        return self._set_param("mapPUIs", map_puis)  # type: ignore[return-value]
 
     # --- scientificName ---
 
@@ -371,14 +371,14 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        map_db_ids: Optional[List[str]] = None,
-        map_pu_is: Optional[List[str]] = None,
+        map_dbids: Optional[List[str]] = None,
+        map_puis: Optional[List[str]] = None,
         scientific_name: Optional[List[str]] = None,
         types: Optional[List[str]] = None,
     ) -> "GenomeMapQuery":
@@ -392,7 +392,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.genome_map
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -430,7 +430,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.genome_map
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -473,19 +473,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, map_db_id: str) -> "GenomeMap":
+    def get_by_id(self, map_dbid: str) -> "GenomeMap":
         """
         Retrieve a single GenomeMap by its database ID.
 
         Calls ``GET /maps/{mapDbId}``.
 
         Args:
-            map_db_id: The ``mapDbId`` to retrieve.
+            map_dbid: The ``mapDbId`` to retrieve.
 
         Returns:
             A single ``GenomeMap`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{map_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{map_dbid}")
         return GenomeMap(**record)
 
 

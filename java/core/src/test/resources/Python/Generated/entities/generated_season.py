@@ -113,12 +113,12 @@ class SeasonQuery(BaseQuery[Season]):
     All filter methods return a new ``SeasonQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.season.season_db_ids("2012")
+        base = client.season.season_dbids("2012")
         q1   = base.seasons("Spring")
         q2   = base.season_names("Objective Code One")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.season.season_db_ids("2012").season_db_ids("1957-2004")  # one value as time
-        q4 = client.season.season_db_ids(["2012", "1957-2004", ...])  # list
+        q3 = client.season.season_dbids("2012").season_dbids("1957-2004")  # one value as time
+        q4 = client.season.season_dbids(["2012", "1957-2004", ...])  # list
         
     Materialise with::
 
@@ -143,22 +143,22 @@ class SeasonQuery(BaseQuery[Season]):
 
     # --- seasonDbIds ---
 
-    def season_db_ids(self, season_db_ids: Union[str, List[str]]) -> "SeasonQuery":
+    def season_dbids(self, season_dbids: Union[str, List[str]]) -> "SeasonQuery":
         """The unique identifier for a season. For backward compatibility it can be a string like &#39;2012&#39;, &#39;1957-2004&#39;.
 
         Example::
             client.season
-                .season_db_ids("2012")
+                .season_dbids("2012")
                 .fetch()
                 .to_df()
             
             client.season
-                .season_db_ids(["2012", "1957-2004"])
+                .season_dbids(["2012", "1957-2004"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("seasonDbIds", season_db_ids)  # type: ignore[return-value]
+        return self._set_param("seasonDbIds", season_dbids)  # type: ignore[return-value]
 
     # --- seasons ---
 
@@ -217,7 +217,7 @@ class SeasonQuery(BaseQuery[Season]):
     def filter(
         self,
         *,
-        season_db_ids: Optional[List[str]] = None,
+        season_dbids: Optional[List[str]] = None,
         seasons: Optional[List[str]] = None,
         season_names: Optional[List[str]] = None,
         years: Optional[List[str]] = None,
@@ -231,7 +231,7 @@ class SeasonQuery(BaseQuery[Season]):
             (
                 client.season
                     .filter(
-                        season_db_ids=["2012"],
+                        season_dbids=["2012"],
                         seasons=["Spring"],
                         season_names=["Objective Code One"],
                    )
@@ -269,7 +269,7 @@ class SeasonQuery(BaseQuery[Season]):
 
             df = (
                 client.season
-                    .season_db_ids("2012")
+                    .season_dbids("2012")
                     .seasons("Spring")
                     .season_names("Objective Code One")
                     .list()
@@ -313,19 +313,19 @@ class SeasonQuery(BaseQuery[Season]):
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, season_db_id: str) -> "Season":
+    def get_by_id(self, season_dbid: str) -> "Season":
         """
         Retrieve a single Season by its database ID.
 
         Calls ``GET /seasons/{seasonDbId}``.
 
         Args:
-            season_db_id: The ``seasonDbId`` to retrieve.
+            season_dbid: The ``seasonDbId`` to retrieve.
 
         Returns:
             A single ``Season`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{season_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{season_dbid}")
         return Season(**record)
     def create(
         self,
@@ -354,14 +354,14 @@ class SeasonQuery(BaseQuery[Season]):
 
     def update(
         self,
-        season_db_id: str,
+        season_dbid: str,
         season: Union["Season", Dict[str, Any]],
     ) -> "Season":
         """
         Update a Season record using ``PUT //seasons/{seasonDbId}``.
 
         Args:
-            season_db_id: The ``seasonDbId`` of the record to update.
+            season_dbid: The ``seasonDbId`` of the record to update.
             Season: A ``Season`` instance or plain dict with updated fields.
 
         Returns:
@@ -372,7 +372,7 @@ class SeasonQuery(BaseQuery[Season]):
             if isinstance(season, Season)
             else season
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{season_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{season_dbid}", body)
         return Season(**record)
 
 

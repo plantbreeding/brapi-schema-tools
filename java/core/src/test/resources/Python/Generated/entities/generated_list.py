@@ -143,7 +143,7 @@ class ListQuery(BaseQuery[List]):
     pattern) so the same base query can be forked::
 
         base = client.list.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.list.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -195,7 +195,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ListQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ListQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -204,17 +204,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.list
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.list
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -275,22 +275,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- listDbIds ---
 
-    def list_db_ids(self, list_db_ids: Union[str, List[str]]) -> "ListQuery":
+    def list_dbids(self, list_dbids: Union[str, List[str]]) -> "ListQuery":
         """An array of primary database identifiers to identify a set of Lists
 
         Example::
             client.list
-                .list_db_ids("55f20cf6")
+                .list_dbids("55f20cf6")
                 .fetch()
                 .to_df()
             
             client.list
-                .list_db_ids(["55f20cf6", "3193ca3d"])
+                .list_dbids(["55f20cf6", "3193ca3d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("listDbIds", list_db_ids)  # type: ignore[return-value]
+        return self._set_param("listDbIds", list_dbids)  # type: ignore[return-value]
 
     # --- listNames ---
 
@@ -332,22 +332,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- listOwnerPersonDbIds ---
 
-    def list_owner_person_db_ids(self, list_owner_person_db_ids: Union[str, List[str]]) -> "ListQuery":
+    def list_owner_person_dbids(self, list_owner_person_dbids: Union[str, List[str]]) -> "ListQuery":
         """An array of primary database identifiers to identify people or entities who are responsible for a set of Lists
 
         Example::
             client.list
-                .list_owner_person_db_ids("bob@bob.com")
+                .list_owner_person_dbids("bob@bob.com")
                 .fetch()
                 .to_df()
             
             client.list
-                .list_owner_person_db_ids(["bob@bob.com", "rob@bob.com"])
+                .list_owner_person_dbids(["bob@bob.com", "rob@bob.com"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("listOwnerPersonDbIds", list_owner_person_db_ids)  # type: ignore[return-value]
+        return self._set_param("listOwnerPersonDbIds", list_owner_person_dbids)  # type: ignore[return-value]
 
     # --- listSources ---
 
@@ -383,16 +383,16 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
         date_created_range_start: Optional[datetime] = None,
         date_created_range_end: Optional[datetime] = None,
         date_modified_range_start: Optional[datetime] = None,
         date_modified_range_end: Optional[datetime] = None,
-        list_db_ids: Optional[List[str]] = None,
+        list_dbids: Optional[List[str]] = None,
         list_names: Optional[List[str]] = None,
         list_owner_names: Optional[List[str]] = None,
-        list_owner_person_db_ids: Optional[List[str]] = None,
+        list_owner_person_dbids: Optional[List[str]] = None,
         list_sources: Optional[List[str]] = None,
         list_type: Optional[ListType] = None,
     ) -> "ListQuery":
@@ -406,7 +406,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.list
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -437,7 +437,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.list
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .search()
                     .to_df()
@@ -496,7 +496,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.list
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -539,19 +539,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, list_db_id: str) -> "List":
+    def get_by_id(self, list_dbid: str) -> "List":
         """
         Retrieve a single List by its database ID.
 
         Calls ``GET /lists/{listDbId}``.
 
         Args:
-            list_db_id: The ``listDbId`` to retrieve.
+            list_dbid: The ``listDbId`` to retrieve.
 
         Returns:
             A single ``List`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{list_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{list_dbid}")
         return List(**record)
     def create(
         self,
@@ -580,14 +580,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        list_db_id: str,
+        list_dbid: str,
         list: Union["List", Dict[str, Any]],
     ) -> "List":
         """
         Update a List record using ``PUT //lists/{listDbId}``.
 
         Args:
-            list_db_id: The ``listDbId`` of the record to update.
+            list_dbid: The ``listDbId`` of the record to update.
             List: A ``List`` instance or plain dict with updated fields.
 
         Returns:
@@ -598,7 +598,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(list, List)
             else list
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{list_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{list_dbid}", body)
         return List(**record)
 
 

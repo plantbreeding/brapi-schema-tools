@@ -146,7 +146,7 @@ class CallSetQuery(BaseQuery[CallSet]):
     pattern) so the same base query can be forked::
 
         base = client.call_set.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.call_set.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -198,22 +198,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.call_set
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -236,7 +236,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -245,17 +245,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.call_set
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -280,22 +280,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """List of study identifiers to search for
 
         Example::
             client.call_set
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -318,22 +318,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.call_set
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -356,22 +356,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- sampleDbIds ---
 
-    def sample_db_ids(self, sample_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def sample_dbids(self, sample_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """A list of IDs which uniquely identify `Samples` within the given database server
 
         Example::
             client.call_set
-                .sample_db_ids("758d3f6d")
+                .sample_dbids("758d3f6d")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .sample_db_ids(["758d3f6d", "39c0a3f7"])
+                .sample_dbids(["758d3f6d", "39c0a3f7"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("sampleDbIds", sample_db_ids)  # type: ignore[return-value]
+        return self._set_param("sampleDbIds", sample_dbids)  # type: ignore[return-value]
 
     # --- sampleNames ---
 
@@ -394,22 +394,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- callSetDbIds ---
 
-    def call_set_db_ids(self, call_set_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def call_set_dbids(self, call_set_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """A list of IDs which uniquely identify `CallSets` within the given database server
 
         Example::
             client.call_set
-                .call_set_db_ids("6c7486b2")
+                .call_set_dbids("6c7486b2")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .call_set_db_ids(["6c7486b2", "49c36a73"])
+                .call_set_dbids(["6c7486b2", "49c36a73"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("callSetDbIds", call_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("callSetDbIds", call_set_dbids)  # type: ignore[return-value]
 
     # --- callSetNames ---
 
@@ -432,22 +432,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- variantSetDbIds ---
 
-    def variant_set_db_ids(self, variant_set_db_ids: Union[str, List[str]]) -> "CallSetQuery":
+    def variant_set_dbids(self, variant_set_dbids: Union[str, List[str]]) -> "CallSetQuery":
         """A list of IDs which uniquely identify `VariantSets` within the given database server
 
         Example::
             client.call_set
-                .variant_set_db_ids("8a9a8972")
+                .variant_set_dbids("8a9a8972")
                 .fetch()
                 .to_df()
             
             client.call_set
-                .variant_set_db_ids(["8a9a8972", "32a2649a"])
+                .variant_set_dbids(["8a9a8972", "32a2649a"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantSetDbIds", variant_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantSetDbIds", variant_set_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -455,19 +455,19 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        sample_db_ids: Optional[List[str]] = None,
+        sample_dbids: Optional[List[str]] = None,
         sample_names: Optional[List[str]] = None,
-        call_set_db_ids: Optional[List[str]] = None,
+        call_set_dbids: Optional[List[str]] = None,
         call_set_names: Optional[List[str]] = None,
-        variant_set_db_ids: Optional[List[str]] = None,
+        variant_set_dbids: Optional[List[str]] = None,
     ) -> "CallSetQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -479,7 +479,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.call_set
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -510,7 +510,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.call_set
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -569,7 +569,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.call_set
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -612,19 +612,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, call_set_db_id: str) -> "CallSet":
+    def get_by_id(self, call_set_dbid: str) -> "CallSet":
         """
         Retrieve a single CallSet by its database ID.
 
         Calls ``GET /callsets/{callSetDbId}``.
 
         Args:
-            call_set_db_id: The ``callSetDbId`` to retrieve.
+            call_set_dbid: The ``callSetDbId`` to retrieve.
 
         Returns:
             A single ``CallSet`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{call_set_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{call_set_dbid}")
         return CallSet(**record)
 
 

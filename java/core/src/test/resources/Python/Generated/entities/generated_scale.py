@@ -130,7 +130,7 @@ class ScaleQuery(BaseQuery[Scale]):
     pattern) so the same base query can be forked::
 
         base = client.scale.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.scale.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -182,18 +182,18 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "ScaleQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "ScaleQuery":
         """The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology 
 
   Use `GET /ontologies` to find the list of available ontologies on a server.
 
         
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ScaleQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ScaleQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -202,17 +202,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.scale
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.scale
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -237,41 +237,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- scaleDbIds ---
 
-    def scale_db_ids(self, scale_db_ids: Union[str, List[str]]) -> "ScaleQuery":
+    def scale_dbids(self, scale_dbids: Union[str, List[str]]) -> "ScaleQuery":
         """The unique identifier for a scale.
 
         Example::
             client.scale
-                .scale_db_ids("3cd0ca36")
+                .scale_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.scale
-                .scale_db_ids(["3cd0ca36", "983f3b14"])
+                .scale_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scaleDbIds", scale_db_ids)  # type: ignore[return-value]
+        return self._set_param("scaleDbIds", scale_dbids)  # type: ignore[return-value]
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "ScaleQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "ScaleQuery":
         """The unique identifier for an observation variable.
 
         Example::
             client.scale
-                .observation_variable_db_ids("3cd0ca36")
+                .observation_variable_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.scale
-                .observation_variable_db_ids(["3cd0ca36", "983f3b14"])
+                .observation_variable_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -279,11 +279,11 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        scale_db_ids: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        scale_dbids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
     ) -> "ScaleQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -295,7 +295,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.scale
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -333,7 +333,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.scale
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -376,19 +376,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, scale_db_id: str) -> "Scale":
+    def get_by_id(self, scale_dbid: str) -> "Scale":
         """
         Retrieve a single Scale by its database ID.
 
         Calls ``GET /scales/{scaleDbId}``.
 
         Args:
-            scale_db_id: The ``scaleDbId`` to retrieve.
+            scale_dbid: The ``scaleDbId`` to retrieve.
 
         Returns:
             A single ``Scale`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{scale_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{scale_dbid}")
         return Scale(**record)
     def create(
         self,
@@ -417,14 +417,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        scale_db_id: str,
+        scale_dbid: str,
         scale: Union["Scale", Dict[str, Any]],
     ) -> "Scale":
         """
         Update a Scale record using ``PUT //scales/{scaleDbId}``.
 
         Args:
-            scale_db_id: The ``scaleDbId`` of the record to update.
+            scale_dbid: The ``scaleDbId`` of the record to update.
             Scale: A ``Scale`` instance or plain dict with updated fields.
 
         Returns:
@@ -435,7 +435,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(scale, Scale)
             else scale
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{scale_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{scale_dbid}", body)
         return Scale(**record)
 
 

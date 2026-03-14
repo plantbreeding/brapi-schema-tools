@@ -153,7 +153,7 @@ class PlannedCrossQuery(BaseQuery[PlannedCross]):
     pattern) so the same base query can be forked::
 
         base = client.planned_cross.common_crop_names("Tomatillo")
-        q1   = base.program_db_ids("8f5de35b")
+        q1   = base.program_dbids("8f5de35b")
         q2   = base.program_names("Better Breeding Program")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.planned_cross.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -205,7 +205,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "PlannedCrossQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "PlannedCrossQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -214,17 +214,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.planned_cross
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.planned_cross
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -249,12 +249,12 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- crossingProjectDbIds ---
 
-    def crossing_project_db_ids(self, crossing_project_db_ids: Union[str, List[str]]) -> "PlannedCrossQuery":
+    def crossing_project_dbids(self, crossing_project_dbids: Union[str, List[str]]) -> "PlannedCrossQuery":
         """Search for Crossing Projects with this unique id
 
         
         """
-        return self._set_param("crossingProjectDbIds", crossing_project_db_ids)  # type: ignore[return-value]
+        return self._set_param("crossingProjectDbIds", crossing_project_dbids)  # type: ignore[return-value]
 
     # --- crossingProjectNames ---
 
@@ -267,12 +267,12 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- plannedCrossDbIds ---
 
-    def planned_cross_db_ids(self, planned_cross_db_ids: Union[str, List[str]]) -> "PlannedCrossQuery":
+    def planned_cross_dbids(self, planned_cross_dbids: Union[str, List[str]]) -> "PlannedCrossQuery":
         """Search for Planned Cross with this unique id
 
         
         """
-        return self._set_param("plannedCrossDbIds", planned_cross_db_ids)  # type: ignore[return-value]
+        return self._set_param("plannedCrossDbIds", planned_cross_dbids)  # type: ignore[return-value]
 
     # --- plannedCrossNames ---
 
@@ -298,11 +298,11 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        crossing_project_db_ids: Optional[List[str]] = None,
+        crossing_project_dbids: Optional[List[str]] = None,
         crossing_project_names: Optional[List[str]] = None,
-        planned_cross_db_ids: Optional[List[str]] = None,
+        planned_cross_dbids: Optional[List[str]] = None,
         planned_cross_names: Optional[List[str]] = None,
         statuses: Optional[List[CrossStatus]] = None,
     ) -> "PlannedCrossQuery":
@@ -316,7 +316,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.planned_cross
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        program_db_ids=["8f5de35b"],
+                        program_dbids=["8f5de35b"],
                         program_names=["Better Breeding Program"],
                    )
                     .fetch()
@@ -354,7 +354,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.planned_cross
                     .common_crop_names("Tomatillo")
-                    .program_db_ids("8f5de35b")
+                    .program_dbids("8f5de35b")
                     .program_names("Better Breeding Program")
                     .list()
                     .to_df()
@@ -425,14 +425,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        planned_cross_db_id: str,
+        planned_cross_dbid: str,
         planned_cross: Union["PlannedCross", Dict[str, Any]],
     ) -> "PlannedCross":
         """
         Update a PlannedCross record using ``PUT //plannedcrosses/{plannedCrossDbId}``.
 
         Args:
-            planned_cross_db_id: The ``plannedCrossDbId`` of the record to update.
+            planned_cross_dbid: The ``plannedCrossDbId`` of the record to update.
             PlannedCross: A ``PlannedCross`` instance or plain dict with updated fields.
 
         Returns:
@@ -443,7 +443,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(planned_cross, PlannedCross)
             else planned_cross
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{planned_cross_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{planned_cross_dbid}", body)
         return PlannedCross(**record)
 
 

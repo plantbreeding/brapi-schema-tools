@@ -191,7 +191,7 @@ class ObservationUnitQuery(BaseQuery[ObservationUnit]):
     pattern) so the same base query can be forked::
 
         base = client.observation_unit.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.observation_unit.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -248,22 +248,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.observation_unit
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -286,22 +286,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- locationDbIds ---
 
-    def location_db_ids(self, location_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def location_dbids(self, location_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The location ids to search for
 
         Example::
             client.observation_unit
-                .location_db_ids("b28911cf")
+                .location_dbids("b28911cf")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .location_db_ids(["b28911cf", "5071d1e4"])
+                .location_dbids(["b28911cf", "5071d1e4"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("locationDbIds", location_db_ids)  # type: ignore[return-value]
+        return self._set_param("locationDbIds", location_dbids)  # type: ignore[return-value]
 
     # --- locationNames ---
 
@@ -324,22 +324,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """List of study identifiers to search for
 
         Example::
             client.observation_unit
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -362,22 +362,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The DbIds of Variables to search for
 
         Example::
             client.observation_unit
-                .observation_variable_db_ids("a646187d")
+                .observation_variable_dbids("a646187d")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .observation_variable_db_ids(["a646187d", "6d23513b"])
+                .observation_variable_dbids(["a646187d", "6d23513b"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- observationVariableNames ---
 
@@ -400,26 +400,26 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- observationVariablePUIs ---
 
-    def observation_variable_pu_is(self, observation_variable_pu_is: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def observation_variable_puis(self, observation_variable_puis: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
 
         Example::
             client.observation_unit
-                .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .observation_variable_pu_is(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
+                .observation_variable_puis(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariablePUIs", observation_variable_pu_is)  # type: ignore[return-value]
+        return self._set_param("observationVariablePUIs", observation_variable_puis)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -428,17 +428,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.observation_unit
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -463,22 +463,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.observation_unit
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -501,22 +501,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- observationUnitDbIds ---
 
-    def observation_unit_db_ids(self, observation_unit_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def observation_unit_dbids(self, observation_unit_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The unique id of an observation unit
 
         Example::
             client.observation_unit
-                .observation_unit_db_ids("66bab7e3")
+                .observation_unit_dbids("66bab7e3")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .observation_unit_db_ids(["66bab7e3", "0e5e7f99"])
+                .observation_unit_dbids(["66bab7e3", "0e5e7f99"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationUnitDbIds", observation_unit_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationUnitDbIds", observation_unit_dbids)  # type: ignore[return-value]
 
     # --- observationUnitNames ---
 
@@ -626,14 +626,14 @@ or `observationUnitLevelOrder`. References ObservationUnit-&gt;observationUnitPo
 
     # --- observationUnitLevelRelationshipDbIds ---
 
-    def observation_unit_level_relationship_db_ids(self, observation_unit_level_relationship_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def observation_unit_level_relationship_dbids(self, observation_unit_level_relationship_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The observationUnitDbId associated with a particular level and code.
 &lt;br/&gt;This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit-&gt;observationUnitPosition-&gt;observationLevel-&gt;observationUnitDbId 
 &lt;br/&gt;For more information on Observation Levels, please review the &lt;a target=&quot;_blank&quot; href=&quot;https://wiki.brapi.org/index.php/Observation_Levels&quot;&gt;Observation Levels documentation&lt;/a&gt;. 
 
         
         """
-        return self._set_param("observationUnitLevelRelationshipDbIds", observation_unit_level_relationship_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationUnitLevelRelationshipDbIds", observation_unit_level_relationship_dbids)  # type: ignore[return-value]
 
     # --- includeObservations ---
 
@@ -653,22 +653,22 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
 
     # --- seasonDbIds ---
 
-    def season_db_ids(self, season_db_ids: Union[str, List[str]]) -> "ObservationUnitQuery":
+    def season_dbids(self, season_dbids: Union[str, List[str]]) -> "ObservationUnitQuery":
         """The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)
 
         Example::
             client.observation_unit
-                .season_db_ids("Spring 2018")
+                .season_dbids("Spring 2018")
                 .fetch()
                 .to_df()
             
             client.observation_unit
-                .season_db_ids(["Spring 2018", "Season A"])
+                .season_dbids(["Spring 2018", "Season A"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("seasonDbIds", season_db_ids)  # type: ignore[return-value]
+        return self._set_param("seasonDbIds", season_dbids)  # type: ignore[return-value]
 
     # --- Bulk convenience ---
 
@@ -676,20 +676,20 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        location_db_ids: Optional[List[str]] = None,
+        location_dbids: Optional[List[str]] = None,
         location_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
         observation_variable_names: Optional[List[str]] = None,
-        observation_variable_pu_is: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        observation_variable_puis: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        observation_unit_db_ids: Optional[List[str]] = None,
+        observation_unit_dbids: Optional[List[str]] = None,
         observation_unit_names: Optional[List[str]] = None,
         observation_levels: Optional[List[ObservationUnitLevel]] = None,
         observation_level_relationships: Optional[List[ObservationUnitLevelRelationship]] = None,
@@ -699,9 +699,9 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
         observation_unit_level_relationship_names: Optional[List[str]] = None,
         observation_unit_level_relationship_orders: Optional[List[str]] = None,
         observation_unit_level_relationship_codes: Optional[List[str]] = None,
-        observation_unit_level_relationship_db_ids: Optional[List[str]] = None,
+        observation_unit_level_relationship_dbids: Optional[List[str]] = None,
         include_observations: Optional[bool] = None,
-        season_db_ids: Optional[List[str]] = None,
+        season_dbids: Optional[List[str]] = None,
     ) -> "ObservationUnitQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -713,7 +713,7 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
                 client.observation_unit
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -744,7 +744,7 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
             df = (
                 client.observation_unit
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -803,7 +803,7 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
             df = (
                 client.observation_unit
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -846,19 +846,19 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, observation_unit_db_id: str) -> "ObservationUnit":
+    def get_by_id(self, observation_unit_dbid: str) -> "ObservationUnit":
         """
         Retrieve a single ObservationUnit by its database ID.
 
         Calls ``GET /observationunits/{observationUnitDbId}``.
 
         Args:
-            observation_unit_db_id: The ``observationUnitDbId`` to retrieve.
+            observation_unit_dbid: The ``observationUnitDbId`` to retrieve.
 
         Returns:
             A single ``ObservationUnit`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{observation_unit_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{observation_unit_dbid}")
         return ObservationUnit(**record)
     def create(
         self,
@@ -887,14 +887,14 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
 
     def update(
         self,
-        observation_unit_db_id: str,
+        observation_unit_dbid: str,
         observation_unit: Union["ObservationUnit", Dict[str, Any]],
     ) -> "ObservationUnit":
         """
         Update a ObservationUnit record using ``PUT //observationunits/{observationUnitDbId}``.
 
         Args:
-            observation_unit_db_id: The ``observationUnitDbId`` of the record to update.
+            observation_unit_dbid: The ``observationUnitDbId`` of the record to update.
             ObservationUnit: A ``ObservationUnit`` instance or plain dict with updated fields.
 
         Returns:
@@ -905,7 +905,7 @@ CAUTION - Use this parameter at your own risk. It may return large, unpaginated 
             if isinstance(observation_unit, ObservationUnit)
             else observation_unit
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{observation_unit_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{observation_unit_dbid}", body)
         return ObservationUnit(**record)
 
 

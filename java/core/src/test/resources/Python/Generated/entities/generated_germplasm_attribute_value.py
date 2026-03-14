@@ -135,7 +135,7 @@ class GermplasmAttributeValueQuery(BaseQuery[GermplasmAttributeValue]):
     pattern) so the same base query can be forked::
 
         base = client.germplasm_attribute_value.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.germplasm_attribute_value.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -187,22 +187,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.germplasm_attribute_value
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -225,7 +225,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -234,17 +234,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.germplasm_attribute_value
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -269,41 +269,41 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- attributeValueDbIds ---
 
-    def attribute_value_db_ids(self, attribute_value_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def attribute_value_dbids(self, attribute_value_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of Germplasm Attribute Value IDs to search for
 
         Example::
             client.germplasm_attribute_value
-                .attribute_value_db_ids("ca4636d0")
+                .attribute_value_dbids("ca4636d0")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .attribute_value_db_ids(["ca4636d0", "c8a92409"])
+                .attribute_value_dbids(["ca4636d0", "c8a92409"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("attributeValueDbIds", attribute_value_db_ids)  # type: ignore[return-value]
+        return self._set_param("attributeValueDbIds", attribute_value_dbids)  # type: ignore[return-value]
 
     # --- attributeDbIds ---
 
-    def attribute_db_ids(self, attribute_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def attribute_dbids(self, attribute_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of Germplasm Attribute IDs to search for
 
         Example::
             client.germplasm_attribute_value
-                .attribute_db_ids("2ef15c9f")
+                .attribute_dbids("2ef15c9f")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .attribute_db_ids(["2ef15c9f", "318e7f7d"])
+                .attribute_dbids(["2ef15c9f", "318e7f7d"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("attributeDbIds", attribute_db_ids)  # type: ignore[return-value]
+        return self._set_param("attributeDbIds", attribute_dbids)  # type: ignore[return-value]
 
     # --- attributeNames ---
 
@@ -326,79 +326,79 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- ontologyDbIds ---
 
-    def ontology_db_ids(self, ontology_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def ontology_dbids(self, ontology_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of ontology IDs to search for
 
         Example::
             client.germplasm_attribute_value
-                .ontology_db_ids("f44f7b23")
+                .ontology_dbids("f44f7b23")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .ontology_db_ids(["f44f7b23", "a26b576e"])
+                .ontology_dbids(["f44f7b23", "a26b576e"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("ontologyDbIds", ontology_db_ids)  # type: ignore[return-value]
+        return self._set_param("ontologyDbIds", ontology_dbids)  # type: ignore[return-value]
 
     # --- methodDbIds ---
 
-    def method_db_ids(self, method_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def method_dbids(self, method_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of methods to filter search results
 
         Example::
             client.germplasm_attribute_value
-                .method_db_ids("07e34f83")
+                .method_dbids("07e34f83")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .method_db_ids(["07e34f83", "d3d5517a"])
+                .method_dbids(["07e34f83", "d3d5517a"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("methodDbIds", method_db_ids)  # type: ignore[return-value]
+        return self._set_param("methodDbIds", method_dbids)  # type: ignore[return-value]
 
     # --- scaleDbIds ---
 
-    def scale_db_ids(self, scale_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def scale_dbids(self, scale_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of scales to filter search results
 
         Example::
             client.germplasm_attribute_value
-                .scale_db_ids("a13ecffa")
+                .scale_dbids("a13ecffa")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .scale_db_ids(["a13ecffa", "7e1afe4f"])
+                .scale_dbids(["a13ecffa", "7e1afe4f"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("scaleDbIds", scale_db_ids)  # type: ignore[return-value]
+        return self._set_param("scaleDbIds", scale_dbids)  # type: ignore[return-value]
 
     # --- traitDbIds ---
 
-    def trait_db_ids(self, trait_db_ids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
+    def trait_dbids(self, trait_dbids: Union[str, List[str]]) -> "GermplasmAttributeValueQuery":
         """List of trait unique ID to filter search results
 
         Example::
             client.germplasm_attribute_value
-                .trait_db_ids("ef81147b")
+                .trait_dbids("ef81147b")
                 .fetch()
                 .to_df()
             
             client.germplasm_attribute_value
-                .trait_db_ids(["ef81147b", "78d82fad"])
+                .trait_dbids(["ef81147b", "78d82fad"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("traitDbIds", trait_db_ids)  # type: ignore[return-value]
+        return self._set_param("traitDbIds", trait_dbids)  # type: ignore[return-value]
 
     # --- traitClasses ---
 
@@ -444,17 +444,17 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        attribute_value_db_ids: Optional[List[str]] = None,
-        attribute_db_ids: Optional[List[str]] = None,
+        attribute_value_dbids: Optional[List[str]] = None,
+        attribute_dbids: Optional[List[str]] = None,
         attribute_names: Optional[List[str]] = None,
-        ontology_db_ids: Optional[List[str]] = None,
-        method_db_ids: Optional[List[str]] = None,
-        scale_db_ids: Optional[List[str]] = None,
-        trait_db_ids: Optional[List[str]] = None,
+        ontology_dbids: Optional[List[str]] = None,
+        method_dbids: Optional[List[str]] = None,
+        scale_dbids: Optional[List[str]] = None,
+        trait_dbids: Optional[List[str]] = None,
         trait_classes: Optional[List[str]] = None,
         data_types: Optional[List[TraitDataType]] = None,
     ) -> "GermplasmAttributeValueQuery":
@@ -468,7 +468,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.germplasm_attribute_value
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -499,7 +499,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.germplasm_attribute_value
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -558,7 +558,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.germplasm_attribute_value
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -601,19 +601,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, attribute_value_db_id: str) -> "GermplasmAttributeValue":
+    def get_by_id(self, attribute_value_dbid: str) -> "GermplasmAttributeValue":
         """
         Retrieve a single GermplasmAttributeValue by its database ID.
 
         Calls ``GET /attributevalues/{attributeValueDbId}``.
 
         Args:
-            attribute_value_db_id: The ``attributeValueDbId`` to retrieve.
+            attribute_value_dbid: The ``attributeValueDbId`` to retrieve.
 
         Returns:
             A single ``GermplasmAttributeValue`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{attribute_value_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{attribute_value_dbid}")
         return GermplasmAttributeValue(**record)
     def create(
         self,
@@ -642,14 +642,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        attribute_value_db_id: str,
+        attribute_value_dbid: str,
         germplasm_attribute_value: Union["GermplasmAttributeValue", Dict[str, Any]],
     ) -> "GermplasmAttributeValue":
         """
         Update a GermplasmAttributeValue record using ``PUT //attributevalues/{attributeValueDbId}``.
 
         Args:
-            attribute_value_db_id: The ``attributeValueDbId`` of the record to update.
+            attribute_value_dbid: The ``attributeValueDbId`` of the record to update.
             GermplasmAttributeValue: A ``GermplasmAttributeValue`` instance or plain dict with updated fields.
 
         Returns:
@@ -660,7 +660,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(germplasm_attribute_value, GermplasmAttributeValue)
             else germplasm_attribute_value
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{attribute_value_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{attribute_value_dbid}", body)
         return GermplasmAttributeValue(**record)
 
 

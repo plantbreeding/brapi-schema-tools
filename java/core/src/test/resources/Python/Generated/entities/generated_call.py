@@ -147,12 +147,12 @@ class CallQuery(BaseQuery[Call]):
     All filter methods return a new ``CallQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.call.call_set_db_ids("a03202ec")
-        q1   = base.variant_db_ids("bba0b258")
-        q2   = base.variant_set_db_ids("407c0508")
+        base = client.call.call_set_dbids("a03202ec")
+        q1   = base.variant_dbids("bba0b258")
+        q2   = base.variant_set_dbids("407c0508")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.call.call_set_db_ids("a03202ec").call_set_db_ids("274e4f63")  # one value as time
-        q4 = client.call.call_set_db_ids(["a03202ec", "274e4f63", ...])  # list
+        q3 = client.call.call_set_dbids("a03202ec").call_set_dbids("274e4f63")  # one value as time
+        q4 = client.call.call_set_dbids(["a03202ec", "274e4f63", ...])  # list
         
     Materialise with::
 
@@ -177,60 +177,60 @@ class CallQuery(BaseQuery[Call]):
 
     # --- callSetDbIds ---
 
-    def call_set_db_ids(self, call_set_db_ids: Union[str, List[str]]) -> "CallQuery":
+    def call_set_dbids(self, call_set_dbids: Union[str, List[str]]) -> "CallQuery":
         """A list of IDs which uniquely identify `CallSets` within the given database server
 
         Example::
             client.call
-                .call_set_db_ids("a03202ec")
+                .call_set_dbids("a03202ec")
                 .fetch()
                 .to_df()
             
             client.call
-                .call_set_db_ids(["a03202ec", "274e4f63"])
+                .call_set_dbids(["a03202ec", "274e4f63"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("callSetDbIds", call_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("callSetDbIds", call_set_dbids)  # type: ignore[return-value]
 
     # --- variantDbIds ---
 
-    def variant_db_ids(self, variant_db_ids: Union[str, List[str]]) -> "CallQuery":
+    def variant_dbids(self, variant_dbids: Union[str, List[str]]) -> "CallQuery":
         """A list of IDs which uniquely identify `Variant` within the given database server
 
         Example::
             client.call
-                .variant_db_ids("bba0b258")
+                .variant_dbids("bba0b258")
                 .fetch()
                 .to_df()
             
             client.call
-                .variant_db_ids(["bba0b258", "ff97d4f0"])
+                .variant_dbids(["bba0b258", "ff97d4f0"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantDbIds", variant_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantDbIds", variant_dbids)  # type: ignore[return-value]
 
     # --- variantSetDbIds ---
 
-    def variant_set_db_ids(self, variant_set_db_ids: Union[str, List[str]]) -> "CallQuery":
+    def variant_set_dbids(self, variant_set_dbids: Union[str, List[str]]) -> "CallQuery":
         """A list of IDs which uniquely identify `VariantSets` within the given database server
 
         Example::
             client.call
-                .variant_set_db_ids("407c0508")
+                .variant_set_dbids("407c0508")
                 .fetch()
                 .to_df()
             
             client.call
-                .variant_set_db_ids(["407c0508", "49e24dfc"])
+                .variant_set_dbids(["407c0508", "49e24dfc"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("variantSetDbIds", variant_set_db_ids)  # type: ignore[return-value]
+        return self._set_param("variantSetDbIds", variant_set_dbids)  # type: ignore[return-value]
 
     # --- expandHomozygotes ---
 
@@ -293,9 +293,9 @@ class CallQuery(BaseQuery[Call]):
     def filter(
         self,
         *,
-        call_set_db_ids: Optional[List[str]] = None,
-        variant_db_ids: Optional[List[str]] = None,
-        variant_set_db_ids: Optional[List[str]] = None,
+        call_set_dbids: Optional[List[str]] = None,
+        variant_dbids: Optional[List[str]] = None,
+        variant_set_dbids: Optional[List[str]] = None,
         expand_homozygotes: Optional[bool] = None,
         sep_phased: Optional[str] = None,
         sep_unphased: Optional[str] = None,
@@ -310,9 +310,9 @@ class CallQuery(BaseQuery[Call]):
             (
                 client.call
                     .filter(
-                        call_set_db_ids=["a03202ec"],
-                        variant_db_ids=["bba0b258"],
-                        variant_set_db_ids=["407c0508"],
+                        call_set_dbids=["a03202ec"],
+                        variant_dbids=["bba0b258"],
+                        variant_set_dbids=["407c0508"],
                    )
                     .fetch()
                     .to_df()
@@ -341,9 +341,9 @@ class CallQuery(BaseQuery[Call]):
 
             df = (
                 client.call
-                    .call_set_db_ids("a03202ec")
-                    .variant_db_ids("bba0b258")
-                    .variant_set_db_ids("407c0508")
+                    .call_set_dbids("a03202ec")
+                    .variant_dbids("bba0b258")
+                    .variant_set_dbids("407c0508")
                     .search()
                     .to_df()
             )
@@ -400,9 +400,9 @@ class CallQuery(BaseQuery[Call]):
 
             df = (
                 client.call
-                    .call_set_db_ids("a03202ec")
-                    .variant_db_ids("bba0b258")
-                    .variant_set_db_ids("407c0508")
+                    .call_set_dbids("a03202ec")
+                    .variant_dbids("bba0b258")
+                    .variant_set_dbids("407c0508")
                     .list()
                     .to_df()
             )

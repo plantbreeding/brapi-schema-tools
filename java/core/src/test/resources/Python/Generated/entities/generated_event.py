@@ -164,12 +164,12 @@ class EventQuery(BaseQuery[Event]):
     All filter methods return a new ``EventQuery`` (immutable builder
     pattern) so the same base query can be forked::
 
-        base = client.event.study_db_ids("cf6c4bd4")
+        base = client.event.study_dbids("cf6c4bd4")
         q1   = base.study_names("The First Bob Study 2017")
-        q2   = base.observation_unit_db_ids("3cd0ca36")
+        q2   = base.observation_unit_dbids("3cd0ca36")
     You can provide single values one at time or a list to each filter method, for example::
-        q3 = client.event.study_db_ids("cf6c4bd4").study_db_ids("691e69d6")  # one value as time
-        q4 = client.event.study_db_ids(["cf6c4bd4", "691e69d6", ...])  # list
+        q3 = client.event.study_dbids("cf6c4bd4").study_dbids("691e69d6")  # one value as time
+        q4 = client.event.study_dbids(["cf6c4bd4", "691e69d6", ...])  # list
         
     Materialise with::
 
@@ -194,22 +194,22 @@ class EventQuery(BaseQuery[Event]):
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "EventQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "EventQuery":
         """List of study identifiers to search for
 
         Example::
             client.event
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.event
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -232,41 +232,41 @@ class EventQuery(BaseQuery[Event]):
 
     # --- observationUnitDbIds ---
 
-    def observation_unit_db_ids(self, observation_unit_db_ids: Union[str, List[str]]) -> "EventQuery":
+    def observation_unit_dbids(self, observation_unit_dbids: Union[str, List[str]]) -> "EventQuery":
         """The ID which uniquely identifies an observation unit.
 
         Example::
             client.event
-                .observation_unit_db_ids("3cd0ca36")
+                .observation_unit_dbids("3cd0ca36")
                 .fetch()
                 .to_df()
             
             client.event
-                .observation_unit_db_ids(["3cd0ca36", "983f3b14"])
+                .observation_unit_dbids(["3cd0ca36", "983f3b14"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationUnitDbIds", observation_unit_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationUnitDbIds", observation_unit_dbids)  # type: ignore[return-value]
 
     # --- eventDbIds ---
 
-    def event_db_ids(self, event_db_ids: Union[str, List[str]]) -> "EventQuery":
+    def event_dbids(self, event_dbids: Union[str, List[str]]) -> "EventQuery":
         """Filter based on an Event DbId.
 
         Example::
             client.event
-                .event_db_ids("bba0b258")
+                .event_dbids("bba0b258")
                 .fetch()
                 .to_df()
             
             client.event
-                .event_db_ids(["bba0b258", "ff97d4f0"])
+                .event_dbids(["bba0b258", "ff97d4f0"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("eventDbIds", event_db_ids)  # type: ignore[return-value]
+        return self._set_param("eventDbIds", event_dbids)  # type: ignore[return-value]
 
     # --- eventTypes ---
 
@@ -300,10 +300,10 @@ class EventQuery(BaseQuery[Event]):
     def filter(
         self,
         *,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        observation_unit_db_ids: Optional[List[str]] = None,
-        event_db_ids: Optional[List[str]] = None,
+        observation_unit_dbids: Optional[List[str]] = None,
+        event_dbids: Optional[List[str]] = None,
         event_types: Optional[List[str]] = None,
         date_range_start: Optional[datetime] = None,
         date_range_end: Optional[datetime] = None,
@@ -317,9 +317,9 @@ class EventQuery(BaseQuery[Event]):
             (
                 client.event
                     .filter(
-                        study_db_ids=["cf6c4bd4"],
+                        study_dbids=["cf6c4bd4"],
                         study_names=["The First Bob Study 2017"],
-                        observation_unit_db_ids=["3cd0ca36"],
+                        observation_unit_dbids=["3cd0ca36"],
                    )
                     .fetch()
                     .to_df()
@@ -355,9 +355,9 @@ class EventQuery(BaseQuery[Event]):
 
             df = (
                 client.event
-                    .study_db_ids("cf6c4bd4")
+                    .study_dbids("cf6c4bd4")
                     .study_names("The First Bob Study 2017")
-                    .observation_unit_db_ids("3cd0ca36")
+                    .observation_unit_dbids("3cd0ca36")
                     .list()
                     .to_df()
             )

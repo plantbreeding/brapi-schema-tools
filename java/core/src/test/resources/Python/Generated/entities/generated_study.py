@@ -278,7 +278,7 @@ class StudyQuery(BaseQuery[Study]):
     pattern) so the same base query can be forked::
 
         base = client.study.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.study.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -330,22 +330,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "StudyQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.study
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.study
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -368,22 +368,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- locationDbIds ---
 
-    def location_db_ids(self, location_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def location_dbids(self, location_dbids: Union[str, List[str]]) -> "StudyQuery":
         """The location ids to search for
 
         Example::
             client.study
-                .location_db_ids("b28911cf")
+                .location_dbids("b28911cf")
                 .fetch()
                 .to_df()
             
             client.study
-                .location_db_ids(["b28911cf", "5071d1e4"])
+                .location_dbids(["b28911cf", "5071d1e4"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("locationDbIds", location_db_ids)  # type: ignore[return-value]
+        return self._set_param("locationDbIds", location_dbids)  # type: ignore[return-value]
 
     # --- locationNames ---
 
@@ -406,7 +406,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "StudyQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -415,17 +415,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.study
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.study
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -450,22 +450,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyDbIds ---
 
-    def study_db_ids(self, study_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def study_dbids(self, study_dbids: Union[str, List[str]]) -> "StudyQuery":
         """List of study identifiers to search for
 
         Example::
             client.study
-                .study_db_ids("cf6c4bd4")
+                .study_dbids("cf6c4bd4")
                 .fetch()
                 .to_df()
             
             client.study
-                .study_db_ids(["cf6c4bd4", "691e69d6"])
+                .study_dbids(["cf6c4bd4", "691e69d6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyDbIds", study_db_ids)  # type: ignore[return-value]
+        return self._set_param("studyDbIds", study_dbids)  # type: ignore[return-value]
 
     # --- studyNames ---
 
@@ -488,22 +488,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- trialDbIds ---
 
-    def trial_db_ids(self, trial_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def trial_dbids(self, trial_dbids: Union[str, List[str]]) -> "StudyQuery":
         """The ID which uniquely identifies a trial to search for
 
         Example::
             client.study
-                .trial_db_ids("d2593dc2")
+                .trial_dbids("d2593dc2")
                 .fetch()
                 .to_df()
             
             client.study
-                .trial_db_ids(["d2593dc2", "9431a731"])
+                .trial_dbids(["d2593dc2", "9431a731"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("trialDbIds", trial_db_ids)  # type: ignore[return-value]
+        return self._set_param("trialDbIds", trial_dbids)  # type: ignore[return-value]
 
     # --- trialNames ---
 
@@ -526,22 +526,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- observationVariableDbIds ---
 
-    def observation_variable_db_ids(self, observation_variable_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def observation_variable_dbids(self, observation_variable_dbids: Union[str, List[str]]) -> "StudyQuery":
         """The DbIds of Variables to search for
 
         Example::
             client.study
-                .observation_variable_db_ids("a646187d")
+                .observation_variable_dbids("a646187d")
                 .fetch()
                 .to_df()
             
             client.study
-                .observation_variable_db_ids(["a646187d", "6d23513b"])
+                .observation_variable_dbids(["a646187d", "6d23513b"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
+        return self._set_param("observationVariableDbIds", observation_variable_dbids)  # type: ignore[return-value]
 
     # --- observationVariableNames ---
 
@@ -564,22 +564,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- observationVariablePUIs ---
 
-    def observation_variable_pu_is(self, observation_variable_pu_is: Union[str, List[str]]) -> "StudyQuery":
+    def observation_variable_puis(self, observation_variable_puis: Union[str, List[str]]) -> "StudyQuery":
         """The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
 
         Example::
             client.study
-                .observation_variable_pu_is("http://my-traits.com/trait/CO_123:0008012")
+                .observation_variable_puis("http://my-traits.com/trait/CO_123:0008012")
                 .fetch()
                 .to_df()
             
             client.study
-                .observation_variable_pu_is(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
+                .observation_variable_puis(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("observationVariablePUIs", observation_variable_pu_is)  # type: ignore[return-value]
+        return self._set_param("observationVariablePUIs", observation_variable_puis)  # type: ignore[return-value]
 
     # --- active ---
 
@@ -597,22 +597,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- seasonDbIds ---
 
-    def season_db_ids(self, season_db_ids: Union[str, List[str]]) -> "StudyQuery":
+    def season_dbids(self, season_dbids: Union[str, List[str]]) -> "StudyQuery":
         """The ID which uniquely identifies a season
 
         Example::
             client.study
-                .season_db_ids("Harvest Two 2017")
+                .season_dbids("Harvest Two 2017")
                 .fetch()
                 .to_df()
             
             client.study
-                .season_db_ids(["Harvest Two 2017", "Summer 2018"])
+                .season_dbids(["Harvest Two 2017", "Summer 2018"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("seasonDbIds", season_db_ids)  # type: ignore[return-value]
+        return self._set_param("seasonDbIds", season_dbids)  # type: ignore[return-value]
 
     # --- studyTypes ---
 
@@ -654,22 +654,22 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- studyPUIs ---
 
-    def study_pu_is(self, study_pu_is: Union[str, List[str]]) -> "StudyQuery":
+    def study_puis(self, study_puis: Union[str, List[str]]) -> "StudyQuery":
         """Permanent unique identifier associated with study data. For example, a URI or DOI
 
         Example::
             client.study
-                .study_pu_is("doi:10.155454/12349537312")
+                .study_puis("doi:10.155454/12349537312")
                 .fetch()
                 .to_df()
             
             client.study
-                .study_pu_is(["doi:10.155454/12349537312", "https://pui.per/d8dd35e1"])
+                .study_puis(["doi:10.155454/12349537312", "https://pui.per/d8dd35e1"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("studyPUIs", study_pu_is)  # type: ignore[return-value]
+        return self._set_param("studyPUIs", study_puis)  # type: ignore[return-value]
 
     # --- sortBy ---
 
@@ -695,24 +695,24 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        location_db_ids: Optional[List[str]] = None,
+        location_dbids: Optional[List[str]] = None,
         location_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        study_db_ids: Optional[List[str]] = None,
+        study_dbids: Optional[List[str]] = None,
         study_names: Optional[List[str]] = None,
-        trial_db_ids: Optional[List[str]] = None,
+        trial_dbids: Optional[List[str]] = None,
         trial_names: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
+        observation_variable_dbids: Optional[List[str]] = None,
         observation_variable_names: Optional[List[str]] = None,
-        observation_variable_pu_is: Optional[List[str]] = None,
+        observation_variable_puis: Optional[List[str]] = None,
         active: Optional[bool] = None,
-        season_db_ids: Optional[List[str]] = None,
+        season_dbids: Optional[List[str]] = None,
         study_types: Optional[List[str]] = None,
         study_codes: Optional[List[str]] = None,
-        study_pu_is: Optional[List[str]] = None,
+        study_puis: Optional[List[str]] = None,
         sort_by: Optional[SortBy] = None,
         sort_order: Optional[SortOrder] = None,
     ) -> "StudyQuery":
@@ -726,7 +726,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.study
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -757,7 +757,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.study
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .search()
                     .to_df()
@@ -816,7 +816,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.study
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -859,19 +859,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, study_db_id: str) -> "Study":
+    def get_by_id(self, study_dbid: str) -> "Study":
         """
         Retrieve a single Study by its database ID.
 
         Calls ``GET /studies/{studyDbId}``.
 
         Args:
-            study_db_id: The ``studyDbId`` to retrieve.
+            study_dbid: The ``studyDbId`` to retrieve.
 
         Returns:
             A single ``Study`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{study_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{study_dbid}")
         return Study(**record)
     def create(
         self,
@@ -900,14 +900,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        study_db_id: str,
+        study_dbid: str,
         study: Union["Study", Dict[str, Any]],
     ) -> "Study":
         """
         Update a Study record using ``PUT //studies/{studyDbId}``.
 
         Args:
-            study_db_id: The ``studyDbId`` of the record to update.
+            study_dbid: The ``studyDbId`` of the record to update.
             Study: A ``Study`` instance or plain dict with updated fields.
 
         Returns:
@@ -918,7 +918,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(study, Study)
             else study
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{study_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{study_dbid}", body)
         return Study(**record)
 
 

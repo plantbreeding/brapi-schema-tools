@@ -174,7 +174,7 @@ class SeedLotQuery(BaseQuery[SeedLot]):
     pattern) so the same base query can be forked::
 
         base = client.seed_lot.common_crop_names("Tomatillo")
-        q1   = base.germplasm_db_ids("e9c6edd7")
+        q1   = base.germplasm_dbids("e9c6edd7")
         q2   = base.germplasm_names("A0000003")
     You can provide single values one at time or a list to each filter method, for example::
         q3 = client.seed_lot.common_crop_names("Tomatillo").common_crop_names("Paw Paw")  # one value as time
@@ -226,22 +226,22 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- germplasmDbIds ---
 
-    def germplasm_db_ids(self, germplasm_db_ids: Union[str, List[str]]) -> "SeedLotQuery":
+    def germplasm_dbids(self, germplasm_dbids: Union[str, List[str]]) -> "SeedLotQuery":
         """List of IDs which uniquely identify germplasm to search for
 
         Example::
             client.seed_lot
-                .germplasm_db_ids("e9c6edd7")
+                .germplasm_dbids("e9c6edd7")
                 .fetch()
                 .to_df()
             
             client.seed_lot
-                .germplasm_db_ids(["e9c6edd7", "1b1df4a6"])
+                .germplasm_dbids(["e9c6edd7", "1b1df4a6"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("germplasmDbIds", germplasm_db_ids)  # type: ignore[return-value]
+        return self._set_param("germplasmDbIds", germplasm_dbids)  # type: ignore[return-value]
 
     # --- germplasmNames ---
 
@@ -264,7 +264,7 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
 
     # --- programDbIds ---
 
-    def program_db_ids(self, program_db_ids: Union[str, List[str]]) -> "SeedLotQuery":
+    def program_dbids(self, program_dbids: Union[str, List[str]]) -> "SeedLotQuery":
         """A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. 
 
 Use this parameter to only return results associated with the given programs. 
@@ -273,17 +273,17 @@ Use `GET /programs` to find the list of available programs on a server.
 
         Example::
             client.seed_lot
-                .program_db_ids("8f5de35b")
+                .program_dbids("8f5de35b")
                 .fetch()
                 .to_df()
             
             client.seed_lot
-                .program_db_ids(["8f5de35b", "0e2d4a13"])
+                .program_dbids(["8f5de35b", "0e2d4a13"])
                 .fetch()
                 .to_df()
             
         """
-        return self._set_param("programDbIds", program_db_ids)  # type: ignore[return-value]
+        return self._set_param("programDbIds", program_dbids)  # type: ignore[return-value]
 
     # --- programNames ---
 
@@ -308,21 +308,21 @@ Use `GET /programs` to find the list of available programs on a server.
 
     # --- seedLotDbIds ---
 
-    def seed_lot_db_ids(self, seed_lot_db_ids: Union[str, List[str]]) -> "SeedLotQuery":
+    def seed_lot_dbids(self, seed_lot_dbids: Union[str, List[str]]) -> "SeedLotQuery":
         """Unique id for a seed lot on this server
 
         
         """
-        return self._set_param("seedLotDbIds", seed_lot_db_ids)  # type: ignore[return-value]
+        return self._set_param("seedLotDbIds", seed_lot_dbids)  # type: ignore[return-value]
 
     # --- crossDbIds ---
 
-    def cross_db_ids(self, cross_db_ids: Union[str, List[str]]) -> "SeedLotQuery":
+    def cross_dbids(self, cross_dbids: Union[str, List[str]]) -> "SeedLotQuery":
         """Search for Cross with this unique id
 
         
         """
-        return self._set_param("crossDbIds", cross_db_ids)  # type: ignore[return-value]
+        return self._set_param("crossDbIds", cross_dbids)  # type: ignore[return-value]
 
     # --- crossNames ---
 
@@ -339,12 +339,12 @@ Use `GET /programs` to find the list of available programs on a server.
         self,
         *,
         common_crop_names: Optional[List[str]] = None,
-        germplasm_db_ids: Optional[List[str]] = None,
+        germplasm_dbids: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
-        program_db_ids: Optional[List[str]] = None,
+        program_dbids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
-        seed_lot_db_ids: Optional[List[str]] = None,
-        cross_db_ids: Optional[List[str]] = None,
+        seed_lot_dbids: Optional[List[str]] = None,
+        cross_dbids: Optional[List[str]] = None,
         cross_names: Optional[List[str]] = None,
     ) -> "SeedLotQuery":
         """
@@ -357,7 +357,7 @@ Use `GET /programs` to find the list of available programs on a server.
                 client.seed_lot
                     .filter(
                         common_crop_names=["Tomatillo"],
-                        germplasm_db_ids=["e9c6edd7"],
+                        germplasm_dbids=["e9c6edd7"],
                         germplasm_names=["A0000003"],
                    )
                     .fetch()
@@ -395,7 +395,7 @@ Use `GET /programs` to find the list of available programs on a server.
             df = (
                 client.seed_lot
                     .common_crop_names("Tomatillo")
-                    .germplasm_db_ids("e9c6edd7")
+                    .germplasm_dbids("e9c6edd7")
                     .germplasm_names("A0000003")
                     .list()
                     .to_df()
@@ -438,19 +438,19 @@ Use `GET /programs` to find the list of available programs on a server.
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, seed_lot_db_id: str) -> "SeedLot":
+    def get_by_id(self, seed_lot_dbid: str) -> "SeedLot":
         """
         Retrieve a single SeedLot by its database ID.
 
         Calls ``GET /seedlots/{seedLotDbId}``.
 
         Args:
-            seed_lot_db_id: The ``seedLotDbId`` to retrieve.
+            seed_lot_dbid: The ``seedLotDbId`` to retrieve.
 
         Returns:
             A single ``SeedLot`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{seed_lot_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{seed_lot_dbid}")
         return SeedLot(**record)
     def create(
         self,
@@ -479,14 +479,14 @@ Use `GET /programs` to find the list of available programs on a server.
 
     def update(
         self,
-        seed_lot_db_id: str,
+        seed_lot_dbid: str,
         seed_lot: Union["SeedLot", Dict[str, Any]],
     ) -> "SeedLot":
         """
         Update a SeedLot record using ``PUT //seedlots/{seedLotDbId}``.
 
         Args:
-            seed_lot_db_id: The ``seedLotDbId`` of the record to update.
+            seed_lot_dbid: The ``seedLotDbId`` of the record to update.
             SeedLot: A ``SeedLot`` instance or plain dict with updated fields.
 
         Returns:
@@ -497,7 +497,7 @@ Use `GET /programs` to find the list of available programs on a server.
             if isinstance(seed_lot, SeedLot)
             else seed_lot
         )
-        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{seed_lot_db_id}", body)
+        record = self._http.put_one(f"{_CRUD_ENDPOINT}/{seed_lot_dbid}", body)
         return SeedLot(**record)
 
 

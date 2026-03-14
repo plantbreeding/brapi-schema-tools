@@ -177,19 +177,19 @@ class BreedingMethodQuery(BaseQuery[BreedingMethod]):
     # ------------------------------------------------------------------
     # CRUD operations — execute immediately (not lazy BrapiResult)
     # ------------------------------------------------------------------
-    def get_by_id(self, breeding_method_db_id: str) -> "BreedingMethod":
+    def get_by_id(self, breeding_method_dbid: str) -> "BreedingMethod":
         """
         Retrieve a single BreedingMethod by its database ID.
 
         Calls ``GET /breedingmethods/{breedingMethodDbId}``.
 
         Args:
-            breeding_method_db_id: The ``breedingMethodDbId`` to retrieve.
+            breeding_method_dbid: The ``breedingMethodDbId`` to retrieve.
 
         Returns:
             A single ``BreedingMethod`` object.
         """
-        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{breeding_method_db_id}")
+        record = self._http.get_one(f"{_CRUD_ENDPOINT}/{breeding_method_dbid}")
         return BreedingMethod(**record)
 
 
