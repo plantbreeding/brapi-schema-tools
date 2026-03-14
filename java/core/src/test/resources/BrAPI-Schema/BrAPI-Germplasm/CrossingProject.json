@@ -12,8 +12,7 @@
                     "type": [
                         "null",
                         "string"
-                    ],
-                    "example": "Cassava"
+                    ]
                 },
                 "crossingProjectDbId": {
                     "description": "The unique identifier for a crossing project",
@@ -24,13 +23,11 @@
                     "type": [
                         "null",
                         "string"
-                    ],
-                    "example": "Crosses between germplasm X and germplasm Y in male nursery study X_2018 and female nursery study Y_2018"
+                    ]
                 },
                 "crossingProjectName": {
                     "description": "The human readable name for a crossing project",
-                    "type": "string",
-                    "example": "Crosses_2018"
+                    "type": "string"
                 },
                 "externalReferences": {
                     "description": "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",

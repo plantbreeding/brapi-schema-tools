@@ -25,13 +25,11 @@
                     "type": [
                         "null",
                         "string"
-                    ],
-                    "example": "11223344"
+                    ]
                 },
                 "plateDbId": {
                     "description": "The ID which uniquely identifies a `Plate`",
-                    "type": "string",
-                    "example": "a106467f"
+                    "type": "string"
                 },
                 "plateFormat": {
                     "description": "Enum for plate formats, usually \"PLATE_96\" for a 96 well plate or \"TUBES\" for plateless format",
@@ -47,8 +45,7 @@
                 },
                 "plateName": {
                     "description": "A human readable name for a `Plate`",
-                    "type": "string",
-                    "example": "Plate_123_XYZ"
+                    "type": "string"
                 },
                 "program": {
                     "$ref": "../BrAPI-Core/Program.json#/$defs/Program",
@@ -68,8 +65,7 @@
                     "type": [
                         "null",
                         "string"
-                    ],
-                    "example": "TISSUE"
+                    ]
                 },
                 "study": {
                     "$ref": "../BrAPI-Core/Study.json#/$defs/Study",
