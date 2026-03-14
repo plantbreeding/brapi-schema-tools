@@ -179,10 +179,14 @@ public class StringUtils {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        // Insert underscore between a lowercase/digit and an uppercase letter (e.g. "germplasmP" → "germplasm_P")
-        String result = value.replaceAll("([a-z0-9])([A-Z])", "$1_$2");
-        // Insert underscore between an acronym and the start of the next word (e.g. "PUIs" → "PUI_s" before lowercasing)
-        result = result.replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2");
+        // First, insert underscore between an acronym run and the start of the next Title-case word
+        // (e.g. "APISchema" → "API_Schema"). Require 2+ lowercase chars to avoid splitting plural
+        // acronym suffixes like "PUIs" where "Is" has only 1 lowercase.
+        String result = value.replaceAll("([A-Z]+)([A-Z][a-z]{2,})", "$1_$2");
+        // Then, insert underscore between a lowercase/digit and an uppercase letter, but only when
+        // the lowercase letter is NOT immediately preceded by an uppercase letter. This prevents
+        // splitting mixed-case acronym prefixes like "Br" in "BrAPI" (where 'r' follows 'B').
+        result = result.replaceAll("(?<![A-Z])([a-z0-9])([A-Z])", "$1_$2");
         if (result.startsWith("_")) {
             result = result.substring(1);
         }
