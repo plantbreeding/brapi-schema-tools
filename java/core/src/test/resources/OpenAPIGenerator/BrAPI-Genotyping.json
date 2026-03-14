@@ -1683,6 +1683,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -1734,6 +1770,49 @@
                 }
             }
         },
+        "/maps/{mapDbId}/linkagegroups" : {
+            "get" : {
+                "tags" : [
+                    "GenomeMaps"
+                ],
+                "summary" : "Get a filtered list of LinkageGroup",
+                "description" : "Get a list of LinkageGroup",
+                "parameters" : [
+                    {
+                        "name" : "mapDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier for a `GenomeMap`",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/LinkageGroupListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/plates/{plateDbId}" : {
             "get" : {
                 "tags" : [
@@ -1767,6 +1846,43 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/ReferenceSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/references/{referenceDbId}/bases" : {
+            "get" : {
+                "tags" : [
+                    "References"
+                ],
+                "summary" : "Get the details of a specific ReferenceBases",
+                "description" : "Get details for a ReferenceBases",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "referenceDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier for a `Reference`",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ReferenceBasesSingleResponse"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -1867,6 +1983,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -1936,6 +2088,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -1982,6 +2170,24 @@
                         }
                     },
                     {
+                        "name" : "callSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetName",
+                        "in" : "query",
+                        "description" : "A list of human readable names associated with `CallSets`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -2020,6 +2226,15 @@
                         "in" : "path",
                         "description" : "The unique identifier for a VariantSet",
                         "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Variants`",
+                        "required" : false,
                         "schema" : {
                             "type" : "string"
                         }
@@ -2625,7 +2840,8 @@
                     },
                     "expandHomozygotes" : {
                         "type" : "boolean",
-                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)"
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "example" : true
                     },
                     "germplasmDbIds" : {
                         "type" : "array",
@@ -2657,6 +2873,7 @@
                                 "dimension" : {
                                     "type" : "string",
                                     "description" : "the dimension of the matrix being paginated",
+                                    "example" : "VARIANTS",
                                     "enum" : [
                                         "CALLSETS",
                                         "VARIANTS"
@@ -2665,12 +2882,14 @@
                                 "page" : {
                                     "type" : "integer",
                                     "description" : "the requested page number (zero indexed)",
-                                    "format" : "int32"
+                                    "format" : "int32",
+                                    "example" : 0
                                 },
                                 "pageSize" : {
                                     "type" : "integer",
                                     "description" : "the maximum number of elements per page in this dimension of the matrix",
-                                    "format" : "int32"
+                                    "format" : "int32",
+                                    "example" : 500
                                 }
                             }
                         }
@@ -2684,7 +2903,8 @@
                     },
                     "preview" : {
                         "type" : "boolean",
-                        "description" : "Default Value = false\n<br/>\nIf 'preview' is set to true, then the server should only return the lists of 'callSetDbIds', \n'variantDbIds', and 'variantSetDbIds'. The server should not return any matrix data. This\nis intended to be a preview and give the client a sense of how large the matrix returned will be\n<br/>\nIf 'preview' is set to false or not set (default), then the server should return all the matrix\ndata as requested."
+                        "description" : "Default Value = false\n<br/>\nIf 'preview' is set to true, then the server should only return the lists of 'callSetDbIds', \n'variantDbIds', and 'variantSetDbIds'. The server should not return any matrix data. This\nis intended to be a preview and give the client a sense of how large the matrix returned will be\n<br/>\nIf 'preview' is set to false or not set (default), then the server should return all the matrix\ndata as requested.",
+                        "example" : true
                     },
                     "sampleDbIds" : {
                         "type" : "array",
@@ -2695,15 +2915,18 @@
                     },
                     "sepPhased" : {
                         "type" : "string",
-                        "description" : "The string used as a separator for phased allele calls."
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
-                        "description" : "The string used as a separator for unphased allele calls."
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
-                        "description" : "The string used as a representation for missing data."
+                        "description" : "The string used as a representation for missing data.",
+                        "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
@@ -2793,7 +3016,8 @@
                     },
                     "attributeCategory" : {
                         "type" : "string",
-                        "description" : "General category for the attribute. very similar to Trait class."
+                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "example" : "Morphological"
                     },
                     "attributeDbId" : {
                         "type" : "string",
@@ -2801,15 +3025,18 @@
                     },
                     "attributeDescription" : {
                         "type" : "string",
-                        "description" : "A human readable description of this attribute"
+                        "description" : "A human readable description of this attribute",
+                        "example" : "Height of the plant measured in meters by a tape"
                     },
                     "attributeName" : {
                         "type" : "string",
-                        "description" : "A human readable name for this attribute"
+                        "description" : "A human readable name for this attribute",
+                        "example" : "Plant Height 1"
                     },
                     "attributePUI" : {
                         "type" : "string",
-                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI"
+                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "example" : "http://my-traits.com/trait/CO_123:0008012"
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -3035,19 +3262,23 @@
                     },
                     "expandHomozygotes" : {
                         "type" : "boolean",
-                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)"
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "example" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
-                        "description" : "The string used as a separator for phased allele calls."
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
-                        "description" : "The string used as a separator for unphased allele calls."
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
-                        "description" : "The string used as a representation for missing data."
+                        "description" : "The string used as a representation for missing data.",
+                        "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
@@ -3299,24 +3530,6 @@
                 },
                 "description" : "A two dimensional array that holds allele data or associated metadata. Each matrix should be the same size and orientation, aligned with the \"callSetDbIds\" as columns and the \"variantDbIds\" as rows."
             },
-            "DataType" : {
-                "type" : "string",
-                "description" : "The type of field represented in this data matrix. This is intended to help parse the data out of JSON.",
-                "enum" : [
-                    "string",
-                    "integer",
-                    "float",
-                    "boolean"
-                ]
-            },
-            "Dimension" : {
-                "type" : "string",
-                "description" : "The dimension of the matrix being paginated",
-                "enum" : [
-                    "CALLSETS",
-                    "VARIANTS"
-                ]
-            },
             "ExternalReference" : {
                 "type" : "object",
                 "properties" : {
@@ -3459,7 +3672,8 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Feature\""
+                        "description" : "The literal string \"Feature\"",
+                        "example" : "Feature"
                     }
                 },
                 "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -3564,6 +3778,44 @@
                 },
                 "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
+            "LinkageGroup" : {
+                "type" : "object",
+                "properties" : {
+                    "additionalInfo" : {
+                        "$ref" : "#/components/schemas/AdditionalInfo"
+                    },
+                    "linkageGroupName" : {
+                        "type" : "string",
+                        "description" : "The Uniquely Identifiable name of a `LinkageGroup` <br> This might be a chromosome identifier or the generic linkage group identifier if the chromosome is not applicable.",
+                        "nullable" : true,
+                        "example" : "Chromosome 3"
+                    },
+                    "mapDbId" : {
+                        "type" : "string"
+                    },
+                    "mapName" : {
+                        "type" : "string"
+                    },
+                    "mapPUI" : {
+                        "type" : "string"
+                    },
+                    "markerCount" : {
+                        "type" : "integer",
+                        "description" : "The number of markers associated with a `LinkageGroup`.",
+                        "format" : "int32",
+                        "nullable" : true,
+                        "example" : 150
+                    },
+                    "maxPosition" : {
+                        "type" : "integer",
+                        "description" : "The maximum position of a marker within a `LinkageGroup`.",
+                        "format" : "int32",
+                        "nullable" : true,
+                        "example" : 2500
+                    }
+                },
+                "description" : "a `LinkageGroup` is the generic term for a named section of a `GenomeMap`. A `LinkageGroup` can represent a Chromosome, Scaffold, or Linkage Group."
+            },
             "MarkerPosition" : {
                 "type" : "object",
                 "properties" : {
@@ -3616,12 +3868,14 @@
                     "maxPosition" : {
                         "type" : "integer",
                         "description" : "The maximum position of markers in a given map",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 4000
                     },
                     "minPosition" : {
                         "type" : "integer",
                         "description" : "The minimum position of markers in a given map",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 250
                     },
                     "variantDbIds" : {
                         "type" : "array",
@@ -4047,6 +4301,31 @@
                 },
                 "description" : "A `Reference` is a canonical assembled contig, intended to act as a reference coordinate space for other genomic annotations. A single `Reference` might represent the human chromosome 1, for instance. `References` are designed to be immutable."
             },
+            "ReferenceBases" : {
+                "type" : "object",
+                "properties" : {
+                    "nextPageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets. Provide this value in a subsequent request to return the next page of results. This field will be empty if there are not any additional results.",
+                        "nullable" : true,
+                        "example" : "3a3d658a"
+                    },
+                    "offset" : {
+                        "type" : "integer",
+                        "description" : "The offset position (0-based) of the given sequence from the start of this `Reference`. This value will differ for each page in a request.",
+                        "format" : "int32",
+                        "nullable" : true,
+                        "example" : 20000
+                    },
+                    "sequence" : {
+                        "type" : "string",
+                        "description" : "A sub-string of the bases that make up this reference. Bases are represented as IUPAC-IUB codes; this string matches the regular expression `[ACGTMRWSYKVHDBN]*`.",
+                        "nullable" : true,
+                        "example" : "TAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATATTAGGATTGAGCTCTATAT"
+                    }
+                },
+                "description" : "A string representation of the `Reference` base alleles."
+            },
             "ReferenceSearchRequest" : {
                 "type" : "object",
                 "properties" : {
@@ -4086,7 +4365,8 @@
                     "maxLength" : {
                         "type" : "integer",
                         "description" : "The minimum length of this `References` sequence.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 90000
                     },
                     "md5checksums" : {
                         "type" : "array",
@@ -4098,7 +4378,8 @@
                     "minLength" : {
                         "type" : "integer",
                         "description" : "The minimum length of this `References` sequence.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 4000
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -4381,7 +4662,8 @@
                         "properties" : {
                             "sampleDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample."
+                                "description" : "The ID which uniquely identifies a `Sample`\n<br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample.",
+                                "nullable" : true
                             }
                         },
                         "description" : "The identifiers and metadata associated with a physical piece of biological material collected from the field for external analysis. A Sample can take many forms (leaf clipping, seed, DNA, etc) and might be used for a variety of analysis procedures (spectra, genotyping, etc)."
@@ -4930,7 +5212,8 @@
                     "end" : {
                         "type" : "integer",
                         "description" : "The end of the window (0-based, exclusive) for which overlapping variants should be returned.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 1500
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -4948,7 +5231,8 @@
                     },
                     "referenceDbId" : {
                         "type" : "string",
-                        "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference."
+                        "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
+                        "example" : "120a2d5c"
                     },
                     "referenceDbIds" : {
                         "type" : "array",
@@ -4967,7 +5251,8 @@
                     "start" : {
                         "type" : "integer",
                         "description" : "The beginning of the window (0-based, inclusive) for which overlapping variants should be returned. Genomic positions are non-negative integers less than reference length. Requests spanning the join of circular genomes are represented as two requests one on each side of the join (position 0).",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 100
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -5447,6 +5732,43 @@
                     }
                 }
             },
+            "StudyStudyTypeListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "StudyStudyTypeListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "StudySingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -5904,6 +6226,32 @@
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ReferenceBasesSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "ReferenceBasesSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/ReferenceBases"
                                 }
                             }
                         }
@@ -6428,6 +6776,32 @@
                     }
                 }
             },
+            "GermplasmMCPDSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmMCPDSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/GermplasmMCPD"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ReferenceSetListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -6608,6 +6982,43 @@
                                             "type" : "array",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/Study"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "LinkageGroupListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "LinkageGroupListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/LinkageGroup"
                                             }
                                         }
                                     }
@@ -6860,6 +7271,43 @@
                                             "type" : "array",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/BreedingMethod"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "GermplasmAttributeAttributeCategoryListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmAttributeAttributeCategoryListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
                                             }
                                         }
                                     }

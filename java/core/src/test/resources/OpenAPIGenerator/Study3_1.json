@@ -185,6 +185,43 @@
                         }
                     },
                     {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "studyDbId",
+                                "trialDbId",
+                                "programDbId",
+                                "locationDbId",
+                                "seasonDbId",
+                                "studyType",
+                                "studyName",
+                                "studyLocation",
+                                "programName"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -242,6 +279,29 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/StudyListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/studytypes" : {
+            "get" : {
+                "tags" : [
+                    "Studies"
+                ],
+                "summary" : "Get the studyTypes of Study",
+                "description" : "List all available Study studyTypes",
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/StudyStudyTypeListResponse"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -593,7 +653,8 @@
                 "properties" : {
                     "active" : {
                         "type" : "boolean",
-                        "description" : "A flag to indicate if a Study is currently active and ongoing"
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "example" : true
                     },
                     "commonCropNames" : {
                         "type" : "array",
@@ -671,6 +732,31 @@
                         "items" : {
                             "type" : "string"
                         }
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "studyDbId",
+                            "trialDbId",
+                            "programDbId",
+                            "locationDbId",
+                            "seasonDbId",
+                            "studyType",
+                            "studyName",
+                            "studyLocation",
+                            "programName"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
                     },
                     "studyCodes" : {
                         "type" : "array",
@@ -949,6 +1035,45 @@
                                 }
                             },
                             "title" : "202AcceptedSearchResponse"
+                        }
+                    }
+                }
+            },
+            "StudyStudyTypeListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
+                                            }
+                                        }
+                                    },
+                                    "required" : [
+                                        "data"
+                                    ]
+                                }
+                            },
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "title" : "StudyStudyTypeListResponse"
                         }
                     }
                 }

@@ -321,6 +321,43 @@
                 }
             }
         },
+        "/germplasm/{germplasmDbId}/mcpd" : {
+            "get" : {
+                "tags" : [
+                    "Germplasm"
+                ],
+                "summary" : "Get the details of a specific GermplasmMCPD",
+                "description" : "Get details for a GermplasmMCPD",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/GermplasmMCPDSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/search/germplasm" : {
             "post" : {
                 "tags" : [
@@ -1090,6 +1127,32 @@
                             "type" : "string"
                         },
                         "example" : "ERROR - 2018-10-08T18:15:11Z - User does not have permission to perform this action"
+                    }
+                }
+            },
+            "GermplasmMCPDSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmMCPDSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/GermplasmMCPD"
+                                }
+                            }
+                        }
                     }
                 }
             }

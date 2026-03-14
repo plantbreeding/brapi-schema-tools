@@ -2,7 +2,7 @@
 /* 
 A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.
  */
-DROP TABLE brapi_Studies; 
+DROP TABLE IF EXISTS brapi_Studies; 
 CREATE TABLE brapi_Studies (
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -90,7 +90,7 @@ COMMENT 'A Study represents an experiment that has taken place at a single locat
 /* 
 Creates a lookup table for property 'contacts' for 'Study' to 'Contact'
  */
-DROP TABLE brapi_ContactByStudy; 
+DROP TABLE IF EXISTS brapi_ContactByStudy; 
 CREATE TABLE brapi_ContactByStudy (
   contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
   studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
@@ -103,7 +103,7 @@ COMMENT 'Link table for Study to Contact on property contacts';
 /* 
 Creates a lookup table for property 'observationVariables' for 'Study' to 'ObservationVariable'
  */
-DROP TABLE brapi_ObservationVariableByStudy; 
+DROP TABLE IF EXISTS brapi_ObservationVariableByStudy; 
 CREATE TABLE brapi_ObservationVariableByStudy (
   observationVariableDbId STRING COMMENT 'Variable unique identifier  MIAPPE V1.1 (DM-83) Variable ID - Code used to identify the variable in the data file. We recommend using a variable definition from the Crop Ontology where possible. Otherwise, the Crop Ontology naming convention is recommended: <trait abbreviation>_<method abbreviation>_<scale abbreviation>). A variable ID must be unique within a given investigation.',
   observationVariableName STRING COMMENT 'Variable name (usually a short name)  MIAPPE V1.1 (DM-84) Variable name - Name of the variable.',
@@ -113,3 +113,13 @@ CREATE TABLE brapi_ObservationVariableByStudy (
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) 
 COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
+
+
+/* 
+Controlled Vocabulary for studyTypes of Study
+ */
+DROP TABLE IF EXISTS brapi_StudyTypes; 
+CREATE TABLE brapi_StudyTypes (
+  studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc'
+) 
+COMMENT 'Controlled Vocabulary table for property studyType on Study';

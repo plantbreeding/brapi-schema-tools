@@ -7,6 +7,7 @@ import org.brapi.schematools.core.utils.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,11 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Slf4j
 class PythonGeneratorTest {
 
+    private static final Path OUTPUT_PATH = Paths.get("build/test-output/Python/Generated");
+
     @Test
     void generate() {
         Response<List<Path>> response = null;
         try {
-            response = new PythonGenerator(PythonGeneratorOptions.load().setOverwrite(true), Paths.get("build/test-output/Python/Generated"))
+            response = new PythonGenerator(PythonGeneratorOptions.load().setOverwrite(true), OUTPUT_PATH)
                 .generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -38,16 +41,18 @@ class PythonGeneratorTest {
 
         assertNotNull(response.getResult());
 
-        assertREquals(response.getResult()) ;
+        assertPythonEquals(response.getResult()) ;
     }
 
-    private void assertREquals(List<Path> result) {
+    private void assertPythonEquals(List<Path> result) {
         try {
             for (Path path : result) {
 
                 String rFile = path.getFileName().toString();
 
-                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("PythonGenerator/Generated/"+ rFile).toURI())).getResultOrThrow();
+                String relativePath = path.toAbsolutePath().toString().substring(OUTPUT_PATH.toAbsolutePath().toString().length() + 1);
+
+                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/"+ relativePath).toURI())).getResultOrThrow();
                 String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
 
                 if (!isMultilineEqual(expected, actual)) {
@@ -61,7 +66,9 @@ class PythonGeneratorTest {
 
                 String rFile = path.getFileName().toString();
 
-                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("PythonGenerator/Generated/"+ rFile).toURI())).getResultOrThrow();
+                String relativePath = path.toAbsolutePath().toString().substring(OUTPUT_PATH.toAbsolutePath().toString().length() + 1);
+
+                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/"+ relativePath).toURI())).getResultOrThrow();
                 String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
 
                 assertMultilineEqual(expected, actual);

@@ -14,6 +14,33 @@
                 "description" : "Get a list of List",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programName",
+                        "in" : "query",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "name" : "dateCreatedRangeStart",
                         "in" : "query",
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
@@ -1014,6 +1041,43 @@
                         }
                     },
                     {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "studyDbId",
+                                "trialDbId",
+                                "programDbId",
+                                "locationDbId",
+                                "seasonDbId",
+                                "studyType",
+                                "studyName",
+                                "studyLocation",
+                                "programName"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -1247,6 +1311,41 @@
                         }
                     },
                     {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "trialDbId",
+                                "trialName",
+                                "programDbId",
+                                "programName",
+                                "locationDbId",
+                                "startDate",
+                                "endDate"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -1316,6 +1415,29 @@
                 }
             }
         },
+        "/studytypes" : {
+            "get" : {
+                "tags" : [
+                    "Studies"
+                ],
+                "summary" : "Get the studyTypes of Study",
+                "description" : "List all available Study studyTypes",
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/StudyStudyTypeListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/lists/{listDbId}" : {
             "get" : {
                 "tags" : [
@@ -1354,6 +1476,52 @@
                         "application/json" : {
                             "schema" : {
                                 "$ref" : "#/components/schemas/ListNewRequest"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ListSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/lists/{listDbId}/data" : {
+            "post" : {
+                "tags" : [
+                    "Lists"
+                ],
+                "summary" : "Create new string",
+                "description" : "Add new string to database",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "listDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier for a List",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "string"
                             }
                         }
                     }
@@ -2071,8 +2239,7 @@
                     "commonCropName" : {
                         "type" : "string",
                         "description" : "Crop name (examples: \"Maize\", \"Wheat\")",
-                        "nullable" : true,
-                        "example" : "Maize"
+                        "nullable" : true
                     },
                     "contextOfUse" : {
                         "type" : "array",
@@ -2085,15 +2252,13 @@
                     "defaultValue" : {
                         "type" : "string",
                         "description" : "Variable default value. (examples: \"red\", \"2.3\", etc.)",
-                        "nullable" : true,
-                        "example" : "2.0"
+                        "nullable" : true
                     },
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://wiki.brapi.org/documentation.html"
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -2106,20 +2271,17 @@
                     "growthStage" : {
                         "type" : "string",
                         "description" : "Growth stage at which measurement is made (examples: \"flowering\")",
-                        "nullable" : true,
-                        "example" : "flowering"
+                        "nullable" : true
                     },
                     "institution" : {
                         "type" : "string",
                         "description" : "Name of institution submitting the variable",
-                        "nullable" : true,
-                        "example" : "The BrAPI Institute"
+                        "nullable" : true
                     },
                     "language" : {
                         "type" : "string",
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
-                        "nullable" : true,
-                        "example" : "en"
+                        "nullable" : true
                     },
                     "methodDbId" : {
                         "type" : "string"
@@ -2145,14 +2307,12 @@
                     "scientist" : {
                         "type" : "string",
                         "description" : "Name of scientist submitting the variable.",
-                        "nullable" : true,
-                        "example" : "Dr. Bob Robertson"
+                        "nullable" : true
                     },
                     "status" : {
                         "type" : "string",
                         "description" : "Variable status. (examples: \"recommended\", \"obsolete\", \"legacy\", etc.)",
-                        "nullable" : true,
-                        "example" : "recommended"
+                        "nullable" : true
                     },
                     "submissionTimestamp" : {
                         "type" : "string",
@@ -2291,14 +2451,12 @@
                     "datasetPUI" : {
                         "type" : "string",
                         "description" : "The DOI or other permanent unique identifier for this published dataset",
-                        "nullable" : true,
-                        "example" : "doi:10.15454/312953986E3"
+                        "nullable" : true
                     },
                     "license" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-7) License - License for the reuse of the data associated with this investigation. The Creative Commons licenses cover most use cases and are recommended.",
-                        "nullable" : true,
-                        "example" : "https://CreativeCommons.org/licenses/by/4.0"
+                        "nullable" : true
                     },
                     "publicReleaseDate" : {
                         "type" : "string",
@@ -2385,14 +2543,12 @@
                     "PUI" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.",
-                        "nullable" : true,
-                        "example" : "CO_715:0000145"
+                        "nullable" : true
                     },
                     "description" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be \"unknown\"/\"NA\", \"aggregated/reduced data\", or simply 'none'.",
-                        "nullable" : true,
-                        "example" : "Lines were repeated twice at each location using a complete block design. In order to limit competition effects, each block was organized into four sub-blocks corresponding to earliest groups based on a prior information."
+                        "nullable" : true
                     },
                     "studyDbId" : {
                         "type" : "string"
@@ -2541,14 +2697,12 @@
                     "PUI" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-27) Type of growth facility - Type of growth facility in which the study was carried out, in the form of an accession number from the Crop Ontology.",
-                        "nullable" : true,
-                        "example" : "CO_715:0000162"
+                        "nullable" : true
                     },
                     "description" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-26) Description of growth facility - Short description of the facility in which the study was carried out.",
-                        "nullable" : true,
-                        "example" : "field environment condition, greenhouse"
+                        "nullable" : true
                     }
                 },
                 "description" : "Short description of the facility in which the study was carried out."
@@ -2581,8 +2735,7 @@
                     "version" : {
                         "type" : "string",
                         "description" : "The version of the update.",
-                        "nullable" : true,
-                        "example" : "1.2.3"
+                        "nullable" : true
                     }
                 },
                 "description" : "The date and time when this study was last modified"
@@ -2648,32 +2801,27 @@
                     "listDescription" : {
                         "type" : "string",
                         "description" : "Description of a List",
-                        "nullable" : true,
-                        "example" : "This is a list of germplasm I would like to investigate next season"
+                        "nullable" : true
                     },
                     "listName" : {
                         "type" : "string",
-                        "description" : "Human readable name of a List",
-                        "example" : "MyGermplasm_Sept_2020"
+                        "description" : "Human readable name of a List"
                     },
                     "listOwnerName" : {
                         "type" : "string",
                         "description" : "Human readable name of a List Owner. (usually a user or person)",
-                        "nullable" : true,
-                        "example" : "Bob Robertson"
+                        "nullable" : true
                     },
                     "listSize" : {
                         "type" : "integer",
                         "description" : "The number of elements in a List",
                         "format" : "int32",
-                        "nullable" : true,
-                        "example" : 53
+                        "nullable" : true
                     },
                     "listSource" : {
                         "type" : "string",
                         "description" : "The description of where a List originated from",
-                        "nullable" : true,
-                        "example" : "GeneBank Repository 1.3"
+                        "nullable" : true
                     },
                     "listType" : {
                         "$ref" : "#/components/schemas/ListType"
@@ -2687,6 +2835,13 @@
             "ListSearchRequest" : {
                 "type" : "object",
                 "properties" : {
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
@@ -2744,6 +2899,20 @@
                     },
                     "listType" : {
                         "$ref" : "#/components/schemas/ListType"
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 },
                 "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
@@ -2777,8 +2946,7 @@
                         "properties" : {
                             "locationDbId" : {
                                 "type" : "string",
-                                "description" : "The unique identifier for a Location",
-                                "example" : "3cfdd67d"
+                                "description" : "The unique identifier for a Location"
                             }
                         },
                         "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
@@ -2794,8 +2962,7 @@
                     "abbreviation" : {
                         "type" : "string",
                         "description" : "A shortened version of the human readable name for a Location",
-                        "nullable" : true,
-                        "example" : "L1"
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
@@ -2811,14 +2978,12 @@
                     "coordinateDescription" : {
                         "type" : "string",
                         "description" : "Describes the precision and landmarks of the coordinate values used for a Location. (ex. the site, the nearest town, a 10 kilometers radius circle, +/- 20 meters, etc)",
-                        "nullable" : true,
-                        "example" : "North East corner of greenhouse"
+                        "nullable" : true
                     },
                     "coordinateUncertainty" : {
                         "type" : "string",
                         "description" : "Uncertainty associated with the coordinates in meters. Leave the value empty if the uncertainty is unknown.",
-                        "nullable" : true,
-                        "example" : "20"
+                        "nullable" : true
                     },
                     "coordinates" : {
                         "$ref" : "#/components/schemas/GeoJSON"
@@ -2826,33 +2991,28 @@
                     "countryCode" : {
                         "type" : "string",
                         "description" : "[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec\n<br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.'",
-                        "nullable" : true,
-                        "example" : "PER"
+                        "nullable" : true
                     },
                     "countryName" : {
                         "type" : "string",
                         "description" : "The full name of the country where a Location is located\n<br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.",
-                        "nullable" : true,
-                        "example" : "Peru"
+                        "nullable" : true
                     },
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://brapi.org"
+                        "nullable" : true
                     },
                     "environmentType" : {
                         "type" : "string",
                         "description" : "Describes the general type of environment of a Location. (ex. forest, field, nursery, etc)",
-                        "nullable" : true,
-                        "example" : "Nursery"
+                        "nullable" : true
                     },
                     "exposure" : {
                         "type" : "string",
                         "description" : "Describes the level of protection/exposure for things like sun light and wind at a particular Location",
-                        "nullable" : true,
-                        "example" : "Structure, no exposure"
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -2865,14 +3025,12 @@
                     "instituteAddress" : {
                         "type" : "string",
                         "description" : "The street address of the institute at a particular Location\n<br/> MIAPPE V1.1 (DM-16) Contact institution - Name and address of the institution responsible for the study.",
-                        "nullable" : true,
-                        "example" : "71 Pilgrim Avenue Chevy Chase MD 20815"
+                        "nullable" : true
                     },
                     "instituteName" : {
                         "type" : "string",
                         "description" : "The full name of the institute at a particular Location\n<br/> MIAPPE V1.1 (DM-16) Contact institution - Name and address of the institution responsible for the study.",
-                        "nullable" : true,
-                        "example" : "Plant Science Institute"
+                        "nullable" : true
                     },
                     "locationDbId" : {
                         "type" : "string"
@@ -2883,26 +3041,22 @@
                     "locationType" : {
                         "type" : "string",
                         "description" : "A short description of a type of Location (ex. Field Station, Breeding Location, Storage Location, etc)",
-                        "nullable" : true,
-                        "example" : "Field Station"
+                        "nullable" : true
                     },
                     "siteStatus" : {
                         "type" : "string",
                         "description" : "Description of the accessibility of the location (ex. Public, Private)",
-                        "nullable" : true,
-                        "example" : "Private"
+                        "nullable" : true
                     },
                     "slope" : {
                         "type" : "string",
                         "description" : "Describes the approximate slope (height/distance) of a Location.",
-                        "nullable" : true,
-                        "example" : "0"
+                        "nullable" : true
                     },
                     "topography" : {
                         "type" : "string",
                         "description" : "Describes the topography of the land at a Location. (ex. Plateau, Cirque, Hill, Valley, etc)",
-                        "nullable" : true,
-                        "example" : "Valley"
+                        "nullable" : true
                     }
                 },
                 "description" : "A geographic Location on earth. This is usually used to describe the general area where an experiment took place. For example, a natural site, an experimental field, a greenhouse, a phenotyping facility, etc."
@@ -3063,8 +3217,7 @@
                         "properties" : {
                             "personDbId" : {
                                 "type" : "string",
-                                "description" : "Unique ID for a person",
-                                "example" : "14340a54"
+                                "description" : "Unique ID for a person"
                             }
                         },
                         "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
@@ -3080,14 +3233,12 @@
                     "description" : {
                         "type" : "string",
                         "description" : "description of this person",
-                        "nullable" : true,
-                        "example" : "Bob likes pina coladas and getting caught in the rain."
+                        "nullable" : true
                     },
                     "emailAddress" : {
                         "type" : "string",
                         "description" : "email address for this person",
-                        "nullable" : true,
-                        "example" : "bob@bob.com"
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -3100,38 +3251,32 @@
                     "firstName" : {
                         "type" : "string",
                         "description" : "Persons first name",
-                        "nullable" : true,
-                        "example" : "Bob"
+                        "nullable" : true
                     },
                     "lastName" : {
                         "type" : "string",
                         "description" : "Persons last name",
-                        "nullable" : true,
-                        "example" : "Robertson"
+                        "nullable" : true
                     },
                     "mailingAddress" : {
                         "type" : "string",
                         "description" : "physical address of this person",
-                        "nullable" : true,
-                        "example" : "123 Street Ave, City, State, Country"
+                        "nullable" : true
                     },
                     "middleName" : {
                         "type" : "string",
                         "description" : "Persons middle name",
-                        "nullable" : true,
-                        "example" : "Danger"
+                        "nullable" : true
                     },
                     "phoneNumber" : {
                         "type" : "string",
                         "description" : "phone number of this person",
-                        "nullable" : true,
-                        "example" : "+1-555-555-5555"
+                        "nullable" : true
                     },
                     "userID" : {
                         "type" : "string",
                         "description" : "A systems user ID associated with this person. Different from personDbId because you could have a person who is not a user of the system.",
-                        "nullable" : true,
-                        "example" : "bob-23"
+                        "nullable" : true
                     }
                 },
                 "description" : "A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program."
@@ -3232,8 +3377,7 @@
                         "properties" : {
                             "programDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies the program",
-                                "example" : "f60f15b2"
+                                "description" : "The ID which uniquely identifies the program"
                             }
                         },
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
@@ -3249,8 +3393,7 @@
                     "abbreviation" : {
                         "type" : "string",
                         "description" : "A shortened version of the human readable name for a Program",
-                        "nullable" : true,
-                        "example" : "P1"
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
@@ -3258,15 +3401,13 @@
                     "commonCropName" : {
                         "type" : "string",
                         "description" : "Common name for the crop which this program is for",
-                        "nullable" : true,
-                        "example" : "Tomatillo"
+                        "nullable" : true
                     },
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://wiki.brapi.org"
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -3279,28 +3420,24 @@
                     "fundingInformation" : {
                         "type" : "string",
                         "description" : "Information describing the grant or funding source for this program",
-                        "nullable" : true,
-                        "example" : "EU: FP7-244374"
+                        "nullable" : true
                     },
                     "objective" : {
                         "type" : "string",
                         "description" : "The primary objective of the program",
-                        "nullable" : true,
-                        "example" : "Make a better tomatillo"
+                        "nullable" : true
                     },
                     "personDbId" : {
                         "type" : "string"
                     },
                     "programName" : {
                         "type" : "string",
-                        "description" : "Human readable name of the program",
-                        "example" : "Tomatillo_Breeding_Program"
+                        "description" : "Human readable name of the program"
                     },
                     "programType" : {
                         "type" : "string",
                         "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
                         "nullable" : true,
-                        "example" : "STANDARD",
                         "enum" : [
                             "STANDARD",
                             "PROJECT"
@@ -3382,14 +3519,12 @@
                     "publicationPUI" : {
                         "type" : "string",
                         "description" : "The permanent unique identifier of the publication.",
-                        "nullable" : true,
-                        "example" : "doi:10.15454/312953986E3"
+                        "nullable" : true
                     },
                     "publicationReference" : {
                         "type" : "string",
                         "description" : "The publication reference.",
-                        "nullable" : true,
-                        "example" : "Selby, BrAPI - An application programming interface for plant breeding applications, Bioinformatics, https://doi.org/10.1093/bioinformatics/190"
+                        "nullable" : true
                     },
                     "trialDbId" : {
                         "type" : "string"
@@ -3440,8 +3575,7 @@
                         "properties" : {
                             "studyDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.",
-                                "example" : "175ac75a"
+                                "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution."
                             }
                         },
                         "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
@@ -3457,8 +3591,7 @@
                     "active" : {
                         "type" : "boolean",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
-                        "nullable" : true,
-                        "example" : true
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
@@ -3466,14 +3599,12 @@
                     "commonCropName" : {
                         "type" : "string",
                         "description" : "Common name for the crop associated with this study",
-                        "nullable" : true,
-                        "example" : "Grape"
+                        "nullable" : true
                     },
                     "culturalPractices" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.",
-                        "nullable" : true,
-                        "example" : "Irrigation was applied according needs during summer to prevent water stress."
+                        "nullable" : true
                     },
                     "dataLinks" : {
                         "type" : "array",
@@ -3487,8 +3618,7 @@
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://wiki.brapi.org"
+                        "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
@@ -3524,8 +3654,7 @@
                     "license" : {
                         "type" : "string",
                         "description" : "The usage license associated with the study data",
-                        "nullable" : true,
-                        "example" : "MIT License"
+                        "nullable" : true
                     },
                     "locationDbId" : {
                         "type" : "string"
@@ -3544,8 +3673,7 @@
                     "observationUnitsDescription" : {
                         "type" : "string",
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.",
-                        "nullable" : true,
-                        "example" : "Observation units consisted in individual plots themselves consisting of a row of 15 plants at a density of approximately six plants per square meter."
+                        "nullable" : true
                     },
                     "seasons" : {
                         "type" : "array",
@@ -3564,31 +3692,26 @@
                     "studyCode" : {
                         "type" : "string",
                         "description" : "A short human readable code for a study",
-                        "nullable" : true,
-                        "example" : "Grape_Yield_Spring_2018"
+                        "nullable" : true
                     },
                     "studyDescription" : {
                         "type" : "string",
                         "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study",
-                        "nullable" : true,
-                        "example" : "This is a yield study for Spring 2018"
+                        "nullable" : true
                     },
                     "studyName" : {
                         "type" : "string",
-                        "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study",
-                        "example" : "INRA's Walnut Genetic Resources Observation at Kenya"
+                        "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study"
                     },
                     "studyPUI" : {
                         "type" : "string",
                         "description" : "A permanent unique identifier associated with this study data. For example, a URI or DOI",
-                        "nullable" : true,
-                        "example" : "doi:10.155454/12349537312"
+                        "nullable" : true
                     },
                     "studyType" : {
                         "type" : "string",
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
-                        "nullable" : true,
-                        "example" : "Phenotyping"
+                        "nullable" : true
                     },
                     "trialDbId" : {
                         "type" : "string"
@@ -3687,6 +3810,31 @@
                             "type" : "string"
                         }
                     },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "studyDbId",
+                            "trialDbId",
+                            "programDbId",
+                            "locationDbId",
+                            "seasonDbId",
+                            "studyType",
+                            "studyName",
+                            "studyLocation",
+                            "programName"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
+                    },
                     "studyCodes" : {
                         "type" : "array",
                         "description" : "A short human readable code for a study",
@@ -3765,8 +3913,7 @@
                         "properties" : {
                             "trialDbId" : {
                                 "type" : "string",
-                                "description" : "The ID which uniquely identifies a trial\n\nMIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.",
-                                "example" : "1883b402"
+                                "description" : "The ID which uniquely identifies a trial\n\nMIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution."
                             }
                         },
                         "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
@@ -3782,8 +3929,7 @@
                     "active" : {
                         "type" : "boolean",
                         "description" : "A flag to indicate if a Trial is currently active and ongoing",
-                        "nullable" : true,
-                        "example" : true
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
@@ -3791,8 +3937,7 @@
                     "commonCropName" : {
                         "type" : "string",
                         "description" : "Common name for the crop associated with this trial",
-                        "nullable" : true,
-                        "example" : "Wheat"
+                        "nullable" : true
                     },
                     "contacts" : {
                         "type" : "array",
@@ -3814,13 +3959,11 @@
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://wiki.brapi.org"
+                        "nullable" : true
                     },
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date this trial ends",
-                        "format" : "date",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -3848,7 +3991,6 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this trial started",
-                        "format" : "date",
                         "nullable" : true
                     },
                     "studyDbIds" : {
@@ -3862,19 +4004,16 @@
                     "trialDescription" : {
                         "type" : "string",
                         "description" : "The human readable description of a trial\n\nMIAPPE V1.1 (DM-4) Investigation description - Human-readable text describing the investigation in more detail.",
-                        "nullable" : true,
-                        "example" : "General drought resistance trial initiated in Peru before duplication in Africa"
+                        "nullable" : true
                     },
                     "trialName" : {
                         "type" : "string",
-                        "description" : "The human readable name of a trial\n\nMIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.",
-                        "example" : "Peru Yield Trial 1"
+                        "description" : "The human readable name of a trial\n\nMIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation."
                     },
                     "trialPUI" : {
                         "type" : "string",
                         "description" : "A permanent identifier for a trial. Could be DOI or other URI formatted identifier.",
-                        "nullable" : true,
-                        "example" : "https://doi.org/101093190"
+                        "nullable" : true
                     }
                 },
                 "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing."
@@ -3960,6 +4099,29 @@
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
                     },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
+                    },
                     "studyDbIds" : {
                         "type" : "array",
                         "description" : "List of study identifiers to search for",
@@ -4014,8 +4176,7 @@
                     "commonCropName" : {
                         "type" : "string",
                         "description" : "Crop name (examples: \"Maize\", \"Wheat\")",
-                        "nullable" : true,
-                        "example" : "Maize"
+                        "nullable" : true
                     },
                     "contextOfUse" : {
                         "type" : "array",
@@ -4028,15 +4189,13 @@
                     "defaultValue" : {
                         "type" : "string",
                         "description" : "Variable default value. (examples: \"red\", \"2.3\", etc.)",
-                        "nullable" : true,
-                        "example" : "2.0"
+                        "nullable" : true
                     },
                     "documentationURL" : {
                         "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
                         "format" : "uri",
-                        "nullable" : true,
-                        "example" : "https://wiki.brapi.org/documentation.html"
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -4049,20 +4208,17 @@
                     "growthStage" : {
                         "type" : "string",
                         "description" : "Growth stage at which measurement is made (examples: \"flowering\")",
-                        "nullable" : true,
-                        "example" : "flowering"
+                        "nullable" : true
                     },
                     "institution" : {
                         "type" : "string",
                         "description" : "Name of institution submitting the variable",
-                        "nullable" : true,
-                        "example" : "The BrAPI Institute"
+                        "nullable" : true
                     },
                     "language" : {
                         "type" : "string",
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
-                        "nullable" : true,
-                        "example" : "en"
+                        "nullable" : true
                     },
                     "methodDbId" : {
                         "type" : "string"
@@ -4088,14 +4244,12 @@
                     "scientist" : {
                         "type" : "string",
                         "description" : "Name of scientist submitting the variable.",
-                        "nullable" : true,
-                        "example" : "Dr. Bob Robertson"
+                        "nullable" : true
                     },
                     "status" : {
                         "type" : "string",
                         "description" : "Variable status. (examples: \"recommended\", \"obsolete\", \"legacy\", etc.)",
-                        "nullable" : true,
-                        "example" : "recommended"
+                        "nullable" : true
                     },
                     "submissionTimestamp" : {
                         "type" : "string",
@@ -4345,6 +4499,43 @@
                                         "searchResultsDbId" : {
                                             "type" : "string",
                                             "example" : "551ae08c"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "StudyStudyTypeListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "StudyStudyTypeListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
+                                            }
                                         }
                                     }
                                 }

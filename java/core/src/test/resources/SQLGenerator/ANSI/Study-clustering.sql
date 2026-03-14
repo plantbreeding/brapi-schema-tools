@@ -113,3 +113,12 @@ CREATE TABLE brapi_ObservationVariableByStudy (
 ) 
 CLUSTER BY (observationVariableDbId,observationVariableName,observationVariablePUI,studyDbId)
 COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
+
+
+/* 
+Controlled Vocabulary for studyTypes of Study
+ */
+CREATE TABLE brapi_StudyTypes (
+  studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc'
+) 
+COMMENT 'Controlled Vocabulary table for property studyType on Study';

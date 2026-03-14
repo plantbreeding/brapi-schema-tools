@@ -119,3 +119,14 @@ USING delta
 CLUSTER BY (observationVariableDbId,observationVariableName,observationVariablePUI,studyDbId)
 TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
+
+
+/* 
+Controlled Vocabulary for studyTypes of Study
+ */
+CREATE TABLE brapi_StudyTypes (
+  studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc'
+) 
+USING delta
+TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
+COMMENT 'Controlled Vocabulary table for property studyType on Study';

@@ -4,61 +4,102 @@ import org.brapi.schematools.core.model.BrAPIPrimitiveType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class PythonTypeUtilsTest {
 
     @Test
     void testFindPyType_String() {
-        assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType()));
+        try {
+            assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType()).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_StringWithDateTimeFormat() {
-        assertEquals("datetime", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("date-time")));
+        try {
+            assertEquals("datetime", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("date-time")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_StringWithDateFormat() {
-        assertEquals("date", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("date")));
+        try {
+            assertEquals("date", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("date")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_StringWithUnknownFormat() {
-        assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("email")));
-        assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("uri")));
-        assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("uuid")));
+        try {
+            assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("email")).getResultOrThrow());
+            assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("uri")).getResultOrThrow());
+            assertEquals("str", PythonTypeUtils.findPyType(BrAPIPrimitiveType.stringType("uuid")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_Integer() {
-        assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType()));
+        try {
+            assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType()).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_IntegerWithFormat() {
-        assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType("int32")));
-        assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType("int64")));
+        try {
+            assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType("int32")).getResultOrThrow());
+            assertEquals("int", PythonTypeUtils.findPyType(BrAPIPrimitiveType.integerType("int64")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_Number() {
-        assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType()));
+        try {
+            assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType()).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_NumberWithFormat() {
-        assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType("float")));
-        assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType("double")));
+        try {
+            assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType("float")).getResultOrThrow());
+            assertEquals("float", PythonTypeUtils.findPyType(BrAPIPrimitiveType.numberType("double")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_Boolean() {
-        assertEquals("bool", PythonTypeUtils.findPyType(BrAPIPrimitiveType.booleanType()));
+        try {
+            assertEquals("bool", PythonTypeUtils.findPyType(BrAPIPrimitiveType.booleanType()).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
     void testFindPyType_BooleanWithFormat() {
-        assertEquals("bool", PythonTypeUtils.findPyType(BrAPIPrimitiveType.booleanType("someFormat")));
+        try {
+            assertEquals("bool", PythonTypeUtils.findPyType(BrAPIPrimitiveType.booleanType("someFormat")).getResultOrThrow());
+        } catch (RuntimeException e) {
+            fail(e.getMessage());
+        }
     }
 }
 
