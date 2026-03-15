@@ -37,6 +37,8 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toSingular("germplasm")) ;
         assertEquals("study", StringUtils.toSingular("studies")) ;
         assertEquals("trial", StringUtils.toSingular("trials")) ;
+        assertEquals("genus", StringUtils.toSingular("genus")) ;
+        assertEquals("species", StringUtils.toSingular("species")) ;
     }
 
     @Test

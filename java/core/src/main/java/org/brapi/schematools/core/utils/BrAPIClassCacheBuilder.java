@@ -168,9 +168,17 @@ public class BrAPIClassCacheBuilder {
                 }
                 case BrAPIReferenceType brAPIReferenceType -> {
                     // check in the cache, if not fall back to the input classes
-                    BrAPIClass brAPIClass = brAPIClassMap.getOrDefault(brAPIReferenceType.getName(), inputClassMap.get(brAPIReferenceType.getName()));
+                    BrAPIClass brAPIClass = brAPIClassMap.get(brAPIReferenceType.getName());
+
                     if (brAPIClass == null) {
-                        throw new IllegalStateException("No BrAPIClass with name " + brAPIReferenceType.getName() + " found");
+                        // if the class is not in the cache, then we need to cache it and its dependencies
+                        brAPIClass = inputClassMap.get(brAPIReferenceType.getName()) ;
+
+                        if (brAPIClass == null) {
+                            throw new IllegalStateException("No BrAPIClass with name " + brAPIReferenceType.getName() + " found");
+                        }
+
+                        return cacheType(inputClassMap.get(brAPIReferenceType.getName()));
                     }
                     return brAPIClass;
                 }

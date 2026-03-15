@@ -35,4 +35,16 @@ public class ClassModel {
     List<ClassModelField> scalarFields ;
     List<ClassModelField> nestedListFields ;
     List<ClassModelField> relationshipFields ;
+
+    /** {@code true} when this class represents a {@code BrAPIEnumType} rather than a {@code BrAPIObjectType}. */
+    @Builder.Default
+    boolean enumClass = false ;
+    /**
+     * The base Python enum class: {@code "StrEnum"} for string enums, {@code "IntEnum"} for integer enums,
+     * {@code "float"}-based enums use {@code "float, Enum"}, etc.  {@code null} for non-enum classes.
+     */
+    String enumBaseType ;
+    /** The enum members, in schema declaration order.  Empty (not {@code null}) for non-enum classes. */
+    @Builder.Default
+    List<EnumValueModel> enumValues = List.of() ;
 }

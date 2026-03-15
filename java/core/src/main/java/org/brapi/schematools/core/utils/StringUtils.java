@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm");
+    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm", "genus", "species");
 
     private static final List<Replacer> singularisations = ImmutableList.of(
         replace("(.*)people$").with("$1person"),

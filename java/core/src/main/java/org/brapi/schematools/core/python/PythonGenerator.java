@@ -6,8 +6,10 @@ import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.python.metadata.PythonGeneratorMetadata;
 import org.brapi.schematools.core.python.options.PythonGeneratorOptions;
+import org.brapi.schematools.core.model.BrAPIPrimitiveType;
 import org.brapi.schematools.core.python.thymeleaf.*;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.thymeleaf.TemplateEngine;
@@ -21,6 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
@@ -119,6 +124,15 @@ public class PythonGenerator {
 
             context.setVariable("entityClasses", entityClasses);
 
+            List<Dependency> entityClassDependencies = entityClasses.stream()
+                .map(classModel -> Dependency.builder()
+                    .name(classModel.getQueryClassName())
+                    .module("brapi.entities." + metadata.getFilePrefix() + toSnakeCase(classModel.getName()))
+                    .build())
+                .toList();
+
+            context.setVariable("entityClassDependencies", entityClassDependencies);
+
             String text = templateEngine.process("BrapiClient.txt", context);
 
             List<Path> paths = new ArrayList<>();
@@ -130,6 +144,8 @@ public class PythonGenerator {
                     .map(this::createPythonEntityClass)
                     .collect(Response.toList()))
                 .onSuccessDoWithResult(paths::addAll)
+                .map(() -> createEntitiesInit(entityClasses))
+                .onSuccessDoWithResult(paths::add)
                 .map(() -> success(paths));
         }
 
@@ -141,6 +157,16 @@ public class PythonGenerator {
                 .toList();
 
             context.setVariable("commonClasses", commonClasses);
+
+            Map<String, Dependency> entityClassDependencies = commonClasses.stream()
+                .flatMap(classModel -> brAPIClassCache.getPrimaryDependencies(classModel.getName()).stream())
+                .map(b -> Dependency.builder()
+                    .name(b.getName())
+                    .module("brapi.entities." + metadata.getFilePrefix() + toSnakeCase(b.getName()))
+                    .build())
+                .collect(Collectors.toMap(Dependency::getName, Function.identity(), (d1, d2) -> d1));
+
+            context.setVariable("entityClassDependencies", entityClassDependencies.values());
 
             String text = templateEngine.process("CommonClasses.txt", context);
             return writeToFile(
@@ -188,6 +214,42 @@ public class PythonGenerator {
             return writeToFile(createPathForEntityClass(fileName), primaryModel.getName(), text);
         }
 
+        private Response<Path> createEntitiesInit(List<ClassModel> entityClasses) {
+            Context context = new Context();
+
+            context.setVariable("brapiSchemaToolsVersion", options.getSchemaToolsVersion());
+
+            List<EntityModuleDescription> entityModules = entityClasses.stream()
+                .map(classModel -> EntityModuleDescription.builder()
+                    .classNames(findClassNamesForEntityClass(classModel))
+                    .moduleName(metadata.getFilePrefix() + toSnakeCase(classModel.getName()))
+                    .build())
+                .toList();
+
+            context.setVariable("entityModules", entityModules);
+
+            context.setVariable("commonModule", metadata.getFilePrefix() + "common");
+
+            String text = templateEngine.process("EntitiesInit.txt", context);
+
+            return writeToFile(
+                createPathForEntityClass("__init__.py"),
+                "EntitiesInit",
+                text
+            );
+        }
+
+        private List<String> findClassNamesForEntityClass(ClassModel entityClass) {
+            List<String> classNames = new ArrayList<>();
+
+            classNames.add(entityClass.getName());
+            classNames.add(entityClass.getQueryClassName());
+
+            classNames.addAll(brAPIClassCache.getExclusiveDependencies(entityClass.getName()).stream().map(BrAPIClass::getName).toList());
+
+            return classNames;
+        }
+
         private Response<ClassModel> createPrimaryModel(BrAPIClass brAPIClass) {
 
             if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
@@ -203,8 +265,13 @@ public class PythonGenerator {
                     List<ClassModelField> scalarFields = new ArrayList<>();
                     List<ClassModelField> nestedListFields = new ArrayList<>();
                     List<ClassModelField> relationshipFields = new ArrayList<>();
+                    List<ClassModelField> flattenNestedListFields = new ArrayList<>();
+                    List<ClassModelField> flattenRelationshipFields = new ArrayList<>();
 
                     brAPIObjectType.getProperties().forEach(property -> {
+                        boolean isDeprecatedAndIgnored =
+                            options.getBrAPISchemaReader().isIgnoringDepreciatedProperties() && property.isDeprecated();
+
                         if (property.getType() instanceof BrAPIPrimitiveType primitiveType) {
                             if (property.isRequired()) {
                                 requiredFields.add(ClassModelField.builder().name(property.getName()).type(findPyType(primitiveType).getResultOrThrow()).build());
@@ -215,16 +282,59 @@ public class PythonGenerator {
                             if (arrayType.getItems() instanceof BrAPIArrayType) {
                                 throw new RuntimeException(String.format("Properties '%s' with 2+ dimensions are not supported yet", property.getName()));
                             }
-                            nestedListFields.add(ClassModelField.builder()
+                            ClassModelField field = ClassModelField.builder()
                                 .name(property.getName())
                                 .type(arrayType.getName())
                                 .itemType(findType(arrayType.getItems()).getResultOrThrow())
-                                .build());
+                                .build();
+                            nestedListFields.add(field);
+                            boolean isNone = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
+                                .mapResult(LinkType.NONE::equals).orElseResult(false);
+                            if (!isDeprecatedAndIgnored && !isNone) {
+                                flattenNestedListFields.add(field);
+                            }
                         } else if (property.getType() instanceof BrAPIObjectType objectType) {
-                            relationshipFields.add(ClassModelField.builder().name(property.getName()).type(objectType.getName()).build());
+                            LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
+                                .orElseResult(LinkType.EMBEDDED);
+                            if (linkType == LinkType.ID) {
+                                // LinkType.ID: API returns flat scalar fields (e.g. cultivarDbId, cultivarName)
+                                // rather than a nested object — expand to explicit scalar link properties.
+                                if (!isDeprecatedAndIgnored) {
+                                    options.getProperties().getLinkPropertiesFor(objectType).forEach(linkProp ->
+                                        scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
+                                }
+                            } else {
+                                ClassModelField field = ClassModelField.builder().name(property.getName()).type(objectType.getName()).build();
+                                relationshipFields.add(field);
+                                // Only EMBEDDED fields need dict-expansion in to_df
+                                if (linkType == LinkType.EMBEDDED && !isDeprecatedAndIgnored) {
+                                    flattenRelationshipFields.add(field);
+                                }
+                            }
                         } else if (property.getType() instanceof BrAPIReferenceType referenceType) {
-                            relationshipFields.add(ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build());
+                            LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
+                                .orElseResult(LinkType.EMBEDDED);
+                            if (linkType == LinkType.ID) {
+                                // LinkType.ID: resolve reference and expand to scalar link properties
+                                if (!isDeprecatedAndIgnored) {
+                                    BrAPIClass refClass = brAPIClassCache.getBrAPIClass(referenceType.getName());
+                                    if (refClass instanceof BrAPIObjectType refObjectType) {
+                                        options.getProperties().getLinkPropertiesFor(refObjectType).forEach(linkProp ->
+                                            scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
+                                    } else {
+                                        // Fallback: treat as opaque relationship field
+                                        relationshipFields.add(ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build());
+                                    }
+                                }
+                            } else {
+                                ClassModelField field = ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build();
+                                relationshipFields.add(field);
+                                if (linkType == LinkType.EMBEDDED && !isDeprecatedAndIgnored) {
+                                    flattenRelationshipFields.add(field);
+                                }
+                            }
                         } else if (property.getType() instanceof BrAPIEnumType enumType) {
+                            // Enums are scalar values in the API response — no flattening needed
                             relationshipFields.add(ClassModelField.builder().name(property.getName()).type(enumType.getName()).build());
                         } else {
                             throw new RuntimeException(String.format("Property '%s' with type '%s' not supported yet", property.getName(), property.getType().getName()));
@@ -247,7 +357,8 @@ public class PythonGenerator {
                         .map(b -> Dependency.builder()
                             .name(b.getName())
                             .module(metadata.getFilePrefix() + "common")
-                            .build()).toList());
+                            .build())
+                        .toList());
 
                     builder.commonDependencies(commonDependencies);
 
@@ -256,13 +367,14 @@ public class PythonGenerator {
                         .map(b -> Dependency.builder()
                             .name(b.getName())
                             .module(metadata.getFilePrefix() + toSnakeCase(b.getName()))
-                            .build()).toList();
+                            .build())
+                        .toList();
 
                     builder.primaryDependencies(primaryDependencies);
 
                     builder.flattenConfig(FlattenConfig.builder()
-                        .relationshipFields(List.of())
-                        .relationshipFields(List.of())
+                        .relationshipFields(flattenRelationshipFields.stream().map(ClassModelField::getName).toList())
+                        .arrayFields(flattenNestedListFields.stream().map(ClassModelField::getName).toList())
                         .build());
 
                     Endpoints.EndpointsBuilder endpoints = Endpoints.builder();
@@ -446,12 +558,44 @@ public class PythonGenerator {
                     .filter(property -> !property.isRequired())
                     .filter(property -> property.getType() instanceof BrAPIPrimitiveType)
                     .map(this::createModelField).toList());
+            } else if (brAPIClass instanceof BrAPIEnumType brAPIEnumType) {
+                boolean isStringEnum = BrAPIPrimitiveType.STRING.equals(brAPIEnumType.getType());
+                builder.enumClass(true);
+                builder.enumBaseType(resolvePythonEnumBase(brAPIEnumType.getType()));
+                builder.enumValues(brAPIEnumType.getValues().stream()
+                    .map(v -> EnumValueModel.builder()
+                        .name(toEnumMemberName(v.getName()))
+                        .value(v.getValue())
+                        .stringValue(isStringEnum)
+                        .build())
+                    .toList());
+                builder.requiredFields(List.of());
+                builder.scalarFields(List.of());
             } else {
                 builder.requiredFields(List.of());
                 builder.scalarFields(List.of());
             }
 
             return builder.build();
+        }
+
+        /** Maps a BrAPI primitive type string to the Python enum base class name. */
+        private String resolvePythonEnumBase(String brAPIType) {
+            return switch (brAPIType) {
+                case BrAPIPrimitiveType.INTEGER -> "IntEnum";
+                case BrAPIPrimitiveType.NUMBER  -> "float, Enum";
+                case BrAPIPrimitiveType.BOOLEAN -> "int, Enum";
+                default                         -> "StrEnum";   // string
+            };
+        }
+
+        /**
+         * Converts a raw enum value name (e.g. {@code "fieldStudy"}) into a valid
+         * Python UPPER_SNAKE_CASE identifier (e.g. {@code "FIELD_STUDY"}).
+         */
+        private String toEnumMemberName(String name) {
+            // reuse existing toSnakeCase then upper-case
+            return toSnakeCase(name).toUpperCase();
         }
 
         private ClassModelField createModelField(BrAPIObjectProperty property) {
