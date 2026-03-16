@@ -27,6 +27,9 @@ public class ListGetOptions extends AbstractSubOptions {
     private Map<String, Boolean> inputFor = new HashMap<>();
     private Boolean propertiesFromRequest;
     private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
+    private Boolean pagedTokenDefault;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> pagedToken = new HashMap<>();
 
     @Override
     public Validation validate() {
@@ -35,7 +38,9 @@ public class ListGetOptions extends AbstractSubOptions {
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor, "'inputFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertiesFromRequest, "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**
@@ -65,6 +70,13 @@ public class ListGetOptions extends AbstractSubOptions {
                     propertyFromRequestFor.put(key, new HashMap<>(value));
                 }
             });
+        }
+
+        if (overrideOptions.pagedTokenDefault != null) {
+            setPagedTokenDefault(overrideOptions.pagedTokenDefault);
+        }
+        if (overrideOptions.pagedToken != null) {
+            pagedToken.putAll(overrideOptions.pagedToken);
         }
     }
 
@@ -194,5 +206,64 @@ public class ListGetOptions extends AbstractSubOptions {
             .computeIfAbsent(type.getName(), k -> new HashMap<>())
             .put(property.getName(), usePropertyFromRequest);
         return this;
+    }
+
+    /**
+     * Determines if the list endpoint has a page token for the named primary model.
+     * @param name the name of the primary model
+     * @return {@code true} if the list endpoint has a page token, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean hasPageTokenFor(@NonNull String name) {
+        return pagedToken.getOrDefault(name, pagedTokenDefault);
+    }
+
+    /**
+     * Determines if the list endpoint has a page token for the given primary model.
+     * @param type the primary model
+     * @return {@code true} if the list endpoint has a page token, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean hasPageTokenFor(@NonNull BrAPIType type) {
+        return hasPageTokenFor(type.getName());
+    }
+
+    /**
+     * Sets the page token flag for the named primary model.
+     * @param name       the name of the primary model
+     * @param hasPageToken {@code true} if the list endpoint has a page token
+     * @return this
+     */
+    @JsonIgnore
+    public final ListGetOptions setHasPageTokenFor(@NonNull String name, boolean hasPageToken) {
+        pagedToken.put(name, hasPageToken);
+        return this;
+    }
+
+    /**
+     * Sets the page token flag for the given primary model.
+     * @param type         the primary model
+     * @param hasPageToken {@code true} if the list endpoint has a page token
+     * @return this
+     */
+    @JsonIgnore
+    public final ListGetOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
+        return setHasPageTokenFor(type.getName(), hasPageToken);
+    }
+
+    protected Boolean getPagedTokenDefault() {
+        return this.pagedTokenDefault;
+    }
+
+    protected Map<String, Boolean> getPagedToken() {
+        return this.pagedToken;
+    }
+
+    public void setPagedTokenDefault(Boolean pagedTokenDefault) {
+        this.pagedTokenDefault = pagedTokenDefault;
+    }
+
+    private void setPagedToken(Map<String, Boolean> pagedToken) {
+        this.pagedToken = pagedToken;
     }
 }

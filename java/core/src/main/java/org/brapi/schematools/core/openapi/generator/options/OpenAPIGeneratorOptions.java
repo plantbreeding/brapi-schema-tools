@@ -3,15 +3,11 @@ package org.brapi.schematools.core.openapi.generator.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
+import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
-import org.brapi.schematools.core.options.LinkType;
-import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -21,10 +17,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
-import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
-import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 
 /**
@@ -36,12 +29,6 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Accessors(chain = true)
 public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
-
-    @Setter(AccessLevel.PRIVATE)
-    private ListGetOptions listGet;
-    @Setter(AccessLevel.PRIVATE)
-    private ControlledVocabularyOptions controlledVocabulary;
-
     @Getter(AccessLevel.PUBLIC)
     private String supplementalSpecification;
     @Getter(AccessLevel.NONE)
@@ -112,14 +99,6 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     public OpenAPIGeneratorOptions override(OpenAPIGeneratorOptions overrideOptions) {
         super.override(overrideOptions) ;
 
-        if (overrideOptions.listGet != null) {
-            listGet.override(overrideOptions.getListGet()) ;
-        }
-
-        if (overrideOptions.controlledVocabulary != null) {
-            controlledVocabulary.override(overrideOptions.getControlledVocabulary()) ;
-        }
-
         if (overrideOptions.separateByModule != null) {
             separateByModule = overrideOptions.separateByModule ;
         }
@@ -166,12 +145,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(listGet,  "List Get Endpoint Options are null")
-            .assertNotNull(controlledVocabulary,  "Controlled Vocabulary Options are null")
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
-            .merge(listGet)
-            .merge(controlledVocabulary)
             .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
             .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
@@ -198,7 +173,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
      */
     @JsonIgnore
     public final boolean isGeneratingEndpoint() {
-        return listGet.isGenerating() || getPost().isGenerating() || getPut().isGenerating() ;
+        return getListGet().isGenerating() || getPost().isGenerating() || getPut().isGenerating() ;
     }
 
     /**
@@ -209,7 +184,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointFor(@NonNull String name) {
-        return listGet.isGeneratingFor(name) || getPost().isGeneratingFor(name) || getPut().isGeneratingEndpointFor(name) ;
+        return getListGet().isGeneratingFor(name) || getPost().isGeneratingFor(name) || getPut().isGeneratingEndpointFor(name) ;
     }
 
     /**
@@ -379,16 +354,6 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     }
 
     /**
-     * Gets the singular name for a pluralised property name
-     * @param propertyName the pluralised property name
-     * @return the singular name for the property
-     */
-    @JsonIgnore
-    public final String getSingularForProperty(@NonNull String propertyName) {
-        return toSingular(propertyName) ;
-    }
-
-    /**
      * Gets the path item with id name for a specific Primary Model
      * @param type the Primary Model
      * @return the path item name for a specific Primary Model
@@ -428,15 +393,5 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         tagFor.put(name, tagName) ;
 
         return this ;
-    }
-
-    @Override
-    public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return getProperties().getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
-    }
-
-    @Override
-    public final boolean isGeneratingControlledVocabularyEndpoints() {
-        return controlledVocabulary != null && controlledVocabulary.isGenerating() ;
     }
 }

@@ -1,6 +1,4 @@
-package org.brapi.schematools.core.python.options;
-
-import org.brapi.schematools.core.options.AbstractSubOptions;
+package org.brapi.schematools.core.options;
 
 /**
  * Provides options for the generation of Table query methods

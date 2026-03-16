@@ -1,15 +1,8 @@
 package org.brapi.schematools.core.python.options;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
-import org.brapi.schematools.core.options.LinkType;
-import org.brapi.schematools.core.options.ListGetOptions;
 import org.brapi.schematools.core.python.PythonGenerator;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -17,8 +10,6 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-
-import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
  * Options for the {@link PythonGenerator}.
@@ -31,15 +22,6 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     private String entitiesDirectory;
-
-    @Setter(AccessLevel.PRIVATE)
-    private ListGetOptions listGet;
-    @Setter(AccessLevel.PRIVATE)
-    private TableOptions table;
-    @Setter(AccessLevel.PRIVATE)
-    private SearchTableOptions searchTable;
-    @Setter(AccessLevel.PRIVATE)
-    private ControlledVocabularyOptions controlledVocabulary;
 
     /**
      * Load the default options.
@@ -81,11 +63,7 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(entitiesDirectory, "'entitiesDirectory' option is null")
-            .assertNotNull(listGet, "List Get Endpoint Options are null")
-            .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
-            .merge(listGet)
-            .merge(controlledVocabulary);
+            .assertNotNull(entitiesDirectory, "'entitiesDirectory' option is null");
     }
 
     /** {@inheritDoc} */
@@ -114,73 +92,7 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
         if (overrideOptions.entitiesDirectory != null) {
             entitiesDirectory = overrideOptions.entitiesDirectory;
         }
-        if (overrideOptions.listGet != null) {
-            listGet.override(overrideOptions.listGet);
-        }
-        if (overrideOptions.table != null) {
-            table.override(overrideOptions.getTable());
-        }
-        if (overrideOptions.searchTable != null) {
-            searchTable.override(overrideOptions.getSearchTable());
-        }
-        if (overrideOptions.controlledVocabulary != null) {
-            controlledVocabulary.override(overrideOptions.getControlledVocabulary());
-        }
-
         return this;
     }
 
-    /**
-     * Determines if a Python class is generated for a specific primary model.
-     *
-     * @param name the name of the primary model
-     * @return {@code true} if a class is generated for the primary model, {@code false} otherwise
-     */
-    @JsonIgnore
-    public final boolean isGeneratingFor(@NonNull String name) {
-        return super.isGeneratingFor(name) && (getSingleGet().isGeneratingFor(name) ||
-            listGet.isGeneratingFor(name) ||
-            getPost().isGeneratingFor(name) ||
-            getPut().isGeneratingFor(name) ||
-            getDelete().isGeneratingFor(name) ||
-            getSearch().isGeneratingFor(name));
-    }
-
-    /**
-     * Determines if a Python class is generated for a specific primary model.
-     *
-     * @param type the primary model
-     * @return {@code true} if a class is generated for the primary model, {@code false} otherwise
-     */
-    @JsonIgnore
-    public final boolean isGeneratingFor(BrAPIType type) {
-        return getSingleGet().isGeneratingFor(type) ||
-            listGet.isGeneratingFor(type) ||
-            getPost().isGeneratingFor(type) ||
-            getPut().isGeneratingFor(type) ||
-            getDelete().isGeneratingFor(type) ||
-            getSearch().isGeneratingFor(type);
-    }
-
-    /**
-     * Gets the singular name for a pluralised property name.
-     *
-     * @param propertyName the pluralised property name
-     * @return the singular name for the property
-     */
-    @JsonIgnore
-    public final String getSingularForProperty(@NonNull String propertyName) {
-        return toSingular(propertyName);
-    }
-
-    @Override
-    public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return getProperties().getLinkTypeFor(type, property)
-            .mapResult(LinkType.SUB_QUERY::equals).orElseResult(false);
-    }
-
-    @Override
-    public final boolean isGeneratingControlledVocabularyEndpoints() {
-        return controlledVocabulary != null && controlledVocabulary.isGenerating();
-    }
 }

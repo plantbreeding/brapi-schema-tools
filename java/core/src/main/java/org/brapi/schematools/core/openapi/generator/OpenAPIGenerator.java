@@ -958,7 +958,7 @@ public class OpenAPIGenerator {
 
         private Response<ApiResponses> createListApiResponses(BrAPIObjectTypeWithProperty typeWithProperty) {
             return success(addStandardApiResponses(new ApiResponses().
-                addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty), typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.property.getName()))))));
+                addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty), typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.getProperty().getName()))))));
         }
 
         private ApiResponses addStandardApiResponses(ApiResponses apiResponses) {

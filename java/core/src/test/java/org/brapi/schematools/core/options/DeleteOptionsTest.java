@@ -1,17 +1,20 @@
-package org.brapi.schematools.core.openapi.generator.options;
+package org.brapi.schematools.core.options;
 
+import org.brapi.schematools.core.openapi.generator.options.OpenAPIGeneratorOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ListGetOptionsTest {
+class DeleteOptionsTest {
 
-    ListGetOptions subject ;
+    DeleteOptions subject ;
     @BeforeEach
     void setUp() {
-        subject = OpenAPIGeneratorOptions.load().getListGet() ;
+        subject = OpenAPIGeneratorOptions.load().getDelete() ;
+
+        subject.setGenerate(true);
     }
 
     @Test
@@ -27,22 +30,10 @@ class ListGetOptionsTest {
     }
 
     @Test
-    void getSummaryFormat() {
+    void getSummaryFor() {
     }
 
     @Test
-    void getDescriptionFormat() {
-    }
-
-    @Test
-    void isPagedDefault() {
-    }
-
-    @Test
-    void getPaged() {
-    }
-
-    @Test
-    void builder() {
+    void getDescriptionFor() {
     }
 }

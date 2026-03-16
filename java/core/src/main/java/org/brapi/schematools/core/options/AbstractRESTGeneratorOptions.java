@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
-import org.brapi.schematools.core.openapi.generator.BrAPIObjectTypeWithProperty;
+import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toLowerCase;
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
  * Abstract base class for generator options that produce REST-style endpoints
@@ -40,6 +41,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Setter(AccessLevel.PRIVATE)
     private SingleGetOptions singleGet;
     @Setter(AccessLevel.PRIVATE)
+    private ListGetOptions listGet;
+    @Setter(AccessLevel.PRIVATE)
     private PostOptions post;
     @Setter(AccessLevel.PRIVATE)
     private PutOptions put;
@@ -49,6 +52,12 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     private SearchOptions search;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
+    @Setter(AccessLevel.PRIVATE)
+    private ControlledVocabularyOptions controlledVocabulary;
+    @Setter(AccessLevel.PRIVATE)
+    private TableOptions table;
+    @Setter(AccessLevel.PRIVATE)
+    private SearchTableOptions searchTable;
 
     // -------------------------------------------------------------------------
     // validate
@@ -59,17 +68,22 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         return super.validate()
             .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null")
             .assertNotNull(singleGet, "Single Get Endpoint Options are null")
+            .assertNotNull(listGet,  "List Get Endpoint Options are null")
             .assertNotNull(post, "Post Endpoint Options are null")
             .assertNotNull(put, "Put Endpoint Options are null")
             .assertNotNull(delete, "Delete Endpoint Options are null")
             .assertNotNull(search, "Search Endpoint Options are null")
             .assertNotNull(properties, "Properties Options are null")
+            .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
+            .assertNotNull(table, "Table Options are null")
+            .assertNotNull(searchTable, "Search Table Options are null")
             .merge(singleGet)
             .merge(post)
             .merge(put)
             .merge(delete)
             .merge(search)
-            .merge(properties);
+            .merge(properties)
+            .merge(controlledVocabulary);
     }
 
     // -------------------------------------------------------------------------
@@ -110,6 +124,9 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         if (overrideOptions.singleGet != null) {
             singleGet.override(overrideOptions.singleGet);
         }
+        if (overrideOptions.listGet != null) {
+            listGet.override(overrideOptions.getListGet()) ;
+        }
         if (overrideOptions.post != null) {
             post.override(overrideOptions.post);
         }
@@ -124,6 +141,15 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         }
         if (overrideOptions.properties != null) {
             properties.override(overrideOptions.properties);
+        }
+        if (overrideOptions.controlledVocabulary != null) {
+            controlledVocabulary.override(overrideOptions.controlledVocabulary);
+        }
+        if (overrideOptions.table != null) {
+            table.override(overrideOptions.table);
+        }
+        if (overrideOptions.searchTable != null) {
+            searchTable.override(overrideOptions.searchTable);
         }
 
         return this;
@@ -260,13 +286,60 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     }
 
     /**
+     * Determines if a Python class is generated for a specific primary model.
+     *
+     * @param name the name of the primary model
+     * @return {@code true} if a class is generated for the primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    @Override
+    public boolean isGeneratingFor(@NonNull String name) {
+        return super.isGeneratingFor(name) && (getSingleGet().isGeneratingFor(name) ||
+            getListGet().isGeneratingFor(name) ||
+            getPost().isGeneratingFor(name) ||
+            getPut().isGeneratingFor(name) ||
+            getDelete().isGeneratingFor(name) ||
+            getSearch().isGeneratingFor(name));
+    }
+
+    /**
+     * Determines if a class is generated for a specific primary model.
+     *
+     * @param type the primary model
+     * @return {@code true} if a class is generated for the primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    @Override
+    public boolean isGeneratingFor(@NonNull BrAPIType type) {
+        return getSingleGet().isGeneratingFor(type) ||
+            getListGet().isGeneratingFor(type) ||
+            getPost().isGeneratingFor(type) ||
+            getPut().isGeneratingFor(type) ||
+            getDelete().isGeneratingFor(type) ||
+            getSearch().isGeneratingFor(type);
+    }
+
+    /**
+     * Gets the singular name for a pluralised property name.
+     *
+     * @param propertyName the pluralised property name
+     * @return the singular name for the property
+     */
+    @JsonIgnore
+    public final String getSingularForProperty(@NonNull String propertyName) {
+        return toSingular(propertyName);
+    }
+
+    /**
      * Determines if a specific property should be exposed as a separate sub-path endpoint.
      *
      * @param type     the Object type
      * @param property the Object type property
      * @return {@code true} if a separate endpoint will be created for the property, {@code false} otherwise
      */
-    public abstract boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property);
+    public boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
+        return getProperties().getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false);
+    }
 
     /**
      * Gets the name of the sub-path endpoint for a property.
@@ -284,6 +357,9 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
      *
      * @return {@code true} if controlled vocabulary endpoints should be generated, {@code false} otherwise
      */
-    public abstract boolean isGeneratingControlledVocabularyEndpoints();
+    @JsonIgnore
+    public final boolean isGeneratingControlledVocabularyEndpoints() {
+        return controlledVocabulary != null && controlledVocabulary.isGenerating();
+    }
 }
 
