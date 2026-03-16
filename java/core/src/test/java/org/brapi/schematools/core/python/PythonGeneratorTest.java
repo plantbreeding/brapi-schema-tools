@@ -63,9 +63,6 @@ class PythonGeneratorTest {
             }
 
             for (Path path : result) {
-
-                String rFile = path.getFileName().toString();
-
                 String relativePath = path.toAbsolutePath().toString().substring(OUTPUT_PATH.toAbsolutePath().toString().length() + 1);
 
                 String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/"+ relativePath).toURI())).getResultOrThrow();

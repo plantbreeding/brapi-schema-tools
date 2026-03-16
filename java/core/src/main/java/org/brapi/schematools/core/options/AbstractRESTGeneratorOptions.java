@@ -37,6 +37,19 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
 
+    @Setter(AccessLevel.PRIVATE)
+    private SingleGetOptions singleGet;
+    @Setter(AccessLevel.PRIVATE)
+    private PostOptions post;
+    @Setter(AccessLevel.PRIVATE)
+    private PutOptions put;
+    @Setter(AccessLevel.PRIVATE)
+    private DeleteOptions delete;
+    @Setter(AccessLevel.PRIVATE)
+    private SearchOptions search;
+    @Setter(AccessLevel.PRIVATE)
+    private PropertiesOptions properties;
+
     // -------------------------------------------------------------------------
     // validate
     // -------------------------------------------------------------------------
@@ -44,7 +57,19 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null");
+            .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null")
+            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
+            .assertNotNull(post, "Post Endpoint Options are null")
+            .assertNotNull(put, "Put Endpoint Options are null")
+            .assertNotNull(delete, "Delete Endpoint Options are null")
+            .assertNotNull(search, "Search Endpoint Options are null")
+            .assertNotNull(properties, "Properties Options are null")
+            .merge(singleGet)
+            .merge(post)
+            .merge(put)
+            .merge(delete)
+            .merge(search)
+            .merge(properties);
     }
 
     // -------------------------------------------------------------------------
@@ -80,6 +105,25 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
                     pathItemNameForProperty.put(key, new HashMap<>(value));
                 }
             });
+        }
+
+        if (overrideOptions.singleGet != null) {
+            singleGet.override(overrideOptions.singleGet);
+        }
+        if (overrideOptions.post != null) {
+            post.override(overrideOptions.post);
+        }
+        if (overrideOptions.put != null) {
+            put.override(overrideOptions.put);
+        }
+        if (overrideOptions.delete != null) {
+            delete.override(overrideOptions.delete);
+        }
+        if (overrideOptions.search != null) {
+            search.override(overrideOptions.search);
+        }
+        if (overrideOptions.properties != null) {
+            properties.override(overrideOptions.properties);
         }
 
         return this;

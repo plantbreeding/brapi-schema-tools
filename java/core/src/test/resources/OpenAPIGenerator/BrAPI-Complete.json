@@ -986,7 +986,7 @@
                         }
                     },
                     {
-                        "name" : "genu",
+                        "name" : "genus",
                         "in" : "query",
                         "description" : "List of Genus names to identify germplasm",
                         "required" : false,
@@ -995,7 +995,7 @@
                         }
                     },
                     {
-                        "name" : "specy",
+                        "name" : "species",
                         "in" : "query",
                         "description" : "List of Species names to identify germplasm",
                         "required" : false,
@@ -3689,7 +3689,7 @@
                         }
                     },
                     {
-                        "name" : "genu",
+                        "name" : "genus",
                         "in" : "query",
                         "description" : "List of Genus names to identify germplasm",
                         "required" : false,
@@ -3698,7 +3698,7 @@
                         }
                     },
                     {
-                        "name" : "specy",
+                        "name" : "species",
                         "in" : "query",
                         "description" : "List of Species names to identify germplasm",
                         "required" : false,

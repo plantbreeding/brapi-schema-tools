@@ -38,19 +38,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     @Setter(AccessLevel.PRIVATE)
-    private SingleGetOptions singleGet;
-    @Setter(AccessLevel.PRIVATE)
     private ListGetOptions listGet;
-    @Setter(AccessLevel.PRIVATE)
-    private PostOptions post;
-    @Setter(AccessLevel.PRIVATE)
-    private PutOptions put;
-    @Setter(AccessLevel.PRIVATE)
-    private DeleteOptions delete;
-    @Setter(AccessLevel.PRIVATE)
-    private SearchOptions search;
-    @Setter(AccessLevel.PRIVATE)
-    private PropertiesOptions properties;
     @Setter(AccessLevel.PRIVATE)
     private ControlledVocabularyOptions controlledVocabulary;
 
@@ -124,32 +112,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     public OpenAPIGeneratorOptions override(OpenAPIGeneratorOptions overrideOptions) {
         super.override(overrideOptions) ;
 
-        if (overrideOptions.singleGet != null) {
-            singleGet.override(overrideOptions.getSingleGet()) ;
-        }
-
         if (overrideOptions.listGet != null) {
             listGet.override(overrideOptions.getListGet()) ;
-        }
-
-        if (overrideOptions.post != null) {
-            post.override(overrideOptions.getPost()) ;
-        }
-
-        if (overrideOptions.put != null) {
-            put.override(overrideOptions.getPut()) ;
-        }
-
-        if (overrideOptions.search != null) {
-            search.override(overrideOptions.getSearch()) ;
-        }
-
-        if (overrideOptions.delete != null) {
-            delete.override(overrideOptions.getDelete()) ;
-        }
-
-        if (overrideOptions.properties != null) {
-            properties.override(overrideOptions.getProperties()) ;
         }
 
         if (overrideOptions.controlledVocabulary != null) {
@@ -202,23 +166,11 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
             .assertNotNull(listGet,  "List Get Endpoint Options are null")
-            .assertNotNull(post, "Post Endpoint Options are null")
-            .assertNotNull(put, "Put Endpoint Options are null")
-            .assertNotNull(delete,  "Delete Endpoint Options are null")
-            .assertNotNull(search,  "Search Endpoint Options are null")
-            .assertNotNull(properties,  "Properties Options are null")
             .assertNotNull(controlledVocabulary,  "Controlled Vocabulary Options are null")
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
-            .merge(singleGet)
             .merge(listGet)
-            .merge(post)
-            .merge(put)
-            .merge(delete)
-            .merge(search)
-            .merge(properties)
             .merge(controlledVocabulary)
             .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
             .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
@@ -241,28 +193,28 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate any Endpoints without an ID parameter. Returns {@code true} if
-     * {@link ListGetOptions#isGenerating()} or {@link PostOptions#isGenerating()} or {@link PutOptions#isGenerating()}  is set to {@code true}
+     * {@link ListGetOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PostOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()}  is set to {@code true}
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpoint() {
-        return listGet.isGenerating() || post.isGenerating() || put.isGenerating() ;
+        return listGet.isGenerating() || getPost().isGenerating() || getPut().isGenerating() ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointFor(@NonNull String name) {
-        return listGet.isGeneratingFor(name) || post.isGeneratingFor(name) || put.isGeneratingEndpointFor(name) ;
+        return listGet.isGeneratingFor(name) || getPost().isGeneratingFor(name) || getPut().isGeneratingEndpointFor(name) ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link PostOptions#isGeneratingFor(String)} is set to {@code true}
+     * {@link ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)} is set to {@code true}
      * @param type the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
@@ -273,31 +225,31 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate any Endpoints with an ID parameter. Returns {@code true} if
-     * {@link SingleGetOptions#isGenerating()} or {@link PutOptions#isGenerating()} or
-     * {@link DeleteOptions#isGenerating()} is set to {@code true}
+     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()} or
+     * {@link org.brapi.schematools.core.options.DeleteOptions#isGenerating()} is set to {@code true}
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointWithId() {
-        return singleGet.isGenerating() || put.isGenerating() || delete.isGenerating() ;
+        return getSingleGet().isGenerating() || getPut().isGenerating() || getDelete().isGenerating() ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
+     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
+     * {@link org.brapi.schematools.core.options.DeleteOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
-        return singleGet.isGeneratingFor(name) || put.isGeneratingEndpointNameWithIdFor(name) || delete.isGeneratingFor(name) ;
+        return getSingleGet().isGeneratingFor(name) || getPut().isGeneratingEndpointNameWithIdFor(name) || getDelete().isGeneratingFor(name) ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link SingleGetOptions#isGeneratingFor(String)} or {@link PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
-     * {@link DeleteOptions#isGeneratingFor(String)}is set to {@code true}
+     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
+     * {@link org.brapi.schematools.core.options.DeleteOptions#isGeneratingFor(String)} is set to {@code true}
      * @param type the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
@@ -442,7 +394,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
      * @return the path item name for a specific Primary Model
      */
     public final String getPathItemWithIdNameFor(BrAPIType type) {
-        return String.format("%s/{%s}", getPathItemNameFor(type), properties.getIdPropertyNameFor(type));
+        return String.format("%s/{%s}", getPathItemNameFor(type), getProperties().getIdPropertyNameFor(type));
     }
 
     /**
@@ -480,7 +432,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     @Override
     public final boolean isGeneratingSubPathFor(BrAPIObjectType type, BrAPIObjectProperty property) {
-        return properties.getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
+        return getProperties().getLinkTypeFor(type, property).mapResult(LinkType.SUB_QUERY::equals).orElseResult(false) ;
     }
 
     @Override

@@ -1,8 +1,9 @@
-package org.brapi.schematools.core.python.options;
+package org.brapi.schematools.core.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.validiation.Validation;
@@ -10,19 +11,20 @@ import org.brapi.schematools.core.validiation.Validation;
 import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 
 /**
- * Provides options for the generation of Search POST and result-retrieval GET methods.
+ * Provides options for the generation of Search POST and result-retrieval GET Endpoints/methods.
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class SearchOptions extends AbstractPythonGeneratorSubOptions {
+public class SearchOptions extends AbstractSubOptions {
 
     @Getter(AccessLevel.PUBLIC)
     private String searchIdFieldName;
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
 
+    @Override
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(searchIdFieldName,
                 "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat,
@@ -56,10 +58,10 @@ public class SearchOptions extends AbstractPythonGeneratorSubOptions {
      * Gets the submit description for a specific primary model.
      *
      * @param type the primary model
-     * @return the submit description string
+     * @return the formatted submit description string
      */
     @JsonIgnore
-    public final String getSubmitDescriptionFormat(BrAPIType type) {
+    public final String getSubmitDescriptionFormat(@NonNull BrAPIType type) {
         return String.format(submitDescriptionFormat, type.getName(), toParameterCase(type.getName()));
     }
 
@@ -67,10 +69,10 @@ public class SearchOptions extends AbstractPythonGeneratorSubOptions {
      * Gets the retrieve description for a specific primary model.
      *
      * @param type the primary model
-     * @return the retrieve description string
+     * @return the formatted retrieve description string
      */
     @JsonIgnore
-    public final String getRetrieveDescriptionFormat(BrAPIType type) {
+    public final String getRetrieveDescriptionFormat(@NonNull BrAPIType type) {
         return String.format(retrieveDescriptionFormat, type.getName(), toParameterCase(type.getName()));
     }
 }
