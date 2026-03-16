@@ -45,18 +45,24 @@ class PythonGeneratorTest {
     }
 
     private void assertPythonEquals(List<Path> result) {
+        boolean failed = false ;
         try {
             for (Path path : result) {
-
-                String rFile = path.getFileName().toString();
-
                 String relativePath = path.toAbsolutePath().toString().substring(OUTPUT_PATH.toAbsolutePath().toString().length() + 1);
 
-                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/"+ relativePath).toURI())).getResultOrThrow();
                 String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
 
-                if (!isMultilineEqual(expected, actual)) {
-                    Path build = Paths.get("build/test-output/Python/Fails", rFile);
+                try {
+                    String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/" + relativePath).toURI())).getResultOrThrow();
+                    if (!isMultilineEqual(expected, actual)) {
+                        Path build = Paths.get("build/test-output/Python/Fails", relativePath);
+                        Files.createDirectories(build.getParent());
+                        Files.writeString(build, actual);
+                    }
+                } catch (Exception e) {
+                    failed = true ;
+                    log.error(e.getMessage(), e);
+                    Path build = Paths.get("build/test-output/Python/Fails", relativePath);
                     Files.createDirectories(build.getParent());
                     Files.writeString(build, actual);
                 }
@@ -74,6 +80,10 @@ class PythonGeneratorTest {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             Assertions.fail(e) ;
+        }
+
+        if (failed) {
+            Assertions.fail("Generated Python did not match expected output. See build/test-output/Python/Fails for actual output.");
         }
     }
 

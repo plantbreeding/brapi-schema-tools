@@ -129,10 +129,10 @@ PedigreeNodes <- R6Class(
         queryParams$binomialName <- binomialNames
       }
       if (!is.null(genus)) {
-        queryParams$genu <- genus
+        queryParams$genus <- genus
       }
       if (!is.null(species)) {
-        queryParams$specy <- species
+        queryParams$species <- species
       }
       if (!is.null(synonyms)) {
         queryParams$synonym <- synonyms
