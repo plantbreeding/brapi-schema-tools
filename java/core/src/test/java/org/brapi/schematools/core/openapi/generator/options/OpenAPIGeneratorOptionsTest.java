@@ -40,6 +40,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void loadJson() {
         OpenAPIGeneratorOptions options = null;
@@ -56,6 +57,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void loadYaml() {
         OpenAPIGeneratorOptions options = null;
@@ -71,6 +73,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OpenAPIGeneratorOptions options = null;

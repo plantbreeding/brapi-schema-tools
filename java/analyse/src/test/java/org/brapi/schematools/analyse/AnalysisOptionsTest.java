@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.graphql.options.GraphQLGeneratorOptions;
 import org.brapi.schematools.core.graphql.options.IdsOptions;
-import org.brapi.schematools.core.graphql.options.PropertiesOptions;
+import org.brapi.schematools.core.graphql.options.GraphQLPropertiesOptions;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
@@ -45,6 +45,7 @@ class AnalysisOptionsTest {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         AnalysisOptions options = null;
@@ -153,7 +154,7 @@ class AnalysisOptionsTest {
         assertEquals(options.getProperties().getPui().getPropertyNameFor("GermplasmAttribute"), "attributePUI");
     }
 
-    private void checkOptions(PropertiesOptions options) {
+    private void checkOptions(GraphQLPropertiesOptions options) {
         assertNotNull(options);
         checkOptions(options.getIds());
 

@@ -49,6 +49,7 @@ class RGeneratorMetadataTest {
         checkDefaultMetadata(metadata);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         RGeneratorMetadata metadata = null;

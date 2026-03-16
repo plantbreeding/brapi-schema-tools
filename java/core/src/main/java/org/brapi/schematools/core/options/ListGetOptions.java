@@ -250,20 +250,4 @@ public class ListGetOptions extends AbstractSubOptions {
     public final ListGetOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
         return setHasPageTokenFor(type.getName(), hasPageToken);
     }
-
-    protected Boolean getPagedTokenDefault() {
-        return this.pagedTokenDefault;
-    }
-
-    protected Map<String, Boolean> getPagedToken() {
-        return this.pagedToken;
-    }
-
-    public void setPagedTokenDefault(Boolean pagedTokenDefault) {
-        this.pagedTokenDefault = pagedTokenDefault;
-    }
-
-    private void setPagedToken(Map<String, Boolean> pagedToken) {
-        this.pagedToken = pagedToken;
-    }
 }

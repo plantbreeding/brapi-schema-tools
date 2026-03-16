@@ -29,7 +29,7 @@ public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private InputOptions input ;
     private QueryTypeOptions queryType;
     private MutationTypeOptions mutationType;
-    private PropertiesOptions properties;
+    private GraphQLPropertiesOptions properties;
     private Boolean mergeOneOfType;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)

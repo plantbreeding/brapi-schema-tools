@@ -56,6 +56,7 @@ class OpenAPIComparatorOptionsTest {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OpenAPIComparatorOptions options = null;
