@@ -73,10 +73,9 @@ class [[${entityName}]](BaseModel):
 [/][/][# th:if="${!primaryModel.nestedListFields.isEmpty()}"]
     # --- Nested lists ---
 [# th:each="field : ${primaryModel.nestedListFields}"]    [[${field.name}]]: Optional[List[(&#x5B;)][[(${field.itemType})]][(&#x5D;)]] = None
-[/][/][# th:if="${!primaryModel.relationshipFields.isEmpty()}"]    # --- Relationship IDs (many-to-one; full objects are dropped in list endpoints) ---
-    # These arrive as simple dicts when present; use Any to avoid failures.
+[/][/][# th:if="${!primaryModel.relationshipFields.isEmpty()}"]    # --- Relationship fields (embedded objects and enums) ---
 [# th:each="field : ${primaryModel.relationshipFields}"]
-    [[${field.name}]]: Optional[Any] = None
+    [[${field.name}]]: Optional[(&#x5B;)][(${field.type})]] = None
 [/][/]
 
 # ---------------------------------------------------------------------------
@@ -131,6 +130,7 @@ def [[${entityNameSnakeCase}]]_to_df(items: List[(&#x5B;)][(${entityName})]]) ->
 [# th:if="${endpoints.crud != null}"]_CRUD_ENDPOINT = "[[${endpoints.crud}]]"
 [/][# th:if="${endpoints.search != null}"]_SEARCH_ENDPOINT = "[[${endpoints.search}]]"
 [/][# th:if="${endpoints.table != null}"]_TABLE_ENDPOINT = "[[${endpoints.table}]]"
+[/][# th:if="${endpoints.searchTable != null}"]_SEARCH_TABLE_ENDPOINT = "[[${endpoints.searchTable}]]"
 [/][# th:if="${!pluralToSingularGetParams.isEmpty}"]
 # Maps POST [[${endpoints.search}]] body parameter names → GET [[${endpoints.crud}]] query parameter
 # names.  Parameters absent from this dict (or mapped to None) are not forwarded
@@ -139,7 +139,7 @@ _LIST_PARAM_MAP: Dict[str, Optional[str]] = {
     [# th:each="f,s : ${pluralToSingularGetParams}"]"[[${f.pluralName}]]": "[[${f.singularName}]]"[# th:unless="${s.last && unchangedGetParams.isEmpty}"], [/]
     [/][# th:if="${!unchangedGetParams.isEmpty}"]# Already singular — pass through unchanged:
     [# th:each="f,s : ${unchangedGetParams}"]"[[${f.pluralName}]]": "[[${f.singularName}]]"[# th:unless="${s.last}"], [/]
-    [/][/][# th:if="${!ignoreGetParams.isEmpty}"]# Not supported by GET /germplasm — intentionally omitted:
+    [/][/][# th:if="${!ignoreGetParams.isEmpty}"]# Not supported by GET [[${endpoints.crud}]] — intentionally omitted:
     # [# th:each="f,s : ${ignoreGetParams}"]"[[${f.pluralName}]]"[# th:unless="${s.last}"], [/][/][/]
 }[/]
 class [[${queryClassName}]](BaseQuery[(&#x5B;)][(${entityName})]]):
@@ -164,18 +164,23 @@ class [[${queryClassName}]](BaseQuery[(&#x5B;)][(${entityName})]]):
         df     = q1.fetch().to_df()  # triggers HTTP, returns DataFrame
         items  = list(q1.fetch())    # same
 [# th:if="${endpoints.table != null}"]
-    Use the ZIP/CSV table endpoint (faster for large datasets)::
+    Use the direct CSV table endpoint::
 
         [# th:if="${exampleFilters.size() > 0}"]df = client.[[${queryFunctionName}]].[[${exampleFilters[0].methodName}]]([[${exampleFilters[0].exampleArg}]]).as_table().fetch().to_df()[/]
+[/][# th:if="${endpoints.searchTable != null}"]
+    Use the ZIP/CSV search-table endpoint (faster for large datasets)::
+
+        [# th:if="${exampleFilters.size() > 0}"]df = client.[[${queryFunctionName}]].[[${exampleFilters[0].methodName}]]([[${exampleFilters[0].exampleArg}]]).as_search_table().fetch().to_df()[/]
 [/]    """
 
     def __init__(self, http: HttpTransport) -> None:
         super().__init__(
             http=http,
-            endpoint=_CRUD_ENDPOINT,
+            endpoint=[# th:if="${endpoints.search != null}"]_SEARCH_ENDPOINT[/][# th:if="${endpoints.search == null}"]_CRUD_ENDPOINT[/],
             model_cls=[[${entityName}]],
-            http_method="POST",
+            http_method=[# th:if="${endpoints.search != null}"]"POST"[/][# th:if="${endpoints.search == null}"]"GET"[/],
 [# th:if="${endpoints.table != null}"]            table_endpoint=_TABLE_ENDPOINT,
+[/][# th:if="${endpoints.searchTable != null}"]            search_table_endpoint=_SEARCH_TABLE_ENDPOINT,
 [/]            to_df_fn=[[${entityNameSnakeCase}]]_to_df,
         )
 
@@ -226,7 +231,7 @@ class [[${queryClassName}]](BaseQuery[(&#x5B;)][(${entityName})]]):
             )
         """
         q: [[${queryClassName}]] = self
-[# th:each="p : ${bulkFilterParams}"]        if [[${p.argName}]]:
+[# th:each="p : ${filters}"]        if [[${p.argName}]]:
             q = q.[[${p.methodName}]]([[${p.argName}]])
 [/]        return q
 
@@ -330,7 +335,7 @@ class [[${queryClassName}]](BaseQuery[(&#x5B;)][(${entityName})]]):
 [# th:if="${!pluralToSingularGetParams.isEmpty}"]        for search_key, value in self._params.items():
             get_key = _LIST_PARAM_MAP.get(search_key, search_key)  # default: pass through
             if get_key is None:
-                continue  # not supported on GET /[(${endpoints.list})]
+                continue  # not supported on GET [(${endpoints.crud})]
             # Lists become repeated query-string values; scalars pass through
             get_params[get_key] = value
 [/]
@@ -428,7 +433,7 @@ class [[${queryClassName}]](BaseQuery[(&#x5B;)][(${entityName})]]):
         [[${entityNameSnakeCase}]]: Union["[(${entityName})]", Dict[str, Any]],
     ) -> "[(${entityName})]":
         """
-        Update a [[${entityName}]] record using ``PUT /[(${endpoints.crud})]/{[(${idPropertyName})]}``.
+        Update a [[${entityName}]] record using ``PUT [(${endpoints.crud})]/{[(${idPropertyName})]}``.
 
         Args:
             [(${idArgumentName})]: The ``[(${idPropertyName})]`` of the record to update.

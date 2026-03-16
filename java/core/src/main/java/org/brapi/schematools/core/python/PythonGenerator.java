@@ -21,11 +21,17 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
@@ -245,7 +251,8 @@ public class PythonGenerator {
             classNames.add(entityClass.getName());
             classNames.add(entityClass.getQueryClassName());
 
-            classNames.addAll(brAPIClassCache.getExclusiveDependencies(entityClass.getName()).stream().map(BrAPIClass::getName).toList());
+            // Use the transitive exclusive deps already computed in createPrimaryModel
+            classNames.addAll(entityClass.getExclusiveDependencies().stream().map(ClassModel::getName).toList());
 
             return classNames;
         }
@@ -282,56 +289,69 @@ public class PythonGenerator {
                             if (arrayType.getItems() instanceof BrAPIArrayType) {
                                 throw new RuntimeException(String.format("Properties '%s' with 2+ dimensions are not supported yet", property.getName()));
                             }
-                            ClassModelField field = ClassModelField.builder()
-                                .name(property.getName())
-                                .type(arrayType.getName())
-                                .itemType(findType(arrayType.getItems()).getResultOrThrow())
-                                .build();
-                            nestedListFields.add(field);
-                            boolean isNone = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
-                                .mapResult(LinkType.NONE::equals).orElseResult(false);
-                            if (!isDeprecatedAndIgnored && !isNone) {
+                            if (isDeprecatedAndIgnored) return;
+                            LinkType arrayLinkType = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
+                                .orElseResult(LinkType.EMBEDDED);
+                            if (arrayLinkType == LinkType.NONE || arrayLinkType == LinkType.SUB_QUERY) {
+                                // NONE: not in REST response; SUB_QUERY: fetched via separate endpoint — omit from model
+                                return;
+                            } else if (arrayLinkType == LinkType.ID) {
+                                // ONE_TO_MANY relationship — REST returns an array of ID strings,
+                                // e.g. observationVariables → observationVariableDbIds: List[str]
+                                String idsFieldName = options.getProperties().getIdsPropertyNameFor(property);
+                                nestedListFields.add(ClassModelField.builder()
+                                    .name(idsFieldName)
+                                    .type("array")
+                                    .itemType("str")
+                                    .build());
+                                // Already flat strings — no to_df flattening needed
+                            } else {
+                                // EMBEDDED: full nested objects present in REST response
+                                ClassModelField field = ClassModelField.builder()
+                                    .name(property.getName())
+                                    .type(arrayType.getName())
+                                    .itemType(findType(arrayType.getItems()).getResultOrThrow())
+                                    .build();
+                                nestedListFields.add(field);
                                 flattenNestedListFields.add(field);
                             }
                         } else if (property.getType() instanceof BrAPIObjectType objectType) {
+                            if (isDeprecatedAndIgnored) return;
                             LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
                                 .orElseResult(LinkType.EMBEDDED);
-                            if (linkType == LinkType.ID) {
-                                // LinkType.ID: API returns flat scalar fields (e.g. cultivarDbId, cultivarName)
-                                // rather than a nested object — expand to explicit scalar link properties.
-                                if (!isDeprecatedAndIgnored) {
-                                    options.getProperties().getLinkPropertiesFor(objectType).forEach(linkProp ->
-                                        scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
-                                }
+                            if (linkType == LinkType.NONE || linkType == LinkType.SUB_QUERY) {
+                                // Not returned in the REST response — omit from the model
+                            } else if (linkType == LinkType.ID) {
+                                // API returns flat scalar fields (e.g. cultivarDbId, cultivarName)
+                                options.getProperties().getLinkPropertiesFor(objectType).forEach(linkProp ->
+                                    scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
                             } else {
+                                // EMBEDDED: nested object present in REST response
                                 ClassModelField field = ClassModelField.builder().name(property.getName()).type(objectType.getName()).build();
                                 relationshipFields.add(field);
-                                // Only EMBEDDED fields need dict-expansion in to_df
-                                if (linkType == LinkType.EMBEDDED && !isDeprecatedAndIgnored) {
-                                    flattenRelationshipFields.add(field);
-                                }
+                                flattenRelationshipFields.add(field);
                             }
                         } else if (property.getType() instanceof BrAPIReferenceType referenceType) {
+                            if (isDeprecatedAndIgnored) return;
                             LinkType linkType = options.getProperties().getLinkTypeFor(brAPIObjectType, property)
                                 .orElseResult(LinkType.EMBEDDED);
-                            if (linkType == LinkType.ID) {
-                                // LinkType.ID: resolve reference and expand to scalar link properties
-                                if (!isDeprecatedAndIgnored) {
-                                    BrAPIClass refClass = brAPIClassCache.getBrAPIClass(referenceType.getName());
-                                    if (refClass instanceof BrAPIObjectType refObjectType) {
-                                        options.getProperties().getLinkPropertiesFor(refObjectType).forEach(linkProp ->
-                                            scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
-                                    } else {
-                                        // Fallback: treat as opaque relationship field
-                                        relationshipFields.add(ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build());
-                                    }
+                            if (linkType == LinkType.NONE || linkType == LinkType.SUB_QUERY) {
+                                // Not returned in the REST response — omit from the model
+                            } else if (linkType == LinkType.ID) {
+                                // Resolve reference and expand to scalar link properties
+                                BrAPIClass refClass = brAPIClassCache.getBrAPIClass(referenceType.getName());
+                                if (refClass instanceof BrAPIObjectType refObjectType) {
+                                    options.getProperties().getLinkPropertiesFor(refObjectType).forEach(linkProp ->
+                                        scalarFields.add(ClassModelField.builder().name(linkProp.getName()).type("str").build()));
+                                } else {
+                                    // Fallback: treat as opaque relationship field
+                                    relationshipFields.add(ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build());
                                 }
                             } else {
+                                // EMBEDDED: nested object present in REST response
                                 ClassModelField field = ClassModelField.builder().name(property.getName()).type(referenceType.getName()).build();
                                 relationshipFields.add(field);
-                                if (linkType == LinkType.EMBEDDED && !isDeprecatedAndIgnored) {
-                                    flattenRelationshipFields.add(field);
-                                }
+                                flattenRelationshipFields.add(field);
                             }
                         } else if (property.getType() instanceof BrAPIEnumType enumType) {
                             // Enums are scalar values in the API response — no flattening needed
@@ -346,20 +366,43 @@ public class PythonGenerator {
                         .nestedListFields(nestedListFields)
                         .relationshipFields(relationshipFields);
 
-                    List<ClassModel> exclusiveDependencies = new ArrayList<>(brAPIClassCache.getExclusiveDependencies(brAPIObjectType.getName())
-                        .stream()
-                        .map(this::createClassModel).toList());
+                    // Collect type names directly referenced by non-deprecated properties.
+                    // This prevents deprecated-only dependencies (e.g. GermplasmMCPD) from
+                    // appearing in the exclusive/common dep lists.
+                    Set<String> directNonDeprecatedTypeNames = new HashSet<>();
+                    brAPIObjectType.getProperties().forEach(property -> {
+                        if (!(options.getBrAPISchemaReader().isIgnoringDepreciatedProperties() && property.isDeprecated())) {
+                            collectDirectTypeName(property.getType(), directNonDeprecatedTypeNames);
+                        }
+                    });
+
+                    // BFS state — shared across entity + request-class dep collection
+                    Set<String> depAllSeen = new HashSet<>();
+                    Set<BrAPIClass> depExclusiveSet = new LinkedHashSet<>();
+                    Set<BrAPIClass> depCommonSet = new LinkedHashSet<>();
+                    Deque<BrAPIClass> depExclusiveQueue = new ArrayDeque<>();
+                    Deque<BrAPIClass> depCommonQueue = new ArrayDeque<>();
+
+                    // Seed from entity's direct (non-deprecated) exclusive deps
+                    brAPIClassCache.getExclusiveDependencies(brAPIObjectType.getName()).stream()
+                        .filter(dep -> directNonDeprecatedTypeNames.contains(dep.getName()))
+                        .filter(dep -> depAllSeen.add(dep.getName()))
+                        .forEach(dep -> { depExclusiveSet.add(dep); depExclusiveQueue.add(dep); });
+
+                    // Seed from entity's direct (non-deprecated) common deps
+                    brAPIClassCache.getCommonDependencies(brAPIObjectType.getName()).stream()
+                        .filter(dep -> directNonDeprecatedTypeNames.contains(dep.getName()))
+                        .filter(dep -> depAllSeen.add(dep.getName()))
+                        .forEach(dep -> { depCommonSet.add(dep); depCommonQueue.add(dep); });
+
+                    // BFS: expand deps-of-deps transitively
+                    expandTransitiveDeps(depExclusiveQueue, depCommonQueue, depAllSeen, depExclusiveSet, depCommonSet);
+
+                    // Build intermediate lists (may be rebuilt below if requestClass exists)
+                    List<ClassModel> exclusiveDependencies = buildExclusiveClassModels(depExclusiveSet);
+                    List<Dependency> commonDependencies = buildCommonDependencies(depCommonSet);
 
                     builder.exclusiveDependencies(exclusiveDependencies);
-
-                    List<Dependency> commonDependencies = new ArrayList<>(brAPIClassCache.getCommonDependencies(brAPIObjectType.getName())
-                        .stream()
-                        .map(b -> Dependency.builder()
-                            .name(b.getName())
-                            .module(metadata.getFilePrefix() + "common")
-                            .build())
-                        .toList());
-
                     builder.commonDependencies(commonDependencies);
 
                     List<Dependency> primaryDependencies = brAPIClassCache.getPrimaryDependencies(brAPIObjectType.getName())
@@ -383,22 +426,26 @@ public class PythonGenerator {
                         options.getPost().isGeneratingFor(brAPIObjectType) ||
                         options.getPut().isGeneratingFor(brAPIObjectType) ||
                         options.getPost().isGeneratingFor(brAPIObjectType)) {
-                        endpoints.crud(options.getPathItemNameFor(brAPIClass));
+                        endpoints.crud(stripLeadingSlash(options.getPathItemNameFor(brAPIClass)));
 
                         builder.idPropertyName(options.getProperties().getIdPropertyFor(brAPIClass).getResultOrThrow().getName());
                         builder.idArgumentName(StringUtils.toSnakeCase(options.getProperties().getIdPropertyFor(brAPIClass).getResultOrThrow().getName()));
                     }
 
                     if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
-                        endpoints.crud(options.getPathItemNameFor(brAPIClass));
+                        endpoints.crud(stripLeadingSlash(options.getPathItemNameFor(brAPIClass)));
                     }
 
                     if (options.getSearch().isGeneratingFor(brAPIObjectType)) {
-                        endpoints.search(options.getSearchPathItemNameFor(brAPIClass));
+                        endpoints.search(stripLeadingSlash(options.getSearchPathItemNameFor(brAPIClass)));
                     }
 
                     if (options.getTable().isGeneratingFor(brAPIObjectType)) {
-                        endpoints.table(options.getPathItemNameFor(brAPIClass));
+                        endpoints.table(stripLeadingSlash(options.getPathItemNameFor(brAPIClass)) + "/table");
+                    }
+
+                    if (options.getSearchTable().isGeneratingFor(brAPIObjectType)) {
+                        endpoints.searchTable(stripLeadingSlash(options.getSearchPathItemNameFor(brAPIClass)) + "/table");
                     }
 
                     endpoints.get(options.getSingleGet().isGeneratingFor(brAPIObjectType));
@@ -422,22 +469,44 @@ public class PythonGenerator {
 
                     if (requestClass != null) {
                         if (requestClass instanceof BrAPIObjectType requestObject) {
-                            exclusiveDependencies.addAll(brAPIClassCache.getExclusiveDependencies(requestObject.getName())
-                                .stream()
-                                .map(this::createClassModel).toList()) ;
+                            // Add request class deps into BFS (no deprecated filter for request params)
+                            brAPIClassCache.getExclusiveDependencies(requestObject.getName()).stream()
+                                .filter(dep -> depAllSeen.add(dep.getName()))
+                                .forEach(dep -> { depExclusiveSet.add(dep); depExclusiveQueue.add(dep); });
+
+                            brAPIClassCache.getCommonDependencies(requestObject.getName()).stream()
+                                .filter(dep -> depAllSeen.add(dep.getName()))
+                                .forEach(dep -> { depCommonSet.add(dep); depCommonQueue.add(dep); });
+
+                            // BFS: expand transitive deps from request class
+                            expandTransitiveDeps(depExclusiveQueue, depCommonQueue, depAllSeen, depExclusiveSet, depCommonSet);
+
+                            // Rebuild and override with full lists
+                            exclusiveDependencies = buildExclusiveClassModels(depExclusiveSet);
+                            commonDependencies = buildCommonDependencies(depCommonSet);
 
                             builder.exclusiveDependencies(exclusiveDependencies);
-
-                            commonDependencies.addAll(brAPIClassCache.getCommonDependencies(requestObject.getName())
-                                .stream()
-                                .map(b -> Dependency.builder()
-                                    .name(b.getName())
-                                    .module(metadata.getFilePrefix() + "common")
-                                    .build()).toList());
-
                             builder.commonDependencies(commonDependencies);
 
-                            requestObject.getProperties().forEach(property -> filters.add(createFilterMethod(property)));
+                            // Direct property names on the primary entity (e.g. "commonCropName", "germplasmDbId").
+                            // These are never prefixed with "by_" even if they match a link property of another type.
+                            Set<String> ownPropertyNames = brAPIObjectType.getProperties().stream()
+                                .map(BrAPIObjectProperty::getName)
+                                .collect(Collectors.toSet());
+
+                            // Build the set of link property names (e.g. "programDbId", "programName",
+                            // "studyDbId", "trialDbId") by collecting link properties from ALL primary classes
+                            // OTHER than this entity.  Request params whose singular form is in this set
+                            // get the "by_" prefix, unless the name is also a direct property of the entity.
+                            Set<String> relationshipFilterSingularNames = brAPIClassCache.getPrimaryClasses().stream()
+                                .filter(cls -> !cls.getName().equals(brAPIObjectType.getName()))
+                                .filter(cls -> cls instanceof BrAPIObjectType)
+                                .flatMap(cls -> options.getProperties().getLinkPropertiesFor((BrAPIObjectType) cls).stream()
+                                    .map(BrAPIObjectProperty::getName))
+                                .filter(name -> !ownPropertyNames.contains(name))
+                                .collect(Collectors.toSet());
+
+                            requestObject.getProperties().forEach(property -> filters.add(createFilterMethod(property, relationshipFilterSingularNames)));
 
                             if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
                                 requestObject.getProperties()
@@ -488,10 +557,93 @@ public class PythonGenerator {
             }
         }
 
-        private Filter createFilterMethod(BrAPIObjectProperty property) {
+        /**
+         * Collects the direct class-level type name(s) from a BrAPIType, recursing into arrays.
+         * Primitive types are skipped (no class dependency).
+         */
+        private static String stripLeadingSlash(String path) {
+            return path != null && path.startsWith("/") ? path.substring(1) : path;
+        }
+
+        private void collectDirectTypeName(BrAPIType type, Set<String> names) {
+            if (type instanceof BrAPIArrayType arrayType) {
+                collectDirectTypeName(arrayType.getItems(), names);
+            } else if (type instanceof BrAPIObjectType objectType) {
+                names.add(objectType.getName());
+            } else if (type instanceof BrAPIReferenceType referenceType) {
+                names.add(referenceType.getName());
+            } else if (type instanceof BrAPIEnumType enumType) {
+                names.add(enumType.getName());
+            }
+            // BrAPIPrimitiveType → no class dependency
+        }
+
+        /**
+         * BFS expansion of transitive (deps-of-deps) dependencies.
+         * <ul>
+         *   <li>Exclusive deps of an exclusive dep stay exclusive.</li>
+         *   <li>Common deps of an exclusive dep become common.</li>
+         *   <li>All deps of a common dep become common.</li>
+         * </ul>
+         * {@code allSeen} is used as the "already queued" guard to prevent cycles and duplicates.
+         */
+        private void expandTransitiveDeps(
+            Deque<BrAPIClass> exclusiveQueue,
+            Deque<BrAPIClass> commonQueue,
+            Set<String> allSeen,
+            Set<BrAPIClass> exclusiveSet,
+            Set<BrAPIClass> commonSet
+        ) {
+            // Process the exclusive queue until empty, then the common queue once.
+            // Common deps of common deps are already defined in the common file —
+            // the primary entity file only needs to import things it directly uses,
+            // so we do NOT expand through common deps.
+            while (!exclusiveQueue.isEmpty()) {
+                BrAPIClass dep = exclusiveQueue.poll();
+                // exclusive → exclusive: keep exclusive
+                brAPIClassCache.getExclusiveDependencies(dep.getName()).forEach(transitive -> {
+                    if (allSeen.add(transitive.getName())) {
+                        exclusiveSet.add(transitive);
+                        exclusiveQueue.add(transitive);
+                    }
+                });
+                // exclusive → common: import from common (but do not expand further)
+                brAPIClassCache.getCommonDependencies(dep.getName()).forEach(transitive -> {
+                    if (allSeen.add(transitive.getName())) {
+                        commonSet.add(transitive);
+                        // intentionally NOT queued — common file is self-contained
+                    }
+                });
+            }
+            // Drain the common queue (seeded by direct entity deps) — no expansion
+            commonQueue.clear();
+        }
+
+        private List<ClassModel> buildExclusiveClassModels(Set<BrAPIClass> exclusiveSet) {
+            return exclusiveSet.stream()
+                .map(this::createClassModel)
+                .collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        private List<Dependency> buildCommonDependencies(Set<BrAPIClass> commonSet) {
+            return commonSet.stream()
+                .map(b -> Dependency.builder()
+                    .name(b.getName())
+                    .module(metadata.getFilePrefix() + "common")
+                    .build())
+                .collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        private Filter createFilterMethod(BrAPIObjectProperty property, Set<String> relationshipFilterSingularNames) {
+            // If the singular of the property name matches a LinkType.ID link property
+            // (e.g. "programDbId", "programName"), prefix the method with "by_".
+            String singularName = options.getSingularForProperty(property.getName());
+            String methodName = relationshipFilterSingularNames.contains(singularName)
+                ? "by_" + toSnakeCase(singularName)
+                : toSnakeCase(property.getName());
 
             Filter.FilterBuilder builder = Filter.builder()
-                .methodName(toSnakeCase(property.getName()))
+                .methodName(methodName)
                 .paramName(property.getName())
                 .argName(toSnakeCase(property.getName()))
                 .groupComment(property.getName())
@@ -556,7 +708,8 @@ public class PythonGenerator {
                 builder.scalarFields(brAPIObjectType.getProperties()
                     .stream()
                     .filter(property -> !property.isRequired())
-                    .filter(property -> property.getType() instanceof BrAPIPrimitiveType)
+                    .filter(property -> property.getType() instanceof BrAPIPrimitiveType
+                        || property.getType() instanceof BrAPIEnumType)
                     .map(this::createModelField).toList());
             } else if (brAPIClass instanceof BrAPIEnumType brAPIEnumType) {
                 boolean isStringEnum = BrAPIPrimitiveType.STRING.equals(brAPIEnumType.getType());

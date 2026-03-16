@@ -9,6 +9,7 @@ public class Endpoints {
     String crud ;
     String search ;
     String table;
+    String searchTable;
 
     boolean get ;
     boolean list ;

@@ -39,6 +39,8 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private TableOptions table;
     @Setter(AccessLevel.PRIVATE)
+    private SearchTableOptions searchTable;
+    @Setter(AccessLevel.PRIVATE)
     private PostOptions post;
     @Setter(AccessLevel.PRIVATE)
     private PutOptions put;
@@ -147,6 +149,12 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
         }
         if (overrideOptions.put != null) {
             put.override(overrideOptions.getPut());
+        }
+        if (overrideOptions.table != null) {
+            table.override(overrideOptions.getTable());
+        }
+        if (overrideOptions.searchTable != null) {
+            searchTable.override(overrideOptions.getSearchTable());
         }
         if (overrideOptions.search != null) {
             search.override(overrideOptions.getSearch());
