@@ -504,7 +504,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 return createObjectColumnDefinition(parentType, property, brAPIObjectDereferencedType);
             } else if (dereferencedType instanceof BrAPIOneOfType brAPIOneOfType) {
                 return createOneOfTypeColumnDefinition(parentType, property, brAPIOneOfType);
-            } else if (dereferencedType instanceof BrAPIAllOfType brAPIAllOfType) {
+            } else if (dereferencedType instanceof BrAPIAllOfType) {
                 return fail(Response.ErrorType.VALIDATION, "All-of-types are not supported, should have been removed at this point!");
             } else if (dereferencedType instanceof BrAPIArrayType brAPIArrayType) {
                 return createArrayColumnDefinition(parentType, property, brAPIArrayType);

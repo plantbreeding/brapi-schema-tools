@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
@@ -110,15 +109,19 @@ public class PythonGenerator {
                 Files.createDirectories(outputPath);
 
                 List<Path> paths = new ArrayList<>();
+                List<ClassModel> classModels = new ArrayList<>();
 
                 return brAPIClassCache.getPrimaryClasses()
                     .stream()
                     .map(this::createPrimaryModel)
                     .collect(Response.toList())
+                    .onSuccessDoWithResult(classModels::addAll)
                     .mapResultToResponse(this::createBrapiClient)
                     .onSuccessDoWithResult(paths::addAll)
                     .map(() -> createCommonClasses(brAPIClassCache.getAllNonPrimaryDependencies()))
                     .onSuccessDoWithResult(paths::add)
+                    .map(() -> createNotebooks(classModels))
+                    .onSuccessDoWithResult(paths::addAll)
                     .map(() -> success(paths));
             } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage());
@@ -802,12 +805,65 @@ public class PythonGenerator {
             }
         }
 
+        @SuppressWarnings("unused")
         private String getDescription(BrAPIObjectProperty brAPIObjectProperty) {
             return StringUtils.extractFirstLine(brAPIObjectProperty.getDescription());
         }
 
         private Path createPathForEntityClass(String fileName) {
             return outputPath.resolve(options.getEntitiesDirectory()).resolve(fileName);
+        }
+
+        private Response<List<Path>> createNotebooks(List<ClassModel> classModels) {
+            if (!options.isGeneratingNotebooks()) {
+                return success(List.of());
+            }
+            return classModels.stream()
+                .map(this::createNotebook)
+                .collect(Response.toList());
+        }
+
+        private Response<Path> createNotebook(ClassModel primaryModel) {
+            Context context = new Context();
+
+            context.setVariable("brapiSchemaToolsVersion", options.getSchemaToolsVersion());
+
+            String fileName = metadata.getFilePrefix() + toSnakeCase(primaryModel.getName()) + ".py";
+            context.setVariable("fileName", fileName);
+            context.setVariable("primaryModel", primaryModel);
+            context.setVariable("entityName", primaryModel.getName());
+            context.setVariable("queryFunctionName", primaryModel.getQueryFunctionName());
+            context.setVariable("entityNameSnakeCase", primaryModel.getNameSnakeCase());
+            context.setVariable("idPropertyName", primaryModel.getIdPropertyName());
+            context.setVariable("idArgumentName", primaryModel.getIdArgumentName());
+            context.setVariable("endpoints", primaryModel.getEndpoints());
+            context.setVariable("filters", primaryModel.getFilters());
+            context.setVariable("exampleFilters", primaryModel.getExampleFilters());
+
+            String text = templateEngine.process("Notebook.txt", context);
+
+            String notebookFileName = toSnakeCase(primaryModel.getName()) + "_exploration.ipynb";
+            Path notebookDir = outputPath.resolve(options.getNotebooksDirectory());
+            return writeNotebookToFile(notebookDir.resolve(notebookFileName), primaryModel.getName(), text);
+        }
+
+        private Response<Path> writeNotebookToFile(Path path, String name, String text) {
+            try {
+                if (!options.isOverwritingExistingFiles() && Files.exists(path)) {
+                    log.warn("Notebook file '{}' already exists and was not overwritten", path);
+                    return Response.empty();
+                } else {
+                    Files.createDirectories(path.getParent());
+                    PrintWriter printWriter = new PrintWriter(
+                        Files.newBufferedWriter(path, Charset.defaultCharset()));
+                    printWriter.print(text);
+                    printWriter.close();
+                    return success(path);
+                }
+            } catch (IOException exception) {
+                return fail(Response.ErrorType.VALIDATION, path,
+                    String.format("Cannot write notebook '%s' due to %s", name, exception.getMessage()));
+            }
         }
 
         private Response<Path> writeToFile(Path path, String name, String text) {

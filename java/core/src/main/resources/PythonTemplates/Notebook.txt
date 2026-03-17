@@ -1,0 +1,405 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "nb-title",
+   "metadata": {},
+   "source": [
+    "# [(${entityName})] — brapi-py\n",
+    "\n",
+    "Interactive notebook for exploring the BrAPI **[(${entityName})]** endpoint.\n",
+    "Run each cell with **Shift+Enter** (or the ▶ button).\n",
+    "\n",
+    "> **First time?** Select a Python kernel with the **Select Kernel** button (top-right).  \n",
+    "> If `brapi-py` is not installed, uncomment the `pip install` line in the next cell."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-version",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Uncomment to install / upgrade brapi-py\n",
+    "# %pip install brapi-py\n",
+    "import brapi\n",
+    "print('brapi-py version:', brapi.__version__)"
+   ]
+  }
+  ,{
+   "cell_type": "markdown",
+   "id": "nb-conn-md",
+   "metadata": {},
+   "source": [
+    "## 1 — Connection\n",
+    "Edit the cell below with your server credentials, then run it.\n",
+    "The `with` block is optional — the client stays open for the whole notebook."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-conn",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from brapi import BrapiClient\n",
+    "\n",
+    "# ── Edit these ────────────────────────────────────────────────────────────\n",
+    "BASE_URL       = 'https://brapi.example.com'\n",
+    "TOKEN_ENDPOINT = 'https://auth.example.com/token'\n",
+    "CLIENT_ID      = 'my-client'\n",
+    "CLIENT_SECRET  = 'my-secret'\n",
+    "# ─────────────────────────────────────────────────────────────────────────\n",
+    "\n",
+    "client = BrapiClient(\n",
+    "    base_url=BASE_URL,\n",
+    "    token_endpoint=TOKEN_ENDPOINT,\n",
+    "    client_id=CLIENT_ID,\n",
+    "    client_secret=CLIENT_SECRET,\n",
+    ")\n",
+    "print('Client ready →', client)"
+   ]
+  }
+[# th:if="${endpoints.search != null}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-search-md",
+   "metadata": {},
+   "source": [
+    "## 2 — Search  (`POST /[(${endpoints.search})]`)\n",
+    "\n",
+    "Full-featured search. Handles both synchronous (HTTP 200) and asynchronous (HTTP 202 + polling) responses."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-search-basic",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Basic search[# th:if="${!exampleFilters.isEmpty()}"] — filtered by [(${exampleFilters.get(0).methodName})]()[/]\n",
+    "df = (\n",
+    "    client.[(${queryFunctionName})]\n",
+[# th:if="${!exampleFilters.isEmpty()}"]    "    .[(${exampleFilters.get(0).methodName})]([(${exampleFilters.get(0).exampleArgs != null ? exampleFilters.get(0).exampleArgs : exampleFilters.get(0).exampleArg})])\n",
+[/]    "    .search()\n",
+    "    .to_df()\n",
+    ")\n",
+    "print(f'{len(df)} records returned')\n",
+    "df.head()"
+   ]
+  }
+[# th:if="${exampleFilters.size() > 1}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-search-fork",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Immutable builder — fork the same base query safely\n",
+    "base = (\n",
+    "    client.[(${queryFunctionName})]\n",
+    "    .[(${exampleFilters.get(0).methodName})]([(${exampleFilters.get(0).exampleArgs != null ? exampleFilters.get(0).exampleArgs : exampleFilters.get(0).exampleArg})])\n",
+    ")\n",
+    "\n",
+    "q1_df = base.[(${exampleFilters.get(1).methodName})]([(${exampleFilters.get(1).exampleArgs != null ? exampleFilters.get(1).exampleArgs : exampleFilters.get(1).exampleArg})]).search().to_df()\n",
+[# th:if="${exampleFilters.size() > 2}"]    "q2_df = base.[(${exampleFilters.get(2).methodName})]([(${exampleFilters.get(2).exampleArgs != null ? exampleFilters.get(2).exampleArgs : exampleFilters.get(2).exampleArg})]).search().to_df()\n",
+    "\n",
+    "print('q1:', len(q1_df), '  q2:', len(q2_df))"
+[/][# th:unless="${exampleFilters.size() > 2}"]    "print('q1:', len(q1_df))"
+[/]   ]
+  }
+[/][# th:if="${!exampleFilters.isEmpty()}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-search-filter",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Bulk filter — apply multiple criteria in one call\n",
+    "df = (\n",
+    "    client.[(${queryFunctionName})]\n",
+    "    .filter(\n",
+[# th:each="f,s : ${exampleFilters}"]    "        [(${f.argName})]=[(${f.exampleArgs != null ? f.exampleArgs : f.exampleArg})],[# th:if="${s.last}"]  # add more filters above[/]\n",
+[/]    "    )\n",
+    "    .search()\n",
+    "    .to_df()\n",
+    ")\n",
+    "df.head(10)"
+   ]
+  }
+[/][/][# th:if="${endpoints.list}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-list-md",
+   "metadata": {},
+   "source": [
+    "## 3 — List  (`GET /[(${endpoints.crud})]`)\n",
+    "\n",
+    "Simpler GET endpoint — same filter state, mapped to query-string params.\n",
+    "Useful when the server does not support the search endpoint, or for quick lookups."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-list-basic",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# GET /[(${endpoints.crud})] — list records\n",
+    "df = (\n",
+    "    client.[(${queryFunctionName})]\n",
+[# th:if="${!exampleFilters.isEmpty()}"]    "    .[(${exampleFilters.get(0).methodName})]([(${exampleFilters.get(0).exampleArgs != null ? exampleFilters.get(0).exampleArgs : exampleFilters.get(0).exampleArg})])\n",
+[/]    "    .list()\n",
+    "    .to_df()\n",
+    ")\n",
+    "print(f'{len(df)} records')\n",
+    "df.head()"
+   ]
+  }
+[/][# th:if="${endpoints.get || endpoints.create || endpoints.update || endpoints.delete}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-crud-md",
+   "metadata": {},
+   "source": [
+    "## 4 — Single-record CRUD\n",
+    "\n",
+    "Get, create, update, and delete individual records."
+   ]
+  }
+[# th:if="${endpoints.get}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-get",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# GET /[(${endpoints.crud})]/\u2009{id}  — fetch one record by primary key\n",
+    "[(${#strings.toUpperCase(idArgumentName)})] = 'example-001'   # ← change to a real ID\n",
+    "\n",
+    "record = client.[(${queryFunctionName})].get_by_id([(${#strings.toUpperCase(idArgumentName)})])\n",
+    "print(record)"
+   ]
+  }
+[/][# th:if="${endpoints.create}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-create",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from brapi.entities.[(${#strings.replace(fileName, '.py', '')})] import [(${entityName})]\n",
+    "\n",
+    "# POST /[(${endpoints.crud})] — create a new record\n",
+    "new_[(${entityNameSnakeCase})] = [(${entityName})](\n",
+[# th:each="f,s : ${primaryModel.requiredFields}"]    "    [(${f.name})]=[# th:if="${#strings.endsWith(f.name, 'DbId')}"]''[/][# th:if="${#strings.endsWith(f.name, 'Name')}"]'Example [(${entityName})]'[/][# th:if="${#strings.endsWith(f.name, 'PUI')}"]'http://pui.example/[(${entityNameSnakeCase})]-001'[/][# th:unless="${#strings.endsWith(f.name, 'DbId') || #strings.endsWith(f.name, 'Name') || #strings.endsWith(f.name, 'PUI')}"][# th:if="${f.type == 'int'}"]0[/][# th:if="${f.type == 'bool'}"]False[/][# th:if="${f.type == 'float'}"]0.0[/][# th:unless="${f.type == 'int' || f.type == 'bool' || f.type == 'float'}"]''[/][/],[# th:if="${#strings.endsWith(f.name, 'DbId')}"]  # assigned by server[/]\n",
+[/]    ")\n",
+    "created = client.[(${queryFunctionName})].create(new_[(${entityNameSnakeCase})])\n",
+    "print('Created [(${idPropertyName})]:', created.[(${idPropertyName})])"
+   ]
+  }
+[/][# th:if="${endpoints.update}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-update",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# PUT /[(${endpoints.crud})]/\u2009{id} — update the record created above\n",
+    "# (run the create cell first to populate 'created')\n",
+[# th:if="${!primaryModel.scalarFields.isEmpty()}"]    "created.[(${primaryModel.scalarFields.get(0).name})] = 'updated value'\n",
+[/]    "updated = client.[(${queryFunctionName})].update(created.[(${idPropertyName})], created)\n",
+    "print('Updated:', updated.[(${idPropertyName})])"
+   ]
+  }
+[/][# th:if="${endpoints.delete}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-delete",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# DELETE /[(${endpoints.crud})]/\u2009{id} — remove the record created above\n",
+    "ok = client.[(${queryFunctionName})].delete(created.[(${idPropertyName})])\n",
+    "print('Deleted:', ok)"
+   ]
+  }
+[/][/][# th:if="${endpoints.search != null && !filters.isEmpty()}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-pipe-md",
+   "metadata": {},
+   "source": [
+    "## 5 — Pipe transforms\n",
+    "\n",
+    "`.pipe()` applies a pure function lazily — only one HTTP call is made regardless of how many transform stages are chained."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-pipe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def filter_non_null_ids(items):\n",
+    "    \"\"\"Keep only records with a non-empty primary key.\"\"\"\n",
+    "    return [r for r in items if r.[(${idPropertyName})]]\n",
+    "\n",
+    "def add_label(items):\n",
+    "    \"\"\"Attach a short display label to each record.\"\"\"\n",
+    "    for r in items:\n",
+    "        r.label = f'[(${entityName})] {r.[(${idPropertyName})]}'\n",
+    "    return items\n",
+    "\n",
+    "df = (\n",
+    "    client.[(${queryFunctionName})]\n",
+[# th:if="${!exampleFilters.isEmpty()}"]    "    .[(${exampleFilters.get(0).methodName})]([(${exampleFilters.get(0).exampleArgs != null ? exampleFilters.get(0).exampleArgs : exampleFilters.get(0).exampleArg})])\n",
+[/]    "    .search()\n",
+    "    .pipe(filter_non_null_ids)\n",
+    "    .pipe(add_label)\n",
+    "    .to_df()\n",
+    ")\n",
+    "df.head(10)"
+   ]
+  }
+[/][# th:if="${endpoints.search != null || endpoints.list}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-df-md",
+   "metadata": {},
+   "source": [
+    "## 6 — DataFrame exploration\n",
+    "\n",
+    "Useful pandas operations once you have a DataFrame."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-df-columns",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Reload a fresh DataFrame\n",
+    "df = (\n",
+    "    client.[(${queryFunctionName})]\n",
+[# th:if="${!exampleFilters.isEmpty()}"]    "    .[(${exampleFilters.get(0).methodName})]([(${exampleFilters.get(0).exampleArgs != null ? exampleFilters.get(0).exampleArgs : exampleFilters.get(0).exampleArg})])\n",
+[/][# th:if="${endpoints.search != null}"]    "    .search()\n",
+[/][# th:unless="${endpoints.search != null}"]    "    .list()\n",
+[/]    "    .to_df()\n",
+    ")\n",
+    "\n",
+    "print('Columns:', df.columns.tolist())\n",
+    "print('Shape:', df.shape)\n",
+    "df.head()"
+   ]
+  }
+[# th:if="${!primaryModel.scalarFields.isEmpty()}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-df-value-counts",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Value distribution for '[(${primaryModel.scalarFields.get(0).name})]'\n",
+    "if '[(${primaryModel.scalarFields.get(0).name})]' in df.columns:\n",
+    "    df['[(${primaryModel.scalarFields.get(0).name})]'].value_counts().head(10)\n",
+    "else:\n",
+    "    print('Column not present in this result set')"
+   ]
+  }
+[/][# th:if="${!primaryModel.nestedListFields.isEmpty()}"]  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-df-explode",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import json, pandas as pd\n",
+    "\n",
+    "# Explode the '[(${primaryModel.nestedListFields.get(0).name})]' JSON column into separate rows\n",
+    "col = '[(${primaryModel.nestedListFields.get(0).name})]'\n",
+    "if col in df.columns:\n",
+    "    exploded = (\n",
+    "        df[['[(${idPropertyName})]', col]]\n",
+    "        .dropna(subset=[col])\n",
+    "        .assign(**{col: lambda d: d[col].apply(json.loads)})\n",
+    "        .explode(col)\n",
+    "    )\n",
+    "    exploded.head(10)\n",
+    "else:\n",
+    "    print(f'Column {col!r} not present in this result set')"
+   ]
+  }
+[/][/][# th:if="${endpoints.get || endpoints.search != null || endpoints.create}"]  ,{
+   "cell_type": "markdown",
+   "id": "nb-err-md",
+   "metadata": {},
+   "source": [
+    "## 7 — Error handling"
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-errors",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import httpx\n",
+    "\n",
+[# th:if="${endpoints.get}"]    "# 404 — record not found\n",
+    "try:\n",
+    "    client.[(${queryFunctionName})].get_by_id('does-not-exist-xyz')\n",
+    "except httpx.HTTPStatusError as e:\n",
+    "    print(f'HTTP {e.response.status_code}: {e.request.url}')\n",
+    "\n",
+[/][# th:if="${endpoints.search != null}"]    "# Async search poll timeout\n",
+    "try:\n",
+    "    client.[(${queryFunctionName})].search(max_poll_attempts=1).to_list()\n",
+    "except TimeoutError as e:\n",
+    "    print('TimeoutError:', e)\n",
+[/][# th:if="${endpoints.create}"]    "\n",
+    "# ValueError from create_many with only one item\n",
+    "try:\n",
+    "    client.[(${queryFunctionName})].create_many([])\n",
+    "except (ValueError, AttributeError) as e:\n",
+    "    print('Error:', e)"
+[/][# th:unless="${endpoints.create}"]    "print('Error handling examples above — edit as needed')"
+[/]   ]
+  }
+[/]  ,{
+   "cell_type": "markdown",
+   "id": "nb-close-md",
+   "metadata": {},
+   "source": [
+    "## 8 — Clean up\n",
+    "Close the HTTP client when done to release the connection pool."
+   ]
+  }
+  ,{
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "nb-close",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "client.close()\n",
+    "print('Connection closed')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.10.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

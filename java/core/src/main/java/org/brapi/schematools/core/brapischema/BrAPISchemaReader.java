@@ -517,7 +517,7 @@ public class BrAPISchemaReader {
                 .interfaces(new ArrayList<>());
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false).
-                onSuccessDoWithResult(builder::deprecated);
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -615,7 +615,7 @@ public class BrAPISchemaReader {
                 required(required);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false).
-                onSuccessDoWithResult(builder::deprecated);
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -635,7 +635,7 @@ public class BrAPISchemaReader {
 
             findStringFieldList(path, jsonNode, "type", false)
                 .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, false))
-                .onSuccessDoWithResult(builder::nullable);
+                .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
 
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module).
                 onSuccessDoWithResult(builder::type).
@@ -649,13 +649,13 @@ public class BrAPISchemaReader {
             BrAPIMetadata.BrAPIMetadataBuilder builder = BrAPIMetadata.builder();
 
             return findBooleanChildValue(path, metadata, "primaryModel", false, false)
-                .onSuccessDoWithResult(builder::primaryModel)
+                .onSuccessDoWithResult(value -> builder.primaryModel(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "request", false, false))
-                .onSuccessDoWithResult(builder::request)
+                .onSuccessDoWithResult(value -> builder.request(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "parameters", false, false))
-                .onSuccessDoWithResult(builder::parameters)
+                .onSuccessDoWithResult(value -> builder.parameters(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "interface", false, false))
-                .onSuccessDoWithResult(builder::interfaceClass)
+                .onSuccessDoWithResult(value -> builder.interfaceClass(Boolean.TRUE.equals(value)))
                 .merge(findStringFieldList(path, metadata, "controlledVocabularyProperties", false))
                 .onSuccessDoWithResult(builder::controlledVocabularyProperties)
                 .merge(findStringFieldList(path, metadata, "subQueryProperties", false))
@@ -674,7 +674,7 @@ public class BrAPISchemaReader {
                 module(module);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false).
-                onSuccessDoWithResult(builder::deprecated);
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -712,7 +712,7 @@ public class BrAPISchemaReader {
                 module(module);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false).
-                onSuccessDoWithResult(builder::deprecated);
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -741,7 +741,7 @@ public class BrAPISchemaReader {
                 module(module);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false).
-                onSuccessDoWithResult(builder::deprecated);
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);

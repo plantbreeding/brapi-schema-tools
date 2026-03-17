@@ -143,6 +143,7 @@ public class OpenAPIGenerator {
 
     }
 
+    @SuppressWarnings("unchecked")
     private static class Generator {
         private final OpenAPIGeneratorOptions options;
 

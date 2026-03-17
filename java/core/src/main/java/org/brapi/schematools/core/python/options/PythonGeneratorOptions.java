@@ -1,5 +1,6 @@
 package org.brapi.schematools.core.python.options;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
@@ -22,6 +23,15 @@ import java.nio.file.Path;
 public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     private String entitiesDirectory;
+
+    /** When {@code true} a Jupyter notebook is generated for each primary entity. */
+    private Boolean generateNotebooks;
+
+    /**
+     * Output directory for generated notebooks, relative to {@code outputPath}.
+     * Defaults to {@code ../../notebooks} (project-root notebooks/ when outputPath is src/brapi/).
+     */
+    private String notebooksDirectory;
 
     /**
      * Load the default options.
@@ -66,6 +76,16 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(entitiesDirectory, "'entitiesDirectory' option is null");
     }
 
+    /**
+     * Determines if the Generator should generate Jupyter notebooks.
+     *
+     * @return {@code true} if notebooks should be generated, {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isGeneratingNotebooks() {
+        return Boolean.TRUE.equals(generateNotebooks);
+    }
+
     /** {@inheritDoc} */
     @Override
     public PythonGeneratorOptions setOverwrite(Boolean overwrite) {
@@ -91,6 +111,12 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         if (overrideOptions.entitiesDirectory != null) {
             entitiesDirectory = overrideOptions.entitiesDirectory;
+        }
+        if (overrideOptions.generateNotebooks != null) {
+            generateNotebooks = overrideOptions.generateNotebooks;
+        }
+        if (overrideOptions.notebooksDirectory != null) {
+            notebooksDirectory = overrideOptions.notebooksDirectory;
         }
         return this;
     }

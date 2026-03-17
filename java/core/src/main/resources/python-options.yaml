@@ -3,6 +3,8 @@ descriptionFormat: TODO Description for %s
 overwrite: false
 addGeneratorComments: true
 entitiesDirectory: entities
+generateNotebooks: true
+notebooksDirectory: ../../notebooks
 pluralFor:
     AlleleMatrix: AlleleMatrix
     ServerInfo: ServerInfo

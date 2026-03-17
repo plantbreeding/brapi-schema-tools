@@ -63,6 +63,7 @@ class MarkdownGeneratorOptionsTest extends OptionsTestBase {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         MarkdownGeneratorOptions options = null;

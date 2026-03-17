@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.com.google.common.collect.ImmutableList;
-import graphql.com.google.common.collect.ImmutableSet;
 import org.atteo.evo.inflector.English;
 import org.brapi.schematools.core.response.Response;
 
@@ -30,9 +28,9 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
 
-    private static final Set<String> unpluralisables = ImmutableSet.of("germplasm", "genus", "species");
+    private static final Set<String> unpluralisables = Set.of("germplasm", "genus", "species");
 
-    private static final List<Replacer> singularisations = ImmutableList.of(
+    private static final List<Replacer> singularisations = List.of(
         replace("(.*)people$").with("$1person"),
         replace("(.*)People$").with("$1Person"),
         replace("oxen$").with("ox"),
@@ -58,7 +56,7 @@ public class StringUtils {
         replace("(.+)s$").with("$1")
     );
 
-    private static final List<Replacer> pluralisations = ImmutableList.of(
+    private static final List<Replacer> pluralisations = List.of(
         replace("(.*)matrix$").with("$1matrices"),
         replace("(.*)Matrix$").with("$1Matrices"),
         replace("(.*)person$").with("$1people"),
