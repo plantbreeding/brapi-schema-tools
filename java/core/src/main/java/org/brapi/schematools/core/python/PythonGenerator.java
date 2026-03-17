@@ -838,13 +838,35 @@ public class PythonGenerator {
             context.setVariable("idArgumentName", primaryModel.getIdArgumentName());
             context.setVariable("endpoints", primaryModel.getEndpoints());
             context.setVariable("filters", primaryModel.getFilters());
-            context.setVariable("exampleFilters", primaryModel.getExampleFilters());
+            context.setVariable("exampleFilters", toNotebookFilters(primaryModel.getExampleFilters()));
 
             String text = templateEngine.process("Notebook.txt", context);
 
             String notebookFileName = toSnakeCase(primaryModel.getName()) + "_exploration.ipynb";
             Path notebookDir = outputPath.resolve(options.getNotebooksDirectory());
             return writeNotebookToFile(notebookDir.resolve(notebookFileName), primaryModel.getName(), text);
+        }
+
+        /**
+         * Returns a copy of the filter list with all example arg/args values converted to use
+         * single-quoted Python strings instead of double-quoted ones.  Notebooks embed Python
+         * source inside JSON strings, so a literal {@code "} inside an arg value would break
+         * the surrounding JSON string delimiter.
+         */
+        private static List<Filter> toNotebookFilters(List<Filter> filters) {
+            if (filters == null) return List.of();
+            return filters.stream()
+                .map(f -> f.toBuilder()
+                    .exampleArg(singleQuote(f.getExampleArg()))
+                    .exampleArg2(singleQuote(f.getExampleArg2()))
+                    .exampleArgs(singleQuote(f.getExampleArgs()))
+                    .exampleMultipleArgs(singleQuote(f.getExampleMultipleArgs()))
+                    .build())
+                .toList();
+        }
+
+        private static String singleQuote(String value) {
+            return value == null ? null : value.replace('"', '\'');
         }
 
         private Response<Path> writeNotebookToFile(Path path, String name, String text) {
