@@ -236,6 +236,7 @@ public class XSSFWorkbookGenerator {
             }
         }
 
+        @SuppressWarnings("unchecked")
         private <T> void updateCellValue(Cell cell, ValuePropertyOption column, Object defaultValue, int rowIndex, Object value) {
             try {
                 if (value instanceof Boolean booleanValue) {

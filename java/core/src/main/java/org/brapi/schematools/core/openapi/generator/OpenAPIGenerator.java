@@ -1167,6 +1167,7 @@ public class OpenAPIGenerator {
                 type.getProperties().stream().filter(brAPIObjectProperty -> !brAPIObjectProperty.getName().equals(idParameter)).toList()) ;
         }
 
+        @SuppressWarnings("rawtypes")
         private Response<Schema<?>> createSearchRequestSchemaForType(BrAPIObjectType type) {
             BrAPIClass requestSchema = brAPIClassCache.getBrAPIClass(String.format("%sRequest", type.getName()));
 
@@ -1225,6 +1226,7 @@ public class OpenAPIGenerator {
             return createObjectSchema(type, type.getProperties());
         }
 
+        @SuppressWarnings("rawtypes")
         private Response<Schema<?>> createObjectSchema(BrAPIObjectType type, List<BrAPIObjectProperty> properties) {
             Schema<?> objectSchema = new ObjectSchema()
                 .name(type.getName())
