@@ -9,8 +9,7 @@
                 },
                 "crossType": {
                     "description": "the type of cross",
-                    "$ref": "CrossType.json#/$defs/CrossType",
-                    "example": "BIPARENTAL"
+                    "$ref": "CrossType.json#/$defs/CrossType"
                 },
                 "crossingProject": {
                     "$ref": "CrossingProject.json#/$defs/CrossingProject",
@@ -48,8 +47,7 @@
                     "type": [
                         "null",
                         "string"
-                    ],
-                    "example": "my_Crosses_2018_01"
+                    ]
                 },
                 "status": {
                     "description": "The status of this planned cross. Is it waiting to be performed ('TODO'), has it been completed successfully ('DONE'), or has it not been done on purpose ('SKIPPED').",
@@ -63,8 +61,7 @@
                         "null",
                         "string"
                     ],
-                    "title": "PlannedCrossStatus",
-                    "example": "TODO"
+                    "title": "PlannedCrossStatus"
                 },
                 "crosses": {
                     "title": "crosses",

@@ -49,8 +49,10 @@ public class GraphQLSchemaParser {
     public final GraphQLSchema parseJsonSchema(String jsonSchema) throws JsonProcessingException {
         IntrospectionResultToSchema introspectionResultToSchema = new IntrospectionResultToSchema();
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> map = objectMapper.readValue(jsonSchema, Map.class);
 
+        @SuppressWarnings("unchecked")
         Document document = introspectionResultToSchema.createSchemaDefinition((Map<String, Object>) map.get("data"));
 
         String sdl = new SchemaPrinter().print(document);

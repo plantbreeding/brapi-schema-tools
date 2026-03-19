@@ -51,6 +51,7 @@ class OntModelGeneratorOptionsTest extends OptionsTestBase {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OntModelGeneratorOptions options = null;

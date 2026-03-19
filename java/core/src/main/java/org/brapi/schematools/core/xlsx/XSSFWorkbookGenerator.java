@@ -81,9 +81,9 @@ public class XSSFWorkbookGenerator {
 
         private final Map<String, BrAPIClass> brAPIClasses ;
 
-        public Generator(List<BrAPIClass> brAPISchemas) {
+        public Generator(List<BrAPIClass> brAPIClasses) {
 
-            brAPIClasses = BrAPIClassCacheBuilder.createMap(this::isGenerating, brAPISchemas) ;
+            this.brAPIClasses = BrAPIClassCacheBuilder.createCache(this::isGenerating, brAPIClasses).getBrAPIClassesAsMap() ;
         }
 
         public Response<List<Path>> generate() {
@@ -236,6 +236,7 @@ public class XSSFWorkbookGenerator {
             }
         }
 
+        @SuppressWarnings("unchecked")
         private <T> void updateCellValue(Cell cell, ValuePropertyOption column, Object defaultValue, int rowIndex, Object value) {
             try {
                 if (value instanceof Boolean booleanValue) {

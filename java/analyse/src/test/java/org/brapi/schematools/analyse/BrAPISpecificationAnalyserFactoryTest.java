@@ -18,6 +18,7 @@ class BrAPISpecificationAnalyserFactoryTest {
     private NoAuthorizationProvider authorizationProvider;
     @Mock
     private HttpResponse<String> response ;
+    @SuppressWarnings("unused")
     private BrAPISpecificationAnalyserFactory subject;
 
     @BeforeEach

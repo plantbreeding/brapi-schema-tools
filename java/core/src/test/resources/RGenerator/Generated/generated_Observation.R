@@ -56,6 +56,13 @@ Observations <- R6Class(
     #' @param observationUnitDbIds The unique id of an Observation Unit
     #' @param observationLevels Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevel
     #' @param observationLevelRelationships Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevelRelationships
+    #' @param observationUnitLevelNames The Observation Unit Level.
+    #' @param observationUnitLevelOrders The Observation Unit Level Order Number.
+    #' @param observationUnitLevelCodes The Observation Unit Level Code.
+    #' @param observationUnitLevelRelationshipNames The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy.
+    #' @param observationUnitLevelRelationshipOrders The Observation Unit Level Order Number.
+    #' @param observationUnitLevelRelationshipCodes The Observation Unit Level Code.
+    #' @param observationUnitLevelRelationshipDbIds The observationUnitDbId associated with a particular level and code.
     #' @param observationTimeStampRangeEnd Timestamp range end
     #' @param observationTimeStampRangeStart Timestamp range start
     #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)
@@ -82,6 +89,13 @@ Observations <- R6Class(
         observationUnitDbIds = NULL,
         observationLevels = NULL,
         observationLevelRelationships = NULL,
+        observationUnitLevelNames = NULL,
+        observationUnitLevelOrders = NULL,
+        observationUnitLevelCodes = NULL,
+        observationUnitLevelRelationshipNames = NULL,
+        observationUnitLevelRelationshipOrders = NULL,
+        observationUnitLevelRelationshipCodes = NULL,
+        observationUnitLevelRelationshipDbIds = NULL,
         observationTimeStampRangeEnd = NULL,
         observationTimeStampRangeStart = NULL,
         seasonDbIds = NULL,
@@ -143,6 +157,27 @@ Observations <- R6Class(
       if (!is.null(observationLevelRelationships)) {
         queryParams$observationLevelRelationship <- observationLevelRelationships
       }
+      if (!is.null(observationUnitLevelNames)) {
+        queryParams$observationUnitLevelName <- observationUnitLevelNames
+      }
+      if (!is.null(observationUnitLevelOrders)) {
+        queryParams$observationUnitLevelOrder <- observationUnitLevelOrders
+      }
+      if (!is.null(observationUnitLevelCodes)) {
+        queryParams$observationUnitLevelCode <- observationUnitLevelCodes
+      }
+      if (!is.null(observationUnitLevelRelationshipNames)) {
+        queryParams$observationUnitLevelRelationshipName <- observationUnitLevelRelationshipNames
+      }
+      if (!is.null(observationUnitLevelRelationshipOrders)) {
+        queryParams$observationUnitLevelRelationshipOrder <- observationUnitLevelRelationshipOrders
+      }
+      if (!is.null(observationUnitLevelRelationshipCodes)) {
+        queryParams$observationUnitLevelRelationshipCode <- observationUnitLevelRelationshipCodes
+      }
+      if (!is.null(observationUnitLevelRelationshipDbIds)) {
+        queryParams$observationUnitLevelRelationshipDbId <- observationUnitLevelRelationshipDbIds
+      }
       if (!is.null(observationTimeStampRangeEnd)) {
         queryParams$observationTimeStampRangeEnd <- observationTimeStampRangeEnd
       }
@@ -175,6 +210,13 @@ Observations <- R6Class(
     #' @param observationUnitDbIds The unique id of an Observation Unit
     #' @param observationLevels Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevel
     #' @param observationLevelRelationships Searches for values in ObservationUnit-&gt;observationUnitPosition-&gt;observationLevelRelationships
+    #' @param observationUnitLevelNames The Observation Unit Level.
+    #' @param observationUnitLevelOrders The Observation Unit Level Order Number.
+    #' @param observationUnitLevelCodes The Observation Unit Level Code.
+    #' @param observationUnitLevelRelationshipNames The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy.
+    #' @param observationUnitLevelRelationshipOrders The Observation Unit Level Order Number.
+    #' @param observationUnitLevelRelationshipCodes The Observation Unit Level Code.
+    #' @param observationUnitLevelRelationshipDbIds The observationUnitDbId associated with a particular level and code.
     #' @param observationTimeStampRangeEnd Timestamp range end
     #' @param observationTimeStampRangeStart Timestamp range start
     #' @param seasonDbIds The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)
@@ -202,6 +244,13 @@ Observations <- R6Class(
         observationUnitDbIds = NULL,
         observationLevels = NULL,
         observationLevelRelationships = NULL,
+        observationUnitLevelNames = NULL,
+        observationUnitLevelOrders = NULL,
+        observationUnitLevelCodes = NULL,
+        observationUnitLevelRelationshipNames = NULL,
+        observationUnitLevelRelationshipOrders = NULL,
+        observationUnitLevelRelationshipCodes = NULL,
+        observationUnitLevelRelationshipDbIds = NULL,
         observationTimeStampRangeEnd = NULL,
         observationTimeStampRangeStart = NULL,
         seasonDbIds = NULL,
@@ -263,6 +312,27 @@ Observations <- R6Class(
       if (!is.null(observationLevelRelationships)) {
         queryParams$observationLevelRelationships <- to_list(observationLevelRelationships)
       }
+      if (!is.null(observationUnitLevelNames)) {
+        queryParams$observationUnitLevelNames <- to_list(observationUnitLevelNames)
+      }
+      if (!is.null(observationUnitLevelOrders)) {
+        queryParams$observationUnitLevelOrders <- to_list(observationUnitLevelOrders)
+      }
+      if (!is.null(observationUnitLevelCodes)) {
+        queryParams$observationUnitLevelCodes <- to_list(observationUnitLevelCodes)
+      }
+      if (!is.null(observationUnitLevelRelationshipNames)) {
+        queryParams$observationUnitLevelRelationshipNames <- to_list(observationUnitLevelRelationshipNames)
+      }
+      if (!is.null(observationUnitLevelRelationshipOrders)) {
+        queryParams$observationUnitLevelRelationshipOrders <- to_list(observationUnitLevelRelationshipOrders)
+      }
+      if (!is.null(observationUnitLevelRelationshipCodes)) {
+        queryParams$observationUnitLevelRelationshipCodes <- to_list(observationUnitLevelRelationshipCodes)
+      }
+      if (!is.null(observationUnitLevelRelationshipDbIds)) {
+        queryParams$observationUnitLevelRelationshipDbIds <- to_list(observationUnitLevelRelationshipDbIds)
+      }
       if (!is.null(observationTimeStampRangeEnd)) {
         queryParams$observationTimeStampRangeEnd <- to_list(observationTimeStampRangeEnd)
       }
@@ -308,4 +378,4 @@ Observations <- R6Class(
   )
 )
 
-# Generated by Schema Tools Generator Version: '0.48.0'
+# Generated by Schema Tools Generator Version: '0.57.0'

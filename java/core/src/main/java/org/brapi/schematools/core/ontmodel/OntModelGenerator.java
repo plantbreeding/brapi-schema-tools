@@ -131,6 +131,7 @@ public class OntModelGenerator {
         }
 
         private Response<Boolean> createObjectType(BrAPIObjectType brAPIObjectType) {
+            @SuppressWarnings("unused")
             OntClass ontClass = createOntClass(brAPIObjectType) ;
 
             return brAPIObjectType.getProperties()
@@ -207,9 +208,9 @@ public class OntModelGenerator {
                     .map(property -> createProperty(ontClass, property))
                     .collect(Response.toList())
                     .map (() -> success(ontClass)) ;
-            } else if (brAPIClass instanceof BrAPIOneOfType brAPIOneOfType) {
+            } else if (brAPIClass instanceof BrAPIOneOfType) {
                 return success(ontClass) ;
-            } else if (brAPIClass instanceof BrAPIEnumType brAPIEnumType) {
+            } else if (brAPIClass instanceof BrAPIEnumType) {
                 return success(ontClass) ;
             }
 

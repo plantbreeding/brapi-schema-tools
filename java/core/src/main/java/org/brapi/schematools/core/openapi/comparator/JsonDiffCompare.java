@@ -22,6 +22,7 @@ public class JsonDiffCompare {
      * @return A json node show the differences from the first file to the second
      * @throws IOException an exceptions reading the files to Json and making the comparison
      */
+    @SuppressWarnings("null")
     public static JsonNode fromFilesJSON(Path firstPath, Path secondPath) throws IOException {
         JsonNode file1 = objectMapper.readTree(firstPath.toFile());
         JsonNode file2 = objectMapper.readTree(secondPath.toFile());
@@ -35,6 +36,7 @@ public class JsonDiffCompare {
      * @return A json node show the differences from the first file to the second
      * @throws IOException an exceptions reading the files to Json and making the comparison
      */
+    @SuppressWarnings("null")
     public static JsonNode fromFilesYAML(Path firstPath, Path secondPath) throws IOException {
         JsonNode file1 = objectMapperYAML.readTree(firstPath.toFile());
         JsonNode file2 = objectMapperYAML.readTree(secondPath.toFile());

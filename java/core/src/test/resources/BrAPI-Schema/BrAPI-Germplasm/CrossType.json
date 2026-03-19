@@ -11,8 +11,7 @@
                 "BULK_OPEN_POLLINATED",
                 "DOUBLE_HAPLOID"
             ],
-            "type": "string",
-            "example": "BIPARENTAL"
+            "type": "string"
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Germplasm/CrossType.json",

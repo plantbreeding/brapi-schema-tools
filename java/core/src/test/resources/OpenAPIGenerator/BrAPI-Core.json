@@ -14,6 +14,33 @@
                 "description" : "Get a list of List",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programName",
+                        "in" : "query",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "name" : "dateCreatedRangeStart",
                         "in" : "query",
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
@@ -652,6 +679,7 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
+                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
                             "enum" : [
                                 "STANDARD",
                                 "PROJECT"
@@ -1013,6 +1041,43 @@
                         }
                     },
                     {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "studyDbId",
+                                "trialDbId",
+                                "programDbId",
+                                "locationDbId",
+                                "seasonDbId",
+                                "studyType",
+                                "studyName",
+                                "studyLocation",
+                                "programName"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -1246,6 +1311,41 @@
                         }
                     },
                     {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "trialDbId",
+                                "trialName",
+                                "programDbId",
+                                "programName",
+                                "locationDbId",
+                                "startDate",
+                                "endDate"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
@@ -1315,6 +1415,29 @@
                 }
             }
         },
+        "/studytypes" : {
+            "get" : {
+                "tags" : [
+                    "Studies"
+                ],
+                "summary" : "Get the studyTypes of Study",
+                "description" : "List all available Study studyTypes",
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/StudyStudyTypeListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/lists/{listDbId}" : {
             "get" : {
                 "tags" : [
@@ -1353,6 +1476,52 @@
                         "application/json" : {
                             "schema" : {
                                 "$ref" : "#/components/schemas/ListNewRequest"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ListSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/lists/{listDbId}/data" : {
+            "post" : {
+                "tags" : [
+                    "Lists"
+                ],
+                "summary" : "Create new string",
+                "description" : "Add new string to database",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "listDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier for a List",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "string"
                             }
                         }
                     }
@@ -2045,7 +2214,8 @@
                     },
                     "attributeCategory" : {
                         "type" : "string",
-                        "description" : "General category for the attribute. very similar to Trait class."
+                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "example" : "Morphological"
                     },
                     "attributeDbId" : {
                         "type" : "string",
@@ -2053,15 +2223,18 @@
                     },
                     "attributeDescription" : {
                         "type" : "string",
-                        "description" : "A human readable description of this attribute"
+                        "description" : "A human readable description of this attribute",
+                        "example" : "Height of the plant measured in meters by a tape"
                     },
                     "attributeName" : {
                         "type" : "string",
-                        "description" : "A human readable name for this attribute"
+                        "description" : "A human readable name for this attribute",
+                        "example" : "Plant Height 1"
                     },
                     "attributePUI" : {
                         "type" : "string",
-                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI"
+                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "example" : "http://my-traits.com/trait/CO_123:0008012"
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -2412,7 +2585,8 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Feature\""
+                        "description" : "The literal string \"Feature\"",
+                        "example" : "Feature"
                     }
                 },
                 "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -2661,6 +2835,13 @@
             "ListSearchRequest" : {
                 "type" : "object",
                 "properties" : {
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
@@ -2718,6 +2899,20 @@
                     },
                     "listType" : {
                         "$ref" : "#/components/schemas/ListType"
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 },
                 "description" : "A List represents a collection of other BrAPI data objects. Typically these are custom lists generated by a user to keep track of interesting data. For example, a user might build a List of Germplasm that they have manually marked for further study."
@@ -2878,11 +3073,13 @@
                     },
                     "altitudeMax" : {
                         "type" : "number",
-                        "description" : "The maximum altitude to search for"
+                        "description" : "The maximum altitude to search for",
+                        "example" : 200
                     },
                     "altitudeMin" : {
                         "type" : "number",
-                        "description" : "The minimum altitude to search for"
+                        "description" : "The minimum altitude to search for",
+                        "example" : 20
                     },
                     "commonCropNames" : {
                         "type" : "array",
@@ -3306,6 +3503,7 @@
                         "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding ",
                         "items" : {
                             "type" : "string",
+                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
                             "enum" : [
                                 "STANDARD",
                                 "PROJECT"
@@ -3314,14 +3512,6 @@
                     }
                 },
                 "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies."
-            },
-            "ProgramType" : {
-                "type" : "string",
-                "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
-                "enum" : [
-                    "STANDARD",
-                    "PROJECT"
-                ]
             },
             "Publication" : {
                 "type" : "object",
@@ -3540,7 +3730,8 @@
                 "properties" : {
                     "active" : {
                         "type" : "boolean",
-                        "description" : "A flag to indicate if a Study is currently active and ongoing"
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "example" : true
                     },
                     "commonCropNames" : {
                         "type" : "array",
@@ -3618,6 +3809,31 @@
                         "items" : {
                             "type" : "string"
                         }
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "studyDbId",
+                            "trialDbId",
+                            "programDbId",
+                            "locationDbId",
+                            "seasonDbId",
+                            "studyType",
+                            "studyName",
+                            "studyLocation",
+                            "programName"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
                     },
                     "studyCodes" : {
                         "type" : "array",
@@ -3748,7 +3964,6 @@
                     "endDate" : {
                         "type" : "string",
                         "description" : "The date this trial ends",
-                        "format" : "date",
                         "nullable" : true
                     },
                     "externalReferences" : {
@@ -3776,7 +3991,6 @@
                     "startDate" : {
                         "type" : "string",
                         "description" : "The date this trial started",
-                        "format" : "date",
                         "nullable" : true
                     },
                     "studyDbIds" : {
@@ -3809,7 +4023,8 @@
                 "properties" : {
                     "active" : {
                         "type" : "boolean",
-                        "description" : "A flag to indicate if a Trial is currently active and ongoing"
+                        "description" : "A flag to indicate if a Trial is currently active and ongoing",
+                        "example" : true
                     },
                     "commonCropNames" : {
                         "type" : "array",
@@ -3883,6 +4098,29 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -4261,6 +4499,43 @@
                                         "searchResultsDbId" : {
                                             "type" : "string",
                                             "example" : "551ae08c"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "StudyStudyTypeListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "StudyStudyTypeListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
+                                            }
                                         }
                                     }
                                 }

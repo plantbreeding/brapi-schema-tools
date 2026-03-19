@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class ExamplesGenerator {
 
+    @SuppressWarnings("unused")
     private final ExamplesGeneratorOptions options ;
     private final ObjectMapper mapper ;
 
@@ -31,12 +32,14 @@ public class ExamplesGenerator {
     private class Generator {
 
         Map<String, DataFrame> dataFrames ;
+        @SuppressWarnings("unused")
         Map<String, Response<JsonNode>> jsonNodes ;
 
         private Generator(Map<String, DataFrame> dataFrames) {
             this.dataFrames = dataFrames;
         }
 
+        @SuppressWarnings("unused")
         private Response<JsonNode> parse(Map.Entry<String, DataFrame> entry) {
             return parse(entry.getValue()) ;
         }

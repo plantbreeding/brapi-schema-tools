@@ -49,6 +49,7 @@ class SQLGeneratorMetadataTest {
         checkDefaultMetadata(metadata);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         SQLGeneratorMetadata metadata = null;

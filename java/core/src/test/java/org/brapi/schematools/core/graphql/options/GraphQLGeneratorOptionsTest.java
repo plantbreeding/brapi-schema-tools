@@ -61,6 +61,7 @@ class GraphQLGeneratorOptionsTest extends OptionsTestBase {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         GraphQLGeneratorOptions options = null;
@@ -165,7 +166,7 @@ class GraphQLGeneratorOptionsTest extends OptionsTestBase {
         assertEquals("Mutation", options.getMutationType().getName());
     }
 
-    private void checkOptions(PropertiesOptions options) {
+    private void checkOptions(GraphQLPropertiesOptions options) {
         assertNotNull(options);
         checkOptions(options.getIds());
 

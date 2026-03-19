@@ -45,6 +45,7 @@ listGet:
     pagedDefault: true
     paged:
         BreedingMethod: false
+    pagedTokenDefault: false
     inputFor:
         BreedingMethod: false
     propertiesFromRequest: true
@@ -97,6 +98,16 @@ search:
         SeedLot: false
         ServerInfo: false
         Trait: false
+table:
+    generate: false
+    summaryFormat: Get a table of `%s` records as a CSV file.
+    descriptionFormat: Get a table of `%s` records returned directly as CSV text.
+    generateFor:
+        ObservationUnit: true
+searchTable:
+    generate: false
+    summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
+    descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
 post:
     generate: true
     summaryFormat: Create new %s

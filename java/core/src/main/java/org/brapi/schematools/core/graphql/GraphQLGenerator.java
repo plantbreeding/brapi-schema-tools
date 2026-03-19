@@ -124,30 +124,30 @@ public class GraphQLGenerator {
         }
 
         public Response<GraphQLSchema> generate() {
-            return brAPIClassCache.getBrAPICClassesAsList().stream().
+            return brAPIClassCache.getBrAPIClasses().stream().
                 filter(this::isNonPrimaryModel).
                 map(this::createOutputType).
                 collect(Response.toList()).
                 mapOnCondition(options.isGeneratingCreateMutation() || options.isGeneratingUpdateMutation(),
-                    () -> brAPIClassCache.getBrAPICClassesAsList().stream().
+                    () -> brAPIClassCache.getBrAPIClasses().stream().
                         filter(this::isGeneratingInputTypeForMutation).
                         map(this::createInputObjectTypeForModel).
                         collect(Response.toList())).
                 mapOnCondition(options.isGeneratingListQueries(),
-                    () -> brAPIClassCache.getBrAPICClassesAsList().stream().
+                    () -> brAPIClassCache.getBrAPIClasses().stream().
                         filter(this::isGeneratingInputTypeForListQuery).
                         map(this::createInputObjectTypeForListQuery).
                         collect(Response.toList())).
                 mapOnCondition(options.isGeneratingSearchQueries(),
-                    () -> brAPIClassCache.getBrAPICClassesAsList().stream().
+                    () -> brAPIClassCache.getBrAPIClasses().stream().
                         filter(this::isGeneratingInputTypeForSearchQuery).
                         map(this::createInputObjectTypeForSearchQuery).
                         collect(Response.toList())).
-                map(() -> brAPIClassCache.getBrAPICClassesAsList().stream().
+                map(() -> brAPIClassCache.getBrAPIClasses().stream().
                     filter(this::isInterface).
                     map(this::createInterfaceType).
                     collect(Response.toList())).
-                map(() -> brAPIClassCache.getBrAPICClassesAsList().stream().
+                map(() -> brAPIClassCache.getBrAPIClasses().stream().
                     filter(this::isPrimaryModel).
                     map(this::createObjectType).
                     collect(Response.toList())).

@@ -8,8 +8,6 @@ import java.util.Collections;
 
 class ValidationTest {
 
-    private Validation subject;
-
     @Test
     void valid() {
         Assertions.assertNotNull(Validation.valid()) ;
