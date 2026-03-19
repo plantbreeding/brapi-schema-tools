@@ -133,10 +133,15 @@ class PythonGeneratorTest {
             for (Path path : result) {
                 String relativePath = path.toAbsolutePath().toString().substring(OUTPUT_PATH.toAbsolutePath().toString().length() + 1);
 
-                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/"+ relativePath).toURI())).getResultOrThrow();
-                String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
+                try {
+                    String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("Python/Generated/" + relativePath).toURI())).getResultOrThrow();
+                    String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
+                    assertMultilineEqual(expected, actual);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    Assertions.fail(e) ;
+                }
 
-                assertMultilineEqual(expected, actual);
             }
 
         } catch (Exception e) {

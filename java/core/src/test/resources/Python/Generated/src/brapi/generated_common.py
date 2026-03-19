@@ -14,32 +14,33 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum, IntEnum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
-from strenum import StrEnum
+from brapi._compat import StrEnum
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
 
+if TYPE_CHECKING:
 
-from brapi.entities.generated_reference_set import ReferenceSet
-from brapi.entities.generated_call import Call
-from brapi.entities.generated_study import Study
-from brapi.entities.generated_trial import Trial
-from brapi.entities.generated_ontology import Ontology
-from brapi.entities.generated_cross import Cross
-from brapi.entities.generated_variant_set import VariantSet
-from brapi.entities.generated_reference import Reference
-from brapi.entities.generated_allele_matrix import AlleleMatrix
-from brapi.entities.generated_scale import Scale
-from brapi.entities.generated_pedigree_node import PedigreeNode
-from brapi.entities.generated_image import Image
-from brapi.entities.generated_genome_map import GenomeMap
-from brapi.entities.generated_germplasm import Germplasm
-from brapi.entities.generated_observation_unit import ObservationUnit
-from brapi.entities.generated_observation import Observation
-from brapi.entities.generated_event import Event
-from brapi.entities.generated_seed_lot import SeedLot
+    from brapi.entities.generated_reference_set import ReferenceSet
+    from brapi.entities.generated_call import Call
+    from brapi.entities.generated_study import Study
+    from brapi.entities.generated_trial import Trial
+    from brapi.entities.generated_ontology import Ontology
+    from brapi.entities.generated_cross import Cross
+    from brapi.entities.generated_variant_set import VariantSet
+    from brapi.entities.generated_reference import Reference
+    from brapi.entities.generated_allele_matrix import AlleleMatrix
+    from brapi.entities.generated_scale import Scale
+    from brapi.entities.generated_pedigree_node import PedigreeNode
+    from brapi.entities.generated_image import Image
+    from brapi.entities.generated_genome_map import GenomeMap
+    from brapi.entities.generated_germplasm import Germplasm
+    from brapi.entities.generated_observation_unit import ObservationUnit
+    from brapi.entities.generated_observation import Observation
+    from brapi.entities.generated_event import Event
+    from brapi.entities.generated_seed_lot import SeedLot
 
 
 
@@ -52,28 +53,28 @@ class AcquisitionSourceCode(StrEnum):
     """
     
     """
-    10 = "10"
-    11 = "11"
-    12 = "12"
-    13 = "13"
-    14 = "14"
-    15 = "15"
-    20 = "20"
-    21 = "21"
-    22 = "22"
-    23 = "23"
-    24 = "24"
-    25 = "25"
-    26 = "26"
-    27 = "27"
-    28 = "28"
-    30 = "30"
-    40 = "40"
-    50 = "50"
-    60 = "60"
-    61 = "61"
-    62 = "62"
-    99 = "99"
+    _10 = "10"
+    _11 = "11"
+    _12 = "12"
+    _13 = "13"
+    _14 = "14"
+    _15 = "15"
+    _20 = "20"
+    _21 = "21"
+    _22 = "22"
+    _23 = "23"
+    _24 = "24"
+    _25 = "25"
+    _26 = "26"
+    _27 = "27"
+    _28 = "28"
+    _30 = "30"
+    _40 = "40"
+    _50 = "50"
+    _60 = "60"
+    _61 = "61"
+    _62 = "62"
+    _99 = "99"
 
 
 class AdditionalInfo(BaseModel):
@@ -166,27 +167,27 @@ class BiologicalStatusOfAccessionCode(StrEnum):
     """
     
     """
-    100 = "100"
-    110 = "110"
-    120 = "120"
-    130 = "130"
-    200 = "200"
-    300 = "300"
-    400 = "400"
-    410 = "410"
-    411 = "411"
-    412 = "412"
-    413 = "413"
-    414 = "414"
-    415 = "415"
-    416 = "416"
-    420 = "420"
-    421 = "421"
-    422 = "422"
-    423 = "423"
-    500 = "500"
-    600 = "600"
-    999 = "999"
+    _100 = "100"
+    _110 = "110"
+    _120 = "120"
+    _130 = "130"
+    _200 = "200"
+    _300 = "300"
+    _400 = "400"
+    _410 = "410"
+    _411 = "411"
+    _412 = "412"
+    _413 = "413"
+    _414 = "414"
+    _415 = "415"
+    _416 = "416"
+    _420 = "420"
+    _421 = "421"
+    _422 = "422"
+    _423 = "423"
+    _500 = "500"
+    _600 = "600"
+    _999 = "999"
 
 
 class CollectingInfo(BaseModel):
@@ -619,11 +620,11 @@ class FileFormat(StrEnum):
     """
     
     """
-    TEXT/CSV = "text/csv"
-    TEXT/TSV = "text/tsv"
-    APPLICATION/EXCEL = "application/excel"
-    APPLICATION/ZIP = "application/zip"
-    APPLICATION/JSON = "application/json"
+    TEXT_CSV = "text/csv"
+    TEXT_TSV = "text/tsv"
+    APPLICATION_EXCEL = "application/excel"
+    APPLICATION_ZIP = "application/zip"
+    APPLICATION_JSON = "application/json"
 
 
 class GenotypeMetadata(BaseModel):
@@ -912,10 +913,10 @@ class MlsStatus(StrEnum):
     """
     
     """
-     = ""
-    0 = "0"
-    1 = "1"
-    99 = "99"
+    _EMPTY = ""
+    _0 = "0"
+    _1 = "1"
+    _99 = "99"
 
 
 class ObservationTreatment(BaseModel):
@@ -1238,9 +1239,9 @@ class SortOrder(StrEnum):
     
     """
     ASC = "asc"
-    ASC = "ASC"
+    ASC_2 = "ASC"
     DESC = "desc"
-    DESC = "DESC"
+    DESC_2 = "DESC"
 
 
 class StorageType(BaseModel):
@@ -1266,15 +1267,15 @@ class StorageTypeCode(StrEnum):
     """
     
     """
-    10 = "10"
-    11 = "11"
-    12 = "12"
-    13 = "13"
-    20 = "20"
-    30 = "30"
-    40 = "40"
-    50 = "50"
-    99 = "99"
+    _10 = "10"
+    _11 = "11"
+    _12 = "12"
+    _13 = "13"
+    _20 = "20"
+    _30 = "30"
+    _40 = "40"
+    _50 = "50"
+    _99 = "99"
 
 
 class Synonym(BaseModel):
