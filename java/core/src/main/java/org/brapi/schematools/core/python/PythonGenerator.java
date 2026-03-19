@@ -120,6 +120,8 @@ public class PythonGenerator {
                     .onSuccessDoWithResult(paths::addAll)
                     .map(() -> createCommonClasses(brAPIClassCache.getAllNonPrimaryDependencies()))
                     .onSuccessDoWithResult(paths::add)
+                    .map(this::createCompatModule)
+                    .onSuccessDoWithResult(paths::add)
                     .map(() -> createNotebooks(classModels))
                     .onSuccessDoWithResult(paths::addAll)
                     .map(() -> success(paths));
@@ -146,7 +148,7 @@ public class PythonGenerator {
 
             List<Path> paths = new ArrayList<>();
 
-            return writeToFile(outputPath.resolve(metadata.getFilePrefix() + "client.py"), "BrapiClient", text)
+            return writeToFile(outputPath.resolve(metadata.getCommonDirectory()).resolve(metadata.getFilePrefix() + "client.py"), "BrapiClient", text)
                 .onSuccessDoWithResult(paths::add)
                 .map(() -> entityClasses
                     .stream()
@@ -179,8 +181,24 @@ public class PythonGenerator {
 
             String text = templateEngine.process("CommonClasses.txt", context);
             return writeToFile(
-                outputPath.resolve(metadata.getFilePrefix() + "common.py"),
+                outputPath.resolve(metadata.getCommonDirectory()).resolve(metadata.getFilePrefix() + "common.py"),
                 "BrapiClient",
+                text
+            );
+        }
+
+        private Response<Path> createCompatModule() {
+            String text = """
+try:
+    from enum import StrEnum  # Python 3.11+
+except ImportError:
+    from strenum import StrEnum  # backport for Python 3.10
+
+__all__ = ["StrEnum"]
+""";
+            return writeToFile(
+                outputPath.resolve(metadata.getCommonDirectory()).resolve("_compat.py"),
+                "_compat",
                 text
             );
         }
@@ -718,13 +736,25 @@ public class PythonGenerator {
                 boolean isStringEnum = BrAPIPrimitiveType.STRING.equals(brAPIEnumType.getType());
                 builder.enumClass(true);
                 builder.enumBaseType(resolvePythonEnumBase(brAPIEnumType.getType()));
-                builder.enumValues(brAPIEnumType.getValues().stream()
-                    .map(v -> EnumValueModel.builder()
-                        .name(toEnumMemberName(v.getName()))
+                // Build enum values with deduplication: if toEnumMemberName produces a collision,
+                // append _2, _3, ... until the name is unique within this enum.
+                Set<String> usedNames = new LinkedHashSet<>();
+                List<EnumValueModel> enumValues = new ArrayList<>();
+                for (var v : brAPIEnumType.getValues()) {
+                    String baseName = toEnumMemberName(v.getName());
+                    String uniqueName = baseName;
+                    int suffix = 2;
+                    while (usedNames.contains(uniqueName)) {
+                        uniqueName = baseName + "_" + suffix++;
+                    }
+                    usedNames.add(uniqueName);
+                    enumValues.add(EnumValueModel.builder()
+                        .name(uniqueName)
                         .value(v.getValue())
                         .stringValue(isStringEnum)
-                        .build())
-                    .toList());
+                        .build());
+                }
+                builder.enumValues(enumValues);
                 builder.requiredFields(List.of());
                 builder.scalarFields(List.of());
             } else {
@@ -746,12 +776,35 @@ public class PythonGenerator {
         }
 
         /**
-         * Converts a raw enum value name (e.g. {@code "fieldStudy"}) into a valid
-         * Python UPPER_SNAKE_CASE identifier (e.g. {@code "FIELD_STUDY"}).
+         * Converts a raw enum value name (e.g. {@code "fieldStudy"} or {@code "text/csv"} or {@code "10"})
+         * into a valid Python UPPER_SNAKE_CASE identifier (e.g. {@code "FIELD_STUDY"}, {@code "TEXT_CSV"},
+         * {@code "_10"}).
+         * Rules:
+         * <ul>
+         *   <li>Null / empty names become {@code _EMPTY}.</li>
+         *   <li>Non-identifier characters (e.g. {@code /}, {@code -}, {@code .}) are replaced by {@code _}.</li>
+         *   <li>Consecutive underscores are collapsed and trailing underscores stripped.</li>
+         *   <li>Names starting with a digit are prefixed with {@code _}.</li>
+         * </ul>
          */
         private String toEnumMemberName(String name) {
-            // reuse existing toSnakeCase then upper-case
-            return toSnakeCase(name).toUpperCase();
+            if (name == null || name.isEmpty()) {
+                return "_EMPTY";
+            }
+            // Replace any character that is not a letter, digit, or underscore with _
+            String sanitized = name.replaceAll("[^a-zA-Z0-9]", "_")
+                                   .replaceAll("_+", "_")
+                                   .replaceAll("_+$", "");
+            if (sanitized.isEmpty()) {
+                return "_EMPTY";
+            }
+            // Apply camelCase → snake_case conversion then upper-case
+            String result = toSnakeCase(sanitized).toUpperCase();
+            // Prefix with _ if the result starts with a digit (not a valid Python identifier)
+            if (Character.isDigit(result.charAt(0))) {
+                result = "_" + result;
+            }
+            return result;
         }
 
         private ClassModelField createModelField(BrAPIObjectProperty property) {
@@ -811,7 +864,7 @@ public class PythonGenerator {
         }
 
         private Path createPathForEntityClass(String fileName) {
-            return outputPath.resolve(options.getEntitiesDirectory()).resolve(fileName);
+            return outputPath.resolve(metadata.getEntitiesDirectory()).resolve(fileName);
         }
 
         private Response<List<Path>> createNotebooks(List<ClassModel> classModels) {
@@ -843,7 +896,7 @@ public class PythonGenerator {
             String text = templateEngine.process("Notebook.txt", context);
 
             String notebookFileName = toSnakeCase(primaryModel.getName()) + "_exploration.ipynb";
-            Path notebookDir = outputPath.resolve(options.getNotebooksDirectory());
+            Path notebookDir = outputPath.resolve(metadata.getNotebooksDirectory());
             return writeNotebookToFile(notebookDir.resolve(notebookFileName), primaryModel.getName(), text);
         }
 

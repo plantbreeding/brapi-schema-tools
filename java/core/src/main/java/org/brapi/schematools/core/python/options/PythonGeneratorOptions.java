@@ -22,16 +22,8 @@ import java.nio.file.Path;
 @Accessors(chain = true)
 public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
 
-    private String entitiesDirectory;
-
     /** When {@code true} a Jupyter notebook is generated for each primary entity. */
     private Boolean generateNotebooks;
-
-    /**
-     * Output directory for generated notebooks, relative to {@code outputPath}.
-     * Defaults to {@code ../../notebooks} (project-root notebooks/ when outputPath is src/brapi/).
-     */
-    private String notebooksDirectory;
 
     /**
      * Load the default options.
@@ -72,8 +64,7 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     @Override
     public Validation validate() {
-        return super.validate()
-            .assertNotNull(entitiesDirectory, "'entitiesDirectory' option is null");
+        return super.validate();
     }
 
     /**
@@ -109,14 +100,8 @@ public class PythonGeneratorOptions extends AbstractRESTGeneratorOptions {
     public PythonGeneratorOptions override(PythonGeneratorOptions overrideOptions) {
         super.override(overrideOptions);
 
-        if (overrideOptions.entitiesDirectory != null) {
-            entitiesDirectory = overrideOptions.entitiesDirectory;
-        }
         if (overrideOptions.generateNotebooks != null) {
             generateNotebooks = overrideOptions.generateNotebooks;
-        }
-        if (overrideOptions.notebooksDirectory != null) {
-            notebooksDirectory = overrideOptions.notebooksDirectory;
         }
         return this;
     }

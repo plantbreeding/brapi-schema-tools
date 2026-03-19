@@ -437,7 +437,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
                     if (overwrite && Files.exists(outputPath)) {
                         log.info("Overwriting existing Python files in output directory '{}'", outputPath);
                         deleteFiles(outputPath, metadata.getFilePrefix()) ;
-                        deleteFiles(outputPath.resolve(options.getEntitiesDirectory()), metadata.getFilePrefix()) ;
+                        deleteFiles(outputPath.resolve(metadata.getEntitiesDirectory()), metadata.getFilePrefix()) ;
                     }
 
                     Files.createDirectories(outputPath);

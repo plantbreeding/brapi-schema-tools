@@ -21,8 +21,16 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Uncomment to install / upgrade brapi-py\n",
-    "# %pip install brapi-py\n",
+    "# Install / upgrade brapi-py — uncomment ONE of the options below:\n",
+    "\n",
+    "# Option 1: install from PyPI (once the package is published)\n",
+    "# %pip install -q brapi-py\n",
+    "\n",
+    "# Option 2: install from local source (for development / testing)\n",
+    "# import subprocess, sys, pathlib\n",
+    "# subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-q', '-e',\n",
+    "#                        str(pathlib.Path('..').resolve())])\n",
+    "\n",
     "import brapi\n",
     "print('brapi-py version:', brapi.__version__)"
    ]
@@ -46,19 +54,11 @@
    "source": [
     "from brapi import BrapiClient\n",
     "\n",
-    "# ── Edit these ────────────────────────────────────────────────────────────\n",
-    "BASE_URL       = 'https://brapi.example.com'\n",
-    "TOKEN_ENDPOINT = 'https://auth.example.com/token'\n",
-    "CLIENT_ID      = 'my-client'\n",
-    "CLIENT_SECRET  = 'my-secret'\n",
-    "# ─────────────────────────────────────────────────────────────────────────\n",
-    "\n",
-    "client = BrapiClient(\n",
-    "    base_url=BASE_URL,\n",
-    "    token_endpoint=TOKEN_ENDPOINT,\n",
-    "    client_id=CLIENT_ID,\n",
-    "    client_secret=CLIENT_SECRET,\n",
-    ")\n",
+    "# Credentials are read automatically from ../.env (or environment variables):\n",
+    "#   BRAPI_BASE_URL, BRAPI_TOKEN_ENDPOINT, BRAPI_CLIENT_ID, BRAPI_CLIENT_SECRET\n",
+    "# You can also pass them explicitly:\n",
+    "#   client = BrapiClient(base_url='...', token_endpoint='...', ...)\n",
+    "client = BrapiClient()\n",
     "print('Client ready →', client)"
    ]
   }

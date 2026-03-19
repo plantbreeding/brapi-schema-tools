@@ -56,8 +56,7 @@ class PythonGeneratorTest {
             response = new PythonGenerator(
                 PythonGeneratorOptions.load()
                     .setOverwrite(true)
-                    .setGenerateNotebooks(true)
-                    .setNotebooksDirectory("notebooks"),
+                    .setGenerateNotebooks(true),
                 NOTEBOOK_OUTPUT_PATH)
                 .generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()));
         } catch (Exception e) {

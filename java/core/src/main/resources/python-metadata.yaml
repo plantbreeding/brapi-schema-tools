@@ -1,1 +1,4 @@
 filePrefix: generated_
+commonDirectory: src/brapi
+entitiesDirectory: src/brapi/entities
+notebooksDirectory: notebooks

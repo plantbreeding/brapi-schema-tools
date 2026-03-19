@@ -17,6 +17,15 @@ import java.nio.file.Path;
 public class PythonGeneratorMetadata implements Metadata {
     private String filePrefix;
 
+    /** Output subdirectory (relative to outputPath) for the client and common Python files. */
+    private String commonDirectory;
+
+    /** Output subdirectory (relative to outputPath) for the generated entity Python files. */
+    private String entitiesDirectory;
+
+    /** Output subdirectory (relative to outputPath) for the generated Jupyter notebooks. */
+    private String notebooksDirectory;
+
     /**
      * Load the default metadata.
      *
@@ -63,6 +72,15 @@ public class PythonGeneratorMetadata implements Metadata {
     public PythonGeneratorMetadata override(PythonGeneratorMetadata overrideMetadata) {
         if (overrideMetadata.filePrefix != null) {
             this.filePrefix = overrideMetadata.filePrefix;
+        }
+        if (overrideMetadata.commonDirectory != null) {
+            this.commonDirectory = overrideMetadata.commonDirectory;
+        }
+        if (overrideMetadata.entitiesDirectory != null) {
+            this.entitiesDirectory = overrideMetadata.entitiesDirectory;
+        }
+        if (overrideMetadata.notebooksDirectory != null) {
+            this.notebooksDirectory = overrideMetadata.notebooksDirectory;
         }
         return this;
     }

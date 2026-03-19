@@ -13,15 +13,16 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum, IntEnum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
-from strenum import StrEnum
+from brapi._compat import StrEnum
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
 
+if TYPE_CHECKING:
 [# th:each="dependency : ${entityClassDependencies}"]
-from [[${dependency.module}]] import [[${dependency.name}]]
+    [# th:text="'from ' + ${dependency.module} + ' import ' + ${dependency.name}"/]
 [/]
 
 [# th:if="${!commonClasses.isEmpty}"]
