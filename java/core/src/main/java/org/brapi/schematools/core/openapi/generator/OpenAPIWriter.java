@@ -41,7 +41,6 @@ import static org.brapi.schematools.core.utils.StringUtils.capitalise;
 @Slf4j
 public class OpenAPIWriter {
 
-    private static final Pattern ENTITY_PATH_PATTERN = Pattern.compile("/(?:search/)?(\\w+)");
     private static final Pattern RESPONSE_PATTERN = Pattern.compile("#/components/responses/(\\w+)");
     private static final Pattern SCHEMA_PATTERN = Pattern.compile("#/components/schemas/(\\w+)");
     private static final Pattern ENTITY_IN_RESPONSE_PATTERN = Pattern.compile("(\\w+)(?:List|Single)Response");
@@ -65,10 +64,11 @@ public class OpenAPIWriter {
         return new Writer(specifications).write();
     }
 
+    @SuppressWarnings("unchecked")
     private class Writer {
         private final List<OpenAPI> specifications ;
-        private final Map<String, Schema> remainingSchemas;
-        private final Map<String, Schema> usedSchemas;
+        private final Map<String, Schema<?>> remainingSchemas;
+        private final Map<String, Schema<?>> usedSchemas;
         private final Map<String, ApiResponse> remainingResponses;
         private final Map<String, Parameter> parameters ;
         private final Map<String, SecurityScheme> securitySchemes ;
@@ -86,7 +86,7 @@ public class OpenAPIWriter {
             referrencedSchemas = new TreeMap<>();
             schemaModule = new HashMap<>();
 
-            this.specifications.forEach(specification -> remainingSchemas.putAll(specification.getComponents().getSchemas())) ;
+            this.specifications.forEach(specification -> remainingSchemas.putAll((Map<String, Schema<?>>)(Map<?,?>) specification.getComponents().getSchemas())) ;
             this.specifications.forEach(specification -> remainingResponses.putAll(specification.getComponents().getResponses())) ;
             this.specifications.forEach(specification -> parameters.putAll(specification.getComponents().getParameters())) ;
             this.specifications.forEach(specification -> securitySchemes.putAll(specification.getComponents().getSecuritySchemes())) ;
@@ -262,7 +262,7 @@ public class OpenAPIWriter {
                 }
 
                 if (successfulResponse.getContent() != null && successfulResponse.getContent().get("application/json") != null) {
-                    Schema schema = successfulResponse.getContent().get("application/json").getSchema();
+                    Schema<?> schema = (Schema<?>) successfulResponse.getContent().get("application/json").getSchema();
 
                     if (schema != null) {
                         if (schema.get$ref() != null) {
@@ -272,7 +272,7 @@ public class OpenAPIWriter {
                                 referrencedSchemas.add(matcher.group(1));
                             }
                         } else if (schema.getType().equals("object") || schema.getTypes().contains("object")) {
-                            if (schema.getProperties().get("result") instanceof Schema resultSchema) {
+                            if (schema.getProperties().get("result") instanceof Schema<?> resultSchema) {
                                 if (resultSchema.get$ref() != null) {
                                     Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
 
@@ -280,7 +280,7 @@ public class OpenAPIWriter {
                                         referrencedSchemas.add(matcher.group(1));
                                     }
                                 } else if (resultSchema.getType().equals("object") || resultSchema.getTypes().contains("object")) {
-                                    if (resultSchema.getProperties().get("data") instanceof Schema dataSchema) {
+                                    if (resultSchema.getProperties().get("data") instanceof Schema<?> dataSchema) {
                                         if (dataSchema.get$ref() != null) {
                                             Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
 
@@ -321,7 +321,7 @@ public class OpenAPIWriter {
                 }
 
                 if (successfulResponse.getContent() != null && successfulResponse.getContent().get("application/json") != null) {
-                    Schema schema = successfulResponse.getContent().get("application/json").getSchema();
+                    Schema<?> schema = (Schema<?>) successfulResponse.getContent().get("application/json").getSchema();
 
                     if (schema != null) {
                         if (schema.get$ref() != null) {
@@ -331,7 +331,7 @@ public class OpenAPIWriter {
                                 entityName = findEntityNameInResponse(matcher.group(1));
                             }
                         } else if (schema.getType().equals("object") || schema.getTypes().contains("object")) {
-                            if (schema.getProperties().get("result") instanceof Schema resultSchema) {
+                            if (schema.getProperties().get("result") instanceof Schema<?> resultSchema) {
                                 if (resultSchema.get$ref() != null) {
                                     Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
 
@@ -339,7 +339,7 @@ public class OpenAPIWriter {
                                         entityName = findEntityNameInResponse(matcher.group(1));
                                     }
                                 } else if (resultSchema.getType().equals("object") || resultSchema.getTypes().contains("object")) {
-                                    if (resultSchema.getProperties().get("data") instanceof Schema dataSchema) {
+                                    if (resultSchema.getProperties().get("data") instanceof Schema<?> dataSchema) {
                                         if (dataSchema.get$ref() != null) {
                                             Matcher matcher = SCHEMA_PATTERN.matcher(resultSchema.get$ref());
 
@@ -368,7 +368,7 @@ public class OpenAPIWriter {
             return responseEntityName ;
         }
 
-        private List<String> findReferrencedSchemas(Schema schema) {
+        private List<String> findReferrencedSchemas(Schema<?> schema) {
             List<String> referrencedSchemas = new ArrayList<>();
             if (schema == null) {
                 return referrencedSchemas;
@@ -408,7 +408,7 @@ public class OpenAPIWriter {
             if (remainingSchemas.containsKey(entityName)) {
                 Path schemasPath = createDirectoryPath(path, "Schemas");
                 OpenAPI openAPI = createOpenAPI(specification);
-                Schema schema = remainingSchemas.remove(entityName);
+                Schema<?> schema = remainingSchemas.remove(entityName);
                 usedSchemas.put(entityName, schema);
                 openAPI.setComponents(new Components().addSchemas(entityName, schema));
 

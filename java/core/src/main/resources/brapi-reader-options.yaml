@@ -1,3 +1,5 @@
 specVersion: V202012
 ignoreDuplicateProperties: false
 warnAboutDuplicateProperties: true
+ignoreDepreciatedSchemas: true
+ignoreDepreciatedProperties: true

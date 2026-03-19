@@ -37,6 +37,8 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toSingular("germplasm")) ;
         assertEquals("study", StringUtils.toSingular("studies")) ;
         assertEquals("trial", StringUtils.toSingular("trials")) ;
+        assertEquals("genus", StringUtils.toSingular("genus")) ;
+        assertEquals("species", StringUtils.toSingular("species")) ;
     }
 
     @Test
@@ -65,6 +67,12 @@ class StringUtilsTest {
         assertEquals("trial", StringUtils.toSnakeCase("trial")) ;
         assertEquals("breeding_method", StringUtils.toSnakeCase("BreedingMethod")) ;
         assertEquals("inventory_lot_attribute_value", StringUtils.toSnakeCase("InventoryLotAttributeValue")) ;
+        assertEquals("germplasm_puis", StringUtils.toSnakeCase("germplasmPUIs")) ;
+        assertEquals("germplasm_pui", StringUtils.toSnakeCase("germplasmPUI")) ;
+        assertEquals("brapi_schema_tools", StringUtils.toSnakeCase("BrAPISchemaTools")) ;
+        assertEquals("germplasm_dbid", StringUtils.toSnakeCase("germplasmDBID")) ;
+        assertEquals("external_reference_id", StringUtils.toSnakeCase("externalReferenceID")) ;
+        assertEquals("observation_unit_xref", StringUtils.toSnakeCase("observationUnitXref")) ;
     }
 
     @Test

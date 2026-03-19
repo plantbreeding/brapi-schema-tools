@@ -75,7 +75,7 @@ public class MarkdownGenerator {
         private final Map<String, BrAPIObjectProperty> duplicateObjectProperties;
 
         public Generator(List<BrAPIClass> brAPIClasses) {
-            this.brAPIClasses = BrAPIClassCacheBuilder.createMap(this::isGenerating, brAPIClasses) ;
+            this.brAPIClasses = BrAPIClassCacheBuilder.createCache(this::isGenerating, brAPIClasses).getBrAPIClassesAsMap() ;
             this.descriptionsPath = outputPath.resolve("descriptions") ;
             this.fieldsPath = outputPath.resolve("fields") ;
 

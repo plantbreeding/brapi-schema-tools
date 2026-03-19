@@ -163,6 +163,7 @@ public class BrAPISpecificationAnalyserFactory {
     /**
      * Analyser provides direct access to the analysis functions.
      */
+    @SuppressWarnings("unchecked")
     public class Analyser {
 
         private final OpenAPI openAPI;
@@ -796,7 +797,7 @@ public class BrAPISpecificationAnalyserFactory {
                     MediaType content = response.getContent().get("application/json");
 
                     if (content != null && content.getSchema() != null) {
-                        Schema schema = content.getSchema();
+                        Schema<?> schema = (Schema<?>) content.getSchema();
 
                         if (schema.get$ref() != null) {
                             schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
@@ -837,7 +838,7 @@ public class BrAPISpecificationAnalyserFactory {
                 .collect(Collectors.joining());
         }
 
-        private Response<String> findEntityName(Schema schema) {
+        private Response<String> findEntityName(Schema<?> schema) {
             if (schema.getType() != null && PRIMITIVES.contains(schema.getType().toLowerCase())) {
                 return Response.empty() ;
             }
@@ -860,14 +861,14 @@ public class BrAPISpecificationAnalyserFactory {
             }
         }
 
-        private Response<Schema> findChildSchema(Schema schema, String propertyName) {
+        private Response<Schema<?>> findChildSchema(Schema<?> schema, String propertyName) {
             if (schema != null && schema.get$ref() != null) {
                 schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
             }
 
             if (schema != null) {
                 if (schema.getProperties() != null) {
-                    schema = (Schema) schema.getProperties().get(propertyName);
+                    schema = (Schema<?>) schema.getProperties().get(propertyName);
 
                     if (schema == null) {
                         return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find child schema in property '%s'", propertyName));
@@ -882,14 +883,14 @@ public class BrAPISpecificationAnalyserFactory {
             return Response.fail(Response.ErrorType.VALIDATION, String.format("Can not find child schema in property '%s'", propertyName));
         }
 
-        private Response<Schema> findChildSchema(Schema schema) {
+        private Response<Schema<?>> findChildSchema(Schema<?> schema) {
             if (schema != null && schema.get$ref() != null) {
                 schema = findSchemaFromRef(schema.get$ref()).orElseResult(null);
             }
 
             if (schema != null) {
                 if (schema.getItems() != null) {
-                    return findChildSchema(schema.getItems());
+                    return findChildSchema((Schema<?>) schema.getItems());
                 } else {
                     return success(schema);
                 }
@@ -898,19 +899,20 @@ public class BrAPISpecificationAnalyserFactory {
             return Response.fail(Response.ErrorType.VALIDATION, "Can not find child schema");
         }
 
-        private Response<Schema> derefSchema(Schema schema) {
+        @SuppressWarnings("unused")
+        private Response<Schema<?>> derefSchema(Schema<?> schema) {
             if (schema.get$ref() != null) {
                 return findSchemaFromRef(schema.get$ref());
             }
             return success(schema);
         }
 
-        private Response<Schema> findSchemaFromRef(String ref) {
+        private Response<Schema<?>> findSchemaFromRef(String ref) {
             Matcher matcher = REF_PATTERN.matcher(ref);
 
             if (matcher.matches()) {
 
-                Schema schema = openAPI.getComponents().getSchemas().get(matcher.group(1));
+                Schema<?> schema = (Schema<?>) openAPI.getComponents().getSchemas().get(matcher.group(1));
 
                 if (schema != null) {
                     if (schema.getName() == null) {
@@ -956,7 +958,7 @@ public class BrAPISpecificationAnalyserFactory {
             return builder;
         }
 
-        private Response<Object> buildBody(String entityName, Schema schema, APIRequestOptions apiRequestOptions) {
+        private Response<Object> buildBody(String entityName, Schema<?> schema, APIRequestOptions apiRequestOptions) {
             if (schema instanceof ObjectSchema objectSchema) {
                 Map<String, Object> map = new HashMap<>();
 
@@ -971,7 +973,7 @@ public class BrAPISpecificationAnalyserFactory {
                     .filter(entry -> required.contains(entry.getKey()))
                     .forEach(entry -> {
                     if (!requiredParametersMap.containsKey(entry.getKey())) {
-                        requiredParametersMap.put(entry.getKey(), createProperty(entry.getKey(), entry.getValue())) ;
+                        requiredParametersMap.put(entry.getKey(), createProperty(entry.getKey(), (Schema<?>) entry.getValue())) ;
                     }
                 });
 
@@ -999,8 +1001,8 @@ public class BrAPISpecificationAnalyserFactory {
             }
         }
 
-        private Response<Schema> findSchemaProperty(ObjectSchema objectSchema, String propertyName) {
-            Schema schema = objectSchema.getProperties().get(propertyName);
+        private Response<Schema<?>> findSchemaProperty(ObjectSchema objectSchema, String propertyName) {
+            Schema<?> schema = (Schema<?>) objectSchema.getProperties().get(propertyName);
 
             if (schema != null) {
                 return success(schema) ;
@@ -1009,12 +1011,12 @@ public class BrAPISpecificationAnalyserFactory {
             }
         }
 
-        private Response<Schema> getSchema(RequestBody body) {
+        private Response<Schema<?>> getSchema(RequestBody body) {
             if (body.get$ref() != null) {
                 return findSchemaFromRef(body.get$ref());
             } else {
                 if (body.getContent().containsKey("application/json")) {
-                    Schema schema = body.getContent().get("application/json").getSchema();
+                    Schema<?> schema = (Schema<?>) body.getContent().get("application/json").getSchema();
 
                     if (schema != null && schema.get$ref() != null) {
                         return findSchemaFromRef(schema.get$ref());
@@ -1085,7 +1087,7 @@ public class BrAPISpecificationAnalyserFactory {
                 example = parameter.getExample() ;
             } else {
                 if (parameter.getExamples() != null && !parameter.getExamples().isEmpty()) {
-                    example = parameter.getExamples().get(0) ;
+                    example = parameter.getExamples().values().iterator().next().getValue() ;
                 }
             }
 
@@ -1097,7 +1099,7 @@ public class BrAPISpecificationAnalyserFactory {
             return newParameter ;
         }
 
-        private Parameter createProperty(String name, Schema schema) {
+        private Parameter createProperty(String name, Schema<?> schema) {
             Parameter newParameter = new Parameter() ;
 
             newParameter.setParameterName(name);

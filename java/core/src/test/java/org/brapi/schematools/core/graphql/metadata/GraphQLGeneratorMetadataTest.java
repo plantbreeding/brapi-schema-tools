@@ -48,6 +48,7 @@ class GraphQLGeneratorMetadataTest {
         checkDefaultMetadata(metadata);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         GraphQLGeneratorMetadata metadata = null;

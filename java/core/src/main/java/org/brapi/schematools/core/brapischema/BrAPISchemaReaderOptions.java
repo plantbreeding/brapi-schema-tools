@@ -30,6 +30,8 @@ public class BrAPISchemaReaderOptions implements Options {
     private String specVersion;
     private Boolean ignoreDuplicateProperties ;
     private Boolean warnAboutDuplicateProperties;
+    private Boolean ignoreDepreciatedSchemas;
+    private Boolean ignoreDepreciatedProperties;
 
     /**
      * Load the default options
@@ -90,11 +92,17 @@ public class BrAPISchemaReaderOptions implements Options {
             ignoreDuplicateProperties = overrideOptions.ignoreDuplicateProperties ;
         }
 
-
         if (overrideOptions.warnAboutDuplicateProperties != null) {
             warnAboutDuplicateProperties = overrideOptions.warnAboutDuplicateProperties ;
         }
 
+        if (overrideOptions.ignoreDepreciatedSchemas != null) {
+            ignoreDepreciatedSchemas = overrideOptions.ignoreDepreciatedSchemas ;
+        }
+
+        if (overrideOptions.ignoreDepreciatedProperties != null) {
+            ignoreDepreciatedProperties = overrideOptions.ignoreDepreciatedProperties ;
+        }
 
         return this ;
     }
@@ -117,5 +125,25 @@ public class BrAPISchemaReaderOptions implements Options {
     @JsonIgnore
     public final boolean isWarningAboutDuplicateProperties() {
         return warnAboutDuplicateProperties != null && warnAboutDuplicateProperties ;
+    }
+
+    /**
+     * Determines if the depreciated Schemas are ignored
+     *
+     * @return {@code true} if the Reader should ignore depreciated Schemas, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isIgnoringDepreciatedSchemas() {
+        return ignoreDepreciatedSchemas != null && ignoreDepreciatedSchemas ;
+    }
+
+    /**
+     * Determines if the depreciated Properties are ignored
+     *
+     * @return {@code true} if the Reader should ignore depreciated Properties, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isIgnoringDepreciatedProperties() {
+        return ignoreDepreciatedProperties != null && ignoreDepreciatedProperties ;
     }
 }

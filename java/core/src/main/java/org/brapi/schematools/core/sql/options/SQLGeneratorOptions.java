@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.brapi.schematools.core.openapi.generator.options.ControlledVocabularyOptions;
+import org.brapi.schematools.core.options.ControlledVocabularyOptions;
 import org.brapi.schematools.core.options.AbstractMainGeneratorOptions;
 import org.brapi.schematools.core.options.PropertiesOptions;
 import org.brapi.schematools.core.sql.SQLGenerator;

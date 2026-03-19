@@ -14,6 +14,7 @@ import java.util.List;
 public class BrAPIOneOfType implements BrAPIClass {
     String name;
     String description;
+    boolean deprecated;
     @Singular
     List<Object> examples ;
     String module;

@@ -9,6 +9,12 @@ import java.util.List;
 public interface BrAPIClass extends BrAPIType {
 
     /**
+     * Indicates whether this class is deprecated
+     * @return {{@code true} if this class is deprecated, {@code false} otherwise
+     */
+    boolean isDeprecated();
+
+    /**
      * The class description
      * @return The class description
      */

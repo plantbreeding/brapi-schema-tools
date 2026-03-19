@@ -48,6 +48,7 @@ class OpenAPIGeneratorMetadataTest {
         checkDefaultMetadata(metadata);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OpenAPIGeneratorMetadata metadata = null;

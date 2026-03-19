@@ -30,14 +30,17 @@ public enum OutputFormat {
      */
     MARKDOWN,
     /**
-     * Use this format to generate R Client for types and their fields
+     * Use this format to generate R 6 Client for types and their fields
      */
-    R,
+    R6,
     /**
      * Use this format to generate SQL for types and their fields
      */
     SQL,
-
+    /**
+     * Use this format to generate Python Client for types and their fields
+     */
+    PYTHON,
     /**
      * Use this format to generate Excel (xlsx) for types and their field descriptions
      */

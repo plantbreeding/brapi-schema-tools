@@ -9,6 +9,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
+import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void loadJson() {
         OpenAPIGeneratorOptions options = null;
@@ -55,6 +57,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void loadYaml() {
         OpenAPIGeneratorOptions options = null;
@@ -70,6 +73,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OpenAPIGeneratorOptions options = null;
@@ -169,8 +173,12 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
     }
 
     private void checkOptions(OpenAPIGeneratorOptions options) {
-        assertNotNull(options.validate());
-        assertTrue(options.validate().isValid()) ;
+        Validation validation = options.validate() ;
+        assertNotNull(validation);
+        if (!validation.isValid()) {
+            log.error("Validation errors: {}", validation.getErrors());
+        }
+        assertTrue(validation.isValid()) ;
 
         assertNotNull(options);
 

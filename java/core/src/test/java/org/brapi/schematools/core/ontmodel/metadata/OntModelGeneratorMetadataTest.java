@@ -49,6 +49,7 @@ class OntModelGeneratorMetadataTest {
         checkDefaultMetadata(metadata);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         OntModelGeneratorMetadata metadata = null;

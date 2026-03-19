@@ -405,7 +405,7 @@
                         }
                     },
                     {
-                        "name" : "scaleDbId",
+                        "name" : "methodDbId",
                         "in" : "query",
                         "description" : "The unique identifier for a method.",
                         "required" : false,
@@ -660,6 +660,69 @@
                         "required" : false,
                         "schema" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
                         }
                     },
                     {
@@ -964,6 +1027,69 @@
                         "required" : false,
                         "schema" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
                         }
                     },
                     {
@@ -1819,6 +1945,53 @@
                 }
             }
         },
+        "/images/{imageDbId}/imagecontent" : {
+            "put" : {
+                "tags" : [
+                    "Images"
+                ],
+                "summary" : "Update the details for an existing string",
+                "description" : "Update the details for an existing string",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "imageDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier of an image",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "string",
+                                "format" : "binary"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ImageSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/methods/{methodDbId}" : {
             "get" : {
                 "tags" : [
@@ -2381,7 +2554,8 @@
                     },
                     "attributeCategory" : {
                         "type" : "string",
-                        "description" : "General category for the attribute. very similar to Trait class."
+                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "example" : "Morphological"
                     },
                     "attributeDbId" : {
                         "type" : "string",
@@ -2389,15 +2563,18 @@
                     },
                     "attributeDescription" : {
                         "type" : "string",
-                        "description" : "A human readable description of this attribute"
+                        "description" : "A human readable description of this attribute",
+                        "example" : "Height of the plant measured in meters by a tape"
                     },
                     "attributeName" : {
                         "type" : "string",
-                        "description" : "A human readable name for this attribute"
+                        "description" : "A human readable name for this attribute",
+                        "example" : "Plant Height 1"
                     },
                     "attributePUI" : {
                         "type" : "string",
-                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI"
+                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "example" : "http://my-traits.com/trait/CO_123:0008012"
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -2522,6 +2699,19 @@
                     "type" : "string",
                     "format" : "uri"
                 }
+            },
+            "DataType" : {
+                "type" : "string",
+                "description" : "<p>Class of the scale, entries can be</p>\n<p>\"Code\" -  This scale class is exceptionally used to express complex traits. Code is a nominal scale that combines the expressions of the different traits composing the complex trait. For example a severity trait might be expressed by a 2 digit and 2 character code. The first 2 digits are the percentage of the plant covered by a fungus and the 2 characters refer to the delay in development, e.g. \"75VD\" means \"75 %\" of the plant is infected and the plant is very delayed.</p>\n<p>\"Date\" - The date class is for events expressed in a time format, See ISO 8601</p>\n<p>\"Duration\" - The Duration class is for time elapsed between two events expressed in a time format, e.g. days, hours, months</p>\n<p>\"Nominal\" - Categorical scale that can take one of a limited and fixed number of categories. There is no intrinsic ordering to the categories</p>\n<p>\"Numerical\" - Numerical scales express the trait with real numbers. The numerical scale defines the unit e.g. centimeter, ton per hectare, branches</p>\n<p>\"Ordinal\" - Ordinal scales are scales composed of ordered categories</p>\n<p>\"Text\" - A free text is used to express the trait.</p>",
+                "enum" : [
+                    "Code",
+                    "Date",
+                    "Duration",
+                    "Nominal",
+                    "Numerical",
+                    "Ordinal",
+                    "Text"
+                ]
             },
             "DocumentationLink" : {
                 "type" : "object",
@@ -2720,7 +2910,8 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Feature\""
+                        "description" : "The literal string \"Feature\"",
+                        "example" : "Feature"
                     }
                 },
                 "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -2877,6 +3068,11 @@
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
                     },
+                    "imageContent" : {
+                        "type" : "string",
+                        "description" : "The content of the image",
+                        "format" : "binary"
+                    },
                     "imageFileName" : {
                         "type" : "string",
                         "description" : "The name of the image file. Might be the same as 'imageName', but could be different.",
@@ -2970,22 +3166,26 @@
                     "imageFileSizeMax" : {
                         "type" : "integer",
                         "description" : "A maximum image file size to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 20000000
                     },
                     "imageFileSizeMin" : {
                         "type" : "integer",
                         "description" : "A minimum image file size to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 1000
                     },
                     "imageHeightMax" : {
                         "type" : "integer",
                         "description" : "A maximum image height to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 1080
                     },
                     "imageHeightMin" : {
                         "type" : "integer",
                         "description" : "A minimum image height to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 720
                     },
                     "imageLocation" : {
                         "$ref" : "#/components/schemas/GeoJSONSearchArea"
@@ -3010,12 +3210,14 @@
                     "imageWidthMax" : {
                         "type" : "integer",
                         "description" : "A maximum image width to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 1920
                     },
                     "imageWidthMin" : {
                         "type" : "integer",
                         "description" : "A minimum image width to search for.",
-                        "format" : "int32"
+                        "format" : "int32",
+                        "example" : 1280
                     },
                     "mimeTypes" : {
                         "type" : "array",
@@ -3307,6 +3509,55 @@
                             "type" : "string"
                         }
                     },
+                    "observationUnitLevelCodes" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelNames" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelOrders" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipCodes" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipDbIds" : {
+                        "type" : "array",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipNames" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipOrders" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "observationVariableDbIds" : {
                         "type" : "array",
                         "description" : "The DbIds of Variables to search for",
@@ -3386,12 +3637,14 @@
                     "factor" : {
                         "type" : "string",
                         "description" : "The type of treatment/factor. ex. 'fertilizer', 'inoculation', 'irrigation', etc\n\nMIAPPE V1.1 (DM-61) Experimental Factor type - Name/Acronym of the experimental factor.",
-                        "nullable" : true
+                        "nullable" : true,
+                        "example" : "test-factor:dia2020-2-nv.fertilizer"
                     },
                     "modality" : {
                         "type" : "string",
                         "description" : "The treatment/factor description. ex. 'low fertilizer', 'yellow rust inoculation', 'high water', etc\n\nMIAPPE V1.1 (DM-62) Experimental Factor description - Free text description of the experimental factor. This includes all relevant treatments planned and protocol planned for all the plants targeted by a given experimental factor. ",
-                        "nullable" : true
+                        "nullable" : true,
+                        "example" : "test-factor:dia2020-2-nv.lf"
                     },
                     "observationUnitDbId" : {
                         "type" : "string"
@@ -3675,7 +3928,8 @@
                     },
                     "includeObservations" : {
                         "type" : "boolean",
-                        "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to."
+                        "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
+                        "example" : false
                     },
                     "locationDbIds" : {
                         "type" : "array",
@@ -3708,6 +3962,55 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an observation unit",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelCodes" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelNames" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelOrders" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipCodes" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipDbIds" : {
+                        "type" : "array",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipNames" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationUnitLevelRelationshipOrders" : {
+                        "type" : "array",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "items" : {
                             "type" : "string"
                         }
@@ -4818,6 +5121,17 @@
             }
         },
         "responses" : {
+            "401Unauthorized" : {
+                "description" : "Unauthorized",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "type" : "string"
+                        },
+                        "example" : "ERROR - 2018-10-08T18:15:11Z - Missing or expired authorization token"
+                    }
+                }
+            },
             "ObservationVariableSingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -4844,12 +5158,12 @@
                     }
                 }
             },
-            "SeedLotSingleResponse" : {
+            "ImageListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "SeedLotSingleResponse",
+                            "title" : "ImageListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -4863,33 +5177,18 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/SeedLot"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "VariantSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "VariantSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Variant"
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Image"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -4924,38 +5223,12 @@
                     }
                 }
             },
-            "StudySingleResponse" : {
+            "EventListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "StudySingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Study"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "MarkerPositionListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "MarkerPositionListResponse",
+                            "title" : "EventListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -4977,44 +5250,7 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/MarkerPosition"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "TrialListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "TrialListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Trial"
+                                                "$ref" : "#/components/schemas/Event"
                                             }
                                         }
                                     }
@@ -5050,12 +5286,12 @@
                     }
                 }
             },
-            "SeedLotListResponse" : {
+            "TraitListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "SeedLotListResponse",
+                            "title" : "TraitListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -5077,681 +5313,7 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/SeedLot"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "VariantSetListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "VariantSetListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/VariantSet"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SampleSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SampleSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Sample"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SeedLotTransactionListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SeedLotTransactionListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/SeedLotTransaction"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CallSetListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CallSetListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/CallSet"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CallSetSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CallSetSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/CallSet"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "VariantSetSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "VariantSetSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/VariantSet"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceSetSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceSetSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/ReferenceSet"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ObservationVariableListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ObservationVariableListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/ObservationVariable"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CrossListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CrossListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Cross"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ImageSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ImageSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Image"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PlateListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PlateListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Plate"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SeasonListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SeasonListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Season"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ObservationUnitListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ObservationUnitListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/ObservationUnit"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Reference"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ObservationListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ObservationListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Observation"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "AlleleMatrixListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "AlleleMatrixListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/AlleleMatrix"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GenomeMapSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GenomeMapSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GenomeMap"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PersonListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PersonListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Person"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PlannedCrossListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PlannedCrossListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/PlannedCross"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "LocationListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "LocationListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Location"
+                                                "$ref" : "#/components/schemas/Trait"
                                             }
                                         }
                                     }
@@ -5792,43 +5354,6 @@
                                 },
                                 "result" : {
                                     "$ref" : "#/components/schemas/Ontology"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ProgramListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ProgramListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Program"
-                                            }
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -5898,12 +5423,12 @@
                     }
                 }
             },
-            "ListListResponse" : {
+            "ObservationVariableListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "ListListResponse",
+                            "title" : "ObservationVariableListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -5925,7 +5450,44 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/List"
+                                                "$ref" : "#/components/schemas/ObservationVariable"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "OntologyListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "OntologyListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Ontology"
                                             }
                                         }
                                     }
@@ -5983,495 +5545,6 @@
                     }
                 }
             },
-            "CrossingProjectListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CrossingProjectListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/CrossingProject"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmAttribute"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "TraitSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "TraitSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Trait"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "401Unauthorized" : {
-                "description" : "Unauthorized",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "type" : "string"
-                        },
-                        "example" : "ERROR - 2018-10-08T18:15:11Z - Missing or expired authorization token"
-                    }
-                }
-            },
-            "GermplasmAttributeListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/GermplasmAttribute"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Germplasm"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CrossingProjectSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CrossingProjectSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/CrossingProject"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "EventListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "EventListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Event"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "TraitListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "TraitListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Trait"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SampleListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SampleListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Sample"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceSetListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceSetListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/ReferenceSet"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "TrialSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "TrialSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Trial"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Germplasm"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SeasonSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SeasonSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Season"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Reference"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "OntologyListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "OntologyListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Ontology"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "404NotFound" : {
                 "description" : "Not Found",
                 "content" : {
@@ -6480,43 +5553,6 @@
                             "type" : "string"
                         },
                         "example" : "ERROR - 2018-10-08T18:15:11Z - The requested object DbId is not found"
-                    }
-                }
-            },
-            "StudyListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudyListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Study"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             },
@@ -6546,12 +5582,12 @@
                     }
                 }
             },
-            "BreedingMethodSingleResponse" : {
+            "ImageSingleResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "BreedingMethodSingleResponse",
+                            "title" : "ImageSingleResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -6565,19 +5601,19 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/BreedingMethod"
+                                    "$ref" : "#/components/schemas/Image"
                                 }
                             }
                         }
                     }
                 }
             },
-            "CallListResponse" : {
+            "ObservationUnitListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "CallListResponse",
+                            "title" : "ObservationUnitListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -6599,333 +5635,7 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/Call"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "LocationSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "LocationSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Location"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PersonSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PersonSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Person"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ImageListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ImageListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Image"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "VariantListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "VariantListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Variant"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PlateSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PlateSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Plate"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeValueListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeValueListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/GermplasmAttributeValue"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "BreedingMethodListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "BreedingMethodListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/BreedingMethod"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeValueSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeValueSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmAttributeValue"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GenomeMapListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GenomeMapListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/GenomeMap"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PedigreeNodeListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PedigreeNodeListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/PedigreeNode"
+                                                "$ref" : "#/components/schemas/ObservationUnit"
                                             }
                                         }
                                     }
@@ -6961,12 +5671,12 @@
                     }
                 }
             },
-            "ListSingleResponse" : {
+            "ObservationListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "ListSingleResponse",
+                            "title" : "ObservationListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -6980,19 +5690,30 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/List"
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Observation"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             },
-            "ProgramSingleResponse" : {
+            "TraitSingleResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "ProgramSingleResponse",
+                            "title" : "TraitSingleResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -7006,7 +5727,7 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/Program"
+                                    "$ref" : "#/components/schemas/Trait"
                                 }
                             }
                         }

@@ -58,6 +58,7 @@ class XSSFWorkbookGeneratorOptionsTest {
         checkDefaultOptions(options);
     }
 
+    @SuppressWarnings("null")
     @Test
     void overwrite() {
         XSSFWorkbookGeneratorOptions options = null;

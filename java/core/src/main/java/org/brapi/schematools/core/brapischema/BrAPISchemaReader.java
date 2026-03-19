@@ -140,8 +140,17 @@ public class BrAPISchemaReader {
             return Stream.generate(() -> null)
                 .takeWhile(x -> iterator.hasNext())
                 .map(n -> iterator.next())
+                .filter(entry -> isGeneratingSchema(path, entry.getValue()))
                 .map(entry -> createBrAPIClass(path, entry.getValue(), entry.getKey(), module))
                 .collect(Response.toList());
+        }
+
+        private boolean isGeneratingSchema(Path path, JsonNode jsonNode) {
+            if (options.isIgnoringDepreciatedSchemas()) {
+                findBooleanChildValue(path, jsonNode, "deprecated", false, false).getResult();
+            }
+
+            return true ;
         }
 
         private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
@@ -443,7 +452,6 @@ public class BrAPISchemaReader {
                         return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Unknown type(s) '%s' in node '%s'", types, jsonNode));
 
                     }));
-
         }
 
         private Response<String> findNameFromTitle(Path path, JsonNode jsonNode) {
@@ -508,11 +516,18 @@ public class BrAPISchemaReader {
                 .module(module)
                 .interfaces(new ArrayList<>());
 
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
 
-            findValue(path, jsonNode, "example", false).
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
                 ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 
             findChildValues(path, jsonNode, "examples", false).
                 ifPresentDoWithResult(examples -> examples.forEach(builder::example));
@@ -549,10 +564,19 @@ public class BrAPISchemaReader {
 
         private Response<List<BrAPIObjectProperty>> createProperties(Path path, String name, Iterator<Map.Entry<String, JsonNode>> fields, String module, List<String> required) {
             return Streams.stream(fields)
+                .filter(field -> isGeneratingProperty(path, field.getValue()))
                 .map(
                 field -> createProperty(path, field.getValue(), field.getKey(), module, required.contains(field.getKey())))
                 .collect(Response.toList())
                 .mapResultToResponse(properties -> validateProperties(path, name, properties));
+        }
+
+        private boolean isGeneratingProperty(Path path, JsonNode jsonNode) {
+            if (options.isIgnoringDepreciatedProperties()) {
+                findBooleanChildValue(path, jsonNode, "deprecated", false, false).getResult();
+            }
+
+            return true ;
         }
 
         private Response<List<BrAPIObjectProperty>> validateProperties(Path path, String objectName, List<BrAPIObjectProperty> properties) {
@@ -590,15 +614,28 @@ public class BrAPISchemaReader {
                 name(name).
                 required(required);
 
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
+
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
+                ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
+            findChildValues(path, jsonNode, "examples", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 
             findStringChildValue(path, jsonNode, "referencedAttribute", false).
                 onSuccessDoWithResult(builder::referencedAttribute);
 
             findStringFieldList(path, jsonNode, "type", false)
                 .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, false))
-                .onSuccessDoWithResult(builder::nullable);
+                .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
 
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module).
                 onSuccessDoWithResult(builder::type).
@@ -612,13 +649,13 @@ public class BrAPISchemaReader {
             BrAPIMetadata.BrAPIMetadataBuilder builder = BrAPIMetadata.builder();
 
             return findBooleanChildValue(path, metadata, "primaryModel", false, false)
-                .onSuccessDoWithResult(builder::primaryModel)
+                .onSuccessDoWithResult(value -> builder.primaryModel(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "request", false, false))
-                .onSuccessDoWithResult(builder::request)
+                .onSuccessDoWithResult(value -> builder.request(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "parameters", false, false))
-                .onSuccessDoWithResult(builder::parameters)
+                .onSuccessDoWithResult(value -> builder.parameters(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "interface", false, false))
-                .onSuccessDoWithResult(builder::interfaceClass)
+                .onSuccessDoWithResult(value -> builder.interfaceClass(Boolean.TRUE.equals(value)))
                 .merge(findStringFieldList(path, metadata, "controlledVocabularyProperties", false))
                 .onSuccessDoWithResult(builder::controlledVocabularyProperties)
                 .merge(findStringFieldList(path, metadata, "subQueryProperties", false))
@@ -636,8 +673,21 @@ public class BrAPISchemaReader {
                 name(name).
                 module(module);
 
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
+
+            // sometimes there is an "examples" field with multiple examples, and sometimes there is just an "example" field with one example, so we check both and add all examples to the builder
+            findChildValue(path, jsonNode, "example", false).
+                ifPresentDoWithResult(builder::example);
+
+            findChildValues(path, jsonNode, "example", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
+
+            findChildValues(path, jsonNode, "examples", false).
+                ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 
             return findChildNode(path, jsonNode, "allOf", true).
                 mapResult(node -> childNodes(path, node)).
@@ -660,6 +710,9 @@ public class BrAPISchemaReader {
             BrAPIOneOfType.BrAPIOneOfTypeBuilder builder = BrAPIOneOfType.builder().
                 name(name).
                 module(module);
+
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -686,6 +739,9 @@ public class BrAPISchemaReader {
                 name(name).
                 type(type).
                 module(module);
+
+            findBooleanChildValue(path, jsonNode, "deprecated", false, false).
+                onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false).
                 onSuccessDoWithResult(builder::description);
@@ -720,12 +776,13 @@ public class BrAPISchemaReader {
             }
         }
 
-        private Response<Object> findValue(Path path, JsonNode parentNode, String fieldName, boolean required) {
+        private Response<Object> findChildValue(Path path, JsonNode parentNode, String fieldName, boolean required) {
             return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
                 if (jsonNode instanceof ValueNode) {
                     return findValue(path, jsonNode).or(() -> fail(Response.ErrorType.VALIDATION, path,
                             String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
                 }
+
                 return required ?
                     fail(Response.ErrorType.VALIDATION, path,
                         String.format("Child node type '%s' was not ValueNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
@@ -752,7 +809,7 @@ public class BrAPISchemaReader {
         private Response<List<Object>> findChildValues(Path path, JsonNode parentNode, String fieldName, boolean required) {
             return findChildNode(path, parentNode, fieldName, required).mapResultToResponse(jsonNode -> {
                 if (jsonNode instanceof ArrayNode arrayNode) {
-                    return StreamSupport.stream(arrayNode.spliterator(), false).map(jn -> findValue(path, jsonNode)).collect(Response.toList()).or(() -> fail(Response.ErrorType.VALIDATION, path,
+                    return StreamSupport.stream(arrayNode.spliterator(), false).map(jn -> findValue(path, jn)).collect(Response.toList()).or(() -> fail(Response.ErrorType.VALIDATION, path,
                         String.format("Child node type '%s' was unknown with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName))) ;
                 }
                 return required ?
