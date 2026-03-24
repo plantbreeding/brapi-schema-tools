@@ -21,7 +21,7 @@ public enum LinkType {
      */
     EMBEDDED("embedded"),
     /**
-     * The property value will be linked to the parent object via an ID, usually the DbId
+     * The property value will be linked to the parent object via an ID or list of IDs, usually the DbId
      */
     ID("id"),
     /**

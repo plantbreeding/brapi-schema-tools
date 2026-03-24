@@ -71,8 +71,10 @@ class StringUtilsTest {
         assertEquals("germplasm_pui", StringUtils.toSnakeCase("germplasmPUI")) ;
         assertEquals("brapi_schema_tools", StringUtils.toSnakeCase("BrAPISchemaTools")) ;
         assertEquals("germplasm_dbid", StringUtils.toSnakeCase("germplasmDBID")) ;
+        assertEquals("germplasm_db_id", StringUtils.toSnakeCase("germplasmDbId")) ;
         assertEquals("external_reference_id", StringUtils.toSnakeCase("externalReferenceID")) ;
         assertEquals("observation_unit_xref", StringUtils.toSnakeCase("observationUnitXref")) ;
+        assertEquals("locale_by_study", StringUtils.toSnakeCase("LocaleByStudy")) ;
     }
 
     @Test
