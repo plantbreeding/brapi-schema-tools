@@ -68,6 +68,14 @@ public class PropertyOptions implements Options {
     }
 
     /**
+     * Get the plural name format for this property.
+     * @return the plural name format for this property
+     */
+    public String getPluralNameFormat() {
+        return pluralNameFormat != null ? pluralNameFormat : nameFormat + "s" ;
+    }
+
+    /**
      * Get if this property is used as a foreign key link between entities
      * @return {@code true} if this property is used as a foreign key link between entities, {@code false} otherwise
      */
