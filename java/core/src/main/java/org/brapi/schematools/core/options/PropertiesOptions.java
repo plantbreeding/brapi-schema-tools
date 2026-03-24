@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.brapi.schematools.core.response.Response.fail;
+import static org.brapi.schematools.core.response.Response.success;
 
 /**
  * Provides options for the generation of ID, Name and PUI property and their usage
@@ -63,6 +64,25 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     }
 
     /**
+     * Gets preferred link property that are used to generate links to the
+     * provided object type.
+     *
+     * This is usually the object dbId, but can be the name and/or PUI.
+     * @param brAPIObjectType the object type from which the properties will be obtained
+     * @return list of link properties that are used to generate links to the object
+     */
+    public Response<BrAPIObjectProperty> getLinkPropertyFor(BrAPIObjectType brAPIObjectType) {
+
+        List<BrAPIObjectProperty> linkProperties = getLinkPropertiesFor(brAPIObjectType) ;
+
+        if (linkProperties.isEmpty()) {
+            return Response.fail(Response.ErrorType.VALIDATION, String.format("No link property found for type '%s'", brAPIObjectType.getName()));
+        } else {
+            return success(linkProperties.getFirst());
+        }
+    }
+
+    /**
      * Gets the list of link properties that are used to generate links to the
      * provided object type.
      *
@@ -80,6 +100,13 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                 .ifPresent(linkProperties::add);
         }
 
+        if (pui.isLinkFor(brAPIObjectType)) {
+            brAPIObjectType.getProperties().stream()
+                .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)))
+                .findFirst()
+                .ifPresent(linkProperties::add);
+        }
+
         if (name.isLinkFor(brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
                 .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)))
@@ -87,10 +114,42 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                 .ifPresent(linkProperties::add);
         }
 
+        return linkProperties ;
+    }
+
+    /**
+     * Gets the list of link properties that are used to generate links to the
+     * provided object type for the specific property.
+     *
+     * This is usually the object dbId, but can also be the name and/or PUI.
+     * @param property the property for which the link properties will be obtained. This is used to determine the format of the converted ids link property name.
+     * @param brAPIObjectType the object type from which the properties will be obtained
+     * @return list of link properties that are used to generate links to the object
+     */
+    public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
+        List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
+
+        if (id.isLinkFor(brAPIObjectType)) {
+            brAPIObjectType.getProperties().stream()
+                .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)))
+                .findFirst()
+                .map(childProperty -> childProperty.toBuilder().name(String.format(id.getNameFormat(), property.getName())).build())
+                .ifPresent(linkProperties::add);
+        }
+
         if (pui.isLinkFor(brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
                 .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)))
                 .findFirst()
+                .map(childProperty -> childProperty.toBuilder().name(String.format(pui.getNameFormat(), property.getName())).build())
+                .ifPresent(linkProperties::add);
+        }
+
+        if (name.isLinkFor(brAPIObjectType)) {
+            brAPIObjectType.getProperties().stream()
+                .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)))
+                .findFirst()
+                .map(childProperty -> childProperty.toBuilder().name(String.format(name.getNameFormat(), property.getName())).build())
                 .ifPresent(linkProperties::add);
         }
 
@@ -116,12 +175,23 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     }
 
     /**
-     * Gets the converted ids link property name for a property
+     * Gets the converted id link property name for a property
      * @param property The BrAPI property
      * @return the converted property name that is used to return an array of ids
      */
     public String getIdsPropertyNameFor(BrAPIObjectProperty property) {
-        return String.format("%sDbIds", StringUtils.toSingular(property.getName())) ;
+
+        String format = "%s" ;
+
+        if (id.isLinkFor(property.getType())) {
+            format = id.getPluralNameFormat() ;
+        } else if (pui.isLinkFor(property.getType())) {
+            format = pui.getPluralNameFormat() ;
+        } else if (name.isLinkFor(property.getType())) {
+            format = name.getPluralNameFormat() ;
+        }
+
+        return String.format(format, StringUtils.toSingular(property.getName())) ;
     }
 
     /**

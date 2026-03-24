@@ -177,13 +177,20 @@ public class StringUtils {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        // First, insert underscore between an acronym run and the start of the next Title-case word
-        // (e.g. "APISchema" → "API_Schema"). Require 2+ lowercase chars to avoid splitting plural
-        // acronym suffixes like "PUIs" where "Is" has only 1 lowercase.
-        String result = value.replaceAll("([A-Z]+)([A-Z][a-z]{2,})", "$1_$2");
-        // Then, insert underscore between a lowercase/digit and an uppercase letter, but only when
-        // the lowercase letter is NOT immediately preceded by an uppercase letter. This prevents
-        // splitting mixed-case acronym prefixes like "Br" in "BrAPI" (where 'r' follows 'B').
+        // Step 1: Split before a Title-case word (uppercase followed immediately by lowercase).
+        // e.g. "DbId" → "Db_Id", "BreedingMethod" → "Breeding_Method", "Schema_Tools" etc.
+        // Uses a lookahead so the lowercase char is not consumed, allowing back-to-back splits
+        // like "DbId" where both "b→I" and "m→D" need to be caught in the same pass.
+        // Also correctly handles "BrAPI": 'r' before 'A' is NOT a match because 'A' is followed
+        // by 'P' (uppercase), not lowercase.
+        String result = value.replaceAll("(?<=[a-z0-9])(?=[A-Z][a-z])", "_");
+        // Step 2: Split between an acronym run and a following Title-case word.
+        // e.g. "APISchema" → "API_Schema". Require 2+ lowercase to avoid splitting plural suffixes
+        // like "PUIs" (where "Is" has only 1 lowercase char).
+        result = result.replaceAll("([A-Z]+)([A-Z][a-z]{2,})", "$1_$2");
+        // Step 3: Split between a lowercase/digit and an uppercase letter when the lowercase is NOT
+        // immediately preceded by an uppercase. This handles transitions like "germplasm" + "PUI"
+        // or "germplasm" + "DBID", while leaving "Br" in "BrAPI" intact (r is preceded by B).
         result = result.replaceAll("(?<![A-Z])([a-z0-9])([A-Z])", "$1_$2");
         if (result.startsWith("_")) {
             result = result.substring(1);
