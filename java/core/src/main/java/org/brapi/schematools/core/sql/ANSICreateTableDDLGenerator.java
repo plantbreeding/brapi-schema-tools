@@ -9,6 +9,7 @@ import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -558,7 +559,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createLinkObjectDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
-            List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(brAPIObjectType);
+            List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(property, brAPIObjectType);
 
             if (linkPropertiesFor.isEmpty()) {
                 return fail(Response.ErrorType.VALIDATION,

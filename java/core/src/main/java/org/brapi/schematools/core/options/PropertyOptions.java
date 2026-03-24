@@ -23,7 +23,10 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertyOptions implements Options {
+    @Getter(AccessLevel.PUBLIC)
     private String nameFormat;
+    @Getter(AccessLevel.PUBLIC)
+    private String pluralNameFormat;
     @Getter(AccessLevel.PUBLIC)
     private Boolean link;
     @Setter(AccessLevel.PRIVATE)
@@ -35,7 +38,7 @@ public class PropertyOptions implements Options {
 
     public Validation validate() {
         return Validation.valid()
-            .assertNotNull(nameFormat, "'analyse' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nameFormat, "'nameFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(link, "'link' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(linkFor, "'linkFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName())
@@ -51,6 +54,10 @@ public class PropertyOptions implements Options {
             setNameFormat(overrideOptions.nameFormat); ;
         }
 
+        if (overrideOptions.pluralNameFormat != null) {
+            setNameFormat(overrideOptions.pluralNameFormat); ;
+        }
+
         if (overrideOptions.link != null) {
             setLink(overrideOptions.link); ;
         }
@@ -58,6 +65,14 @@ public class PropertyOptions implements Options {
         linkFor.putAll(overrideOptions.linkFor);
         propertyFor.putAll(overrideOptions.propertyFor);
         pluralPropertyFor.putAll(overrideOptions.pluralPropertyFor);
+    }
+
+    /**
+     * Get the plural name format for this property.
+     * @return the plural name format for this property
+     */
+    public String getPluralNameFormat() {
+        return pluralNameFormat != null ? pluralNameFormat : nameFormat + "s" ;
     }
 
     /**
@@ -177,7 +192,11 @@ public class PropertyOptions implements Options {
      */
     @JsonIgnore
     public final String getPluralPropertyNameFor(String name) {
-        return propertyFor.getOrDefault(name, toPlural(String.format(nameFormat, toParameterCase(name)))) ;
+        if (pluralNameFormat != null) {
+            return pluralPropertyFor.getOrDefault(name, String.format(pluralNameFormat, toParameterCase(name))) ;
+        } else {
+            return propertyFor.getOrDefault(name, toPlural(String.format(nameFormat, toParameterCase(name)))) ;
+        }
     }
 
     /**
@@ -200,7 +219,7 @@ public class PropertyOptions implements Options {
      */
     @JsonIgnore
     public final PropertyOptions setPluralPropertyNameFor(String name, String parameterName) {
-        propertyFor.put(name, parameterName) ;
+        pluralPropertyFor.put(name, parameterName) ;
 
         return this ;
     }

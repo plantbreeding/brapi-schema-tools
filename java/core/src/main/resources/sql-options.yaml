@@ -17,6 +17,7 @@ properties:
     descriptionFormat: Property %s for type %s
     id:
         nameFormat: "%sDbId"
+        pluralNameFormat: "%sDbIds"
         link: true
         propertyFor:
             GermplasmAttribute: attributeDbId
@@ -25,6 +26,7 @@ properties:
             ObservationUnitHierarchyLevel: levelName
     name:
         nameFormat: "%sName"
+        pluralNameFormat: "%sNames"
         link: true
         propertyFor:
             GermplasmAttribute: attributeName
@@ -33,6 +35,7 @@ properties:
             ObservationUnitHierarchyLevel: levelName
     pui:
         nameFormat: "%sPUI"
+        pluralNameFormat: "%sPUIs"
         link: true
         propertyFor:
             GermplasmAttribute: attributePUI
@@ -85,8 +88,9 @@ properties:
         LastUpdate:
             study: none
         Location:
-            seedLots: none
             observationUnits: none
+            childLocations: none
+            seedLots: none
             studies: none
         OntologyTerm:
             reference: none
@@ -123,6 +127,7 @@ properties:
             germplasm: none
         Study:
             callSets: none
+            contacts: embedded
             events: none
             observations: none
             observationUnits: none
@@ -136,8 +141,11 @@ properties:
             observationUnits: none
             plates: none
             samples: none
+        ValidValues:
+            scale: none
         ValidValuesCategory:
             validValues: none
+
         Variant:
             alleleMatrices: none
             calls: none

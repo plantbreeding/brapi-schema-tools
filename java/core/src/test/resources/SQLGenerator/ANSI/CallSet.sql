@@ -15,11 +15,11 @@ CREATE TABLE brapi_CallSets (
       >
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   sampleDbId STRING COMMENT 'The ID which uniquely identifies a `Sample` <br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample.',
-  sampleName STRING COMMENT 'The human readable name of the `Sample`',
   samplePUI STRING COMMENT 'A permanent unique identifier for the `Sample` (DOI, URL, UUID, etc) <br> MIAPPE V1.1 (DM-81) External ID - An identifier for the sample in a persistent repository, comprising the name of the repository and the accession number of the observation unit therein. Submission to the EBI Biosamples repository is recommended. URI are recommended when possible. ',
+  sampleName STRING COMMENT 'The human readable name of the `Sample`',
   studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   updated STRING COMMENT 'The time at which this call set was last updated',
   -- For property 'variantSets' Link table 'VariantSetByCallSet' will be created separately
 ) 
