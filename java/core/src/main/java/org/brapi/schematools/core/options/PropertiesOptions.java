@@ -83,6 +83,26 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     }
 
     /**
+     * Determine if a property is a link property for the provided object type.
+     * @param brAPIObjectType the object type from which the properties will be checked
+     * @param property the property to check
+     * @return {code}true{code} if the provided property is a link property for the provided object type.
+     */
+    public boolean isLinkPropertyFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
+        List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
+
+        if (id.isLinkFor(brAPIObjectType) && property.getName().equals(id.getPropertyNameFor(brAPIObjectType))) {
+            return true ;
+        }
+
+        if (pui.isLinkFor(brAPIObjectType) && property.getName().equals(pui.getPropertyNameFor(brAPIObjectType))) {
+            return true ;
+        }
+
+        return name.isLinkFor(brAPIObjectType) && property.getName().equals(name.getPropertyNameFor(brAPIObjectType));
+    }
+
+    /**
      * Gets the list of link properties that are used to generate links to the
      * provided object type.
      *

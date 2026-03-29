@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.response.Response.empty;
@@ -64,6 +65,72 @@ public class Validation {
      */
     public Validation assertNotNull(Object value, String errorMessage, Object... args) {
         if (value == null) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are equal. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertEquals(Object expected, Object actual, String errorMessage, Object... args) {
+        if (!Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are not equal. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertNotEquals(Object expected, Object actual, String errorMessage, Object... args) {
+        if (Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are equal if the condition is true. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param condition if {@code true} the values are expected to be equal, if {@code false} the validation check is skipped
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertEqualsOnCondition(boolean condition, Object expected, Object actual, String errorMessage, Object... args) {
+        if (condition && !Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are not equal if the condition is true. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param condition if {@code true} the values are expected to be equal, if {@code false} the validation check is skipped
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertNotEqualsOnCondition(boolean condition, Object expected, Object actual, String errorMessage, Object... args) {
+        if (condition && Objects.equals(expected, actual)) {
             addError(errorMessage, args) ;
         }
 

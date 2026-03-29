@@ -4,6 +4,11 @@ addTableHeaderComments: true
 addTableComments: true
 addTableColumnComments: true
 addGeneratorComments: true
+addPrimaryKeyConstraints: true
+addForeignKeyConstraints: false
+generateDropScript: true
+generateForeignKeyConstraintScript: true
+addNotNullConstraints: true
 indent: 2
 descriptionFormat: TODO Description for %s
 generateLinkTables : true

@@ -3,13 +3,14 @@
 A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.
  */
 CREATE TABLE brapi_Studies (
+  studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
-  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',
   contacts
     ARRAY<
       STRUCT<
-        contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
+        contactDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
         email STRING COMMENT 'The contacts email address  MIAPPE V1.1 (DM-32) Person email - The electronic mail address of the person.',
         instituteName STRING COMMENT 'The name of the institution which this contact is part of  MIAPPE V1.1 (DM-35) Person affiliation - The institution the person belongs to',
         name STRING COMMENT 'The full name of this contact person  MIAPPE V1.1 (DM-31) Person name - The name of the person (either full name or as used in scientific publications)',
@@ -36,9 +37,9 @@ CREATE TABLE brapi_Studies (
   environmentParameters
     ARRAY<
       STRUCT<
-        description STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        environmentParametersDbId STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        parameterName STRING COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
+        description STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        environmentParametersDbId STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        parameterName STRING NOT NULL COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
         parameterPUI STRING COMMENT 'URI pointing to an ontology class for the parameter',
         unit STRING COMMENT 'Unit of the value for this parameter',
         unitPUI STRING COMMENT 'URI pointing to an ontology class for the unit',
@@ -50,7 +51,7 @@ CREATE TABLE brapi_Studies (
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
       description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'.'
-    > COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
+    > NOT NULL COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
       STRUCT<
@@ -62,15 +63,15 @@ CREATE TABLE brapi_Studies (
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-27) Type of growth facility - Type of growth facility in which the study was carried out, in the form of an accession number from the Crop Ontology.',
       description STRING COMMENT 'MIAPPE V1.1 (DM-26) Description of growth facility - Short description of the facility in which the study was carried out.'
-    > COMMENT 'Short description of the facility in which the study was carried out.',
+    > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
-      lastUpdateDbId STRING COMMENT 'The date and time when this study was last modified',
+      lastUpdateDbId STRING NOT NULL COMMENT 'The date and time when this study was last modified',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
-    > COMMENT 'The date and time when this study was last modified',
+    > NOT NULL COMMENT 'The date and time when this study was last modified',
   license STRING COMMENT 'The usage license associated with the study data',
-  locationDbId STRING COMMENT 'The unique identifier for a Location',
+  locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
   observationLevels
     ARRAY<
       STRUCT<
@@ -83,10 +84,9 @@ CREATE TABLE brapi_Studies (
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
   studyCode STRING COMMENT 'A short human readable code for a study',
-  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study',
-  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
-  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc',
   trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.'
 ) 
@@ -98,7 +98,7 @@ Creates a lookup table for property 'observationVariables' for 'Study' to 'Obser
  */
 CREATE TABLE brapi_ObservationVariableByStudy (
   observationVariablePUI STRING COMMENT 'The Permanent Unique Identifier of a Observation Variable, usually in the form of a URI',
-  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
+  studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI'
 ) 
 COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
 

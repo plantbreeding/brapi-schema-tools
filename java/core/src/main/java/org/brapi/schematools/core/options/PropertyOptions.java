@@ -25,7 +25,6 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 public class PropertyOptions implements Options {
     @Getter(AccessLevel.PUBLIC)
     private String nameFormat;
-    @Getter(AccessLevel.PUBLIC)
     private String pluralNameFormat;
     @Getter(AccessLevel.PUBLIC)
     private Boolean link;
