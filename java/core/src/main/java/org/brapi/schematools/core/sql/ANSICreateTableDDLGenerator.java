@@ -330,23 +330,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private List<String> findClusterColumns(BrAPIObjectType brAPIObjectType) {
-
-            List<String> clusterColumns = new ArrayList<>();
-
-            options.getProperties().getLinkPropertiesFor(brAPIObjectType).forEach(brAPIObjectProperty -> clusterColumns.add(brAPIObjectProperty.getName()));
-
-            if (options.isClusteringForeignKeys()) {
-                for (BrAPIObjectProperty brAPIObjectProperty : brAPIObjectType.getProperties()) {
-
-                    BrAPIType dereferenceType = brAPIClassCache.dereferenceType(brAPIObjectProperty.getType());
-
-                    if (dereferenceType instanceof BrAPIObjectType brAPIObjectPropertyObjectType && ID.equals(getLinkPropertiesFor(brAPIObjectType, brAPIObjectProperty, dereferenceType))) {
-                        options.getProperties().getLinkPropertiesFor(brAPIObjectPropertyObjectType).forEach(linkProperty -> clusterColumns.add(linkProperty.getName()));
-                    }
-                }
-            }
-
-            return clusterColumns;
+            return options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
+                .stream()
+                .map(BrAPIObjectProperty::getName)
+                .toList() ;
         }
 
         private LinkType getLinkPropertiesFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty brAPIObjectProperty, BrAPIType dereferenceType) {
@@ -377,7 +364,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
 
-            List<BrAPIObjectProperty> properties = new ArrayList<>(options.getProperties().getLinkPropertiesFor(brAPIObjectType));
+            List<BrAPIObjectProperty> properties = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
             brAPIObjectType.getProperties()
                 .stream()
@@ -497,15 +484,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private List<String> findClusterColumns(LinkTable linkTable) {
-            if (linkTable.getDereferencedItemType() instanceof BrAPIObjectType childBrAPIObjectType) {
-                List<BrAPIObjectProperty> linkProperties = new ArrayList<>(options.getProperties().getLinkPropertiesFor(childBrAPIObjectType));
-                linkProperties.addAll(options.getProperties().getLinkPropertiesFor(linkTable.getParentType()));
-
-                return linkProperties.stream().map(BrAPIObjectProperty::getName).collect(Collectors.toList());
-
-            } else {
-                return Collections.emptyList() ;
-            }
+            return Collections.emptyList() ;
         }
 
         private Response<String> appendControlledVocabularyDefinitions(String ddl) {
@@ -586,7 +565,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 builder.append(" NOT NULL");
             }
 
-            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isLinkPropertyFor(brAPIObjectType, property)) {
+            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)) {
                 builder.append(" PRIMARY KEY");
             }
 

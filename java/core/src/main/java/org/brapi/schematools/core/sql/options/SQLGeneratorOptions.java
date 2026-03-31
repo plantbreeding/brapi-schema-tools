@@ -51,7 +51,6 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean generateLinkTables;
     private Boolean snakeCaseTableNames;
     private Boolean pluralTableNames;
-    private Boolean clusterForeignKeys;
     private Boolean generateDropScript;
     private Boolean generateForeignKeyConstraintScript;
 
@@ -190,10 +189,6 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.pluralTableNames != null) {
             pluralTableNames = overrideOptions.pluralTableNames;
-        }
-
-        if (overrideOptions.clusterForeignKeys != null) {
-            clusterForeignKeys = overrideOptions.clusterForeignKeys;
         }
 
         if (overrideOptions.generateDropScript != null) {
@@ -364,15 +359,6 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public boolean isUsingPluralTableNames() {
         return pluralTableNames != null && pluralTableNames ;
-    }
-
-    /**
-     * Determines if the Generator should cluster key for foreign keys. If there are more than 4 cluster keys, the extra ones will be ignored
-     *
-     * @return {@code true} if the Generator should cluster key for foreign keys, {@code false} otherwise
-     */
-    public boolean isClusteringForeignKeys() {
-        return clusterForeignKeys != null && clusterForeignKeys ;
     }
 
     /**

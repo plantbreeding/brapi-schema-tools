@@ -84,8 +84,7 @@ public class PropertyOptions implements Options {
 
     /**
      * Gets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(String, Boolean)}
-     * to override this value.
+     * Use {@link #setLinkFor(String, Boolean)} to override this value.
      * @param name the name of the primary model
      * @return {@code true} if this property is used as a foreign key link between entities
      * for a specific primary model, {@code false} otherwise
@@ -96,8 +95,8 @@ public class PropertyOptions implements Options {
     }
 
     /**
-     * Gets if this property is used specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default. Use {@link #setLinkFor(BrAPIType, Boolean)}
+     * Gets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
+     * Use {@link #setLinkFor(BrAPIType, Boolean)} to override this value.
      * to override this value.
      * @param type the primary model
      * @return {@code true} if this property is used as a foreign key link between entities
@@ -108,8 +107,8 @@ public class PropertyOptions implements Options {
     }
 
     /**
-     * Sets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default.
+     * Sets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
+     * Use {@link #setLinkFor(BrAPIType, Boolean)} to override this value.
      * @param name the name of the primary model
      * @param isLink {@code true} if this property is used as a foreign key link between entities
      * @return the options for chaining
@@ -122,8 +121,8 @@ public class PropertyOptions implements Options {
     }
 
     /**
-     * Sets the property name for a specific primary model. For example the id property (or field)
-     * name of Study, would be 'studyDbId' by default.
+     * Sets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
+     * Use {@link #setLinkFor(BrAPIType, Boolean)} to override this value.
      * @param type the primary model
      * @param isLink {@code true} if this property is used as a foreign key link between entities
      * @return the options for chaining
