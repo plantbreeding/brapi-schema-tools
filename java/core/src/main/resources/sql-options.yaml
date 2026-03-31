@@ -4,12 +4,16 @@ addTableHeaderComments: true
 addTableComments: true
 addTableColumnComments: true
 addGeneratorComments: true
+addPrimaryKeyConstraints: true
+addForeignKeyConstraints: false
+generateDropScript: true
+generateForeignKeyConstraintScript: true
+addNotNullConstraints: true
 indent: 2
 descriptionFormat: TODO Description for %s
 generateLinkTables : true
 snakeCaseTableNames : false
 pluralTableNames : true
-clusterForeignKeys : false
 generateFor:
     AlleleMatrix: false
     MarkerPosition: false
@@ -156,6 +160,52 @@ properties:
             calls: none
             callSets: none
             variants: none
+    maximumClusteringProperties: 4
+    clustering:
+        - commonCropName
+    clusteringFor:
+        Observation:
+            observationTimeStamp: true
+        ObservationUnit:
+            treatmentCode: true
+        Study:
+            studyType: true
+            studyCode: true
+        Trial:
+            stage: true
+            trialType: true
+        Germplasm:
+            genus: true
+            species: true
+        InventoryLot:
+            inventoryLotStatus: true
+            sourceCollection: true
+        Program:
+            programType: true
+            active: true
+        ObservationVariable:
+            status: true
+            variableCategory: true
+        Location:
+            commonCropName: false
+            countryCode: true
+            environmentType: true
+            locationType: true
+        Season:
+            commonCropName: false
+            year: true
+            quarter: true
+        GermplasmAttributeValue:
+            commonCropName: false
+            determinedDate: true
+        PedigreeNode:
+            commonCropName: false
+            crossingYear: true
+            familyCode: true
+        Crop:
+            cropCode: true
+        BreedingMethod:
+            commonCropName: false
 brAPISchemaReader:
     ignoreDuplicateProperties: true
 controlledVocabulary:

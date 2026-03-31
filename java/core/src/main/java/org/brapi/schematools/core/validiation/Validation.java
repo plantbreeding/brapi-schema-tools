@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.response.Response.empty;
@@ -46,7 +47,7 @@ public class Validation {
      * Get a failed instant of the Validation with a specific message. Not sure why you would use this over
      * just creating a new Validation and using methods on it, but here it is.
      * @param message the error message
-     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
      * @return a failed instant of the Validation
      */
     public static Validation fail(String message, Object... args) {
@@ -59,11 +60,77 @@ public class Validation {
      * Checks if the value is non-null.
      * @param value the value to be tested
      * @param errorMessage the error message to be used if the value is null
-     * @param args argument for te error message, See {@link String#format(String, Object...)} to see the options
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
      * @return The validation with the appended error if there was one generated.
      */
     public Validation assertNotNull(Object value, String errorMessage, Object... args) {
         if (value == null) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are equal. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertEquals(Object expected, Object actual, String errorMessage, Object... args) {
+        if (!Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are not equal. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertNotEquals(Object expected, Object actual, String errorMessage, Object... args) {
+        if (Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are equal if the condition is true. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param condition if {@code true} the values are expected to be equal, if {@code false} the validation check is skipped
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertEqualsOnCondition(boolean condition, Object expected, Object actual, String errorMessage, Object... args) {
+        if (condition && !Objects.equals(expected, actual)) {
+            addError(errorMessage, args) ;
+        }
+
+        return this;
+    }
+
+    /**
+     * Checks if two values are not equal if the condition is true. Uses {@link Objects#equals(Object, Object)} to check equality, so it is null safe.
+     * @param condition if {@code true} the values are expected to be equal, if {@code false} the validation check is skipped
+     * @param expected the expected value to be tested
+     * @param actual the actual value to be tested
+     * @param errorMessage the error message to be used if the value is null
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @return The validation with the appended error if there was one generated.
+     */
+    public Validation assertNotEqualsOnCondition(boolean condition, Object expected, Object actual, String errorMessage, Object... args) {
+        if (condition && Objects.equals(expected, actual)) {
             addError(errorMessage, args) ;
         }
 
@@ -164,13 +231,14 @@ public class Validation {
      * Checks that the provided value is one of the provided values.
      * @param value the value to be checked, can not be null.
      * @param values the list of permitted values that the provided value must adhere to, can not be null.
-     * @param message the error message to be used if the value is not one of the provided values
+     * @param errorMessage the error message to be used if the value is not one of the provided values
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options   
      * @param <T> the class of the value
      * @return this Validation
      */
-    public <T> Validation assertOneOf(T value, T[] values, String message) {
+    public <T> Validation assertOneOf(T value, T[] values, String errorMessage, Object... args) {
         if (value == null || values == null || Arrays.stream(values).noneMatch(v -> v.equals(value))) {
-            addError(message);
+            addError(errorMessage, args) ;
         }
 
         return this ;
@@ -180,13 +248,48 @@ public class Validation {
      * Checks that the provided value is one of the provided values.
      * @param value the value to be checked, can not be null.
      * @param values the list of permitted values that the provided value must adhere to, can not be null.
-     * @param message the error message to be used if the value is not one of the provided values
+     * @param errorMessage the error message to be used if the value is not one of the provided values
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options   
      * @param <T> the class of the value
      * @return this Validation
      */
-    public <T> Validation assertOneOf(T value, List<T> values, String message) {
+    public <T> Validation assertOneOf(T value, List<T> values, String errorMessage, Object... args) {
         if (value == null || values == null || !values.contains(value)) {
-            addError(message);
+            addError(errorMessage, args) ;
+        }
+
+        return this ;
+    }
+
+    /**
+     * Checks that the provided value is less than the provided minimum value.
+     * @param value the value to be checked, can not be null.
+     * @param maxValue the maximum value that the provided value must be less than
+     * @param errorMessage the error message to be used if the value is not less than the provided minimum value
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @param <T> the class of the value
+     * @return this Validation
+     */
+    public <T> Validation assertLessThan(Number value, Number maxValue, String errorMessage, Object... args) {
+        if (value == null || maxValue == null || value.doubleValue() > maxValue.doubleValue()) {
+            addError(errorMessage, args) ;
+        }
+
+        return this ;
+    }
+
+    /**
+     * Checks that the provided value is greater than the provided minimum value.
+     * @param value the value to be checked, can not be null.
+     * @param minValue the minimum value that the provided value must be greater than
+     * @param errorMessage the error message to be used if the value is not greater than the provided minimum value
+     * @param args argument for the error message, See {@link String#format(String, Object...)} to see the options
+     * @param <T> the class of the value
+     * @return this Validation
+     */
+    public <T> Validation assertGreaterThan(Number value, Number minValue, String errorMessage, Object... args) {
+        if (value == null || minValue == null || value.doubleValue() < minValue.doubleValue()) {
+            addError(errorMessage, args) ;
         }
 
         return this ;
@@ -365,4 +468,6 @@ public class Validation {
             error.getType()
         )).toList());
     }
+
+
 }
