@@ -178,7 +178,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)} is set to {@code true}
+     * {@link org.brapi.schematools.core.options.ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)}
+     *  or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
@@ -189,7 +190,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)} is set to {@code true}
+     * {@link #isGeneratingEndpointFor(String)} returns {@code true}
      * @param type the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
@@ -223,8 +224,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
-     * {@link org.brapi.schematools.core.options.DeleteOptions#isGeneratingFor(String)} is set to {@code true}
+     * {@link #isGeneratingEndpointNameWithIdFor(String)} returns {@code true}
      * @param type the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */

@@ -35,6 +35,9 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean addTableComments;
     private Boolean addTableColumnComments;
     private Boolean addGeneratorComments;
+    private Boolean addPrimaryKeyConstraints;
+    private Boolean addForeignKeyConstraints;
+    private Boolean addNotNullConstraints;
     private Integer indent ;
     private String tableUsing;
     private Map<String, Object> tableProperties;
@@ -48,7 +51,8 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean generateLinkTables;
     private Boolean snakeCaseTableNames;
     private Boolean pluralTableNames;
-    private Boolean clusterForeignKeys;
+    private Boolean generateDropScript;
+    private Boolean generateForeignKeyConstraintScript;
 
     /**
      * Load the default options
@@ -96,6 +100,9 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @Override
     public Validation validate() {
         return super.validate()
+            .assertEqualsOnCondition(isAddingForeignKeyConstraints(), Boolean.TRUE, isAddingPrimaryKeyConstraints(), "If addForeignKeyConstraints is true if addPrimaryKeyConstraints must also be true")
+            .assertEqualsOnCondition(isGeneratingForeignKeyConstraintScript(), Boolean.TRUE, isAddingPrimaryKeyConstraints(), "If generateForeignKeyConstraintScript is true if addPrimaryKeyConstraints must also be true")
+            .assertFlagsMutuallyExclusive(this, "addForeignKeyConstraints", "generateForeignKeyConstraintScript")
             .assertNotNull(properties, "Properties Options are null")
             .merge(properties)
             .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
@@ -130,6 +137,10 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.addGeneratorComments != null) {
             addGeneratorComments = overrideOptions.addGeneratorComments;
+        }
+
+        if (overrideOptions.addNotNullConstraints != null) {
+            addNotNullConstraints = overrideOptions.addNotNullConstraints;
         }
 
         if (overrideOptions.indent != null) {
@@ -180,8 +191,12 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             pluralTableNames = overrideOptions.pluralTableNames;
         }
 
-        if (overrideOptions.clusterForeignKeys != null) {
-            clusterForeignKeys = overrideOptions.clusterForeignKeys;
+        if (overrideOptions.generateDropScript != null) {
+            generateDropScript = overrideOptions.generateDropScript;
+        }
+
+        if (overrideOptions.generateForeignKeyConstraintScript != null) {
+            generateForeignKeyConstraintScript = overrideOptions.generateForeignKeyConstraintScript;
         }
 
         return this;
@@ -239,6 +254,39 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public boolean isAddingGeneratorComments() {
         return addGeneratorComments != null && addGeneratorComments;
+    }
+
+    /**
+     * Determines if the Generator is adding primary key constraints to the columns in the table 'Create' statement for the primary key property
+     *
+     * @return {@code true} if the Generator add primary key constraints to the columns in the table 'Create' statement for the primary key property
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingPrimaryKeyConstraints() {
+        return addPrimaryKeyConstraints != null && addPrimaryKeyConstraints;
+    }
+
+    /**
+     * Determines if the Generator is adding foreign key constraints to the columns in the table 'Create' statement for the foreign key property
+     *
+     * @return {@code true} if the Generator add primary key constraints to the columns in the table 'Create' statement for the foreign key property
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingForeignKeyConstraints() {
+        return addForeignKeyConstraints != null && addForeignKeyConstraints;
+    }
+
+    /**
+     * Determines if the Generator is adding not null constraints to the columns in the table 'Create' statement for non-nullable properties
+     *
+     * @return {@code true} if the Generator add not null constraints to the columns in the table 'Create' statement for non-nullable properties
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingNotNullConstraints() {
+        return addNotNullConstraints != null && addNotNullConstraints;
     }
 
     /**
@@ -314,11 +362,20 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should cluster key for foreign keys. If there are more than 4 cluster keys, the extra ones will be ignored
+     * Determines if the Generator should create a SQL file with Drop statements for each table.
      *
-     * @return {@code true} if the Generator should cluster key for foreign keys, {@code false} otherwise
+     * @return {@code true} if the Generator should create a SQL file with Drop statements for each table, {@code false} otherwise
      */
-    public boolean isClusteringForeignKeys() {
-        return clusterForeignKeys != null && clusterForeignKeys ;
+    public boolean isGeneratingDropScript() {
+        return generateDropScript != null && generateDropScript ;
+    }
+
+    /**
+     * Determines if the Generator should create a SQL file with Foreign constraint statements for each table.
+     *
+     * @return {@code true} if the Generator should create a SQL file with Drop statements for each table, {@code false} otherwise
+     */
+    public boolean isGeneratingForeignKeyConstraintScript() {
+        return generateForeignKeyConstraintScript != null && generateForeignKeyConstraintScript ;
     }
 }
