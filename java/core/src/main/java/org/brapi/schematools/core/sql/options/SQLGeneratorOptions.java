@@ -53,6 +53,7 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean pluralTableNames;
     private Boolean generateDropScript;
     private Boolean generateForeignKeyConstraintScript;
+    private Boolean suppressConstraintsInArrayStructs;
 
     /**
      * Load the default options
@@ -197,6 +198,10 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.generateForeignKeyConstraintScript != null) {
             generateForeignKeyConstraintScript = overrideOptions.generateForeignKeyConstraintScript;
+        }
+
+        if (overrideOptions.suppressConstraintsInArrayStructs != null) {
+            suppressConstraintsInArrayStructs = overrideOptions.suppressConstraintsInArrayStructs;
         }
 
         return this;
@@ -377,5 +382,18 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
      */
     public boolean isGeneratingForeignKeyConstraintScript() {
         return generateForeignKeyConstraintScript != null && generateForeignKeyConstraintScript ;
+    }
+
+    /**
+     * Determines if the Generator should suppress NOT NULL and PRIMARY KEY constraints on fields nested
+     * inside ARRAY&lt;STRUCT&lt;...&gt;&gt; types. Required for dialects such as Databricks Delta Lake that
+     * do not support constraints on nested struct fields.
+     *
+     * @return {@code true} if the Generator should suppress constraints inside ARRAY&lt;STRUCT&lt;&gt;&gt;,
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isSuppressingConstraintsInArrayStructs() {
+        return suppressConstraintsInArrayStructs != null && suppressConstraintsInArrayStructs;
     }
 }
