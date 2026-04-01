@@ -104,6 +104,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private final List<LinkTable> linkTables = new ArrayList<>();
         private final List<ControlledVocabularyTable> controlledVocabularyTables = new ArrayList<>();
         private int indent = 0 ;
+        private int arrayStructDepth = 0 ;
 
         public Generator(BrAPIObjectType brAPIObjectType) {
             this.brAPIObjectType = brAPIObjectType;
@@ -195,6 +196,13 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
                     if (options.isAddingForeignKeyConstraints()) {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
+                            List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
+                                brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                            if (sourceLinkProps.isEmpty()) {
+                                log.warn("Skipping inline FK constraint on table '{}': no source columns found for property '{}'",
+                                    tableName, brAPIPropertyWithType.getProperty().getName());
+                                continue;
+                            }
                             builder.append(",");
                             appendNewLine(builder);
                             builder.append("CONSTRAINT ");
@@ -208,6 +216,13 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                         }
                     } else {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
+                            List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
+                                brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                            if (sourceLinkProps.isEmpty()) {
+                                log.warn("Skipping FK constraint script on table '{}': no source columns found for property '{}'",
+                                    tableName, brAPIPropertyWithType.getProperty().getName());
+                                continue;
+                            }
                             StringBuilder builder2 = new StringBuilder();
 
                             builder2.append("ALTER TABLE ");
@@ -332,6 +347,11 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private List<String> findClusterColumns(BrAPIObjectType brAPIObjectType) {
             return options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
                 .stream()
+                .filter(p -> {
+                    BrAPIType dereferencedType = brAPIClassCache.dereferenceType(p.getType());
+                    return !(dereferencedType instanceof BrAPIPrimitiveType primitiveType
+                        && "boolean".equals(primitiveType.getName()));
+                })
                 .map(BrAPIObjectProperty::getName)
                 .toList() ;
         }
@@ -561,11 +581,13 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             StringBuilder builder = new StringBuilder(columnDefinition);
 
-            if (options.isAddingNotNullConstraints() && !property.isNullable()) {
+            if (options.isAddingNotNullConstraints() && !property.isNullable()
+                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
                 builder.append(" NOT NULL");
             }
 
-            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)) {
+            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)
+                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
                 builder.append(" PRIMARY KEY");
             }
 
@@ -796,9 +818,18 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             };
         }
 
+        private Response<String> createObjectColumnTypeForArray(BrAPIObjectType brAPIObjectType) {
+            arrayStructDepth++;
+            try {
+                return createObjectColumnType(brAPIObjectType);
+            } finally {
+                arrayStructDepth--;
+            }
+        }
+
         private Response<String> createArrayColumnType(BrAPIType itemType) {
             return switch (itemType) {
-                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnType(brAPIObjectItemType);
+                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnTypeForArray(brAPIObjectItemType);
                 case BrAPIPrimitiveType brAPIPrimitiveType -> findSimpleColumnType(brAPIPrimitiveType.getName());
                 case BrAPIArrayType brAPIArrayType -> createArrayColumnType(brAPIArrayType.getItems());
                 default ->
