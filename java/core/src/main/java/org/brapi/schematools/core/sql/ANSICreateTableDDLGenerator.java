@@ -98,13 +98,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         return name ;
     }
 
-    @AllArgsConstructor
     private class Generator {
         private final BrAPIObjectType brAPIObjectType;
         private final List<LinkTable> linkTables = new ArrayList<>();
         private final List<ControlledVocabularyTable> controlledVocabularyTables = new ArrayList<>();
         private int indent = 0 ;
-        private int arrayStructDepth = 0 ;
+        private int arrayStructDepth = 0;
 
         public Generator(BrAPIObjectType brAPIObjectType) {
             this.brAPIObjectType = brAPIObjectType;
@@ -608,11 +607,11 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(property.getType());
 
             if (property.getType().getName().equals("AdditionalInfo")) {
-                return createAdditionalInfoColumnDefinition(property);
+                return createAdditionalInfoColumnDefinition(parentType, property);
             } else if (dereferencedType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                return createSimpleColumnDefinition(property, brAPIPrimitiveType.getName());
+                return createSimpleColumnDefinition(parentType, property, brAPIPrimitiveType.getName());
             } else if (dereferencedType instanceof BrAPIEnumType brAPIEnumType) {
-                return createSimpleColumnDefinition(property, brAPIEnumType.getType());
+                return createSimpleColumnDefinition(parentType, property, brAPIEnumType.getType());
             } else if (dereferencedType instanceof BrAPIObjectType brAPIObjectDereferencedType) {
                 return createObjectColumnDefinition(parentType, property, brAPIObjectDereferencedType);
             } else if (dereferencedType instanceof BrAPIOneOfType brAPIOneOfType) {
@@ -626,15 +625,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s'", dereferencedType != null ? dereferencedType.getName() : "null"));
         }
 
-        private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectProperty property) {
+        private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
 
             String builder = property.getName() +
                 " MAP<STRING,STRING>";
 
-            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
         }
 
-        private Response<String> createSimpleColumnDefinition(BrAPIObjectProperty property, String type) {
+        private Response<String> createSimpleColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String type) {
 
             StringBuilder builder = new StringBuilder();
             builder.append(property.getName());
@@ -643,7 +642,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return findSimpleColumnType(type)
                 .mapResult(builder::append)
                 .mapResult(StringBuilder::toString)
-                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
         }
 
         private Response<String> findSimpleColumnType(String type) {
@@ -685,7 +684,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private Response<String> createLinkObjectDefinition(List<BrAPIObjectProperty> linkProperties) {
             return linkProperties.stream()
                 .filter(p -> p.getType() instanceof BrAPIPrimitiveType)
-                .map(p -> createSimpleColumnDefinition(p, p.getType().getName())).collect(Response.toList())
+                .map(p -> createSimpleColumnDefinition(brAPIObjectType, p, p.getType().getName())).collect(Response.toList())
                 .mapResult(columnDefinitions -> String.join("," + newLine(), columnDefinitions));
         }
 
