@@ -188,6 +188,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 if (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript()) {
                     List<BrAPIPropertyWithType> foreignKeyProperties = brAPIObjectType.getProperties()
                         .stream()
+                        .filter(property -> brAPIClassCache.dereferenceType(property.getType()) instanceof BrAPIObjectType)
                         .filter(property -> getLinkTypeFor(brAPIObjectType, property).getResultIfPresentOrElseResult(LinkType.NONE) == ID)
                         .map(property -> BrAPIPropertyWithType.builder().property(property).type(unwrapAndDereferenceType(property.getType())).build())
                         .filter(propertyWithType -> propertyWithType.getType() instanceof BrAPIObjectType)
@@ -834,6 +835,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 case BrAPIObjectType brAPIObjectItemType -> createObjectColumnType(brAPIObjectItemType);
                 case BrAPIPrimitiveType brAPIPrimitiveType -> findSimpleColumnType(brAPIPrimitiveType.getName());
                 case BrAPIArrayType brAPIArrayType -> createArrayColumnType(brAPIArrayType.getItems());
+                case BrAPIEnumType brAPIEnumType -> findSimpleColumnType(brAPIEnumType.getType());
                 default ->
                     fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded array type '%s'", itemType.getName()));
             };

@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS brapi_Studies (
     > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
-      lastUpdateDbId STRING COMMENT 'The date and time when this study was last modified',
+      lastUpdateDbId STRING COMMENT 'The ID which uniquely identifies a LastUpdate within the given database server',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
     > NOT NULL COMMENT 'The date and time when this study was last modified',

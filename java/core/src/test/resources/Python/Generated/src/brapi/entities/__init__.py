@@ -94,13 +94,7 @@ from .generated_germplasm import (
     TaxonId,
     Synonym,
     StorageType,
-    GermplasmMCPD,
     Donor,
-    MlsStatus,
-    DonorInfo,
-    CollectingInfo,
-    AcquisitionSourceCode,
-    CollectingSite,
 )
 from .generated_germplasm_attribute import GermplasmAttribute, GermplasmAttributeQuery
 
@@ -243,13 +237,7 @@ __all__ = [
     "TaxonId",
     "Synonym",
     "StorageType",
-    "GermplasmMCPD",
     "Donor",
-    "MlsStatus",
-    "DonorInfo",
-    "CollectingInfo",
-    "AcquisitionSourceCode",
-    "CollectingSite",
     # generated_germplasm_attribute
     "GermplasmAttribute",
     "GermplasmAttributeQuery",

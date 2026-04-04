@@ -3,14 +3,12 @@
 /* 
 The techniques and protocol used to produce a Cross or Germplasm
  */
-CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_breeding_methods (
+CREATE TABLE brapi_BreedingMethods (
   breedingMethodDbId STRING NOT NULL PRIMARY KEY COMMENT 'the unique identifier for this breeding method',
-  breedingMethodName STRING COMMENT 'the human readable identifier for this breeding method',
+  breedingMethodName STRING PRIMARY KEY COMMENT 'the human readable identifier for this breeding method',
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Breeding Method',
   description STRING COMMENT 'human readable description of the breeding method'
 ) 
-USING delta
-TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'The techniques and protocol used to produce a Cross or Germplasm';
 
 

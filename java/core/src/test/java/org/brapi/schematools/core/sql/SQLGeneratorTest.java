@@ -26,10 +26,15 @@ class SQLGeneratorTest {
 
     @Test
     void generateWithDefaults() {
-        generate(SQLGeneratorOptions.load(), SQLGeneratorMetadata.load()) ;
+        generate(SQLGeneratorOptions.load(), SQLGeneratorMetadata.load(), 0) ;
     }
 
-    void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata) {
+    @Test
+    void generateWithOverwrite() {
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36) ;
+    }
+
+    void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, int expectedSize) {
         Response<List<Path>> response = null;
         try {
             SQLGenerator generator = new SQLGenerator(options, Paths.get("build/test-output/SQLGenerator/defaults"));
@@ -46,6 +51,7 @@ class SQLGeneratorTest {
         assertFalse(response.hasErrors());
 
         assertNotNull(response.getResult());
+        assertEquals(expectedSize, response.getResult().size());
 
         response.getResult().forEach(path -> {
             assertTrue(Files.exists(path), "Generated file does not exist: " + path);

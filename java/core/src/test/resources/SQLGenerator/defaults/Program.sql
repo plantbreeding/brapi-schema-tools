@@ -3,15 +3,12 @@
 /* 
 A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.
  */
-CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_programs (
-  programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
-  programName STRING NOT NULL COMMENT 'Human readable name of the program',
-  programPUI STRING PRIMARY KEY COMMENT 'A permanent identifier for a program. Could be DOI or other URI formatted identifier.',
+CREATE TABLE brapi_Programs (
+  programDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies the program',
+  programName STRING NOT NULL PRIMARY KEY COMMENT 'Human readable name of the program',
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Program',
-  active BOOLEAN NOT NULL COMMENT 'Is this program currently active',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   commonCropName STRING COMMENT 'Common name for the crop which this program is for',
-  cropPUI STRING NOT NULL COMMENT 'A permanent unique identifier associated with this Crop. For example, a URI or DOI',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   externalReferences
     ARRAY<
@@ -21,15 +18,10 @@ CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_programs (
       >
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   fundingInformation STRING COMMENT 'Information describing the grant or funding source for this program',
-  inventoryLotPUIs ARRAY<STRING> COMMENT 'inventoryLots',
   leadPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
   objective STRING COMMENT 'The primary objective of the program',
-  programType STRING COMMENT 'The type of program entity this object represents <br/> \'STANDARD\' represents a standard, permanent breeding program <br/> \'PROJECT\' represents a short term project, usually with a set time limit based on funding   ',
-  studyPUIs ARRAY<STRING> COMMENT ''
+  programType STRING COMMENT 'The type of program entity this object represents <br/> \'STANDARD\' represents a standard, permanent breeding program <br/> \'PROJECT\' represents a short term project, usually with a set time limit based on funding   '
 ) 
-USING delta
-CLUSTER BY (commonCropName,programType,active)
-TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.';
 
 
