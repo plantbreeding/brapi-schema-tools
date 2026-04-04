@@ -9,7 +9,7 @@ addForeignKeyConstraints: false
 generateDropScript: true
 generateForeignKeyConstraintScript: true
 addNotNullConstraints: true
-suppressConstraintsInArrayStructs: false
+addConstraintsInArrayStructs: false
 indent: 2
 descriptionFormat: TODO Description for %s
 generateLinkTables : true
