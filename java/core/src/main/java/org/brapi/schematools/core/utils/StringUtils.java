@@ -392,6 +392,30 @@ public class StringUtils {
         return inputString.replaceAll("\"", "\\\"").replaceAll("'", "''") ;
     }
 
+    /**
+     * Escapes single quotes in a SQL string literal using backslash escaping ({@code \'}).
+     * This is compatible with Spark SQL, Hive, and other dialects that reject the ANSI {@code ''}
+     * doubling convention inside {@code COMMENT '...'} clauses.
+     *
+     * @param inputString the string to escape
+     * @return the string with every {@code '} replaced by {@code \'}
+     */
+    public static String escapeSingleSQLQuotes(String inputString) {
+        return inputString.replace("'", "\\'");
+    }
+
+    /**
+     * Escapes end-of-block-comment sequences inside block-comment content so that the comment
+     * is not closed prematurely.  Each occurrence of asterisk-slash is replaced with
+     * asterisk-space-slash (a space is inserted between the asterisk and the slash).
+     *
+     * @param inputString the block-comment body to sanitize
+     * @return the sanitized string
+     */
+    public static String escapeBlockCommentContent(String inputString) {
+        return inputString.replace("*/", "* /");
+    }
+
     public static String escapeSpecialCharacters(String inputString) {
         StringBuilder escapedString = new StringBuilder();
         for (char c : inputString.toCharArray()) {

@@ -12,7 +12,7 @@ CREATE TABLE brapi_Studies (
   contacts
     ARRAY<
       STRUCT<
-        contactDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
+        contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
         email STRING COMMENT 'The contacts email address  MIAPPE V1.1 (DM-32) Person email - The electronic mail address of the person.',
         instituteName STRING COMMENT 'The name of the institution which this contact is part of  MIAPPE V1.1 (DM-35) Person affiliation - The institution the person belongs to',
         name STRING COMMENT 'The full name of this contact person  MIAPPE V1.1 (DM-31) Person name - The name of the person (either full name or as used in scientific publications)',
@@ -39,9 +39,9 @@ CREATE TABLE brapi_Studies (
   environmentParameters
     ARRAY<
       STRUCT<
-        description STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        environmentParametersDbId STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        parameterName STRING NOT NULL COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
+        description STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        environmentParametersDbId STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        parameterName STRING COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
         parameterPUI STRING COMMENT 'URI pointing to an ontology class for the parameter',
         unit STRING COMMENT 'Unit of the value for this parameter',
         unitPUI STRING COMMENT 'URI pointing to an ontology class for the unit',
@@ -68,7 +68,7 @@ CREATE TABLE brapi_Studies (
     > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
-      lastUpdateDbId STRING NOT NULL COMMENT 'The date and time when this study was last modified',
+      lastUpdateDbId STRING COMMENT 'The date and time when this study was last modified',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
     > NOT NULL COMMENT 'The date and time when this study was last modified',
@@ -79,7 +79,7 @@ CREATE TABLE brapi_Studies (
     ARRAY<
       STRUCT<
         levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
-        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`\'s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
       >
     > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',

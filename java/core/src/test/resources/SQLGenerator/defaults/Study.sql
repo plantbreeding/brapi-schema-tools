@@ -1,10 +1,11 @@
+-- Study
 
 /* 
 A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.
  */
-CREATE TABLE brapi_Studies (
-  studyDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_studies (
+  studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -12,7 +13,7 @@ CREATE TABLE brapi_Studies (
   contacts
     ARRAY<
       STRUCT<
-        contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
+        contactDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
         email STRING COMMENT 'The contacts email address  MIAPPE V1.1 (DM-32) Person email - The electronic mail address of the person.',
         instituteName STRING COMMENT 'The name of the institution which this contact is part of  MIAPPE V1.1 (DM-35) Person affiliation - The institution the person belongs to',
         name STRING COMMENT 'The full name of this contact person  MIAPPE V1.1 (DM-31) Person name - The name of the person (either full name or as used in scientific publications)',
@@ -20,6 +21,7 @@ CREATE TABLE brapi_Studies (
         type STRING COMMENT 'The type of person this contact represents (ex: Coordinator, Scientist, PI, etc.)  MIAPPE V1.1 (DM-34) Person role - Type of contribution of the person to the investigation'
       >
     > COMMENT 'List of contact entities associated with this study',
+  cropPUI STRING NOT NULL COMMENT 'A permanent unique identifier associated with this Crop. For example, a URI or DOI',
   culturalPractices STRING COMMENT 'MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.',
   dataLinks
     ARRAY<
@@ -39,9 +41,9 @@ CREATE TABLE brapi_Studies (
   environmentParameters
     ARRAY<
       STRUCT<
-        description STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        environmentParametersDbId STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        parameterName STRING COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
+        description STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        environmentParametersDbId STRING NOT NULL COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
+        parameterName STRING NOT NULL COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
         parameterPUI STRING COMMENT 'URI pointing to an ontology class for the parameter',
         unit STRING COMMENT 'Unit of the value for this parameter',
         unitPUI STRING COMMENT 'URI pointing to an ontology class for the unit',
@@ -51,8 +53,45 @@ CREATE TABLE brapi_Studies (
     > COMMENT 'Environmental parameters that were kept constant throughout the study and did not change between observation units.  MIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).',
   experimentalDesign 
     STRUCT<
-      PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
-      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'.'
+      experimentalDesignPUI STRING COMMENT 'A Permanent Unique Identifier (PUI) for the Type of experimental design, which can be in the form of an Ontology reference for example. ',
+      PUI STRING COMMENT 'A Permanent Unique Identifier (PUI) for the Type of experimental design, which can be in the form of an Ontology reference for example. See MIAPPE V1.1 (DM-23) Type of experimental design. **Deprecated in v2.2** Please use `experimentalDesignPUI`. Github issue number #539',
+      description STRING COMMENT 'Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'. See MIAPPE V1.1 (DM-22) Description of the experimental design',
+      experimentFactors
+        ARRAY<
+          STRUCT<
+            factor STRING NOT NULL COMMENT 'The name of the factor, eg. \'fertilizer\', \'inoculation\', \'irrigation\', etc  MIAPPE V1.1 (DM-61) Experimental Factor type - Name/Acronym of the experimental factor.',
+            factorPUI STRING COMMENT 'The PUI of the factor which may link to an ontology.',
+            modalities
+              ARRAY<
+                STRUCT<
+                  modality STRING NOT NULL COMMENT 'The factor modality/level description. ex. \'low fertilizer\', \'yellow rust inoculation\', \'high water\', etc  MIAPPE V1.1 (DM-62) Experimental Factor description - Free text description of the experimental factor. This includes all relevant treatments planned and protocol planned for all the plants targeted by a given experimental factor. ',
+                  modalityPUI STRING COMMENT 'The PUI of the modality/level which may link to an ontology.'
+                >
+              > NOT NULL COMMENT 'An array of possible factor modalities/levels for this factor'
+          >
+        > COMMENT 'The factors used in the experimental design.',
+      experimentTreatments
+        ARRAY<
+          STRUCT<
+            observationTreatments
+              ARRAY<
+                STRUCT<
+                  factor STRING NOT NULL COMMENT 'The type of treatment/factor. ex. \'fertilizer\', \'inoculation\', \'irrigation\', etc  MIAPPE V1.1 (DM-61) Experimental Factor type - Name/Acronym of the experimental factor.',
+                  factorPUI STRING COMMENT 'The PUI of the factor which may link to an ontology.',
+                  modality STRING NOT NULL COMMENT 'The treatment/factor description. ex. \'low fertilizer\', \'yellow rust inoculation\', \'high water\', etc  MIAPPE V1.1 (DM-62) Experimental Factor description - Free text description of the experimental factor. This includes all relevant treatments planned and protocol planned for all the plants targeted by a given experimental factor. ',
+                  modalityPUI STRING COMMENT 'The PUI of the modality which may link to an ontology.',
+                  observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.'
+                >
+              > NOT NULL COMMENT 'An array of possible factor modalities/levels combinations for this Experiment Treatment',
+            treatmentCode STRING COMMENT 'A code or number that relates a unique combination of observation treatments in the context of the Experimental Design.'
+          >
+        > COMMENT 'The unique combination of factors and their modalities/levels that are used in this Experimental Design.',
+      firstRepRand STRING COMMENT 'A description of how the first replication is treated in the Experimental Design',
+      layoutPattern STRING COMMENT 'How the trial is layout in the field',
+      numberOfReps DOUBLE COMMENT 'The number of replications.',
+      randomizationType STRING COMMENT 'The type of randomization use to create the experimental design.',
+      rowsPerPlot DOUBLE COMMENT 'The number of rows in a plot',
+      setSize DOUBLE COMMENT 'The levels of all combination of factors involved. For example if the experiment involves single factor with 10 modalities/levels, set size will be 10. If the experiment involves 2 factors with one factor having 5 levels and another factor having 2 levels, the set size will be 10.'
     > NOT NULL COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
@@ -68,13 +107,13 @@ CREATE TABLE brapi_Studies (
     > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
-      lastUpdateDbId STRING COMMENT 'The date and time when this study was last modified',
+      lastUpdateDbId STRING NOT NULL COMMENT 'The date and time when this study was last modified',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
     > NOT NULL COMMENT 'The date and time when this study was last modified',
   license STRING COMMENT 'The usage license associated with the study data',
-  locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
-  locationName STRING NOT NULL COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
+  localePUIs ARRAY<STRING> COMMENT 'The locales to which this study belongs. A Locale represents a physical or logical location where the study took place. A study can be associated with multiple locales, for example if measurements were taken in multiple fields or locations.',
+  locationPUI STRING NOT NULL COMMENT 'A permanent unique identifier associated with this location. For example, a URI or DOI.',
   observationLevels
     ARRAY<
       STRUCT<
@@ -83,37 +122,30 @@ CREATE TABLE brapi_Studies (
       >
     > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',
-  -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
+  observationVariablePUIs ARRAY<STRING> NOT NULL COMMENT 'The list of Observation Variables being used in this study.   This list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ',
+  programPUI STRING COMMENT 'A permanent identifier for a program. Could be DOI or other URI formatted identifier.',
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
   studyCode STRING COMMENT 'A short human readable code for a study',
   studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study',
   studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc',
-  trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
-  trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.'
+  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.'
 ) 
+USING delta
+CLUSTER BY (commonCropName,studyType,studyCode)
+TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
-
-
-/* 
-Creates a lookup table for property 'observationVariables' for 'Study' to 'ObservationVariable'
- */
-CREATE TABLE brapi_ObservationVariableByStudy (
-  observationVariableDbId STRING NOT NULL COMMENT 'Variable unique identifier  MIAPPE V1.1 (DM-83) Variable ID - Code used to identify the variable in the data file. We recommend using a variable definition from the Crop Ontology where possible. Otherwise, the Crop Ontology naming convention is recommended: <trait abbreviation>_<method abbreviation>_<scale abbreviation>). A variable ID must be unique within a given investigation.',
-  observationVariablePUI STRING COMMENT 'The Permanent Unique Identifier of a Observation Variable, usually in the form of a URI',
-  observationVariableName STRING NOT NULL COMMENT 'Variable name (usually a short name)  MIAPPE V1.1 (DM-84) Variable name - Name of the variable.',
-  studyDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study'
-) 
-COMMENT 'Link table for Study to ObservationVariable on property observationVariables';
 
 
 /* 
 Controlled Vocabulary for studyTypes of Study
  */
-CREATE TABLE brapi_StudyTypes (
+CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_study_types (
   studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc'
 ) 
+USING delta
+TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
 COMMENT 'Controlled Vocabulary table for property studyType on Study';
+
+
+-- Generated by Schema Tools Generator Version: '0.60.0'

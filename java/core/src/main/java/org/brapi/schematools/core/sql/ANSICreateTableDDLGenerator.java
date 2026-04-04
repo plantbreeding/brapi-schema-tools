@@ -287,7 +287,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                     appendNewLine(builder) ;
                     builder.append("COMMENT '");
 
-                    builder.append(removeCarriageReturns(escapeQuotes(description)));
+                    builder.append(escapeSingleSQLQuotes(description));
 
                     builder.append("'");
                 }
@@ -344,9 +344,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private String getTableDescription(BrAPIObjectType brAPIObjectType) {
             if (brAPIObjectType.getDescription() != null) {
-                return removeCarriageReturns(escapeQuotes(brAPIObjectType.getDescription()));
+                return removeCarriageReturns(brAPIObjectType.getDescription());
             } else {
-                return removeCarriageReturns(escapeQuotes(options.getDescriptionFor(brAPIObjectType)));
+                return removeCarriageReturns(options.getDescriptionFor(brAPIObjectType));
             }
         }
 
@@ -413,10 +413,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             if (brAPIObjectType.getDescription() != null) {
                 appendNewLine(builder) ;
-                builder.append(brAPIObjectType.getDescription());
+                builder.append(escapeBlockCommentContent(brAPIObjectType.getDescription()));
             } else {
                 appendNewLine(builder) ;
-                builder.append(options.getDescriptionFor(brAPIObjectType));
+                builder.append(escapeBlockCommentContent(options.getDescriptionFor(brAPIObjectType)));
             }
 
             appendNewLine(builder) ;
@@ -567,7 +567,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             builder.append(SQLGenerator.COMMENT_START);
 
             appendNewLine(builder) ;
-            builder.append(options.getControlledVocabulary().getDescriptionFor(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty()));
+            builder.append(escapeBlockCommentContent(options.getControlledVocabulary().getDescriptionFor(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty())));
 
             appendNewLine(builder) ;
             builder.append(SQLGenerator.COMMENT_END);
@@ -588,7 +588,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             StringBuilder builder = new StringBuilder(columnDefinition);
 
             if (options.isAddingNotNullConstraints() && !property.isNullable()
-                && (options.isAddingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
+                && (arrayStructDepth == 0 || options.isAddingConstraintsInArrayStructs())) {
                 builder.append(" NOT NULL");
             }
 
@@ -600,9 +600,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             builder.append(" COMMENT '");
 
             if (property.getDescription() != null) {
-                builder.append(removeCarriageReturns(escapeQuotes(property.getDescription())));
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(property.getDescription())));
             } else {
-                builder.append(removeCarriageReturns(escapeQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
             }
 
             builder.append("'");

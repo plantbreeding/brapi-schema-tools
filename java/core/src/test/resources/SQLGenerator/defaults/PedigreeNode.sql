@@ -1,0 +1,47 @@
+-- PedigreeNode
+
+/* 
+A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances.
+ */
+CREATE TABLE IF NOT EXISTS sta_dash.dadi_br_sandbox.silver_phenome_pedigree_nodes (
+  pedigreeNodeDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a pedigree node',
+  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  breedingMethodDbId STRING NOT NULL COMMENT 'the unique identifier for this breeding method',
+  crossingProjectDbId STRING NOT NULL COMMENT 'The unique identifier for a crossing project',
+  crossingYear INT COMMENT 'The year the parents were originally crossed',
+  defaultDisplayName STRING COMMENT 'Human readable name used for display purposes',
+  externalReferences
+    ARRAY<
+      STRUCT<
+        referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
+        referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
+      >
+    > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
+  familyCode STRING COMMENT 'The code representing the family of this germplasm',
+  germplasmPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier which represents a germplasm  MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.  MIAPPE V1.1 (DM-51) Material source DOI - Digital Object Identifier (DOI) of the material source  MCPD (v2.1) (PUID) 0. Any persistent, unique identifier assigned to the accession so it can be unambiguously referenced at the global level and the information associated with it harvested through automated means. Report one PUID for each accession. The Secretariat of the International Treaty on Plant Genetic Resources for Food and Agriculture (PGRFA) is facilitating the assignment of a persistent unique identifier (PUID), in the form of a DOI, to PGRFA at the accession level. Genebanks not applying a true PUID to their accessions should use, and request recipients to use, the concatenation of INSTCODE, ACCENUMB, and GENUS as a globally unique identifier similar in most respects to the PUID whenever they exchange information on accessions with third parties.',
+  parents
+    ARRAY<
+      STRUCT<
+        parentGermplasmPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier which represents a germplasm  MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.  MIAPPE V1.1 (DM-51) Material source DOI - Digital Object Identifier (DOI) of the material source  MCPD (v2.1) (PUID) 0. Any persistent, unique identifier assigned to the accession so it can be unambiguously referenced at the global level and the information associated with it harvested through automated means. Report one PUID for each accession. The Secretariat of the International Treaty on Plant Genetic Resources for Food and Agriculture (PGRFA) is facilitating the assignment of a persistent unique identifier (PUID), in the form of a DOI, to PGRFA at the accession level. Genebanks not applying a true PUID to their accessions should use, and request recipients to use, the concatenation of INSTCODE, ACCENUMB, and GENUS as a globally unique identifier similar in most respects to the PUID whenever they exchange information on accessions with third parties.',
+        parentType STRING NOT NULL COMMENT 'The type of parent used during crossing. Accepted values for this field are \'MALE\', \'FEMALE\', \'SELF\', \'POPULATION\', and \'CLONAL\'.   In a pedigree record, the \'parentType\' describes each parent of a particular germplasm.   In a progeny record, the \'parentType\' is used to describe how this germplasm was crossed to generate a particular progeny.  For example, given a record for germplasm A, having a progeny B and C. The \'parentType\' field for progeny B item refers  to the \'parentType\' of A toward B. The \'parentType\' field for progeny C item refers to the \'parentType\' of A toward C. In this way, A could be a male parent to B, but a female parent to C. ',
+        pedigreeNodeDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a pedigree node'
+      >
+    > COMMENT 'A list of parent germplasm references in the pedigree tree for this germplasm. These represent edges in the tree, connecting to other nodes. <br/> Typically, this array should only have one parent (clonal or self) or two parents (cross). In some special cases, there may be more parents, usually when the exact parent is not known.  <br/> If the parameter \'includeParents\' is set to false, then this array should be empty, null, or not present in the response.',
+  pedigreeString STRING COMMENT 'The string representation of the pedigree for this germplasm in PURDY notation',
+  progeny
+    ARRAY<
+      STRUCT<
+        childGermplasmPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier which represents a germplasm  MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.  MIAPPE V1.1 (DM-51) Material source DOI - Digital Object Identifier (DOI) of the material source  MCPD (v2.1) (PUID) 0. Any persistent, unique identifier assigned to the accession so it can be unambiguously referenced at the global level and the information associated with it harvested through automated means. Report one PUID for each accession. The Secretariat of the International Treaty on Plant Genetic Resources for Food and Agriculture (PGRFA) is facilitating the assignment of a persistent unique identifier (PUID), in the form of a DOI, to PGRFA at the accession level. Genebanks not applying a true PUID to their accessions should use, and request recipients to use, the concatenation of INSTCODE, ACCENUMB, and GENUS as a globally unique identifier similar in most respects to the PUID whenever they exchange information on accessions with third parties.',
+        parentType STRING NOT NULL COMMENT 'The type of parent used during crossing. Accepted values for this field are \'MALE\', \'FEMALE\', \'SELF\', \'POPULATION\', and \'CLONAL\'.   In a pedigree record, the \'parentType\' describes each parent of a particular germplasm.   In a progeny record, the \'parentType\' is used to describe how this germplasm was crossed to generate a particular progeny.  For example, given a record for germplasm A, having a progeny B and C. The \'parentType\' field for progeny B item refers  to the \'parentType\' of A toward B. The \'parentType\' field for progeny C item refers to the \'parentType\' of A toward C. In this way, A could be a male parent to B, but a female parent to C. ',
+        pedigreeNodeDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a pedigree node'
+      >
+    > COMMENT 'A list of germplasm references that are direct children of this germplasm. These represent edges in the tree, connecting to other nodes. <br/> The given germplasm could have a large number of progeny, across a number of different breeding methods. The \'parentType\' shows        the type of parent this germplasm is to each of the child germplasm references. <br/> If the parameter \'includeProgeny\' is set to false, then this array should be empty, null, or not present in the response.',
+  siblingPUIs ARRAY<STRING> COMMENT 'A list of sibling germplasm references in the pedigree tree for this germplasm. These represent edges in the tree, connecting to other nodes. <br/> Siblings share at least one parent with the given germplasm.  <br/> If the parameter \'includeSiblings\' is set to false, then this array should be empty, null, or not present in the response.'
+) 
+USING delta
+CLUSTER BY (crossingYear,familyCode)
+TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
+COMMENT 'A representation of a particular Germplasm within a pedigree tree, and all the links to its parents, siblings, and children. From a list of PedigreeNode objects, a client application should have all the information it needs to draw a pedigree tree visualization, or calculate genetic distances.';
+
+
+-- Generated by Schema Tools Generator Version: '0.60.0'
