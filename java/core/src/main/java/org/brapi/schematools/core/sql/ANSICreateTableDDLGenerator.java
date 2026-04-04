@@ -209,7 +209,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             builder.append("_");
                             builder.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder.append("_fk FOREIGN KEY(");
-                            builder.append(options.getProperties().getLinkPropertyFor((BrAPIObjectType) brAPIPropertyWithType.getType()).getResultOrThrow().getName());
+                            String inlineFkColumns = sourceLinkProps.stream()
+                                .map(BrAPIObjectProperty::getName)
+                                .collect(Collectors.joining(", "));
+                            builder.append(inlineFkColumns);
                             builder.append(") REFERENCES ");
                             builder.append(createTableNameFullName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                         }
@@ -227,10 +230,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             builder2.append("ALTER TABLE ");
                             builder2.append(tableName);
                             builder2.append(" ADD CONSTRAINT ");
+                            builder2.append(createTableName(tableName));
                             builder2.append("_");
                             builder2.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder2.append("_fk FOREIGN KEY(");
-                            builder2.append(options.getProperties().getLinkPropertyFor((BrAPIObjectType) brAPIPropertyWithType.getType()).getResultOrThrow().getName());
+                            String fkColumns = sourceLinkProps.stream()
+                                .map(BrAPIObjectProperty::getName)
+                                .collect(Collectors.joining(", "));
+                            builder2.append(fkColumns);
                             builder2.append(") REFERENCES ");
                             builder2.append(createTableNameFullName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder2.append(" ;");
@@ -581,12 +588,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             StringBuilder builder = new StringBuilder(columnDefinition);
 
             if (options.isAddingNotNullConstraints() && !property.isNullable()
-                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
+                && (options.isAddingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
                 builder.append(" NOT NULL");
             }
 
-            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)
-                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
+            if (arrayStructDepth == 0 && options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)
+                && arrayStructDepth == 0) {
                 builder.append(" PRIMARY KEY");
             }
 
@@ -689,20 +696,25 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createObjectColumnType(BrAPIObjectType brAPIObjectType) {
-            StringBuilder builder = new StringBuilder();
-            indent();
-            appendNewLine(builder);
-            builder.append("STRUCT<");
-            indent();
-            appendNewLine(builder);
+            arrayStructDepth++;
+            try {
+                StringBuilder builder = new StringBuilder();
+                indent();
+                appendNewLine(builder);
+                builder.append("STRUCT<");
+                indent();
+                appendNewLine(builder);
 
-            return createColumnDefinitions(brAPIObjectType)
-                .mapResult(builder::append)
-                .onSuccessDo(this::dedent)
-                .onSuccessDoWithResult(this::appendNewLine)
-                .mapResult(b -> b.append(">"))
-                .mapResult(StringBuilder::toString)
-                .onSuccessDo(this::dedent) ;
+                return createColumnDefinitions(brAPIObjectType)
+                    .mapResult(builder::append)
+                    .onSuccessDo(this::dedent)
+                    .onSuccessDoWithResult(this::appendNewLine)
+                    .mapResult(b -> b.append(">"))
+                    .mapResult(StringBuilder::toString)
+                    .onSuccessDo(this::dedent);
+            } finally {
+                arrayStructDepth--;
+            }
         }
 
         private Response<String> createOneOfTypeColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIOneOfType brAPIOneOfType) {
@@ -817,18 +829,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             };
         }
 
-        private Response<String> createObjectColumnTypeForArray(BrAPIObjectType brAPIObjectType) {
-            arrayStructDepth++;
-            try {
-                return createObjectColumnType(brAPIObjectType);
-            } finally {
-                arrayStructDepth--;
-            }
-        }
-
         private Response<String> createArrayColumnType(BrAPIType itemType) {
             return switch (itemType) {
-                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnTypeForArray(brAPIObjectItemType);
+                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnType(brAPIObjectItemType);
                 case BrAPIPrimitiveType brAPIPrimitiveType -> findSimpleColumnType(brAPIPrimitiveType.getName());
                 case BrAPIArrayType brAPIArrayType -> createArrayColumnType(brAPIArrayType.getItems());
                 default ->
