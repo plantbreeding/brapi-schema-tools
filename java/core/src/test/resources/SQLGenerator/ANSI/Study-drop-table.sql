@@ -53,7 +53,7 @@ CREATE TABLE brapi_Studies (
   experimentalDesign 
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
-      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply ''none''.'
+      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'.'
     > NOT NULL COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
