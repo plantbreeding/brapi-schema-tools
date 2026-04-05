@@ -679,7 +679,7 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
+                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
                             "enum" : [
                                 "STANDARD",
                                 "PROJECT"
@@ -2715,7 +2715,7 @@
                 "properties" : {
                     "lastUpdateDbId" : {
                         "type" : "string",
-                        "description" : "The date and time when this study was last modified"
+                        "description" : "The ID which uniquely identifies a LastUpdate within the given database server"
                     },
                     "studyDbId" : {
                         "type" : "string"
@@ -2969,7 +2969,7 @@
                     },
                     "childLocationDbIds" : {
                         "type" : "array",
-                        "description" : "",
+                        "description" : "The child locations that belong to this Location. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
                         "nullable" : true,
                         "items" : {
                             "type" : "string"
@@ -3503,7 +3503,7 @@
                         "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding ",
                         "items" : {
                             "type" : "string",
-                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
+                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
                             "enum" : [
                                 "STANDARD",
                                 "PROJECT"

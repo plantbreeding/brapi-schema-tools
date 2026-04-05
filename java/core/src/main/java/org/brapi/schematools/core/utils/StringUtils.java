@@ -392,6 +392,38 @@ public class StringUtils {
         return inputString.replaceAll("\"", "\\\"").replaceAll("'", "''") ;
     }
 
+    /**
+     * Sanitizes a string for use inside a SQL {@code COMMENT '...'} clause.
+     * <ul>
+     *   <li>Single quotes are doubled ({@code ''}) following the ANSI SQL standard, which is
+     *       required by Databricks / Spark SQL when running in ANSI mode.</li>
+     *   <li>Semicolons are replaced with commas to prevent applications that naively split SQL
+     *       on {@code ;} from breaking mid-string and producing unclosed string literal errors.</li>
+     * </ul>
+     *
+     * @param inputString the string to sanitize
+     * @return the sanitized string safe for use inside a single-quoted SQL COMMENT value
+     */
+    public static String escapeSingleSQLQuotes(String inputString) {
+        return inputString.replace("'", "''").replace(";", ",");
+    }
+
+    /**
+     * Sanitizes the body of a SQL block comment ({@code /* ... *}{@code /}) so that the comment
+     * is not closed prematurely and so that applications which naively split SQL on {@code ;}
+     * do not break the comment block.
+     * <ul>
+     *   <li>Each occurrence of {@code *}{@code /} is replaced with {@code * /}.</li>
+     *   <li>Semicolons are replaced with commas.</li>
+     * </ul>
+     *
+     * @param inputString the block-comment body to sanitize
+     * @return the sanitized string
+     */
+    public static String escapeBlockCommentContent(String inputString) {
+        return inputString.replace("*/", "* /").replace(";", ",");
+    }
+
     public static String escapeSpecialCharacters(String inputString) {
         StringBuilder escapedString = new StringBuilder();
         for (char c : inputString.toCharArray()) {

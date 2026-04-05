@@ -98,13 +98,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         return name ;
     }
 
-    @AllArgsConstructor
     private class Generator {
         private final BrAPIObjectType brAPIObjectType;
         private final List<LinkTable> linkTables = new ArrayList<>();
         private final List<ControlledVocabularyTable> controlledVocabularyTables = new ArrayList<>();
         private int indent = 0 ;
-        private int arrayStructDepth = 0 ;
+        private int arrayStructDepth = 0;
 
         public Generator(BrAPIObjectType brAPIObjectType) {
             this.brAPIObjectType = brAPIObjectType;
@@ -126,8 +125,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(brAPIObjectType),
                 () -> createColumnDefinitions(brAPIObjectType),
                 getTableDescription(brAPIObjectType),
-                findClusterColumns(brAPIObjectType)
-            )
+                findClusterColumns(brAPIObjectType),
+                true)
                 .conditionalMapResultToResponse(options.isGeneratingLinkTables() && !linkTables.isEmpty(), this::appendLinkTableDefinitions)
                 .conditionalMapResultToResponse(options.getControlledVocabulary().isGenerating() && !controlledVocabularyTables.isEmpty(), this::appendControlledVocabularyDefinitions);
         }
@@ -136,7 +135,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                                                        Supplier<Response<String>> descriptionSupplier,
                                                        Supplier<Response<String>> columnSupplier,
                                                        String description,
-                                                       List<String> clusterColumns) {
+                                                       List<String> clusterColumns,
+                                                       boolean primaryTable) {
 
             StringBuilder builder = new StringBuilder();
             tables.add(tableName);
@@ -148,7 +148,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .onSuccessDoWithResult(builder::append)
                 .map(columnSupplier)
                 .onSuccessDoWithResult(builder::append)
-                .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns))
+                .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns, primaryTable))
                 .onSuccessDoWithResult(builder::append)
                 .map(() -> success(builder.toString())) ;
         }
@@ -181,14 +181,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return success(builder.toString());
         }
 
-        private Response<String> createTableDefinitionEnd(String tableName, String description, List<String> clusterColumns) {
+        private Response<String> createTableDefinitionEnd(String tableName, String description, List<String> clusterColumns, boolean primaryTable) {
 
             try {
                 StringBuilder builder = new StringBuilder();
 
-                if (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript()) {
+                if (primaryTable && (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript())) {
                     List<BrAPIPropertyWithType> foreignKeyProperties = brAPIObjectType.getProperties()
                         .stream()
+                        .filter(property -> brAPIClassCache.dereferenceType(property.getType()) instanceof BrAPIObjectType)
                         .filter(property -> getLinkTypeFor(brAPIObjectType, property).getResultIfPresentOrElseResult(LinkType.NONE) == ID)
                         .map(property -> BrAPIPropertyWithType.builder().property(property).type(unwrapAndDereferenceType(property.getType())).build())
                         .filter(propertyWithType -> propertyWithType.getType() instanceof BrAPIObjectType)
@@ -210,7 +211,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             builder.append("_");
                             builder.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder.append("_fk FOREIGN KEY(");
-                            builder.append(options.getProperties().getLinkPropertyFor((BrAPIObjectType) brAPIPropertyWithType.getType()).getResultOrThrow().getName());
+                            String inlineFkColumns = sourceLinkProps.stream()
+                                .map(BrAPIObjectProperty::getName)
+                                .collect(Collectors.joining(", "));
+                            builder.append(inlineFkColumns);
                             builder.append(") REFERENCES ");
                             builder.append(createTableNameFullName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                         }
@@ -226,12 +230,19 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             StringBuilder builder2 = new StringBuilder();
 
                             builder2.append("ALTER TABLE ");
+                            if (options.isAddingConstraintIfExists()) {
+                                builder2.append("IF EXISTS ");
+                            }
                             builder2.append(tableName);
                             builder2.append(" ADD CONSTRAINT ");
+                            builder2.append(createTableName(tableName));
                             builder2.append("_");
                             builder2.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder2.append("_fk FOREIGN KEY(");
-                            builder2.append(options.getProperties().getLinkPropertyFor((BrAPIObjectType) brAPIPropertyWithType.getType()).getResultOrThrow().getName());
+                            String fkColumns = sourceLinkProps.stream()
+                                .map(BrAPIObjectProperty::getName)
+                                .collect(Collectors.joining(", "));
+                            builder2.append(fkColumns);
                             builder2.append(") REFERENCES ");
                             builder2.append(createTableNameFullName((BrAPIObjectType) brAPIPropertyWithType.getType()));
                             builder2.append(" ;");
@@ -281,7 +292,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                     appendNewLine(builder) ;
                     builder.append("COMMENT '");
 
-                    builder.append(removeCarriageReturns(escapeQuotes(description)));
+                    builder.append(escapeSingleSQLQuotes(description));
 
                     builder.append("'");
                 }
@@ -338,9 +349,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private String getTableDescription(BrAPIObjectType brAPIObjectType) {
             if (brAPIObjectType.getDescription() != null) {
-                return removeCarriageReturns(escapeQuotes(brAPIObjectType.getDescription()));
+                return removeCarriageReturns(brAPIObjectType.getDescription());
             } else {
-                return removeCarriageReturns(escapeQuotes(options.getDescriptionFor(brAPIObjectType)));
+                return removeCarriageReturns(options.getDescriptionFor(brAPIObjectType));
             }
         }
 
@@ -384,18 +395,97 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
 
-            List<BrAPIObjectProperty> properties = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
+            // Group 1: Primary properties (dbId, name, PUI) — always come first.
+            List<BrAPIObjectProperty> primaryProps = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
+            // Group 2: Link (ID-type / foreign-key) properties, sorted alphabetically.
+            // Placed early so that clustering columns (Group 3) appear before complex
+            // nested types and remain within Databricks' default 32-column stats window.
+            List<BrAPIObjectProperty> linkProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
-                .filter(brAPIObjectProperty -> getLinkTypeFor(brAPIObjectType, brAPIObjectProperty).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
-                .filter(brAPIObjectProperty -> !properties.contains(brAPIObjectProperty))
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) == ID)
+                .filter(p -> !primaryProps.contains(p))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
-                .forEach(properties::add) ;
+                .forEach(linkProps::add);
 
-            return properties.stream()
-                .map(property -> createColumnDefinition(brAPIObjectType, property))
-                .collect(Response.toList()).mapResult(columns -> String.join("," + newLine(), columns)) ;
+            // Group 3: Clustering properties (not already included), in the configured
+            // order.  Placing them here — before the remaining ARRAY/STRUCT columns —
+            // ensures they receive Delta Lake stats and avoid DELTA_CLUSTERING_COLUMN_MISSING_STATS.
+            List<BrAPIObjectProperty> seen = new ArrayList<>(primaryProps);
+            seen.addAll(linkProps);
+
+            List<BrAPIObjectProperty> clusterProps = new ArrayList<>();
+            options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
+                .stream()
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
+                .filter(p -> !seen.contains(p))
+                .forEach(clusterProps::add);
+            seen.addAll(clusterProps);
+
+            // Group 4: All remaining properties with a non-NONE link type, sorted alphabetically.
+            List<BrAPIObjectProperty> otherProps = new ArrayList<>();
+            brAPIObjectType.getProperties()
+                .stream()
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
+                .filter(p -> !seen.contains(p))
+                .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
+                .forEach(otherProps::add);
+
+            // Only add the "-- Properties" separator when at least one earlier group
+            // (link or clustering) contributed columns, so tables without those groups
+            // don't get a redundant separator.
+            String otherComment = (!linkProps.isEmpty() || !clusterProps.isEmpty()) ? "-- Properties" : "";
+
+            return buildGroupedColumnDefinitions(brAPIObjectType,
+                List.of(primaryProps,           linkProps,              clusterProps,                   otherProps),
+                List.of("-- Primary properties", "-- Link properties",   "-- Clustering properties",     otherComment));
+        }
+
+        /**
+         * Assembles column definitions from multiple ordered groups into a single
+         * comma-separated SQL column list.  When a group has a non-blank comment string
+         * and is not the very first group of columns, the comment is inserted on its own
+         * line (at the current indent level) just before the first column of that group,
+         * producing output like:
+         * <pre>
+         *   lastColOfPrevGroup STRING,
+         *   -- Comment
+         *   firstColOfNextGroup STRING,
+         * </pre>
+         */
+        private Response<String> buildGroupedColumnDefinitions(
+                BrAPIObjectType brAPIObjectType,
+                List<List<BrAPIObjectProperty>> groups,
+                List<String> comments) {
+
+            List<Response<String>> allCols = new ArrayList<>();
+
+            for (int i = 0; i < groups.size(); i++) {
+                List<BrAPIObjectProperty> group = groups.get(i);
+                if (group.isEmpty()) continue;
+
+                String comment = (i < comments.size()) ? comments.get(i) : "";
+
+                List<Response<String>> groupCols = group.stream()
+                    .map(p -> createColumnDefinition(brAPIObjectType, p))
+                    .collect(Collectors.toList());
+
+                if (!comment.isBlank()) {
+                    // Prepend "-- comment\n<indent>" to the first column definition of
+                    // this group so it appears on its own line between the groups.
+                    String commentPrefix = comment + newLine();
+                    List<Response<String>> annotated = new ArrayList<>(groupCols);
+                    annotated.set(0, groupCols.get(0).mapResult(col -> commentPrefix + col));
+                    allCols.addAll(annotated);
+                } else {
+                    allCols.addAll(groupCols);
+                }
+            }
+
+            return allCols.stream()
+                .collect(Response.toList())
+                .mapResult(cols -> String.join("," + newLine(), cols));
         }
 
         private Response<String> createTableDescription(BrAPIObjectType brAPIObjectType) {
@@ -407,10 +497,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             if (brAPIObjectType.getDescription() != null) {
                 appendNewLine(builder) ;
-                builder.append(brAPIObjectType.getDescription());
+                builder.append(escapeBlockCommentContent(brAPIObjectType.getDescription()));
             } else {
                 appendNewLine(builder) ;
-                builder.append(options.getDescriptionFor(brAPIObjectType));
+                builder.append(escapeBlockCommentContent(options.getDescriptionFor(brAPIObjectType)));
             }
 
             appendNewLine(builder) ;
@@ -447,7 +537,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(linkTable),
                 () -> createColumnDefinitions(linkTable),
                 getTableComment(linkTable),
-                findClusterColumns(linkTable));
+                findClusterColumns(linkTable),
+                false);
         }
 
         private String createLinkTableFullName(LinkTable linkedTable) {
@@ -526,7 +617,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(controlledVocabularyTable),
                 () -> createColumnDefinitions(controlledVocabularyTable),
                 getTableComment(controlledVocabularyTable),
-                findClusterColumns(controlledVocabularyTable));
+                findClusterColumns(controlledVocabularyTable),
+                false);
         }
 
         private String createControlledVocabularyFullTableName(ControlledVocabularyTable controlledVocabularyTable) {
@@ -561,7 +653,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             builder.append(SQLGenerator.COMMENT_START);
 
             appendNewLine(builder) ;
-            builder.append(options.getControlledVocabulary().getDescriptionFor(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty()));
+            builder.append(escapeBlockCommentContent(options.getControlledVocabulary().getDescriptionFor(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty())));
 
             appendNewLine(builder) ;
             builder.append(SQLGenerator.COMMENT_END);
@@ -582,21 +674,21 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             StringBuilder builder = new StringBuilder(columnDefinition);
 
             if (options.isAddingNotNullConstraints() && !property.isNullable()
-                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
+                && (arrayStructDepth == 0 || options.isAddingConstraintsInArrayStructs())) {
                 builder.append(" NOT NULL");
             }
 
-            if (options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)
-                && (!options.isSuppressingConstraintsInArrayStructs() || arrayStructDepth == 0)) {
+            if (arrayStructDepth == 0 && options.isAddingPrimaryKeyConstraints() && options.getProperties().isPrimaryLinkPropertyFor(brAPIObjectType, property)
+                && arrayStructDepth == 0) {
                 builder.append(" PRIMARY KEY");
             }
 
             builder.append(" COMMENT '");
 
             if (property.getDescription() != null) {
-                builder.append(removeCarriageReturns(escapeQuotes(property.getDescription())));
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(property.getDescription())));
             } else {
-                builder.append(removeCarriageReturns(escapeQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
+                builder.append(removeCarriageReturns(escapeSingleSQLQuotes(options.getProperties().getDescriptionFor(brAPIObjectType, property))));
             }
 
             builder.append("'");
@@ -608,11 +700,11 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(property.getType());
 
             if (property.getType().getName().equals("AdditionalInfo")) {
-                return createAdditionalInfoColumnDefinition(property);
+                return createAdditionalInfoColumnDefinition(parentType, property);
             } else if (dereferencedType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                return createSimpleColumnDefinition(property, brAPIPrimitiveType.getName());
+                return createSimpleColumnDefinition(parentType, property, brAPIPrimitiveType.getName());
             } else if (dereferencedType instanceof BrAPIEnumType brAPIEnumType) {
-                return createSimpleColumnDefinition(property, brAPIEnumType.getType());
+                return createSimpleColumnDefinition(parentType, property, brAPIEnumType.getType());
             } else if (dereferencedType instanceof BrAPIObjectType brAPIObjectDereferencedType) {
                 return createObjectColumnDefinition(parentType, property, brAPIObjectDereferencedType);
             } else if (dereferencedType instanceof BrAPIOneOfType brAPIOneOfType) {
@@ -626,15 +718,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return fail(Response.ErrorType.VALIDATION, String.format("Unknown type '%s'", dereferencedType != null ? dereferencedType.getName() : "null"));
         }
 
-        private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectProperty property) {
+        private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
 
             String builder = property.getName() +
                 " MAP<STRING,STRING>";
 
-            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
         }
 
-        private Response<String> createSimpleColumnDefinition(BrAPIObjectProperty property, String type) {
+        private Response<String> createSimpleColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String type) {
 
             StringBuilder builder = new StringBuilder();
             builder.append(property.getName());
@@ -643,7 +735,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return findSimpleColumnType(type)
                 .mapResult(builder::append)
                 .mapResult(StringBuilder::toString)
-                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
         }
 
         private Response<String> findSimpleColumnType(String type) {
@@ -685,25 +777,30 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private Response<String> createLinkObjectDefinition(List<BrAPIObjectProperty> linkProperties) {
             return linkProperties.stream()
                 .filter(p -> p.getType() instanceof BrAPIPrimitiveType)
-                .map(p -> createSimpleColumnDefinition(p, p.getType().getName())).collect(Response.toList())
+                .map(p -> createSimpleColumnDefinition(brAPIObjectType, p, p.getType().getName())).collect(Response.toList())
                 .mapResult(columnDefinitions -> String.join("," + newLine(), columnDefinitions));
         }
 
         private Response<String> createObjectColumnType(BrAPIObjectType brAPIObjectType) {
-            StringBuilder builder = new StringBuilder();
-            indent();
-            appendNewLine(builder);
-            builder.append("STRUCT<");
-            indent();
-            appendNewLine(builder);
+            arrayStructDepth++;
+            try {
+                StringBuilder builder = new StringBuilder();
+                indent();
+                appendNewLine(builder);
+                builder.append("STRUCT<");
+                indent();
+                appendNewLine(builder);
 
-            return createColumnDefinitions(brAPIObjectType)
-                .mapResult(builder::append)
-                .onSuccessDo(this::dedent)
-                .onSuccessDoWithResult(this::appendNewLine)
-                .mapResult(b -> b.append(">"))
-                .mapResult(StringBuilder::toString)
-                .onSuccessDo(this::dedent) ;
+                return createColumnDefinitions(brAPIObjectType)
+                    .mapResult(builder::append)
+                    .onSuccessDo(this::dedent)
+                    .onSuccessDoWithResult(this::appendNewLine)
+                    .mapResult(b -> b.append(">"))
+                    .mapResult(StringBuilder::toString)
+                    .onSuccessDo(this::dedent);
+            } finally {
+                arrayStructDepth--;
+            }
         }
 
         private Response<String> createOneOfTypeColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIOneOfType brAPIOneOfType) {
@@ -818,20 +915,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             };
         }
 
-        private Response<String> createObjectColumnTypeForArray(BrAPIObjectType brAPIObjectType) {
-            arrayStructDepth++;
-            try {
-                return createObjectColumnType(brAPIObjectType);
-            } finally {
-                arrayStructDepth--;
-            }
-        }
-
         private Response<String> createArrayColumnType(BrAPIType itemType) {
             return switch (itemType) {
-                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnTypeForArray(brAPIObjectItemType);
+                case BrAPIObjectType brAPIObjectItemType -> createObjectColumnType(brAPIObjectItemType);
                 case BrAPIPrimitiveType brAPIPrimitiveType -> findSimpleColumnType(brAPIPrimitiveType.getName());
                 case BrAPIArrayType brAPIArrayType -> createArrayColumnType(brAPIArrayType.getItems());
+                case BrAPIEnumType brAPIEnumType -> findSimpleColumnType(brAPIEnumType.getType());
                 default ->
                     fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded array type '%s'", itemType.getName()));
             };

@@ -43,6 +43,7 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Map<String, Object> tableProperties;
     private Boolean clustering;
     private Boolean ifNotExists;
+    private Boolean addConstraintIfExists;
     private Boolean dropTable;
     @Setter(AccessLevel.PRIVATE)
     private PropertiesOptions properties;
@@ -53,7 +54,7 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean pluralTableNames;
     private Boolean generateDropScript;
     private Boolean generateForeignKeyConstraintScript;
-    private Boolean suppressConstraintsInArrayStructs;
+    private Boolean addConstraintsInArrayStructs;
 
     /**
      * Load the default options
@@ -103,6 +104,7 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
         return super.validate()
             .assertEqualsOnCondition(isAddingForeignKeyConstraints(), Boolean.TRUE, isAddingPrimaryKeyConstraints(), "If addForeignKeyConstraints is true if addPrimaryKeyConstraints must also be true")
             .assertEqualsOnCondition(isGeneratingForeignKeyConstraintScript(), Boolean.TRUE, isAddingPrimaryKeyConstraints(), "If generateForeignKeyConstraintScript is true if addPrimaryKeyConstraints must also be true")
+            .assertEqualsOnCondition(isAddingConstraintIfExists(), Boolean.TRUE, isGeneratingForeignKeyConstraintScript(), "If addConstraintIfExists is true if generateForeignKeyConstraintScript must also be true")
             .assertFlagsMutuallyExclusive(this, "addForeignKeyConstraints", "generateForeignKeyConstraintScript")
             .assertNotNull(properties, "Properties Options are null")
             .merge(properties)
@@ -168,6 +170,10 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             ifNotExists = overrideOptions.ifNotExists;
         }
 
+        if (overrideOptions.addConstraintIfExists != null) {
+            addConstraintIfExists = overrideOptions.addConstraintIfExists;
+        }
+
         if (overrideOptions.dropTable != null) {
             dropTable = overrideOptions.dropTable;
         }
@@ -200,8 +206,8 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             generateForeignKeyConstraintScript = overrideOptions.generateForeignKeyConstraintScript;
         }
 
-        if (overrideOptions.suppressConstraintsInArrayStructs != null) {
-            suppressConstraintsInArrayStructs = overrideOptions.suppressConstraintsInArrayStructs;
+        if (overrideOptions.addConstraintsInArrayStructs != null) {
+            addConstraintsInArrayStructs = overrideOptions.addConstraintsInArrayStructs;
         }
 
         return this;
@@ -385,15 +391,27 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
-     * Determines if the Generator should suppress NOT NULL and PRIMARY KEY constraints on fields nested
+     * Determines if the Generator should add NOT NULL and PRIMARY KEY constraints on fields nested
      * inside ARRAY&lt;STRUCT&lt;...&gt;&gt; types. Required for dialects such as Databricks Delta Lake that
      * do not support constraints on nested struct fields.
      *
-     * @return {@code true} if the Generator should suppress constraints inside ARRAY&lt;STRUCT&lt;&gt;&gt;,
+     * @return {@code true} if the Generator should add constraints inside ARRAY&lt;STRUCT&lt;&gt;&gt;,
      * {@code false} otherwise
      */
     @JsonIgnore
-    public boolean isSuppressingConstraintsInArrayStructs() {
-        return suppressConstraintsInArrayStructs != null && suppressConstraintsInArrayStructs;
+    public boolean isAddingConstraintsInArrayStructs() {
+        return addConstraintsInArrayStructs != null && addConstraintsInArrayStructs;
+    }
+
+    /**
+     * Determines if the Generator should add IF EXISTS when adding constraints using ALTER TABLE statements.
+     * Required for dialects such as Databricks Delta Lake that do not support adding constraints if they already exist.
+     *
+     * @return {@code true} if the Generator should add IF EXISTS when adding constraints using ALTER TABLE statements
+     * {@code false} otherwise
+     */
+    @JsonIgnore
+    public boolean isAddingConstraintIfExists() {
+        return addConstraintIfExists != null && addConstraintIfExists;
     }
 }

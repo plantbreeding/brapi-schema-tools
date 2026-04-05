@@ -90,9 +90,9 @@ public class SQLGenerator {
                 return generateSQLFiles(brAPIObjectTypes)
                     .onSuccessDoWithResult(paths::addAll)
                     .mergeOnCondition(options.isGeneratingDropScript(), this::generateDropScript)
-                    .onSuccessDoWithResult(paths::add)
+                    .onSuccessIfPresentDoWithResult(paths::add)
                     .mergeOnCondition(options.isGeneratingForeignKeyConstraintScript(), this::generateForeignKeyConstraintScript)
-                    .onSuccessDoWithResult(paths::add)
+                    .onSuccessIfPresentDoWithResult(paths::add)
                     .map(() -> success(paths));
             } catch (Exception e) {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage()) ;
@@ -117,6 +117,7 @@ public class SQLGenerator {
         private Response<List<Path>> generateSQLFiles(List<BrAPIObjectType> brAPIClasses) {
             return brAPIClasses.stream()
                 .map(this::generateSQL)
+                .filter(Response::isPresent)
                 .collect(Response.toList());
         }
 
