@@ -395,14 +395,38 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
 
+            // Group 1: Primary properties (dbId, name, PUI) — always come first
             List<BrAPIObjectProperty> properties = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
+            // Group 2: Link (ID-type / foreign-key) properties, sorted alphabetically.
+            // These are placed early so that clustering columns (Group 3) appear before
+            // complex nested types and remain within Databricks' default stats-collection
+            // window of 32 indexed columns.
             brAPIObjectType.getProperties()
                 .stream()
-                .filter(brAPIObjectProperty -> getLinkTypeFor(brAPIObjectType, brAPIObjectProperty).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
-                .filter(brAPIObjectProperty -> !properties.contains(brAPIObjectProperty))
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) == ID)
+                .filter(p -> !properties.contains(p))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
-                .forEach(properties::add) ;
+                .forEach(properties::add);
+
+            // Group 3: Clustering properties (not already included), in the order they
+            // are configured.  Placing them here — before the remaining ARRAY/STRUCT
+            // columns — ensures they receive Delta Lake stats and can be used for
+            // liquid clustering without a DELTA_CLUSTERING_COLUMN_MISSING_STATS error.
+            options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
+                .stream()
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
+                .filter(p -> !properties.contains(p))
+                .forEach(properties::add);
+
+            // Group 4: All remaining properties with a non-NONE link type, sorted
+            // alphabetically.
+            brAPIObjectType.getProperties()
+                .stream()
+                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
+                .filter(p -> !properties.contains(p))
+                .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
+                .forEach(properties::add);
 
             return properties.stream()
                 .map(property -> createColumnDefinition(brAPIObjectType, property))
