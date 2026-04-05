@@ -4,15 +4,27 @@ A Study represents an experiment that has taken place at a single location. The 
  */
 DROP TABLE IF EXISTS brapi_Studies; 
 CREATE TABLE brapi_Studies (
+  -- Primary properties
   studyDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  -- Link properties
+  locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
+  locationName STRING NOT NULL COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
+  trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
+  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
+  trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
+  -- Clustering properties
+  commonCropName STRING COMMENT 'Common name for the crop associated with this study',
+  studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc',
+  studyCode STRING COMMENT 'A short human readable code for a study',
+  -- Properties
   active BOOLEAN COMMENT 'A flag to indicate if a Study is currently active and ongoing',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
-  commonCropName STRING COMMENT 'Common name for the crop associated with this study',
   contacts
     ARRAY<
       STRUCT<
+        -- Primary properties
         contactDbId STRING COMMENT 'The ID which uniquely identifies this contact  MIAPPE V1.1 (DM-33) Person ID - An identifier for the data submitter. If that submitter is an individual, ORCID identifiers are recommended.',
         email STRING COMMENT 'The contacts email address  MIAPPE V1.1 (DM-32) Person email - The electronic mail address of the person.',
         instituteName STRING COMMENT 'The name of the institution which this contact is part of  MIAPPE V1.1 (DM-35) Person affiliation - The institution the person belongs to',
@@ -69,16 +81,16 @@ CREATE TABLE brapi_Studies (
     > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
+      -- Primary properties
       lastUpdateDbId STRING COMMENT 'The ID which uniquely identifies a LastUpdate within the given database server',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
     > NOT NULL COMMENT 'The date and time when this study was last modified',
   license STRING COMMENT 'The usage license associated with the study data',
-  locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
-  locationName STRING NOT NULL COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   observationLevels
     ARRAY<
       STRUCT<
+        -- Primary properties
         levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
         levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
       >
@@ -87,12 +99,7 @@ CREATE TABLE brapi_Studies (
   -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
-  studyCode STRING COMMENT 'A short human readable code for a study',
-  studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study',
-  studyType STRING COMMENT 'The type of study being performed. ex. "Yield Trial", etc',
-  trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
-  trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.'
+  studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
 ) 
 COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
 
