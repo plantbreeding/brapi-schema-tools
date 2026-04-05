@@ -18,7 +18,7 @@ CREATE TABLE brapi_Plates (
   plateFormat STRING COMMENT 'Enum for plate formats, usually "PLATE_96" for a 96 well plate or "TUBES" for plateless format',
   programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
   programName STRING NOT NULL COMMENT 'Human readable name of the program',
-  sampleType STRING COMMENT 'The type of samples taken. ex. \'DNA\', \'RNA\', \'Tissue\', etc',
+  sampleType STRING COMMENT 'The type of samples taken. ex. ''DNA'', ''RNA'', ''Tissue'', etc',
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',

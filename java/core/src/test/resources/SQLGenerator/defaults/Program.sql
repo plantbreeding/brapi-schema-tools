@@ -20,7 +20,7 @@ CREATE TABLE brapi_Programs (
   fundingInformation STRING COMMENT 'Information describing the grant or funding source for this program',
   leadPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
   objective STRING COMMENT 'The primary objective of the program',
-  programType STRING COMMENT 'The type of program entity this object represents <br/> \'STANDARD\' represents a standard, permanent breeding program <br/> \'PROJECT\' represents a short term project, usually with a set time limit based on funding   '
+  programType STRING COMMENT 'The type of program entity this object represents <br/> ''STANDARD'' represents a standard, permanent breeding program <br/> ''PROJECT'' represents a short term project, usually with a set time limit based on funding   '
 ) 
 COMMENT 'A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. A Program can contain multiple Trials. A Trial can contain multiple Studies.';
 

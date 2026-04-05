@@ -25,9 +25,9 @@ CREATE TABLE brapi_CrossingProjects (
         observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
         observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
         observationUnitName STRING COMMENT 'A human readable name for an observation unit',
-        parentType STRING COMMENT 'The type of parent ex. \'MALE\', \'FEMALE\', \'SELF\', \'POPULATION\', etc.'
+        parentType STRING COMMENT 'The type of parent ex. ''MALE'', ''FEMALE'', ''SELF'', ''POPULATION'', etc.'
       >
-    > COMMENT 'A list of all the potential parents in the crossing block, available in the crossing project <br/> If the parameter \'includePotentialParents\' is false, the array \'potentialParents\' should be empty, null, or excluded from the response object.',
+    > COMMENT 'A list of all the potential parents in the crossing block, available in the crossing project <br/> If the parameter ''includePotentialParents'' is false, the array ''potentialParents'' should be empty, null, or excluded from the response object.',
   programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
   programName STRING NOT NULL COMMENT 'Human readable name of the program'
 ) 

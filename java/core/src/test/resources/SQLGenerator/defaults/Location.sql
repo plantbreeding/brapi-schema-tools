@@ -24,7 +24,7 @@ CREATE TABLE brapi_Locations (
         > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
       type STRING COMMENT 'The literal string "Feature"'
     > NOT NULL COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
-  countryCode STRING COMMENT '[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec <br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.\'',
+  countryCode STRING COMMENT '[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec <br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.''',
   countryName STRING COMMENT 'The full name of the country where a Location is located <br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   environmentType STRING COMMENT 'Describes the general type of environment of a Location. (ex. forest, field, nursery, etc)',

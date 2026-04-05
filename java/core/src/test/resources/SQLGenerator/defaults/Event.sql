@@ -21,13 +21,13 @@ CREATE TABLE brapi_Events (
     ARRAY<
       STRUCT<
         code STRING COMMENT 'The shortened code name of an event parameter <br>ICASA "Code_Display"',
-        description STRING COMMENT 'A human readable description of this event parameter. This description is usually associated with the \'name\' and \'code\' of an event parameter.',
+        description STRING COMMENT 'A human readable description of this event parameter. This description is usually associated with the ''name'' and ''code'' of an event parameter.',
         eventDbId STRING COMMENT 'Internal database identifier',
         name STRING COMMENT 'The full name of an event parameter <br>ICASA "Variable_Name"',
-        units STRING COMMENT 'The units or data type of the \'value\'.  <br>If the \'value\' comes from a standardized vocabulary or an encoded list of values, then \'unit\' should be \'code\'.  <br>If the \'value\' IS NOT a number, then \'unit\' should specify a data type eg. \'text\', \'boolean\', \'date\', etc.  <br>If the value IS a number, then \'unit\' should specify the units used eg. \'ml\', \'cm\', etc <br>ICASA "Unit_or_type"',
-        value STRING COMMENT 'The single value of this event parameter. This single value is accurate for all the dates in the date range. If \'value\' is populated then \'valuesByDate\' should NOT be populated.',
-        valueDescription STRING COMMENT 'If the event parameter \'unit\' field is \'code\', then use \'valueDescription\' to add a human readable description to the value.',
-        valuesByDate ARRAY<STRING> COMMENT 'An array of values corresponding to each timestamp in the \'discreteDates\' array of this event. The \'valuesByDate\' array should exactly match the size of the \'discreteDates\' array. If \'valuesByDate\' is populated then \'value\' should NOT be populated.'
+        units STRING COMMENT 'The units or data type of the ''value''.  <br>If the ''value'' comes from a standardized vocabulary or an encoded list of values, then ''unit'' should be ''code''.  <br>If the ''value'' IS NOT a number, then ''unit'' should specify a data type eg. ''text'', ''boolean'', ''date'', etc.  <br>If the value IS a number, then ''unit'' should specify the units used eg. ''ml'', ''cm'', etc <br>ICASA "Unit_or_type"',
+        value STRING COMMENT 'The single value of this event parameter. This single value is accurate for all the dates in the date range. If ''value'' is populated then ''valuesByDate'' should NOT be populated.',
+        valueDescription STRING COMMENT 'If the event parameter ''unit'' field is ''code'', then use ''valueDescription'' to add a human readable description to the value.',
+        valuesByDate ARRAY<STRING> COMMENT 'An array of values corresponding to each timestamp in the ''discreteDates'' array of this event. The ''valuesByDate'' array should exactly match the size of the ''discreteDates'' array. If ''valuesByDate'' is populated then ''value'' should NOT be populated.'
       >
     > COMMENT 'A list of objects describing additional event parameters. Each of the following accepts a human-readable value or URI',
   eventType STRING COMMENT 'An identifier for this event type, in the form of an ontology class reference <br/>ICASA Management events allow for the following types: planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other <br/>MIAPPE V1.1 (DM-66) Event accession number - Accession number of the event type in a suitable controlled vocabulary (Crop Ontology).',

@@ -27,7 +27,7 @@ CREATE TABLE brapi_ReferenceSets (
   species 
     STRUCT<
       term STRING COMMENT 'Ontology term - the label of the ontology term the termId is pointing to.',
-      termURI STRING COMMENT 'Ontology term identifier - the CURIE for an ontology term. It differs from the standard GA4GH schema\'s :ref:`id ` in that it is a CURIE pointing to an information resource outside of the scope of the schema or its resource implementation.'
+      termURI STRING COMMENT 'Ontology term identifier - the CURIE for an ontology term. It differs from the standard GA4GH schema''s :ref:`id ` in that it is a CURIE pointing to an information resource outside of the scope of the schema or its resource implementation.'
     > NOT NULL COMMENT 'An ontology term describing an attribute.',
   variantSetDbIds ARRAY<STRING> COMMENT 'variantSets',
   variantDbIds ARRAY<STRING> COMMENT 'variants'

@@ -11,7 +11,7 @@ CREATE TABLE brapi_References (
     STRUCT<
       nextPageToken STRING COMMENT 'The continuation token, which is used to page through large result sets. Provide this value in a subsequent request to return the next page of results. This field will be empty if there are not any additional results.',
       offset INT COMMENT 'The offset position (0-based) of the given sequence from the start of this `Reference`. This value will differ for each page in a request.',
-      sequence STRING COMMENT 'A sub-string of the bases that make up this reference. Bases are represented as IUPAC-IUB codes; this string matches the regular expression `[ACGTMRWSYKVHDBN]*`.'
+      sequence STRING COMMENT 'A sub-string of the bases that make up this reference. Bases are represented as IUPAC-IUB codes, this string matches the regular expression `[ACGTMRWSYKVHDBN]*`.'
     > NOT NULL COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   commonCropName STRING COMMENT 'Common name for the crop',
   externalReferences
@@ -33,7 +33,7 @@ CREATE TABLE brapi_References (
   species 
     STRUCT<
       term STRING COMMENT 'Ontology term - the label of the ontology term the termId is pointing to.',
-      termURI STRING COMMENT 'Ontology term identifier - the CURIE for an ontology term. It differs from the standard GA4GH schema\'s :ref:`id ` in that it is a CURIE pointing to an information resource outside of the scope of the schema or its resource implementation.'
+      termURI STRING COMMENT 'Ontology term identifier - the CURIE for an ontology term. It differs from the standard GA4GH schema''s :ref:`id ` in that it is a CURIE pointing to an information resource outside of the scope of the schema or its resource implementation.'
     > NOT NULL COMMENT 'An ontology term describing an attribute.',
   variantDbIds ARRAY<STRING> COMMENT 'variants'
 ) 

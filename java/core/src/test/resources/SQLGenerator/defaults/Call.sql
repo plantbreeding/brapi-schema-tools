@@ -19,7 +19,7 @@ CREATE TABLE brapi_Calls (
       >
     > COMMENT 'Genotype Metadata are additional layers of metadata associated with each genotype.',
   genotypeValue STRING COMMENT 'The value of this genotype call',
-  phaseSet STRING COMMENT 'If this field is populated, this variant call\'s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.',
+  phaseSet STRING COMMENT 'If this field is populated, this variant call''s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.',
   variantDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a `Variant`',
   variantSetDbId STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
   variantSetName STRING COMMENT 'The human readable name for a VariantSet'

@@ -34,7 +34,7 @@ CREATE TABLE brapi_VariantSets (
         variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
         variantSetName STRING COMMENT 'The human readable name for a VariantSet'
       >
-    > COMMENT 'When the data for a VariantSet is retrieved, it can be retrieved in a variety of data formats and file formats.  <br/>\'dataFormat\' defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc) <br/>\'fileFormat\' defines the MIME type of the file (ie text/csv, application/excel, application/zip). This should also be reflected in the Accept and ContentType HTTP headers for every relevant request and response.',
+    > COMMENT 'When the data for a VariantSet is retrieved, it can be retrieved in a variety of data formats and file formats.  <br/>''dataFormat'' defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc) <br/>''fileFormat'' defines the MIME type of the file (ie text/csv, application/excel, application/zip). This should also be reflected in the Accept and ContentType HTTP headers for every relevant request and response.',
   callSetCount INT COMMENT 'The number of CallSets included in this VariantSet',
   externalReferences
     ARRAY<
@@ -52,7 +52,7 @@ CREATE TABLE brapi_VariantSets (
         variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
         variantSetName STRING COMMENT 'The human readable name for a VariantSet'
       >
-    > COMMENT 'The \'metadataField\' indicates which types of genotyping data and metadata are available in the VariantSet.  <br> When possible, these field names and abbreviations should follow the VCF standard ',
+    > COMMENT 'The ''metadataField'' indicates which types of genotyping data and metadata are available in the VariantSet.  <br> When possible, these field names and abbreviations should follow the VCF standard ',
   referenceSetDbId STRING NOT NULL COMMENT 'The unique identifier for a ReferenceSet',
   referenceSetName STRING NOT NULL COMMENT 'The human readable name of a ReferenceSet',
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',

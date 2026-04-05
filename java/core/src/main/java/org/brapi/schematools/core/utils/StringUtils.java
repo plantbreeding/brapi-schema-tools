@@ -393,27 +393,35 @@ public class StringUtils {
     }
 
     /**
-     * Escapes single quotes in a SQL string literal using backslash escaping ({@code \'}).
-     * This is compatible with Spark SQL, Hive, and other dialects that reject the ANSI {@code ''}
-     * doubling convention inside {@code COMMENT '...'} clauses.
+     * Sanitizes a string for use inside a SQL {@code COMMENT '...'} clause.
+     * <ul>
+     *   <li>Single quotes are doubled ({@code ''}) following the ANSI SQL standard, which is
+     *       required by Databricks / Spark SQL when running in ANSI mode.</li>
+     *   <li>Semicolons are replaced with commas to prevent applications that naively split SQL
+     *       on {@code ;} from breaking mid-string and producing unclosed string literal errors.</li>
+     * </ul>
      *
-     * @param inputString the string to escape
-     * @return the string with every {@code '} replaced by {@code \'}
+     * @param inputString the string to sanitize
+     * @return the sanitized string safe for use inside a single-quoted SQL COMMENT value
      */
     public static String escapeSingleSQLQuotes(String inputString) {
-        return inputString.replace("'", "\\'");
+        return inputString.replace("'", "''").replace(";", ",");
     }
 
     /**
-     * Escapes end-of-block-comment sequences inside block-comment content so that the comment
-     * is not closed prematurely.  Each occurrence of asterisk-slash is replaced with
-     * asterisk-space-slash (a space is inserted between the asterisk and the slash).
+     * Sanitizes the body of a SQL block comment ({@code /* ... *}{@code /}) so that the comment
+     * is not closed prematurely and so that applications which naively split SQL on {@code ;}
+     * do not break the comment block.
+     * <ul>
+     *   <li>Each occurrence of {@code *}{@code /} is replaced with {@code * /}.</li>
+     *   <li>Semicolons are replaced with commas.</li>
+     * </ul>
      *
      * @param inputString the block-comment body to sanitize
      * @return the sanitized string
      */
     public static String escapeBlockCommentContent(String inputString) {
-        return inputString.replace("*/", "* /");
+        return inputString.replace("*/", "* /").replace(";", ",");
     }
 
     public static String escapeSpecialCharacters(String inputString) {

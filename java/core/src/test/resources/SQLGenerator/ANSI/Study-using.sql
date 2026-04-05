@@ -30,7 +30,7 @@ CREATE TABLE brapi_Studies (
         name STRING COMMENT 'The name of the external data link  MIAPPE V1.1 (DM-38) Data file description - Description of the format of the data file. May be a standard file format name, or a description of organization of the data in a tabular file.',
         provenance STRING COMMENT 'The description of the origin or ownership of this linked data. Could be a formal reference to software, method, or workflow.',
         scientificType STRING COMMENT 'The general type of data. For example- Genotyping, Phenotyping raw data, Phenotyping reduced data, Environmental, etc',
-        url STRING COMMENT 'URL describing the location of this data file to view or download  MIAPPE V1.1 (DM-37) Data file link - Link to the data file (or digital object) in a public database or in a persistent institutional repository; or identifier of the data file when submitted together with the MIAPPE submission.',
+        url STRING COMMENT 'URL describing the location of this data file to view or download  MIAPPE V1.1 (DM-37) Data file link - Link to the data file (or digital object) in a public database or in a persistent institutional repository, or identifier of the data file when submitted together with the MIAPPE submission.',
         version STRING COMMENT 'The version number for this data   MIAPPE V1.1 (DM-39) Data file version - The version of the dataset (the actual data).'
       >
     > COMMENT 'List of links to extra data files associated with this study. Extra data could include notes, images, and reference data.',
@@ -52,7 +52,7 @@ CREATE TABLE brapi_Studies (
   experimentalDesign 
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
-      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply \'none\'.'
+      description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply ''none''.'
     > NOT NULL COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
@@ -79,7 +79,7 @@ CREATE TABLE brapi_Studies (
     ARRAY<
       STRUCT<
         levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
-        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`\'s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
       >
     > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
   observationUnitsDescription STRING COMMENT 'MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.',

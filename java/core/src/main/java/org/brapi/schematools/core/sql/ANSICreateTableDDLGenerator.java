@@ -229,7 +229,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             }
                             StringBuilder builder2 = new StringBuilder();
 
-                            builder2.append("ALTER TABLE IF EXISTS ");
+                            builder2.append("ALTER TABLE ");
+                            if (options.isAddingConstraintIfExists()) {
+                                builder2.append("IF EXISTS ");
+                            }
                             builder2.append(tableName);
                             builder2.append(" ADD CONSTRAINT ");
                             builder2.append(createTableName(tableName));

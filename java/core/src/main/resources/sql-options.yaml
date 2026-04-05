@@ -8,6 +8,7 @@ addPrimaryKeyConstraints: true
 addForeignKeyConstraints: false
 generateDropScript: true
 generateForeignKeyConstraintScript: true
+addConstraintIfExists : true
 addNotNullConstraints: true
 addConstraintsInArrayStructs: false
 indent: 2
