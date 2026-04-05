@@ -4,22 +4,28 @@
 The GenomeMap represents the metadata associated with a reference map of a particular species genome. A GenomeMap can either represent a physical map or genetic map.
  */
 CREATE TABLE brapi_GenomeMaps (
+  -- Primary properties
   mapDbId STRING PRIMARY KEY COMMENT 'The unique identifier for a `GenomeMap`',
   mapName STRING PRIMARY KEY COMMENT 'The human readable identifier for a `GenomeMap`',
   mapPUI STRING PRIMARY KEY COMMENT 'The DOI or other permanent identifier for a `GenomeMap`',
+  -- Clustering properties
+  commonCropName STRING NOT NULL COMMENT 'The common name of the `Crop`',
+  -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   comments STRING COMMENT 'Additional comments about a `GenomeMap`',
-  commonCropName STRING NOT NULL COMMENT 'The common name of the `Crop`',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   linkageGroupCount INT COMMENT 'The number of linkage groups present in a `GenomeMap`',
   linkageGroups
     ARRAY<
       STRUCT<
+        -- Primary properties
         linkageGroupName STRING COMMENT 'The Uniquely Identifiable name of a `LinkageGroup` <br> This might be a chromosome identifier or the generic linkage group identifier if the chromosome is not applicable.',
-        additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+        -- Link properties
         genomeMapDbId STRING COMMENT 'The unique identifier for a `GenomeMap`',
         genomeMapPUI STRING COMMENT 'The DOI or other permanent identifier for a `GenomeMap`',
         genomeMapName STRING COMMENT 'The human readable identifier for a `GenomeMap`',
+        -- Properties
+        additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
         markerCount INT COMMENT 'The number of markers associated with a `LinkageGroup`.',
         maxPosition INT COMMENT 'The maximum position of a marker within a `LinkageGroup`.'
       >

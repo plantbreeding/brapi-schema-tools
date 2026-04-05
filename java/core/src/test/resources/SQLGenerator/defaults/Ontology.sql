@@ -4,6 +4,7 @@
 The identifier and metadata needed to reference an external controlled vocabulary
  */
 CREATE TABLE brapi_Ontologies (
+  -- Primary properties
   ontologyDbId STRING NOT NULL PRIMARY KEY COMMENT 'Ontology database unique identifier',
   ontologyName STRING NOT NULL PRIMARY KEY COMMENT 'Ontology name',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',

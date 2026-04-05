@@ -5,6 +5,7 @@ A Scale describes the units and acceptable values for an ObservationVariable.
 <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Scale "inches" or "pixels".
  */
 CREATE TABLE brapi_Scales (
+  -- Primary properties
   scaleDbId STRING NOT NULL PRIMARY KEY COMMENT 'Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID.',
   scaleName STRING NOT NULL PRIMARY KEY COMMENT 'Name of the scale <br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable',
   scalePUI STRING PRIMARY KEY COMMENT 'The Permanent Unique Identifier of a Scale, usually in the form of a URI',
@@ -20,7 +21,12 @@ CREATE TABLE brapi_Scales (
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   ontologyReference 
     STRUCT<
+      -- Primary properties
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
+      -- Link properties
+      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyName STRING COMMENT 'Ontology name',
+      -- Properties
       documentationLinks
         ARRAY<
           STRUCT<
@@ -28,8 +34,6 @@ CREATE TABLE brapi_Scales (
             type STRING COMMENT 'The type of documentation, which can be OBO Foundry, an RDF term or a webpage.'
           >
         > COMMENT 'links to various ontology documentation',
-      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
-      ontologyName STRING COMMENT 'Ontology name',
       version STRING COMMENT 'Ontology version (no specific format)'
     > NOT NULL COMMENT 'MIAPPE V1.1  (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology  (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).',
   units STRING COMMENT 'This field can be used to describe the units used for this scale. This should be the abbreviated  form of the units, intended to be displayed with every value using this scale. Usually this only  applies when `dataType` is Numeric, but could also be included for other dataTypes when applicable.',

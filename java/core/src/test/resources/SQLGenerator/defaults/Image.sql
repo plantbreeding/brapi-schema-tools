@@ -4,8 +4,14 @@
 The metadata for an image file that is connected to some phenotypic observation data.
  */
 CREATE TABLE brapi_Images (
+  -- Primary properties
   imageDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier of an image',
   imageName STRING PRIMARY KEY COMMENT 'The human readable name of an image. Might be the same as ''imageFileName'', but could be different.',
+  -- Link properties
+  observationUnitDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
+  observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
+  observationUnitName STRING COMMENT 'A human readable name for an observation unit',
+  -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   copyright STRING COMMENT 'The copyright information of this image. Example ''Copyright 2018 Bob Robertson''',
   description STRING COMMENT 'The human readable description of an image.',
@@ -39,9 +45,6 @@ CREATE TABLE brapi_Images (
   imageURL STRING COMMENT 'The complete, absolute URI path to the image file. Images might be stored on a different host or path than the BrAPI web server.',
   imageWidth INT COMMENT 'The width of the image in Pixels.',
   mimeType STRING COMMENT 'The file type of the image. Examples ''image/jpeg'', ''image/png'', ''image/svg'', etc',
-  observationUnitDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
-  observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
-  observationUnitName STRING COMMENT 'A human readable name for an observation unit',
   -- For property 'observations' Link table 'ObservationByImage' will be created separately
 ) 
 COMMENT 'The metadata for an image file that is connected to some phenotypic observation data.';

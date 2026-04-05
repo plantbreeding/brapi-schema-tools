@@ -5,6 +5,7 @@ A Trait describes what property is being observed.
 <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Trait "Leaf length" or "Flower height". 
  */
 CREATE TABLE brapi_Traits (
+  -- Primary properties
   traitDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a trait',
   traitName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a trait <br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation',
   traitPUI STRING PRIMARY KEY COMMENT 'The Permanent Unique Identifier of a Trait, usually in the form of a URI',
@@ -24,7 +25,12 @@ CREATE TABLE brapi_Traits (
   mainAbbreviation STRING COMMENT 'A shortened version of the human readable name for a Trait',
   ontologyReference 
     STRUCT<
+      -- Primary properties
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
+      -- Link properties
+      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyName STRING COMMENT 'Ontology name',
+      -- Properties
       documentationLinks
         ARRAY<
           STRUCT<
@@ -32,8 +38,6 @@ CREATE TABLE brapi_Traits (
             type STRING COMMENT 'The type of documentation, which can be OBO Foundry, an RDF term or a webpage.'
           >
         > COMMENT 'links to various ontology documentation',
-      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
-      ontologyName STRING COMMENT 'Ontology name',
       version STRING COMMENT 'Ontology version (no specific format)'
     > NOT NULL COMMENT 'MIAPPE V1.1  (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology  (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).',
   status STRING COMMENT 'Trait status (examples: "recommended", "obsolete", "legacy", etc.)',

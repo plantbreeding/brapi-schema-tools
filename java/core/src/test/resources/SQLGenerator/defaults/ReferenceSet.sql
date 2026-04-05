@@ -4,11 +4,20 @@
 A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.
  */
 CREATE TABLE brapi_ReferenceSets (
+  -- Primary properties
   referenceSetDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a ReferenceSet',
   referenceSetName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a ReferenceSet',
+  -- Link properties
+  referencesDbId STRING NOT NULL COMMENT 'The unique identifier for a `Reference`',
+  referencesName STRING NOT NULL COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
+  sourceGermplasmDbIds ARRAY<STRING> COMMENT 'All known corresponding Germplasm',
+  variantSetDbIds ARRAY<STRING> COMMENT 'variantSets',
+  variantDbIds ARRAY<STRING> COMMENT 'variants',
+  -- Clustering properties
+  commonCropName STRING COMMENT 'Common name for the crop',
+  -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   assemblyPUI STRING COMMENT 'The remaining information is about the source of the sequences Public id of this reference set, such as `GRCH_37`.',
-  commonCropName STRING COMMENT 'Common name for the crop',
   description STRING COMMENT 'Optional free text description of this reference set.',
   externalReferences
     ARRAY<
@@ -19,18 +28,13 @@ CREATE TABLE brapi_ReferenceSets (
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   isDerived BOOLEAN COMMENT 'A reference set may be derived from a source if it contains additional sequences, or some of the sequences within it are derived (see the definition of `isDerived` in `Reference`).',
   md5checksum STRING COMMENT 'Order-independent MD5 checksum which identifies this `ReferenceSet`.  To compute this checksum, make a list of `Reference.md5checksum` for all `Reference` s in this set. Then sort that list, and take the MD5 hash of all the strings concatenated together. Express the hash as a lower-case hexadecimal string.',
-  referencesDbId STRING NOT NULL COMMENT 'The unique identifier for a `Reference`',
-  referencesName STRING NOT NULL COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
   sourceAccessions ARRAY<STRING> COMMENT 'All known corresponding accession IDs in INSDC (GenBank/ENA/DDBJ) ideally with a version number, e.g. `NC_000001.11`.',
-  sourceGermplasmDbIds ARRAY<STRING> COMMENT 'All known corresponding Germplasm',
   sourceURI STRING COMMENT 'Specifies a FASTA format file/string.',
   species 
     STRUCT<
       term STRING COMMENT 'Ontology term - the label of the ontology term the termId is pointing to.',
       termURI STRING COMMENT 'Ontology term identifier - the CURIE for an ontology term. It differs from the standard GA4GH schema''s :ref:`id ` in that it is a CURIE pointing to an information resource outside of the scope of the schema or its resource implementation.'
-    > NOT NULL COMMENT 'An ontology term describing an attribute.',
-  variantSetDbIds ARRAY<STRING> COMMENT 'variantSets',
-  variantDbIds ARRAY<STRING> COMMENT 'variants'
+    > NOT NULL COMMENT 'An ontology term describing an attribute.'
 ) 
 COMMENT 'A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data.';
 

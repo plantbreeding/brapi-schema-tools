@@ -4,6 +4,7 @@
 The techniques and protocol used to produce a Cross or Germplasm
  */
 CREATE TABLE brapi_BreedingMethods (
+  -- Primary properties
   breedingMethodDbId STRING NOT NULL PRIMARY KEY COMMENT 'the unique identifier for this breeding method',
   breedingMethodName STRING PRIMARY KEY COMMENT 'the human readable identifier for this breeding method',
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Breeding Method',

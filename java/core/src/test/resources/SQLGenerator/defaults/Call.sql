@@ -6,9 +6,14 @@ A `Call` represents the determination of genotype with respect to a particular `
 It may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.
  */
 CREATE TABLE brapi_Calls (
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  -- Link properties
   callSetDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a CallSet within the given database server',
   callSetName STRING COMMENT 'The human readable name which identifies a germplasm within the given database server',
+  variantDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a `Variant`',
+  variantSetDbId STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
+  variantSetName STRING COMMENT 'The human readable name for a VariantSet',
+  -- Properties
+  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   genotypeMetadata
     ARRAY<
       STRUCT<
@@ -19,10 +24,7 @@ CREATE TABLE brapi_Calls (
       >
     > COMMENT 'Genotype Metadata are additional layers of metadata associated with each genotype.',
   genotypeValue STRING COMMENT 'The value of this genotype call',
-  phaseSet STRING COMMENT 'If this field is populated, this variant call''s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.',
-  variantDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a `Variant`',
-  variantSetDbId STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
-  variantSetName STRING COMMENT 'The human readable name for a VariantSet'
+  phaseSet STRING COMMENT 'If this field is populated, this variant call''s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.'
 ) 
 COMMENT 'A `Call` represents the determination of genotype with respect to a particular `Variant`.   It may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.';
 

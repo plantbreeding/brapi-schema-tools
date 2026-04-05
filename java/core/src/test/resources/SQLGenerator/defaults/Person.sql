@@ -4,6 +4,7 @@
 A generic object used to maintain the metadata needed to describe a human. The Person might be a software user, a field technician, or a primary contact for a Program.
  */
 CREATE TABLE brapi_People (
+  -- Primary properties
   personDbId STRING NOT NULL PRIMARY KEY COMMENT 'Unique ID for a person',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   description STRING COMMENT 'description of this person',

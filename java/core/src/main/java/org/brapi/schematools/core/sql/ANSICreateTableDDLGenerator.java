@@ -395,42 +395,97 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
 
-            // Group 1: Primary properties (dbId, name, PUI) — always come first
-            List<BrAPIObjectProperty> properties = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
+            // Group 1: Primary properties (dbId, name, PUI) — always come first.
+            List<BrAPIObjectProperty> primaryProps = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
             // Group 2: Link (ID-type / foreign-key) properties, sorted alphabetically.
-            // These are placed early so that clustering columns (Group 3) appear before
-            // complex nested types and remain within Databricks' default stats-collection
-            // window of 32 indexed columns.
+            // Placed early so that clustering columns (Group 3) appear before complex
+            // nested types and remain within Databricks' default 32-column stats window.
+            List<BrAPIObjectProperty> linkProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) == ID)
-                .filter(p -> !properties.contains(p))
+                .filter(p -> !primaryProps.contains(p))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
-                .forEach(properties::add);
+                .forEach(linkProps::add);
 
-            // Group 3: Clustering properties (not already included), in the order they
-            // are configured.  Placing them here — before the remaining ARRAY/STRUCT
-            // columns — ensures they receive Delta Lake stats and can be used for
-            // liquid clustering without a DELTA_CLUSTERING_COLUMN_MISSING_STATS error.
+            // Group 3: Clustering properties (not already included), in the configured
+            // order.  Placing them here — before the remaining ARRAY/STRUCT columns —
+            // ensures they receive Delta Lake stats and avoid DELTA_CLUSTERING_COLUMN_MISSING_STATS.
+            List<BrAPIObjectProperty> seen = new ArrayList<>(primaryProps);
+            seen.addAll(linkProps);
+
+            List<BrAPIObjectProperty> clusterProps = new ArrayList<>();
             options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
                 .stream()
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
-                .filter(p -> !properties.contains(p))
-                .forEach(properties::add);
+                .filter(p -> !seen.contains(p))
+                .forEach(clusterProps::add);
+            seen.addAll(clusterProps);
 
-            // Group 4: All remaining properties with a non-NONE link type, sorted
-            // alphabetically.
+            // Group 4: All remaining properties with a non-NONE link type, sorted alphabetically.
+            List<BrAPIObjectProperty> otherProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
-                .filter(p -> !properties.contains(p))
+                .filter(p -> !seen.contains(p))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
-                .forEach(properties::add);
+                .forEach(otherProps::add);
 
-            return properties.stream()
-                .map(property -> createColumnDefinition(brAPIObjectType, property))
-                .collect(Response.toList()).mapResult(columns -> String.join("," + newLine(), columns)) ;
+            // Only add the "-- Properties" separator when at least one earlier group
+            // (link or clustering) contributed columns, so tables without those groups
+            // don't get a redundant separator.
+            String otherComment = (!linkProps.isEmpty() || !clusterProps.isEmpty()) ? "-- Properties" : "";
+
+            return buildGroupedColumnDefinitions(brAPIObjectType,
+                List.of(primaryProps,           linkProps,              clusterProps,                   otherProps),
+                List.of("-- Primary properties", "-- Link properties",   "-- Clustering properties",     otherComment));
+        }
+
+        /**
+         * Assembles column definitions from multiple ordered groups into a single
+         * comma-separated SQL column list.  When a group has a non-blank comment string
+         * and is not the very first group of columns, the comment is inserted on its own
+         * line (at the current indent level) just before the first column of that group,
+         * producing output like:
+         * <pre>
+         *   lastColOfPrevGroup STRING,
+         *   -- Comment
+         *   firstColOfNextGroup STRING,
+         * </pre>
+         */
+        private Response<String> buildGroupedColumnDefinitions(
+                BrAPIObjectType brAPIObjectType,
+                List<List<BrAPIObjectProperty>> groups,
+                List<String> comments) {
+
+            List<Response<String>> allCols = new ArrayList<>();
+
+            for (int i = 0; i < groups.size(); i++) {
+                List<BrAPIObjectProperty> group = groups.get(i);
+                if (group.isEmpty()) continue;
+
+                String comment = (i < comments.size()) ? comments.get(i) : "";
+
+                List<Response<String>> groupCols = group.stream()
+                    .map(p -> createColumnDefinition(brAPIObjectType, p))
+                    .collect(Collectors.toList());
+
+                if (!comment.isBlank()) {
+                    // Prepend "-- comment\n<indent>" to the first column definition of
+                    // this group so it appears on its own line between the groups.
+                    String commentPrefix = comment + newLine();
+                    List<Response<String>> annotated = new ArrayList<>(groupCols);
+                    annotated.set(0, groupCols.get(0).mapResult(col -> commentPrefix + col));
+                    allCols.addAll(annotated);
+                } else {
+                    allCols.addAll(groupCols);
+                }
+            }
+
+            return allCols.stream()
+                .collect(Response.toList())
+                .mapResult(cols -> String.join("," + newLine(), cols));
         }
 
         private Response<String> createTableDescription(BrAPIObjectType brAPIObjectType) {
