@@ -710,12 +710,22 @@ public class Response<T> {
      * @return this response
      */
     public Response<T> onSuccessDoWithResult(Consumer<T> consumer) {
-        if (this.hasErrors()) {
-            return this;
-        } else {
+        if (!this.hasErrors()) {
             consumer.accept(this.getResult());
-            return this;
         }
+        return this;
+    }
+
+    /**
+     * If this response has no errors and is present pass the result of this response to the provider consumer
+     * @param consumer a consumer for the result of this response
+     * @return this response
+     */
+    public Response<T> onSuccessIfPresentDoWithResult(Consumer<T> consumer) {
+        if (this.isPresent()) {
+            consumer.accept(this.getResult());
+        }
+        return this;
     }
 
     /**
@@ -727,10 +737,8 @@ public class Response<T> {
     public Response<T> onSuccessDoWithResultOnCondition(final boolean condition, Consumer<T> consumer) {
         if (this.hasNoErrors() && condition) {
             consumer.accept(this.getResult());
-            return this;
-        } else {
-            return this;
         }
+        return this;
     }
 
     /**

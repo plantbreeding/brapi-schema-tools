@@ -11,6 +11,7 @@ import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
 import org.brapi.schematools.core.sql.options.SQLGeneratorOptions;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -123,28 +124,34 @@ class SQLGeneratorOptionsTest extends OptionsTestBase {
 
     @Test
     void checkMutuallyExclusiveOptions() {
-        assertTrue(SQLGeneratorOptions.load().setIfNotExists(false).setDropTable(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setIfNotExists(false).setDropTable(true).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setIfNotExists(true).setDropTable(false).validate().isValid());
-        assertFalse(SQLGeneratorOptions.load().setIfNotExists(true).setDropTable(true).validate().isValid());
+        validateTrue(SQLGeneratorOptions.load().setIfNotExists(false).setDropTable(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setIfNotExists(false).setDropTable(true).validate());
+        validateTrue(SQLGeneratorOptions.load().setIfNotExists(true).setDropTable(false).validate());
+        validateFalse(SQLGeneratorOptions.load().setIfNotExists(true).setDropTable(true).validate());
 
-        assertTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(true).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).validate().isValid());
-        assertFalse(SQLGeneratorOptions.load().setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(true).validate().isValid());
+        validateTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).setAddConstraintIfExists(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(true).setAddConstraintIfExists(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).setAddConstraintIfExists(false).validate());
+        validateFalse(SQLGeneratorOptions.load().setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(true).setAddConstraintIfExists(false).validate());
     }
 
     @Test
     void checkKeyConstraintOptions() {
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).validate().isValid());
-        assertFalse(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setAddForeignKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setAddForeignKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).validate().isValid());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setAddForeignKeyConstraints(false).setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(false).validate());
+        validateFalse(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setAddForeignKeyConstraints(true).setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setAddForeignKeyConstraints(false).setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setAddForeignKeyConstraints(true).setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(false).validate());
 
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).setAddForeignKeyConstraints(false).validate().isValid());
-        assertFalse(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setGenerateForeignKeyConstraintScript(true).setAddForeignKeyConstraints(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).setAddForeignKeyConstraints(false).validate().isValid());
-        assertTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setGenerateForeignKeyConstraintScript(true).setAddForeignKeyConstraints(false).validate().isValid());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setGenerateForeignKeyConstraintScript(false).setAddConstraintIfExists(false).setAddForeignKeyConstraints(false).validate());
+        validateFalse(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(false).setGenerateForeignKeyConstraintScript(true).setAddConstraintIfExists(false).setAddForeignKeyConstraints(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setGenerateForeignKeyConstraintScript(false).setAddConstraintIfExists(false).setAddForeignKeyConstraints(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddPrimaryKeyConstraints(true).setGenerateForeignKeyConstraintScript(true).setAddConstraintIfExists(false).setAddForeignKeyConstraints(false).validate());
+
+
+        validateTrue(SQLGeneratorOptions.load().setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(false).setAddForeignKeyConstraints(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddConstraintIfExists(false).setGenerateForeignKeyConstraintScript(true).setAddForeignKeyConstraints(false).validate());
+        validateFalse(SQLGeneratorOptions.load().setAddConstraintIfExists(true).setGenerateForeignKeyConstraintScript(false).setAddForeignKeyConstraints(false).validate());
+        validateTrue(SQLGeneratorOptions.load().setAddConstraintIfExists(true).setGenerateForeignKeyConstraintScript(true).setAddForeignKeyConstraints(false).validate());
     }
 
     private void checkDefaultOptions(SQLGeneratorOptions options) {
@@ -165,6 +172,24 @@ class SQLGeneratorOptionsTest extends OptionsTestBase {
         );
 
         assertEquals(2, options.getIndentSize());
+    }
+
+    private void validateTrue(Validation validate) {
+        if (validate.isValid()) {
+            assertTrue(true);
+        } else {
+            validate.getErrors().forEach(error -> log.error(error.toString()));
+            fail("Validation was expected to be valid but was not");
+        }
+    }
+
+    private void validateFalse(Validation validate) {
+        if (validate.isValid()) {
+            fail("Validation was expected to be invalid but was valid");
+        } else {
+            validate.getErrors().forEach(error -> log.error(error.toString()));
+            assertTrue(true);
+        }
     }
 
     private void checkOverrideOptions(SQLGeneratorOptions options) {

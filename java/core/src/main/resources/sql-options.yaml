@@ -8,8 +8,9 @@ addPrimaryKeyConstraints: true
 addForeignKeyConstraints: false
 generateDropScript: true
 generateForeignKeyConstraintScript: true
+addConstraintIfExists : true
 addNotNullConstraints: true
-suppressConstraintsInArrayStructs: false
+addConstraintsInArrayStructs: false
 indent: 2
 descriptionFormat: TODO Description for %s
 generateLinkTables : true

@@ -11762,7 +11762,7 @@
       "isOneOf" : null,
       "fields" : [ {
         "name" : "lastUpdateDbId",
-        "description" : "The date and time when this study was last modified",
+        "description" : "The ID which uniquely identifies a LastUpdate within the given database server",
         "args" : [ ],
         "type" : {
           "kind" : "SCALAR",
@@ -11817,7 +11817,7 @@
       "fields" : null,
       "inputFields" : [ {
         "name" : "lastUpdateDbId",
-        "description" : "The date and time when this study was last modified",
+        "description" : "The ID which uniquely identifies a LastUpdate within the given database server",
         "type" : {
           "kind" : "SCALAR",
           "name" : "String",
@@ -12830,7 +12830,7 @@
         "deprecationReason" : null
       }, {
         "name" : "childLocationDbId",
-        "description" : "",
+        "description" : "The child locations that belong to this Location. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
         "args" : [ ],
         "type" : {
           "kind" : "LIST",
@@ -13080,7 +13080,7 @@
         "deprecationReason" : null
       }, {
         "name" : "childLocations",
-        "description" : "",
+        "description" : "The child locations that belong to this Location. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
         "type" : {
           "kind" : "LIST",
           "name" : null,
@@ -22623,7 +22623,7 @@
     }, {
       "kind" : "ENUM",
       "name" : "ProgramType",
-      "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding   ",
+      "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
       "isOneOf" : null,
       "fields" : null,
       "inputFields" : null,
