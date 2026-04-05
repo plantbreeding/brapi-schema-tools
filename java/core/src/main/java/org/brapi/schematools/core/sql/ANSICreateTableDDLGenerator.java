@@ -125,8 +125,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(brAPIObjectType),
                 () -> createColumnDefinitions(brAPIObjectType),
                 getTableDescription(brAPIObjectType),
-                findClusterColumns(brAPIObjectType)
-            )
+                findClusterColumns(brAPIObjectType),
+                true)
                 .conditionalMapResultToResponse(options.isGeneratingLinkTables() && !linkTables.isEmpty(), this::appendLinkTableDefinitions)
                 .conditionalMapResultToResponse(options.getControlledVocabulary().isGenerating() && !controlledVocabularyTables.isEmpty(), this::appendControlledVocabularyDefinitions);
         }
@@ -135,7 +135,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                                                        Supplier<Response<String>> descriptionSupplier,
                                                        Supplier<Response<String>> columnSupplier,
                                                        String description,
-                                                       List<String> clusterColumns) {
+                                                       List<String> clusterColumns,
+                                                       boolean primaryTable) {
 
             StringBuilder builder = new StringBuilder();
             tables.add(tableName);
@@ -147,7 +148,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .onSuccessDoWithResult(builder::append)
                 .map(columnSupplier)
                 .onSuccessDoWithResult(builder::append)
-                .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns))
+                .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns, primaryTable))
                 .onSuccessDoWithResult(builder::append)
                 .map(() -> success(builder.toString())) ;
         }
@@ -180,12 +181,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return success(builder.toString());
         }
 
-        private Response<String> createTableDefinitionEnd(String tableName, String description, List<String> clusterColumns) {
+        private Response<String> createTableDefinitionEnd(String tableName, String description, List<String> clusterColumns, boolean primaryTable) {
 
             try {
                 StringBuilder builder = new StringBuilder();
 
-                if (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript()) {
+                if (primaryTable && (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript())) {
                     List<BrAPIPropertyWithType> foreignKeyProperties = brAPIObjectType.getProperties()
                         .stream()
                         .filter(property -> brAPIClassCache.dereferenceType(property.getType()) instanceof BrAPIObjectType)
@@ -228,7 +229,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             }
                             StringBuilder builder2 = new StringBuilder();
 
-                            builder2.append("ALTER TABLE ");
+                            builder2.append("ALTER TABLE IF EXISTS ");
                             builder2.append(tableName);
                             builder2.append(" ADD CONSTRAINT ");
                             builder2.append(createTableName(tableName));
@@ -454,7 +455,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(linkTable),
                 () -> createColumnDefinitions(linkTable),
                 getTableComment(linkTable),
-                findClusterColumns(linkTable));
+                findClusterColumns(linkTable),
+                false);
         }
 
         private String createLinkTableFullName(LinkTable linkedTable) {
@@ -533,7 +535,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 () -> createTableDescription(controlledVocabularyTable),
                 () -> createColumnDefinitions(controlledVocabularyTable),
                 getTableComment(controlledVocabularyTable),
-                findClusterColumns(controlledVocabularyTable));
+                findClusterColumns(controlledVocabularyTable),
+                false);
         }
 
         private String createControlledVocabularyFullTableName(ControlledVocabularyTable controlledVocabularyTable) {
