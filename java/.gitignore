@@ -25,3 +25,9 @@ out/
 
 ### VS Code ###
 .vscode/
+*.code-workspace
+
+### Gradle bin output ###
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
