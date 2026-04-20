@@ -8767,29 +8767,14 @@
             }
         },
         "responses" : {
-            "SeedLotSingleResponse" : {
-                "description" : "OK",
+            "401Unauthorized" : {
+                "description" : "Unauthorized",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "SeedLotSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/SeedLot"
-                                }
-                            }
-                        }
+                            "type" : "string"
+                        },
+                        "example" : "ERROR - 2018-10-08T18:15:11Z - Missing or expired authorization token"
                     }
                 }
             },
@@ -8984,12 +8969,12 @@
                     }
                 }
             },
-            "SeedLotListResponse" : {
+            "SampleListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "SeedLotListResponse",
+                            "title" : "SampleListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -9011,7 +8996,7 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/SeedLot"
+                                                "$ref" : "#/components/schemas/Sample"
                                             }
                                         }
                                     }
@@ -9084,12 +9069,12 @@
                     }
                 }
             },
-            "SeedLotTransactionListResponse" : {
+            "ReferenceSetListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "SeedLotTransactionListResponse",
+                            "title" : "ReferenceSetListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -9111,10 +9096,36 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/SeedLotTransaction"
+                                                "$ref" : "#/components/schemas/ReferenceSet"
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "TrialSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "TrialSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Trial"
                                 }
                             }
                         }
@@ -9210,6 +9221,58 @@
                     }
                 }
             },
+            "SeasonSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "SeasonSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Season"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "ReferenceSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "ReferenceSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Reference"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ReferenceSetSingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -9236,12 +9299,23 @@
                     }
                 }
             },
-            "CrossListResponse" : {
+            "404NotFound" : {
+                "description" : "Not Found",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "type" : "string"
+                        },
+                        "example" : "ERROR - 2018-10-08T18:15:11Z - The requested object DbId is not found"
+                    }
+                }
+            },
+            "StudyListResponse" : {
                 "description" : "OK",
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "title" : "CrossListResponse",
+                            "title" : "StudyListResponse",
                             "required" : [
                                 "metadata",
                                 "result"
@@ -9263,10 +9337,110 @@
                                         "data" : {
                                             "type" : "array",
                                             "items" : {
-                                                "$ref" : "#/components/schemas/Cross"
+                                                "$ref" : "#/components/schemas/Study"
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "LinkageGroupListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "LinkageGroupListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/LinkageGroup"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CallListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "CallListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Call"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "LocationSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "LocationSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Location"
                                 }
                             }
                         }
@@ -9373,6 +9547,32 @@
                     }
                 }
             },
+            "PersonSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "PersonSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Person"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ReferenceListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -9447,6 +9647,69 @@
                     }
                 }
             },
+            "VariantListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "VariantListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Variant"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "PlateSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "PlateSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Plate"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "GenomeMapSingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -9501,43 +9764,6 @@
                                             "type" : "array",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/Person"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PlannedCrossListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PlannedCrossListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/PlannedCross"
                                             }
                                         }
                                     }
@@ -9680,784 +9906,6 @@
                     }
                 }
             },
-            "CrossingProjectListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CrossingProjectListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/CrossingProject"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmAttribute"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "401Unauthorized" : {
-                "description" : "Unauthorized",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "type" : "string"
-                        },
-                        "example" : "ERROR - 2018-10-08T18:15:11Z - Missing or expired authorization token"
-                    }
-                }
-            },
-            "GermplasmAttributeListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/GermplasmAttribute"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Germplasm"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CrossingProjectSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CrossingProjectSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/CrossingProject"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SampleListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SampleListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Sample"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmMCPDSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmMCPDSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmMCPD"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceSetListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceSetListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/ReferenceSet"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "TrialSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "TrialSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Trial"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Germplasm"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "SeasonSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "SeasonSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Season"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "ReferenceSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "ReferenceSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Reference"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "404NotFound" : {
-                "description" : "Not Found",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "type" : "string"
-                        },
-                        "example" : "ERROR - 2018-10-08T18:15:11Z - The requested object DbId is not found"
-                    }
-                }
-            },
-            "StudyListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "StudyListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Study"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "LinkageGroupListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "LinkageGroupListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/LinkageGroup"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "BreedingMethodSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "BreedingMethodSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/BreedingMethod"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "CallListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "CallListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Call"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "LocationSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "LocationSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Location"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PersonSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PersonSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Person"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "VariantListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "VariantListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/Variant"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PlateSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PlateSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/Plate"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeValueListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeValueListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/GermplasmAttributeValue"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "BreedingMethodListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "BreedingMethodListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/BreedingMethod"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeAttributeCategoryListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeAttributeCategoryListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "type" : "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "GermplasmAttributeValueSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmAttributeValueSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmAttributeValue"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "GenomeMapListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -10486,43 +9934,6 @@
                                             "type" : "array",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/GenomeMap"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "PedigreeNodeListResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "PedigreeNodeListResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "required" : [
-                                        "data"
-                                    ],
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "array",
-                                            "items" : {
-                                                "$ref" : "#/components/schemas/PedigreeNode"
                                             }
                                         }
                                     }

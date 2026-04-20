@@ -203,7 +203,7 @@ public class OpenAPIGenerator {
 
         public Response<List<OpenAPI>> generate(Collection<String> classNames) {
             if (classNames != null && !classNames.isEmpty()) {
-                Collection<BrAPIClass> values = brAPIClassCache.getBrAPIClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(Collectors.toSet());
+                Collection<BrAPIClass> values = brAPIClassCache.getBrAPIClasses().stream().filter(brAPIClass -> classNames.contains(brAPIClass.getName())).collect(toList());
 
                 return options.validateAgainstCache(brAPIClassCache)
                     .asResponse()
@@ -219,7 +219,7 @@ public class OpenAPIGenerator {
             if (options.isSeparatingByModule()) {
                 Map<String, List<BrAPIClass>> classesByModule = classes.stream().
                     filter(type -> Objects.nonNull(type.getModule())).
-                    collect(Collectors.groupingBy(BrAPIClass::getModule, toList()));
+                    collect(Collectors.groupingBy(BrAPIClass::getModule, TreeMap::new, toList()));
                 List<BrAPIClass> commonClasses = classesByModule.remove(BRAPI_COMMON);
 
                 List<BrAPIClass> classesWithNoModule = classes.stream().filter(type -> Objects.isNull(type.getModule())).toList();
@@ -1393,14 +1393,20 @@ public class OpenAPIGenerator {
         private Schema makeNullable(Schema schema) {
             if (versionIs3_1_OrLater) {
                 if (schema.getType() != null) {
-                    schema.setTypes(Set.of(schema.getType(), "null"));
+                    Set<String> types = new LinkedHashSet<>();
+                    types.add("null");
+                    types.add(schema.getType());
+                    schema.setTypes(types);
                 } else {
                     if (schema.getTypes() != null) {
-                        Set<String> types = new TreeSet<>(schema.getTypes());
+                        Set<String> types = new LinkedHashSet<>();
                         types.add("null");
+                        types.addAll(schema.getTypes());
                         schema.setTypes(types);
                     } else {
-                        schema.setTypes(Set.of("null"));
+                        Set<String> types = new LinkedHashSet<>();
+                        types.add("null");
+                        schema.setTypes(types);
                     }
                 }
 

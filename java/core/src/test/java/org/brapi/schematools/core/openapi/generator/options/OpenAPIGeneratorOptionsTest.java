@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
+import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.options.OptionsTestBase;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -73,7 +80,26 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
     }
 
-    @SuppressWarnings("null")
+    @Test
+    void validateAgainstCache() {
+        try {
+            List<BrAPIClass> schemas = new BrAPISchemaReader().
+                readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).
+                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
+                getResult();
+
+            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas));
+
+            validation.getErrors().forEach(error -> log.error(error.getMessage()));
+
+            assertTrue(validation.isValid());
+
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     void overwrite() {
         OpenAPIGeneratorOptions options = null;

@@ -54,6 +54,7 @@ public class CompareSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-k", "--comparisonAPI"}, description = "Comparison API to use. Options are 'OpenApiCompare' and 'JsonDiff' Default is OpenApiCompare.")
     private String comparisonAPI = "OpenApiCompare";
 
+
     @CommandLine.Option(names = {"-c", "--components"}, description = "The directory containing the OpenAPI Components, required for the OPEN_API input format")
     private Path componentsDirectory;
 
@@ -70,7 +71,8 @@ public class CompareSubCommand extends AbstractSubCommand {
 
                     OpenAPIComparatorOptions options = optionsPath != null ?
                         OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
-                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options.setComparisonAPI(comparisonAPI));
+                    options.setComparisonAPI(comparisonAPI);
+                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options);
 
                     if (Files.isDirectory(firstPath) && Files.isDirectory(secondPath)) {
                         if (comparisonAPI.equals("OpenApiCompare")) {
