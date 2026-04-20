@@ -8,6 +8,7 @@ import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -155,6 +156,46 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null") ;
+    }
+
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+
+        Validation validation = Validation.valid() ;
+
+        generateNewRequestFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
+                        name,
+                        this.getClass().getSimpleName()
+                    )) ;
+        }) ;
+
+        getPathItemNameFor().keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        tagFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        validation.merge(getSingleGet().validateAgainstCache(brAPIClassCache))
+            .merge(getListGet().validateAgainstCache(brAPIClassCache))
+            .merge(getPost().validateAgainstCache(brAPIClassCache))
+            .merge(getPut().validateAgainstCache(brAPIClassCache))
+            .merge(getDelete().validateAgainstCache(brAPIClassCache))
+            .merge(getSearch().validateAgainstCache(brAPIClassCache))
+            .merge(getProperties().validateAgainstCache(brAPIClassCache))
+            .merge(getControlledVocabulary().validateAgainstCache(brAPIClassCache)) ;
+
+        return validation ;
     }
 
     /**

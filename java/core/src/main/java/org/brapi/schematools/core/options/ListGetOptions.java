@@ -18,15 +18,10 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class ListGetOptions extends AbstractSubOptions {
+public class ListGetOptions extends AbstractListOptions {
 
-    private Boolean pagedDefault;
-    @Setter(AccessLevel.PRIVATE)
-    private Map<String, Boolean> paged = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
-    private Boolean propertiesFromRequest;
-    private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
     private Boolean pagedTokenDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> pagedToken = new HashMap<>();
@@ -34,11 +29,7 @@ public class ListGetOptions extends AbstractSubOptions {
     @Override
     public Validation validate() {
         return super.validate()
-            .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(inputFor, "'inputFor' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertiesFromRequest, "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName());
     }
@@ -51,26 +42,7 @@ public class ListGetOptions extends AbstractSubOptions {
     public void override(ListGetOptions overrideOptions) {
         super.override(overrideOptions);
 
-        if (overrideOptions.pagedDefault != null) {
-            setPagedDefault(overrideOptions.pagedDefault);
-        }
-
-        paged.putAll(overrideOptions.paged);
         inputFor.putAll(overrideOptions.inputFor);
-
-        if (overrideOptions.propertiesFromRequest != null) {
-            setPropertiesFromRequest(overrideOptions.propertiesFromRequest);
-        }
-
-        if (overrideOptions.propertyFromRequestFor != null) {
-            overrideOptions.propertyFromRequestFor.forEach((key, value) -> {
-                if (propertyFromRequestFor.containsKey(key)) {
-                    propertyFromRequestFor.get(key).putAll(value);
-                } else {
-                    propertyFromRequestFor.put(key, new HashMap<>(value));
-                }
-            });
-        }
 
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedTokenDefault(overrideOptions.pagedTokenDefault);
@@ -81,53 +53,6 @@ public class ListGetOptions extends AbstractSubOptions {
     }
 
     /**
-     * Determines if the List Endpoint is paged for a specific primary model.
-     *
-     * @param name the name of the primary model
-     * @return {@code true} if paged, {@code false} otherwise
-     */
-    @JsonIgnore
-    public boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault);
-    }
-
-    /**
-     * Determines if the List Endpoint is paged for a specific primary model.
-     *
-     * @param type the primary model
-     * @return {@code true} if paged, {@code false} otherwise
-     */
-    @JsonIgnore
-    public boolean isPagedFor(@NonNull BrAPIType type) {
-        return isPagedFor(type.getName());
-    }
-
-    /**
-     * Sets paging for a specific primary model.
-     *
-     * @param name   the name of the primary model
-     * @param paging {@code true} if the Endpoint should be paged, {@code false} otherwise
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public ListGetOptions setPagingFor(@NonNull String name, boolean paging) {
-        paged.put(name, paging);
-        return this;
-    }
-
-    /**
-     * Sets paging for a specific primary model.
-     *
-     * @param type   the primary model
-     * @param paging {@code true} if the Endpoint should be paged, {@code false} otherwise
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public ListGetOptions setPagingFor(@NonNull BrAPIType type, boolean paging) {
-        return setPagingFor(type.getName(), paging);
-    }
-
-    /**
      * Determines if the List Endpoint accepts filter input for a specific primary model.
      *
      * @param name the name of the primary model
@@ -135,7 +60,7 @@ public class ListGetOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public boolean hasInputFor(@NonNull String name) {
-        return inputFor.getOrDefault(name, pagedDefault);
+        return inputFor.getOrDefault(name, false);
     }
 
     /**
@@ -172,40 +97,6 @@ public class ListGetOptions extends AbstractSubOptions {
     @JsonIgnore
     public ListGetOptions setInputFor(@NonNull BrAPIType type, boolean hasInput) {
         return setInputFor(type.getName(), hasInput);
-    }
-
-    /**
-     * Determines if a specific request property should be included in the query parameters for a given model.
-     *
-     * @param type     the primary model
-     * @param property the request property
-     * @return {@code true} if the property should be exposed as a query parameter
-     */
-    @JsonIgnore
-    public boolean isUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
-        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
-        if (map != null) {
-            return map.getOrDefault(property.getName(), propertiesFromRequest);
-        }
-        return propertiesFromRequest;
-    }
-
-    /**
-     * Sets whether a specific request property should be included in the query parameters.
-     *
-     * @param type                  the primary model
-     * @param property              the request property
-     * @param usePropertyFromRequest {@code true} if the property should be exposed as a query parameter
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public ListGetOptions setUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type,
-                                                         @NonNull BrAPIObjectProperty property,
-                                                         boolean usePropertyFromRequest) {
-        propertyFromRequestFor
-            .computeIfAbsent(type.getName(), k -> new HashMap<>())
-            .put(property.getName(), usePropertyFromRequest);
-        return this;
     }
 
     /**

@@ -17,7 +17,7 @@ generateNewRequestFor:
     PedigreeNode: false
     PlannedCross: false
     Season: false
-    ServerInfo: false
+    #ServerInfo: false
     Variant: false
     VariantSet: false
 newRequestNameFormat: "%sNewRequest"
@@ -26,7 +26,7 @@ listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
-    ServerInfo: ServerInfo
+    #ServerInfo: ServerInfo
 pathItemNameFor:
     AlleleMatrix: /allelematrix
     GenomeMap: /maps
@@ -35,7 +35,7 @@ pathItemNameFor:
     ObservationUnitHierarchyLevel: /observationlevels
     ObservationVariable: /variables
     PedigreeNode: /pedigree
-    ServerInfo: /serverInfo
+    #ServerInfo: /serverInfo
 pathItemNameForProperty:
     GermplasmAttribute:
         attributeCategory:
@@ -60,14 +60,14 @@ singleGet:
         ObservationUnitHierarchyLevel: false
         PedigreeNode: false
         PlannedCross: false
-        ServerInfo: false
+        #ServerInfo: false
 listGet:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
     generateFor:
         AlleleMatrix: false
-        ServerInfo: false
+        #ServerInfo: false
     pagedDefault: true
     paged:
         BreedingMethod: false
@@ -79,21 +79,201 @@ listGet:
         BreedingMethod: false
     propertiesFromRequest: true
     propertyFromRequestFor:
-        GermplasmAttribute:
+        AdditionalInfo:
+            additionalProperties: false
+        CallSet:
+            commonCropNames: false
             germplasmNames: false
+            programDbIds: false
+            programNames: false
+            studyDbIds: false
+            studyNames: false
+            sampleNames: false
+            trialDbIds: false
+            trialNames: false
+        Cross:
+            programNames: false
+        CrossingProject:
+            programNames: false
+        Event:
+            studyNames: false
+        GenomeMap:
+            programNames: false
+            studyNames: false
+            trialNames: false
+        Germplasm:
+            familyCodes: false
+            programNames: false
+            studyNames: false
+            instituteCodes: false
+            trialNames: false
+        GermplasmAttribute:
+            dataTypes: false
+            germplasmNames: false
+            ontologyDbIds: false
             programNames: false
             studyDbId: false
             studyDbIds: false
             studyNames: false
-            trialDbIds: false
-            trialNames: false
-            ontologyDbIds: false
-            dataTypes: false
             traitClasses: false
             traitAttributes: false
             traitAttributePUIs: false
             traitEntities: false
             traitEntityPUIs: false
+            trialDbIds: false
+            trialNames: false
+        GermplasmAttributeValue:
+            dataTypes: false
+            germplasmNames: false
+            methodDbIds: false
+            ontologyDbIds: false
+            programNames: false
+            scaleDbIds: false
+            traitClasses: false
+            traitDbIds: false
+        List:
+            dateCreatedRangeStart: false
+            dateCreatedRangeEnd: false
+            dateModifiedRangeStart: false
+            dateModifiedRangeEnd: false
+            listOwnerNames: false
+            listOwnerPersonDbIds: false
+            programNames: false
+        Method:
+            programNames: false
+        Image:
+            programNames: false
+            imageFileNames: false
+            imageFileSizeMax: false
+            imageFileSizeMin: false
+            imageHeightMax: false
+            imageHeightMin: false
+            imageLocation: false
+            imageTimeStampRangeEnd: false
+            imageTimeStampRangeStart: false
+            imageWidthMax: false
+            imageWidthMin: false
+            mimeTypes: false
+        Location:
+            programNames: false
+            abbreviations: false
+            altitudeMin: false
+            altitudeMax: false
+            countryCodes: false
+            countryNames: false
+            coordinates: false
+            instituteAddresses: false
+            instituteNames: false
+        ObservationUnit:
+            germplasmNames: false
+            locationNames: false
+            observationLevels: false
+            observationLevelRelationships: false
+            observationVariableDbIds: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+        Observation:
+            germplasmNames: false
+            locationNames: false
+            observationLevels: false
+            observationLevelRelationships: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+        ObservationUnitLevelRelationship:
+            observationUnit: false
+        ObservationVariable:
+            dataTypes: false
+            programNames: false
+            studyDbIds: false
+            studyNames: false
+            traitAttributes: false
+            traitAttributePUIs: false
+            traitEntities: false
+            traitEntityPUIs: false
+            trialNames: false
+        PlannedCross:
+            programNames: false
+        PedigreeNode:
+            programNames: false
+            studyNames: false
+            trialNames: false
+            instituteCodes: false
+        Person:
+            programNames: false
+            emailAddresses: false
+            mailingAddresses: false
+            middleNames: false
+            phoneNumbers: false
+        Plate:
+            germplasmNames: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+            plateBarcodes: false
+        Program:
+            leadPersonDbIds: false
+            leadPersonNames: false
+            objectives: false
+        Reference:
+            germplasmDbIds: false
+            germplasmNames: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+        ReferenceSet:
+            germplasmDbIds: false
+            germplasmNames: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+        Sample:
+            germplasmNames: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+        Scale:
+            programNames: false
+        SeedLot:
+            programNames: false
+        Study:
+            germplasmNames: false
+            locationNames: false
+            programNames: false
+            trialNames: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+        Trait:
+            programNames: false
+        Trial:
+            locationNames: false
+            observationVariableDbIds: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+        Variant:
+            commonCropNames: false
+            programDbIds: false
+            programNames: false
+            studyNames: false
+            studyDbIds: false
+            trialDbIds: false
+            trialNames: false
+            callSetDbIds: false
+            end: false
+            referenceDbIds: false
+            start: false
+        VariantSet:
+            programNames: false
+            trialDbIds: false
+            trialNames: false
+            referenceDbIds: false
 search:
     generate: true
     summaryFormat: Submit a search request for `%s`
@@ -112,6 +292,9 @@ search:
         If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
+    pagedDefault: true
+    paged:
+        AlleleMatrix: false
     generateFor:
         BreedingMethod: false
         Cross: false
@@ -125,8 +308,26 @@ search:
         Scale: false
         Season: false
         SeedLot: false
-        ServerInfo: false
+        #ServerInfo: false
         Trait: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        Observation:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds:  false
+        ObservationUnit:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds: false
 table:
     generate: false
     summaryFormat: Get a table of `%s` records as a CSV file.
@@ -152,9 +353,12 @@ post:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        ServerInfo: false
+        #ServerInfo: false
         Variant: false
         VariantSet: false
+    multiple: false
+    multipleFor:
+        GermplasmAttribute: true
 put:
     generate: true
     summaryFormat: Update the details for an existing %s
@@ -172,7 +376,7 @@ put:
         ReferenceSet: false
         PedigreeNode: false
         Plate: false
-        ServerInfo: false
+        #ServerInfo: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -331,3 +535,4 @@ controlledVocabulary:
     generate: true
     summaryFormat: Get the ${property} of ${type}
     descriptionFormat: List all available ${type} ${property}
+    pagedDefault: true
