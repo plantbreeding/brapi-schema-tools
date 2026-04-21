@@ -382,11 +382,16 @@ public class OpenAPIComparator {
 
     private Response<Path> renderMarkdown(ChangedOpenApi diff, Path outputPath) {
         try {
-            MarkdownRender markdownRender = new MarkdownRender();
-            markdownRender.setShowChangedMetadata(options.getMarkdown().isShowingChangedMetadata());
             FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            markdownRender.render(diff, outputStreamWriter);
+            if (options.getMarkdown().isShowingChangedMetadata()) {
+                // Use detailed renderer that shows why each property changed
+                new DetailedMarkdownRender().render(diff, outputStreamWriter);
+            } else {
+                MarkdownRender markdownRender = new MarkdownRender();
+                markdownRender.setShowChangedMetadata(false);
+                markdownRender.render(diff, outputStreamWriter);
+            }
         } catch (FileNotFoundException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;

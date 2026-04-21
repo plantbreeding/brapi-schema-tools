@@ -60,7 +60,7 @@ public class ListGetOptions extends AbstractListOptions {
      */
     @JsonIgnore
     public boolean hasInputFor(@NonNull String name) {
-        return inputFor.getOrDefault(name, false);
+        return inputFor.getOrDefault(name, true);
     }
 
     /**

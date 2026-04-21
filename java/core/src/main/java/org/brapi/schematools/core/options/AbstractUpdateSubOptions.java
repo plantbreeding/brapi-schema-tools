@@ -21,7 +21,9 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> multipleFor = new HashMap<>();
-
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> useAdditionalProperties = new HashMap<>();
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
      *
@@ -36,6 +38,10 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
 
         if (overrideOptions.multipleFor != null) {
             multipleFor.putAll(overrideOptions.multipleFor);
+        }
+
+        if (overrideOptions.useAdditionalProperties != null) {
+            useAdditionalProperties.putAll(overrideOptions.useAdditionalProperties);
         }
     }
 
@@ -71,6 +77,42 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @JsonIgnore
     public final AbstractUpdateSubOptions setMultipleFor(@NonNull String name, boolean multiple) {
         multipleFor.put(name, multiple);
+        return this;
+    }
+
+    /**
+     * Determines if the PUT/POST Endpoint/method uses additionalProperties to wrap the entity.
+     *
+     * @param name the name of the primary model
+     * @return {@code true} if the PUT/POST uses additionalProperties to wrap the entity, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isUsingAdditionalProperties(@NonNull String name) {
+        return useAdditionalProperties.getOrDefault(name, multiple);
+    }
+
+
+    /**
+     * Determines if the PUT/POST Endpoint/method uses additionalProperties to wrap the entity.
+     *
+     * @param type the primary model
+     * @return {@code true} if the PUT/POST uses additionalProperties to wrap the entity, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isUsingAdditionalProperties(@NonNull BrAPIType type) {
+        return isUsingAdditionalProperties(type.getName());
+    }
+
+    /**
+     * Sets if the PUT/POST Endpoint/method uses additionalProperties to wrap the entity.
+     *
+     * @param name     the name of the primary model
+     * @param usesAdditionalProperties {@code true} if the PUT/POST uses additionalProperties to wrap the entity, {@code false} otherwise
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final AbstractUpdateSubOptions setUsingAdditionalProperties(@NonNull String name, boolean usesAdditionalProperties) {
+        useAdditionalProperties.put(name, usesAdditionalProperties);
         return this;
     }
 

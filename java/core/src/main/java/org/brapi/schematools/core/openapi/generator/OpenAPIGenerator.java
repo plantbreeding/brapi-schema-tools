@@ -35,11 +35,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
-import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
-import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
-import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
  * Generates an OpenAPI Specification from a BrAPI JSON Schema.
@@ -435,12 +432,12 @@ public class OpenAPIGenerator {
                             .map(() -> generateSingleResponse(type))
                     )
                     .mergeOnCondition(isGeneratingPostSubPathOperationFor(parentType, property),
-                        () -> generateSubPathSinglePostOperation(parentType, type)
+                        () -> generateSubPathSinglePostOperation(parentType, property, type)
                             .onSuccessDoWithResult(pathItem::setPost)
                             .map(() -> generateSingleResponse(parentType))
                     )
                     .mergeOnCondition(isGeneratingPutSubPathOperationFor(parentType, property),
-                        () -> generateSubPathSinglePutOperation(parentType, type)
+                        () -> generateSubPathSinglePutOperation(parentType, property, type)
                             .onSuccessDoWithResult(pathItem::setPut)
                             .map(() -> generateSingleResponse(parentType))
                     )
@@ -771,19 +768,34 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperationResponse(type, operation);
+            return getOperation(type, operation);
         }
 
-        private Response<Operation> getOperationResponse(BrAPIObjectType type, Operation operation) {
+        private Response<Operation> getOperation(BrAPIObjectType type, Operation operation, boolean usesAdditionalProperties) {
             String requestBodyName = options.isGeneratingNewRequestFor(type) ? options.getNewRequestNameFor(type) : type.getName();
 
-            operation.requestBody(createRequestBody(new ArraySchema().items(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName)))));
+            if (usesAdditionalProperties) {
+                operation.requestBody(
+                    createRequestBody(
+                        new ObjectSchema()
+                            .additionalProperties(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName)))
+                            .example(createExampleFor(type))
+                        , findMediaTypeForObject(type)
+                    )
+                );
+            }else {
+                operation.requestBody(createRequestBody(new ArraySchema().items(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName))), findMediaTypeForObject(type)));
+            }
 
             operation.addTagsItem(options.getTagFor(type));
 
             return createListApiResponses(type)
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
+        }
+
+        private Object createExampleFor(BrAPIObjectType type) {
+            return Map.of("exampleKey", Map.of("@context", Map.of("exampleContextKey", "exampleContextValue"), "metadata", Map.of("pagination", Map.of("pageSize", 10, "currentPage", 1, "totalCount", 100)), "result", Map.of("exampleResultKey", "exampleResultValue"))) ;
         }
 
         private Response<Operation> generateSingleGetOperation(BrAPIObjectType type) {
@@ -813,7 +825,7 @@ public class OpenAPIGenerator {
 
             String requestBodyName = options.isGeneratingNewRequestFor(type) ? options.getNewRequestNameFor(type) : type.getName();
 
-            operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName))));
+            operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName)), findMediaTypeForObject(type)));
 
             operation.addTagsItem(options.getTagFor(type));
 
@@ -832,7 +844,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperationResponse(type, operation);
+            return getOperation(type, operation);
         }
 
         private Response<Operation> generateDeleteOperation(BrAPIObjectType type) {
@@ -888,7 +900,7 @@ public class OpenAPIGenerator {
                 .map(() -> success(operation));
         }
 
-        private Response<Operation> generateSubPathSinglePostOperation(BrAPIObjectType parentType, BrAPIType type) {
+        private Response<Operation> generateSubPathSinglePostOperation(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
             Operation operation = new Operation();
 
             operation.setSummary(metadata.getPost().getSummaryOrDefault(type.getName(), options.getPost().getSummaryFor(type)));
@@ -901,13 +913,13 @@ public class OpenAPIGenerator {
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
-                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema)))
+                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
                 .map(() -> createSingleApiResponses(parentType))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
 
-        private Response<Operation> generateSubPathSinglePutOperation(BrAPIObjectType parentType, BrAPIType type) {
+        private Response<Operation> generateSubPathSinglePutOperation(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type) {
             Operation operation = new Operation();
 
             operation.setSummary(metadata.getPut().getSummaryOrDefault(type.getName(), options.getPut().getSummaryFor(type)));
@@ -920,7 +932,7 @@ public class OpenAPIGenerator {
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
-                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema)))
+                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
                 .map(() -> createSingleApiResponses(parentType))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
@@ -960,7 +972,7 @@ public class OpenAPIGenerator {
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
-                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema)))
+                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
                 .map(() -> createSingleApiResponses(parentType))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
@@ -979,7 +991,7 @@ public class OpenAPIGenerator {
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
-                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema)))
+                .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
                 .map(() -> createSingleApiResponses(parentType))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
@@ -995,9 +1007,9 @@ public class OpenAPIGenerator {
             }
         }
 
-        private RequestBody createRequestBody(Schema schema) {
+        private RequestBody createRequestBody(Schema schema, String mediaType) {
             return new RequestBody().content(
-                new Content().addMediaType("application/json",
+                new Content().addMediaType(mediaType,
                     new MediaType().schema(schema)));
         }
 
@@ -1036,7 +1048,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchRequestNameFor(type)))));
+            operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchRequestNameFor(type))), findMediaTypeForObject(type)));
 
             operation.responses(createSearchPostResponseRefs(type));
             operation.addTagsItem(options.getTagFor(type));
@@ -1594,6 +1606,14 @@ public class OpenAPIGenerator {
             schema.description(type.getDescription());
 
             return schema ;
+        }
+
+        private String findMediaTypeForObject(BrAPIType type) {
+            return options.getMediaTypeForObject(type) ;
+        }
+
+        private String findMediaTypeForProperty(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+            return options.getMediaTypeForProperty(parentType, property) ;
         }
     }
 

@@ -69,8 +69,6 @@ listGet:
         AlleleMatrix: false
         #ServerInfo: false
     pagedDefault: true
-    paged:
-        BreedingMethod: false
     pagedTokenDefault: false
     pagedToken:
         Call: true
@@ -389,6 +387,14 @@ put:
         PedigreeNode: true
         Plate: true
         Sample: true
+    useAdditionalProperties:
+        Cross: true
+        Observation: true
+        ObservationUnit: true
+        PlannedCross: true
+        PedigreeNode: true
+        Plate: true
+        Sample: true
 delete:
     generate: false
     summaryFormat: Delete an existing %s
@@ -536,3 +542,7 @@ controlledVocabulary:
     summaryFormat: Get the ${property} of ${type}
     descriptionFormat: List all available ${type} ${property}
     pagedDefault: true
+defaultMediaType: application/json
+mediaTypeForProperty:
+    Image:
+        imageContent: image/*
