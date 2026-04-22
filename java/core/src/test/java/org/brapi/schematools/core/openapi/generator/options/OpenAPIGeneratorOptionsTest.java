@@ -83,10 +83,10 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
     @Test
     void validateAgainstCache() {
         try {
-            List<BrAPIClass> schemas = new BrAPISchemaReader().
-                readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI())).
-                onFailDoWithResponse(response -> fail(response.getMessagesCombined(","))).
-                getResult();
+            List<BrAPIClass> schemas = new BrAPISchemaReader()
+                .readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()))
+                .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
+                .getResult();
 
             Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas));
 
