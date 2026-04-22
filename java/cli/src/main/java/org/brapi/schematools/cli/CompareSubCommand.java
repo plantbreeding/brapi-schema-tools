@@ -86,9 +86,13 @@ public class CompareSubCommand extends AbstractSubCommand {
                         if (Files.isDirectory(outputPath)) {
                             handleError(String.format("Output path %s must not be a directory", outputPath)) ;
                         } else {
-                            if (!overwrite && Files.exists(outputPath)) {
-                                printError(String.format("Output file '%s' already exists and was not overwritten", outputPath));
-                                return ;
+                            if (Files.exists(outputPath)) {
+                                if (overwrite) {
+                                    Files.delete(outputPath);
+                                } else {
+                                    printError(String.format("Output file '%s' already exists and was not overwritten", outputPath));
+                                    return ;
+                                }
                             }
                             openAPIComparator.compare(firstPath, secondPath, outputPath, outputFormat)
                                 .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
@@ -118,7 +122,7 @@ public class CompareSubCommand extends AbstractSubCommand {
                 } else if (Files.isRegularFile(child)) {
                     if (child.getFileName().toString().endsWith(".yaml") || child.getFileName().toString().endsWith(".json")) {
                         if (Files.isRegularFile(sibling)) {
-                            Path outputFile = outputPath.resolve(child.getFileName() + getFileExtension(outputFormat));
+                            Path outputFile = outputPath.resolve(stripExtension(child.getFileName().toString()) + getFileExtension(outputFormat));
                             if (!overwrite && Files.exists(outputFile)) {
                                 printError(String.format("Output file '%s' already exists and was not overwritten", outputFile));
                             } else {
@@ -141,6 +145,11 @@ public class CompareSubCommand extends AbstractSubCommand {
 
     private boolean compareDirectory(Path directory) {
         return !IGNORE_PATHS.contains(directory.getFileName().toString());
+    }
+
+    private String stripExtension(String filename) {
+        int dot = filename.lastIndexOf('.');
+        return dot > 0 ? filename.substring(0, dot) : filename;
     }
 
     private String getFileExtension(ComparisonOutputFormat outputFormat) {

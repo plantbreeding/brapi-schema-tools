@@ -768,7 +768,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation);
+            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type));
         }
 
         private Response<Operation> getOperation(BrAPIObjectType type, Operation operation, boolean usesAdditionalProperties) {
@@ -795,7 +795,57 @@ public class OpenAPIGenerator {
         }
 
         private Object createExampleFor(BrAPIObjectType type) {
-            return Map.of("exampleKey", Map.of("@context", Map.of("exampleContextKey", "exampleContextValue"), "metadata", Map.of("pagination", Map.of("pageSize", 10, "currentPage", 1, "totalCount", 100)), "result", Map.of("exampleResultKey", "exampleResultValue"))) ;
+            String idKey = options.getProperties().getIdPropertyFor(type)
+                .mapResult(p -> String.format("<%s>", p.getName()))
+                .orElseResult("<id>");
+
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put(idKey + "_1", createExampleObjectFor(type, 1));
+            result.put(idKey + "_2", createExampleObjectFor(type, 2));
+            return result;
+        }
+
+        private Map<String, Object> createExampleObjectFor(BrAPIObjectType type, int index) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            if (type.getProperties() != null) {
+                for (BrAPIObjectProperty property : type.getProperties()) {
+                    map.put(property.getName(), createExampleValueFor(property, index));
+                }
+            }
+            return map;
+        }
+
+        private Object createExampleValueFor(BrAPIObjectProperty property, int index) {
+            if (property.getExamples() != null && !property.getExamples().isEmpty()) {
+                return property.getExamples().getFirst();
+            }
+            return createExampleValueForType(property.getType(), property.getName(), index);
+        }
+
+        private Object createExampleValueForType(BrAPIType type, String propertyName, int index) {
+            if (type instanceof BrAPIArrayType arrayType) {
+                return List.of(createExampleValueForType(arrayType.getItems(), propertyName, index));
+            } else if (type instanceof BrAPIObjectType objectType) {
+                return createExampleObjectFor(objectType, index);
+            } else if (type instanceof BrAPIPrimitiveType primitiveType) {
+                return switch (primitiveType.getName()) {
+                    case BrAPIPrimitiveType.BOOLEAN -> false;
+                    case BrAPIPrimitiveType.INTEGER -> index * 10;
+                    case BrAPIPrimitiveType.NUMBER  -> index + 0.5;
+                    default -> {
+                        if ("date-time".equals(primitiveType.getFormat())) {
+                            yield "2020-08-12T18:10:40.413Z";
+                        }
+                        yield generateExampleString(propertyName, index);
+                    }
+                };
+            }
+            return Map.of();
+        }
+
+        private String generateExampleString(String propertyName, int index) {
+            int hash = (propertyName.hashCode() * 31 + index) & 0x7FFFFFFF;
+            return String.format("%08x", hash).substring(0, 8);
         }
 
         private Response<Operation> generateSingleGetOperation(BrAPIObjectType type) {
@@ -844,7 +894,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation);
+            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type));
         }
 
         private Response<Operation> generateDeleteOperation(BrAPIObjectType type) {
@@ -1245,6 +1295,7 @@ public class OpenAPIGenerator {
                     .description(type.getDescription());
 
                 updateExamples(objectSchema, brAPIObjectType);
+                updateAdditionalProperties(objectSchema, brAPIObjectType.getAdditionalProperties()) ;
 
                 return createProperties(objectSchema, type, brAPIObjectType.getProperties().stream().toList())
                     .mapResult(properties -> properties.entrySet().stream().filter(entry -> options.getSearch().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
@@ -1295,6 +1346,7 @@ public class OpenAPIGenerator {
                 .description(type.getDescription());
 
             updateExamples(objectSchema, type) ;
+            updateAdditionalProperties(objectSchema, type.getAdditionalProperties()) ;
 
             return createProperties(objectSchema, type, properties)
                 .mapResult(schema -> objectSchema.properties(schema));
@@ -1400,6 +1452,23 @@ public class OpenAPIGenerator {
             }
 
             return schema ;
+        }
+
+
+        private void updateAdditionalProperties(Schema objectSchema, BrAPIAdditionalProperties additionalProperties) {
+            if (additionalProperties != null) {
+                Set<String> types = new TreeSet<>();
+
+                types.add(additionalProperties.getType()) ;
+
+                if (additionalProperties.isNullable()) {
+                    types.add("null") ;
+                }
+
+                objectSchema.additionalProperties(new Schema<>()
+                    .types(types)
+                    .description(additionalProperties.getDescription()));
+            }
         }
 
         private Schema makeNullable(Schema schema) {

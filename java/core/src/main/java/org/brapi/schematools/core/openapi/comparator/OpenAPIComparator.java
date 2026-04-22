@@ -22,8 +22,6 @@ import org.openapitools.openapidiff.core.output.AsciidocRender;
 import org.openapitools.openapidiff.core.output.HtmlRender;
 import org.openapitools.openapidiff.core.output.MarkdownRender;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
@@ -367,13 +365,19 @@ public class OpenAPIComparator {
         } ;
     }
 
+    private OutputStreamWriter openWriter(Path outputPath) throws IOException {
+        return new OutputStreamWriter(
+            Files.newOutputStream(outputPath,
+                java.nio.file.StandardOpenOption.CREATE,
+                java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
+                java.nio.file.StandardOpenOption.WRITE));
+    }
+
     private Response<Path> renderHtml(ChangedOpenApi diff, Path outputPath) {
         try {
             HtmlRender htmlRender = new HtmlRender(options.getHtml().getTitle(), options.getHtml().getLinkCss(), options.getHtml().isShowingAllChanges());
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            htmlRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            htmlRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
@@ -382,29 +386,26 @@ public class OpenAPIComparator {
 
     private Response<Path> renderMarkdown(ChangedOpenApi diff, Path outputPath) {
         try {
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+            OutputStreamWriter outputStreamWriter = openWriter(outputPath);
             if (options.getMarkdown().isShowingChangedMetadata()) {
-                // Use detailed renderer that shows why each property changed
                 new DetailedMarkdownRender().render(diff, outputStreamWriter);
             } else {
                 MarkdownRender markdownRender = new MarkdownRender();
                 markdownRender.setShowChangedMetadata(false);
                 markdownRender.render(diff, outputStreamWriter);
             }
-        } catch (FileNotFoundException exception) {
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
         return Response.success(outputPath) ;
     }
+
     private Response<Path> renderAsciidoc(ChangedOpenApi diff, Path outputPath) {
         try {
             AsciidocRender asciidocRender = new AsciidocRender();
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            asciidocRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            asciidocRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
@@ -414,10 +415,8 @@ public class OpenAPIComparator {
     private Response<Path> renderJson(ChangedOpenApi diff, Path outputPath) {
         try {
             JsonRender jsonRender = new JsonRender(options.getJson().isPrettyPrinting());
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            jsonRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            jsonRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
