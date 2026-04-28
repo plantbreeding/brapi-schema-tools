@@ -476,6 +476,8 @@ properties:
             study: none
         Image:
             imagecontent: sub-query
+        LinkageGroup:
+            genomeMap: none
         Location:
             seedLots: none
             observationUnits: none

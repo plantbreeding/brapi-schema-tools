@@ -10,6 +10,7 @@ import com.networknt.schema.SpecVersion;
 import graphql.com.google.common.collect.Streams;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.atlas.iterator.Iter;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -29,6 +30,7 @@ import java.util.stream.StreamSupport;
 
 import static java.nio.file.Files.find;
 import static java.util.Collections.singletonList;
+import static org.brapi.schematools.core.response.Response.empty;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.*;
@@ -235,7 +237,7 @@ public class BrAPISchemaReader {
                 propertyType = classesMap.get(brAPIReferenceType.getName());
 
                 if (propertyType == null) {
-                    return Response.fail(Response.ErrorType.VALIDATION,
+                    return fail(Response.ErrorType.VALIDATION,
                         String.format("Property '%s' in type '%s' is a Reference, but the referenced type '%s' is not available",
                             property.getName(), brAPIObjectType.getName(), brAPIReferenceType.getName()));
                 }
@@ -247,13 +249,13 @@ public class BrAPISchemaReader {
                 switch (relationshipType) {
                     case MANY_TO_ONE, ONE_TO_ONE -> {
                         if (propertyType instanceof BrAPIArrayType) {
-                            return Response.fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is an array",
+                            return fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is an array",
                                 property.getName(), brAPIObjectType.getName(), relationshipType, propertyType.getName()));
                         }
                     }
                     case ONE_TO_MANY, MANY_TO_MANY -> {
                         if (!(propertyType instanceof BrAPIArrayType)) {
-                            return Response.fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is not an array",
+                            return fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has relationshipType '%s', referenced type '%s' is not an array",
                                 property.getName(), brAPIObjectType.getName(), relationshipType, propertyType.getName()));
                         }
                     }
@@ -267,24 +269,24 @@ public class BrAPISchemaReader {
                 BrAPIClass referencedType = classesMap.get(type.getName());
 
                 if (referencedType == null) {
-                    return Response.fail(Response.ErrorType.VALIDATION,
+                    return fail(Response.ErrorType.VALIDATION,
                         String.format("Property '%s' in type '%s' has a Referenced Attribute '%s', but the referenced type '%s' is not available",
                             property.getName(), brAPIObjectType.getName(), property.getReferencedAttribute(), property.getType().getName()));
                 }
 
                 if (referencedType instanceof BrAPIObjectType referencedObjectType) {
                     if (referencedObjectType.getProperties().stream().noneMatch(childProperty -> property.getReferencedAttribute().equals(childProperty.getName()))) {
-                        return Response.fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has a Referenced Attribute '%s', but the property does not exist in the referenced type '%s'",
+                        return fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has a Referenced Attribute '%s', but the property does not exist in the referenced type '%s'",
                             property.getName(), brAPIObjectType.getName(), property.getReferencedAttribute(), referencedType.getName()));
                     }
                 } else {
-                    return Response.fail(Response.ErrorType.VALIDATION,
+                    return fail(Response.ErrorType.VALIDATION,
                         String.format("Property '%s' in type '%s' has a Referenced Attribute '%s', but the referenced type '%s' is not a BrAPIObjectType",
                             property.getName(), brAPIObjectType.getName(), property.getReferencedAttribute(), referencedType.getName()));
                 }
             }
 
-            return Response.success(property);
+            return success(property);
         }
 
         private List<BrAPIObjectProperty> extractProperties(List<BrAPIObjectProperty> properties, BrAPIType brAPIType, Map<String, BrAPIType> typeMap) {
@@ -377,7 +379,7 @@ public class BrAPISchemaReader {
 
                 return success(json);
             } catch (RuntimeException e) {
-                return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not read json node from path '%s' due to '%s'", path, e.getMessage()));
+                return fail(Response.ErrorType.VALIDATION, path, String.format("Can not read json node from path '%s' due to '%s'", path, e.getMessage()));
             }
         }
 
@@ -385,7 +387,7 @@ public class BrAPISchemaReader {
             try {
                 return createType(path, jsonNode, fallbackName, module).mapResult(type -> (BrAPIClass) type);
             } catch (ClassCastException e) {
-                return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not cast type '%s' to BrAPIClass!", fallbackName));
+                return fail(Response.ErrorType.VALIDATION, path, String.format("Can not cast type '%s' to BrAPIClass!", fallbackName));
             }
         }
 
@@ -400,6 +402,10 @@ public class BrAPISchemaReader {
 
             if (jsonNode.has("oneOf")) {
                 return createOneOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
+            }
+
+            if (jsonNode.has("anyOf")) {
+                return createAnyOfType(path, jsonNode, findNameFromTitle(path, jsonNode).getResultIfPresentOrElseResult(fallbackName), module);
             }
 
             boolean isEnum = jsonNode.has("enum");
@@ -462,7 +468,7 @@ public class BrAPISchemaReader {
                                 }
                             }
 
-                            return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Unknown type(s) '%s' in node '%s'", types, jsonNode));
+                            return fail(Response.ErrorType.VALIDATION, path, String.format("Unknown type(s) '%s' in node '%s'", types, jsonNode));
 
                         }));
         }
@@ -634,7 +640,7 @@ public class BrAPISchemaReader {
                     }
 
                     if (!options.isIgnoringDuplicateProperties()) {
-                        return Response.fail(Response.ErrorType.VALIDATION, path,
+                        return fail(Response.ErrorType.VALIDATION, path,
                             String.format("Duplicate property name '%s' found in properties list for '%s'", property.getName(), objectName));
                     } else {
                         duplicateProperties.add(property);
@@ -644,7 +650,7 @@ public class BrAPISchemaReader {
 
             properties.removeAll(duplicateProperties);
 
-            return Response.success(properties);
+            return success(properties);
         }
 
         private Response<BrAPIObjectProperty> createProperty(Path path, JsonNode jsonNode, String name, String module, boolean required) {
@@ -675,12 +681,29 @@ public class BrAPISchemaReader {
                 .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, false))
                 .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
 
+            findChildNode(path, jsonNode, "anyOf", false)
+                .mapResultToResponse(childNode -> findNullable(path, childNode))
+                .ifPresentDoWithResult(builder::nullable);
+
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module)
                 .onSuccessDoWithResult(builder::type)
                 .mapOnCondition(jsonNode.has("relationshipType"), () -> findStringChildValue(path, jsonNode, "relationshipType", true)
                     .mapResultToResponse(BrAPIRelationshipType::fromNameOrLabel)
                     .onSuccessDoWithResult(builder::relationshipType))
                 .map(() -> success(builder.build()));
+        }
+
+        private Response<Boolean> findNullable(Path path, JsonNode jsonNode) {
+            if (jsonNode == null) {
+                return empty() ;
+            }
+
+            if (jsonNode instanceof ArrayNode arrayNode) {
+                return success(StreamSupport.stream(arrayNode.spliterator(), false)
+                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null")).orElseGetResult(() -> false))) ;
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("Invalid anyOf json node type, must an ArrayNode but was '%s'", jsonNode.getClass().getSimpleName()));
+            }
         }
 
         private Response<BrAPIMetadata> parseMetadata(Path path, JsonNode metadata) {
@@ -767,6 +790,35 @@ public class BrAPISchemaReader {
                 .map(() -> success(builder.build()));
         }
 
+        private Response<BrAPIType> createAnyOfType(Path path, JsonNode jsonNode, String name, String module) {
+            JsonNode childNodes = jsonNode.get("anyOf");
+
+            if (childNodes instanceof ArrayNode arrayNode) {
+                Iterator<JsonNode> iterator = arrayNode.elements();
+
+                JsonNode childNode ;
+                JsonNode childNodeType = null;
+
+                while (iterator.hasNext() && childNodeType == null) {
+                    childNode = iterator.next();
+
+                    if (!findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null")).orElseGetResult(() -> false)) {
+                        childNodeType = childNode ;
+                    }
+                }
+
+                if (childNodeType != null) {
+                    return createType(path, childNodeType, name, module) ;
+                } else {
+                    fail(Response.ErrorType.VALIDATION, String.format("Can not find type in anyOf json node '%s'", jsonNode));
+                }
+
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("Invalid anyOf json node type, must an ArrayNode but was '%s'", jsonNode.getClass().getSimpleName()));
+            }
+            return success(null) ;
+        }
+
         private Response<List<BrAPIType>> createPossibleTypes(Path path, List<JsonNode> jsonNodes, String fallbackNamePrefix, String module) {
 
             AtomicInteger i = new AtomicInteger();
@@ -815,10 +867,10 @@ public class BrAPISchemaReader {
                     case BrAPIPrimitiveType.NUMBER -> success(builder.value(Float.valueOf(string)).build());
                     case BrAPIPrimitiveType.BOOLEAN -> success(builder.value(Boolean.valueOf(string)).build());
                     default ->
-                        Response.fail(Response.ErrorType.VALIDATION, path, String.format("Unknown primitive type '%s'", type));
+                        fail(Response.ErrorType.VALIDATION, path, String.format("Unknown primitive type '%s'", type));
                 };
             } catch (NumberFormatException e) {
-                return Response.fail(Response.ErrorType.VALIDATION, path, String.format("Can not convert '%s' to type '%s'", string, type));
+                return fail(Response.ErrorType.VALIDATION, path, String.format("Can not convert '%s' to type '%s'", string, type));
             }
         }
 
@@ -893,7 +945,7 @@ public class BrAPISchemaReader {
                     return required ?
                         fail(Response.ErrorType.VALIDATION, path,
                             String.format("Child node type '%s' was not BooleanNode with field name '%s' for parent node '%s'", jsonNode.getClass().getName(), parentNode, fieldName)) :
-                        Response.success(defaultValue);
+                        success(defaultValue);
                 });
         }
 

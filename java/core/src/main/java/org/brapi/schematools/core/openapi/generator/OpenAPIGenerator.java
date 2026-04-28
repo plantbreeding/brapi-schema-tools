@@ -1004,7 +1004,7 @@ public class OpenAPIGenerator {
                     return createSubPathListGetParametersFor((BrAPIObjectType)type);
                 })
                 .onSuccessDoWithResult(result -> result.forEach(operation::addParametersItem))
-                .map(() -> createListApiResponses(type))
+                .map(() -> createSubPathListApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1071,6 +1071,13 @@ public class OpenAPIGenerator {
         private Response<ApiResponses> createListApiResponses(BrAPIObjectTypeWithProperty typeWithProperty) {
             return success(addStandardApiResponses(new ApiResponses()
                 .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty), typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.getProperty().getName()))))));
+        }
+
+        private Response<ApiResponses> createSubPathListApiResponses(BrAPIType type) {
+            return success(addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(type)))))
+                .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"))
+            );
         }
 
         private ApiResponses addStandardApiResponses(ApiResponses apiResponses) {
@@ -1297,9 +1304,12 @@ public class OpenAPIGenerator {
                 updateExamples(objectSchema, brAPIObjectType);
                 updateAdditionalProperties(objectSchema, brAPIObjectType.getAdditionalProperties()) ;
 
-                return createProperties(objectSchema, type, brAPIObjectType.getProperties().stream().toList())
-                    .mapResult(properties -> properties.entrySet().stream().filter(entry -> options.getSearch().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-                    .mapResult(properties -> objectSchema.properties(properties));
+                List<BrAPIObjectProperty> properties = brAPIObjectType.getProperties();
+
+                return properties != null && !properties.isEmpty() ? createProperties(objectSchema, type, properties.stream().toList())
+                    .mapResult(p -> p.entrySet().stream().filter(entry -> options.getSearch().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                    .mapResult(p -> objectSchema.properties(p)) :
+                    success(objectSchema);
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));
             }
@@ -1348,8 +1358,10 @@ public class OpenAPIGenerator {
             updateExamples(objectSchema, type) ;
             updateAdditionalProperties(objectSchema, type.getAdditionalProperties()) ;
 
-            return createProperties(objectSchema, type, properties)
-                .mapResult(schema -> objectSchema.properties(schema));
+            return properties != null && !properties.isEmpty() ?
+                createProperties(objectSchema, type, properties)
+                    .mapResult(schema -> objectSchema.properties(schema)) :
+                success(objectSchema);
         }
 
         private Response<Map<String, Schema>> createProperties(Schema objectSchema, BrAPIObjectType parentType, List<BrAPIObjectProperty> properties) {
@@ -1457,16 +1469,13 @@ public class OpenAPIGenerator {
 
         private void updateAdditionalProperties(Schema objectSchema, BrAPIAdditionalProperties additionalProperties) {
             if (additionalProperties != null) {
-                Set<String> types = new TreeSet<>();
-
-                types.add(additionalProperties.getType()) ;
+                objectSchema.type(additionalProperties.getType()) ;
 
                 if (additionalProperties.isNullable()) {
-                    types.add("null") ;
+                    makeNullable(objectSchema) ;
                 }
 
                 objectSchema.additionalProperties(new Schema<>()
-                    .types(types)
                     .description(additionalProperties.getDescription()));
             }
         }
