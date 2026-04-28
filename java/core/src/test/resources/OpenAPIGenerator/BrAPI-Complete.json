@@ -14,6 +14,12 @@
                 "description" : "Get a list of BreedingMethod",
                 "parameters" : [
                     {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
@@ -41,6 +47,69 @@
                 "summary" : "Get a filtered list of Call",
                 "description" : "Get a list of Call",
                 "parameters" : [
+                    {
+                        "name" : "callSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/pageToken"
                     },
@@ -78,6 +147,51 @@
                 "summary" : "Get a filtered list of CallSet",
                 "description" : "Get a list of CallSet",
                 "parameters" : [
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetName",
+                        "in" : "query",
+                        "description" : "A list of human readable names associated with `CallSets`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -118,6 +232,60 @@
                 "summary" : "Get a filtered list of Cross",
                 "description" : "Get a list of Cross",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectDbId",
+                        "in" : "query",
+                        "description" : "Search for Crossing Projects with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectName",
+                        "in" : "query",
+                        "description" : "The human readable name for a crossing project",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossDbId",
+                        "in" : "query",
+                        "description" : "Search for Cross with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossName",
+                        "in" : "query",
+                        "description" : "Search for Cross with this human readable name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -164,10 +332,11 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "type" : "array",
-                                "items" : {
+                                "type" : "object",
+                                "additionalProperties" : {
                                     "$ref" : "#/components/schemas/CrossNewRequest"
-                                }
+                                },
+                                "example" : "{<crossDbId>_1={additionalInfo={}, crossAttributes=[{}], crossDbId=15187888, crossName=15a57676, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationEvents=[{}], observationUnits=[{}]}, <crossDbId>_2={additionalInfo={}, crossAttributes=[{}], crossDbId=15187889, crossName=15a57677, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationEvents=[{}], observationUnits=[{}]}}"
                             }
                         }
                     }
@@ -234,6 +403,51 @@
                 "summary" : "Get a filtered list of CrossingProject",
                 "description" : "Get a list of CrossingProject",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectDbId",
+                        "in" : "query",
+                        "description" : "Search for Crossing Projects with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectName",
+                        "in" : "query",
+                        "description" : "The human readable name for a crossing project",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "includePotentialParents",
+                        "in" : "query",
+                        "description" : "If the parameter 'includePotentialParents' is false, the array 'potentialParents' should be empty, null, or excluded from the response object.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -313,6 +527,62 @@
                 "description" : "Get a list of Event",
                 "parameters" : [
                     {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies an observation unit.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "eventDbId",
+                        "in" : "query",
+                        "description" : "Filter based on an Event DbId.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "eventType",
+                        "in" : "query",
+                        "description" : "Filter based on an Event Type",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "dateRangeStart",
+                        "in" : "query",
+                        "description" : "Filter based on an Event start date.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
+                        "name" : "dateRangeEnd",
+                        "in" : "query",
+                        "description" : "Filter based on an Event start date.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -347,6 +617,78 @@
                 "description" : "Get a list of GenomeMap",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "mapDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a `GenomeMap`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "mapPUI",
+                        "in" : "query",
+                        "description" : "The DOI or other permanent identifier for a `GenomeMap`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scientificName",
+                        "in" : "query",
+                        "description" : "Full scientific binomial format name. This includes Genus, Species, and Sub-species",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "type",
+                        "in" : "query",
+                        "description" : "The type of map, usually \"Genetic\" or \"Physical\"",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -380,6 +722,141 @@
                 "summary" : "Get a filtered list of Germplasm",
                 "description" : "Get a list of Germplasm",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmName",
+                        "in" : "query",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmPUI",
+                        "in" : "query",
+                        "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "accessionNumber",
+                        "in" : "query",
+                        "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "collection",
+                        "in" : "query",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "binomialName",
+                        "in" : "query",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "genus",
+                        "in" : "query",
+                        "description" : "List of Genus names to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "species",
+                        "in" : "query",
+                        "description" : "List of Species names to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "synonym",
+                        "in" : "query",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "parentDbId",
+                        "in" : "query",
+                        "description" : "Search for Germplasm with these parents",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "progenyDbId",
+                        "in" : "query",
+                        "description" : "Search for Germplasm with these children",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -459,6 +936,150 @@
                 "description" : "Get a list of GermplasmAttribute",
                 "parameters" : [
                     {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodDbId",
+                        "in" : "query",
+                        "description" : "List of methods to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodName",
+                        "in" : "query",
+                        "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodPUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scaleDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a Scale",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scaleName",
+                        "in" : "query",
+                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scalePUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a Trait",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitName",
+                        "in" : "query",
+                        "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitPUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeDbId",
+                        "in" : "query",
+                        "description" : "List of Germplasm Attribute IDs to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeName",
+                        "in" : "query",
+                        "description" : "List of human readable Germplasm Attribute names to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributePUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeCategory",
+                        "in" : "query",
+                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -536,6 +1157,60 @@
                 "summary" : "Get a filtered list of GermplasmAttributeValue",
                 "description" : "Get a list of GermplasmAttributeValue",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeValueDbId",
+                        "in" : "query",
+                        "description" : "List of Germplasm Attribute Value IDs to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeDbId",
+                        "in" : "query",
+                        "description" : "List of Germplasm Attribute IDs to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "attributeName",
+                        "in" : "query",
+                        "description" : "List of human readable Germplasm Attribute names to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -615,6 +1290,69 @@
                 "description" : "Get a list of Image",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "descriptiveOntologyTerm",
+                        "in" : "query",
+                        "description" : "A list of terms to formally describe the image to search for. Each item could be a simple Tag, an Ontology reference Id, or a full ontology URL.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "imageName",
+                        "in" : "query",
+                        "description" : "Human readable names to search for.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationDbId",
+                        "in" : "query",
+                        "description" : "A list of observation Ids this image is associated with to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "imageDbId",
+                        "in" : "query",
+                        "description" : "A list of image Ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "A set of observation unit identifiers to search for.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -692,6 +1430,59 @@
                 "summary" : "Get a filtered list of List",
                 "description" : "Get a list of List",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "listDbId",
+                        "in" : "query",
+                        "description" : "An array of primary database identifiers to identify a set of Lists",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "listName",
+                        "in" : "query",
+                        "description" : "An array of human readable names to identify a set of Lists",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "listSource",
+                        "in" : "query",
+                        "description" : "An array of terms identifying lists from different sources (ie 'USER', 'SYSTEM', etc)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "listType",
+                        "in" : "query",
+                        "required" : false,
+                        "schema" : {
+                            "$ref" : "#/components/schemas/ListType"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -771,6 +1562,69 @@
                 "description" : "Get a list of Location",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationName",
+                        "in" : "query",
+                        "description" : "A human readable names to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationType",
+                        "in" : "query",
+                        "description" : "The type of location this represents (ex. Breeding Location, Storage Location, etc)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "parentLocationDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a Location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "parentLocationName",
+                        "in" : "query",
+                        "description" : "A human readable name for a location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -849,6 +1703,53 @@
                 "description" : "Get a list of MarkerPosition",
                 "parameters" : [
                     {
+                        "name" : "mapDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `GenomeMaps` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "linkageGroupName",
+                        "in" : "query",
+                        "description" : "A list of Uniquely Identifiable linkage group names",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "minPosition",
+                        "in" : "query",
+                        "description" : "The minimum position of markers in a given map",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
+                        "name" : "maxPosition",
+                        "in" : "query",
+                        "description" : "The maximum position of markers in a given map",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -882,6 +1783,51 @@
                 "summary" : "Get a filtered list of Method",
                 "description" : "Get a list of Method",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "ontologyDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a method.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an observation variable.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -961,6 +1907,179 @@
                 "description" : "Get a list of Observation",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationDbId",
+                        "in" : "query",
+                        "description" : "The unique id of an Observation",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The unique id of an Observation Unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationTimeStampRangeEnd",
+                        "in" : "query",
+                        "description" : "Timestamp range end",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
+                        "name" : "observationTimeStampRangeStart",
+                        "in" : "query",
+                        "description" : "Timestamp range start",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1006,10 +2125,11 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "type" : "array",
-                                "items" : {
+                                "type" : "object",
+                                "additionalProperties" : {
                                     "$ref" : "#/components/schemas/ObservationNewRequest"
-                                }
+                                },
+                                "example" : "{<observationDbId>_1={additionalInfo={}, collector=1835c514, externalReferences=[{}], geoCoordinates={}, germplasm={}, observationDbId=5cbd4c1c, observationTimeStamp=2020-08-12T18:10:40.413Z, observationUnit={}, observationVariable={}, season={}, study={}, uploadedBy=3fc74c0a, value=4ee59cb0, images=[{}]}, <observationDbId>_2={additionalInfo={}, collector=1835c515, externalReferences=[{}], geoCoordinates={}, germplasm={}, observationDbId=5cbd4c1d, observationTimeStamp=2020-08-12T18:10:40.413Z, observationUnit={}, observationVariable={}, season={}, study={}, uploadedBy=3fc74c0b, value=4ee59cb1, images=[{}]}}"
                             }
                         }
                     }
@@ -1077,6 +2197,159 @@
                 "description" : "Get a list of ObservationUnit",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The unique id of an observation unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitName",
+                        "in" : "query",
+                        "description" : "The human readable identifier for an Observation Unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "includeObservations",
+                        "in" : "query",
+                        "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1122,10 +2395,11 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "type" : "array",
-                                "items" : {
+                                "type" : "object",
+                                "additionalProperties" : {
                                     "$ref" : "#/components/schemas/ObservationUnitNewRequest"
-                                }
+                                },
+                                "example" : "{<observationUnitDbId>_1={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af8, observationUnitName=5a5b18e6, observationUnitPUI=491c6d6d, observationUnitPosition=[{}], program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}, <observationUnitDbId>_2={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af9, observationUnitName=5a5b18e7, observationUnitPUI=491c6d6e, observationUnitPosition=[{}], program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}}"
                             }
                         }
                     }
@@ -1192,6 +2466,168 @@
                 "summary" : "Get a filtered list of ObservationVariable",
                 "description" : "Get a list of ObservationVariable",
                 "parameters" : [
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableName",
+                        "in" : "query",
+                        "description" : "The names of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariablePUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "ontologyDbId",
+                        "in" : "query",
+                        "description" : "List of ontology IDs to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodDbId",
+                        "in" : "query",
+                        "description" : "List of methods to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodName",
+                        "in" : "query",
+                        "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "methodPUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scaleDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a Scale",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scaleName",
+                        "in" : "query",
+                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scalePUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitClass",
+                        "in" : "query",
+                        "description" : "List of trait classes to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a Trait",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitName",
+                        "in" : "query",
+                        "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitPUI",
+                        "in" : "query",
+                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -1271,6 +2707,24 @@
                 "description" : "Get a list of Ontology",
                 "parameters" : [
                     {
+                        "name" : "ontologyDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "ontologyName",
+                        "in" : "query",
+                        "description" : "The human readable identifier for an ontology definition.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -1342,6 +2796,188 @@
                 "summary" : "Get a filtered list of PedigreeNode",
                 "description" : "Get a list of PedigreeNode",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmName",
+                        "in" : "query",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmPUI",
+                        "in" : "query",
+                        "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "accessionNumber",
+                        "in" : "query",
+                        "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "collection",
+                        "in" : "query",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "familyCode",
+                        "in" : "query",
+                        "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "binomialName",
+                        "in" : "query",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "genus",
+                        "in" : "query",
+                        "description" : "List of Genus names to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "species",
+                        "in" : "query",
+                        "description" : "List of Species names to identify germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "synonym",
+                        "in" : "query",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "includeParents",
+                        "in" : "query",
+                        "description" : "If this parameter is true, include the array of parents in the response",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "includeSiblings",
+                        "in" : "query",
+                        "description" : "If this parameter is true, include the array of siblings in the response",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "includeProgeny",
+                        "in" : "query",
+                        "description" : "If this parameter is true, include the array of progeny in the response",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "includeFullTree",
+                        "in" : "query",
+                        "description" : "If this parameter is true, recursively include ALL of the nodes available in this pedigree tree",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "pedigreeDepth",
+                        "in" : "query",
+                        "description" : "Recursively include this number of levels up the tree in the response (parents, grand-parents, great-grand-parents, etc)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
+                        "name" : "progenyDepth",
+                        "in" : "query",
+                        "description" : "Recursively include this number of levels down the tree in the response (children, grand-children, great-grand-children, etc)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -1421,6 +3057,60 @@
                 "description" : "Get a list of Person",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "firstName",
+                        "in" : "query",
+                        "description" : "Persons first name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "lastName",
+                        "in" : "query",
+                        "description" : "Persons last name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "personDbId",
+                        "in" : "query",
+                        "description" : "Unique ID for this person",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "userID",
+                        "in" : "query",
+                        "description" : "A systems user ID associated with this person. Different from personDbId because you could have a person who is not a user of the system.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1499,6 +3189,74 @@
                 "description" : "Get a list of PlannedCross",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectDbId",
+                        "in" : "query",
+                        "description" : "Search for Crossing Projects with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossingProjectName",
+                        "in" : "query",
+                        "description" : "The human readable name for a crossing project",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plannedCrossDbId",
+                        "in" : "query",
+                        "description" : "Search for Planned Cross with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plannedCrossName",
+                        "in" : "query",
+                        "description" : "Search for Planned Cross with this human readable name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "status",
+                        "in" : "query",
+                        "description" : "The status of this planned cross. Is it waiting to be performed ('TODO'), has it been completed successfully ('DONE'), or has it not been done on purpose ('SKIPPED').",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "enum" : [
+                                "TODO",
+                                "DONE",
+                                "SKIPPED"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1544,10 +3302,11 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "type" : "array",
-                                "items" : {
+                                "type" : "object",
+                                "additionalProperties" : {
                                     "$ref" : "#/components/schemas/PlannedCross"
-                                }
+                                },
+                                "example" : "{<plannedCrossDbId>_1={additionalInfo={}, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCrossDbId=47edd16c, plannedCrossName=487acf5a, status={}, crosses=[{}]}, <plannedCrossDbId>_2={additionalInfo={}, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCrossDbId=47edd16d, plannedCrossName=487acf5b, status={}, crosses=[{}]}}"
                             }
                         }
                     }
@@ -1614,6 +3373,105 @@
                 "summary" : "Get a filtered list of Plate",
                 "description" : "Get a list of Plate",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies an observation unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plateDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a plate of samples",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plateName",
+                        "in" : "query",
+                        "description" : "The human readable name of a plate of samples",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a sample",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleName",
+                        "in" : "query",
+                        "description" : "The human readable name of the sample",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleGroupDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a group of related Samples",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -1693,6 +3551,56 @@
                 "description" : "Get a list of Program",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programName",
+                        "in" : "query",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "abbreviation",
+                        "in" : "query",
+                        "description" : "A list of shortened human readable names for a set of Programs",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programType",
+                        "in" : "query",
+                        "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
+                            "enum" : [
+                                "STANDARD",
+                                "PROJECT"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1771,6 +3679,108 @@
                 "description" : "Get a list of Reference",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "accession",
+                        "in" : "query",
+                        "description" : "If specified, return the references for which the `accession` matches this string (case-sensitive, exact match).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "md5checksum",
+                        "in" : "query",
+                        "description" : "If specified, return the references for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "referenceDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `References` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "referenceSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `ReferenceSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "isDerived",
+                        "in" : "query",
+                        "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean",
+                            "format" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "minLength",
+                        "in" : "query",
+                        "description" : "The minimum length of this `References` sequence.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
+                        "name" : "maxLength",
+                        "in" : "query",
+                        "description" : "The minimum length of this `References` sequence.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1811,6 +3821,78 @@
                 "description" : "Get a list of ReferenceSet",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "accession",
+                        "in" : "query",
+                        "description" : "If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "assemblyPUI",
+                        "in" : "query",
+                        "description" : "If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "md5checksum",
+                        "in" : "query",
+                        "description" : "If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "referenceSetDbId",
+                        "in" : "query",
+                        "description" : "The `ReferenceSets` to search.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -1850,6 +3932,105 @@
                 "summary" : "Get a filtered list of Sample",
                 "description" : "Get a list of Sample",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies an `ObservationUnit`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plateDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a `Plate` of `Samples`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "plateName",
+                        "in" : "query",
+                        "description" : "The human readable name of a `Plate` of `Samples`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a `Sample`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleName",
+                        "in" : "query",
+                        "description" : "The human readable name of the `Sample`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sampleGroupDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a group of related `Samples`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -1896,10 +4077,11 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "type" : "array",
-                                "items" : {
+                                "type" : "object",
+                                "additionalProperties" : {
                                     "$ref" : "#/components/schemas/SampleNewRequest"
-                                }
+                                },
+                                "example" : "{<sampleDbId>_1={additionalInfo={}, callSets=[{}], column=10, externalReferences=[{}], germplasm={}, observationUnit={}, plate={}, program={}, row=00358167, sampleBarcode=6a6db74b, sampleDescription=3388964f, sampleDbId=079d6d5e, sampleGroupId=70fcb311, sampleName=082a6b4c, samplePUI=08863647, sampleTimestamp=2020-08-12T18:10:40.413Z, sampleType=0889ec7d, study={}, takenBy=599da043, tissueType=4d105e22, trial={}, well=06bc78f3}, <sampleDbId>_2={additionalInfo={}, callSets=[{}], column=20, externalReferences=[{}], germplasm={}, observationUnit={}, plate={}, program={}, row=00358168, sampleBarcode=6a6db74c, sampleDescription=33889650, sampleDbId=079d6d5f, sampleGroupId=70fcb312, sampleName=082a6b4d, samplePUI=08863648, sampleTimestamp=2020-08-12T18:10:40.413Z, sampleType=0889ec7e, study={}, takenBy=599da044, tissueType=4d105e23, trial={}, well=06bc78f4}}"
                             }
                         }
                     }
@@ -1966,6 +4148,51 @@
                 "summary" : "Get a filtered list of Scale",
                 "description" : "Get a list of Scale",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "ontologyDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "scaleDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a scale.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an observation variable.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -2045,6 +4272,42 @@
                 "description" : "Get a list of Season",
                 "parameters" : [
                     {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a season. For backward compatibility it can be a string like '2012', '1957-2004'.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "season",
+                        "in" : "query",
+                        "description" : "The term to describe a given season. Example \"Spring\" OR \"May\" OR \"Planting_Time_7\".",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "seasonName",
+                        "in" : "query",
+                        "description" : "The term to describe a given season. Example \"Spring\" OR \"May\" OR \"Planting_Time_7\".",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "year",
+                        "in" : "query",
+                        "description" : "The 4 digit year of a season. Example \"2017\"",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -2116,6 +4379,69 @@
                 "summary" : "Get a filtered list of SeedLot",
                 "description" : "Get a list of SeedLot",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmName",
+                        "in" : "query",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "seedLotDbId",
+                        "in" : "query",
+                        "description" : "Unique id for a seed lot on this server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossDbId",
+                        "in" : "query",
+                        "description" : "Search for Cross with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossName",
+                        "in" : "query",
+                        "description" : "Search for Cross with this human readable name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -2195,6 +4521,160 @@
                 "description" : "Get a list of Study",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyName",
+                        "in" : "query",
+                        "description" : "List of study names to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "active",
+                        "in" : "query",
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a season",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyType",
+                        "in" : "query",
+                        "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyCode",
+                        "in" : "query",
+                        "description" : "A short human readable code for a study",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyPUI",
+                        "in" : "query",
+                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "studyDbId",
+                                "trialDbId",
+                                "programDbId",
+                                "locationDbId",
+                                "seasonDbId",
+                                "studyType",
+                                "studyName",
+                                "studyLocation",
+                                "programName"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -2272,6 +4752,51 @@
                 "summary" : "Get a filtered list of Trait",
                 "description" : "Get a list of Trait",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "ontologyDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "traitDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for a trait.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier for an observation variable.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -2351,6 +4876,142 @@
                 "description" : "Get a list of Trial",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialName",
+                        "in" : "query",
+                        "description" : "The human readable name of a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "active",
+                        "in" : "query",
+                        "description" : "A flag to indicate if a Trial is currently active and ongoing",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "contactDbId",
+                        "in" : "query",
+                        "description" : "List of contact entities associated with this trial",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "searchDateRangeStart",
+                        "in" : "query",
+                        "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date"
+                        }
+                    },
+                    {
+                        "name" : "searchDateRangeEnd",
+                        "in" : "query",
+                        "description" : "The end of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date"
+                        }
+                    },
+                    {
+                        "name" : "trialPUI",
+                        "in" : "query",
+                        "description" : "A permanent identifier for a trial. Could be DOI or other URI formatted identifier.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "trialDbId",
+                                "trialName",
+                                "programDbId",
+                                "programName",
+                                "locationDbId",
+                                "startDate",
+                                "endDate"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -2429,6 +5090,42 @@
                 "description" : "Get a list of Variant",
                 "parameters" : [
                     {
+                        "name" : "referenceDbId",
+                        "in" : "query",
+                        "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "referenceSetDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier representing a genotype `ReferenceSet`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Variants`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `VariantSets`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -2471,6 +5168,78 @@
                 "summary" : "Get a filtered list of VariantSet",
                 "description" : "Get a list of VariantSet",
                 "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyName",
+                        "in" : "query",
+                        "description" : "List of study names to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier representing a CallSet",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier representing a Variant",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantSetDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier representing a VariantSet",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "referenceSetDbId",
+                        "in" : "query",
+                        "description" : "The unique identifier representing a genotype ReferenceSet",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
@@ -2669,6 +5438,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -2693,6 +5498,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -2863,6 +5671,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -3278,7 +6089,7 @@
                 ],
                 "requestBody" : {
                     "content" : {
-                        "application/json" : {
+                        "image/*" : {
                             "schema" : {
                                 "type" : "string",
                                 "format" : "binary"
@@ -4132,6 +6943,35 @@
                 "description" : "Get details for a ReferenceBases",
                 "parameters" : [
                     {
+                        "name" : "start",
+                        "in" : "query",
+                        "description" : "The start position (0-based) of this query. Defaults to 0.\nGenomic positions are non-negative integers less than reference length.\nRequests spanning the join of circular genomes are represented as\ntwo requests one on each side of the join (position 0).",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
+                        "name" : "end",
+                        "in" : "query",
+                        "description" : "The end position (0-based, exclusive) of this query. Defaults to the length of this `Reference`.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "integer",
+                            "format" : "int32"
+                        }
+                    },
+                    {
+                        "name" : "pageToken",
+                        "in" : "query",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     },
                     {
@@ -4543,6 +7383,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -4586,6 +7429,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -4909,6 +7755,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -4933,6 +7815,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -4995,6 +7880,42 @@
                         }
                     },
                     {
+                        "name" : "expandHomozygotes",
+                        "in" : "query",
+                        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "sepPhased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for phased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sepUnphased",
+                        "in" : "query",
+                        "description" : "The string used as a separator for unphased allele calls.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "unknownString",
+                        "in" : "query",
+                        "description" : "The string used as a representation for missing data.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -5019,6 +7940,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -5036,6 +7960,24 @@
                         "in" : "path",
                         "description" : "The unique identifier for a VariantSet",
                         "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "callSetName",
+                        "in" : "query",
+                        "description" : "A list of human readable names associated with `CallSets`",
+                        "required" : false,
                         "schema" : {
                             "type" : "string"
                         }
@@ -5062,6 +8004,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -5079,6 +8024,15 @@
                         "in" : "path",
                         "description" : "The unique identifier for a VariantSet",
                         "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "variantDbId",
+                        "in" : "query",
+                        "description" : "A list of IDs which uniquely identify `Variants`",
+                        "required" : false,
                         "schema" : {
                             "type" : "string"
                         }
@@ -5108,6 +8062,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -7130,15 +10087,12 @@
                 ]
             },
             "AdditionalInfo" : {
-                "type" : "object",
-                "properties" : {
-                    "additionalProperties" : {
-                        "type" : "string",
-                        "description" : "A free space containing any additional information related to a particular object.",
-                        "nullable" : true
-                    }
+                "type" : "string",
+                "additionalProperties" : {
+                    "description" : "A free space containing any additional information related to a particular object."
                 },
-                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
+                "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
+                "nullable" : true
             },
             "AlleleMatrix" : {
                 "type" : "object",
@@ -11889,15 +14843,6 @@
                         "description" : "The Uniquely Identifiable name of a `LinkageGroup` <br> This might be a chromosome identifier or the generic linkage group identifier if the chromosome is not applicable.",
                         "nullable" : true,
                         "example" : "Chromosome 3"
-                    },
-                    "mapDbId" : {
-                        "type" : "string"
-                    },
-                    "mapName" : {
-                        "type" : "string"
-                    },
-                    "mapPUI" : {
-                        "type" : "string"
                     },
                     "markerCount" : {
                         "type" : "integer",

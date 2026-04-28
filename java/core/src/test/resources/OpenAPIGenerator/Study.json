@@ -14,6 +14,160 @@
                 "description" : "Get a list of Study",
                 "parameters" : [
                     {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyName",
+                        "in" : "query",
+                        "description" : "List of study names to filter search results",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "active",
+                        "in" : "query",
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "boolean"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a season",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyType",
+                        "in" : "query",
+                        "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyCode",
+                        "in" : "query",
+                        "description" : "A short human readable code for a study",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyPUI",
+                        "in" : "query",
+                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "studyDbId",
+                                "trialDbId",
+                                "programDbId",
+                                "locationDbId",
+                                "seasonDbId",
+                                "studyType",
+                                "studyName",
+                                "studyLocation",
+                                "programName"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "asc",
+                                "ASC",
+                                "desc",
+                                "DESC"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
