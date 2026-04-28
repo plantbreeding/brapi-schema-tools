@@ -26,7 +26,7 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
     private Map<String, Boolean> input = new HashMap<>();
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(responseTypeNameFormat, "'responseTypeNameFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(input,  "'input' option on %s is null", this.getClass().getSimpleName()) ;
     }
