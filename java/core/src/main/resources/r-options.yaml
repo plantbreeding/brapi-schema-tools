@@ -83,6 +83,9 @@ search:
         If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
+    pagedDefault: true
+    paged:
+        AlleleMatrix: false
     generateFor:
         BreedingMethod: false
         Cross: false
@@ -98,6 +101,24 @@ search:
         SeedLot: false
         ServerInfo: false
         Trait: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        Observation:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds: false
+        ObservationUnit:
+            observationUnitLevelNames: false
+            observationUnitLevelOrders: false
+            observationUnitLevelCodes: false
+            observationUnitLevelRelationshipNames: false
+            observationUnitLevelRelationshipOrders: false
+            observationUnitLevelRelationshipCodes: false
+            observationUnitLevelRelationshipDbIds: false
 table:
     generate: false
     summaryFormat: Get a table of `%s` records as a CSV file.

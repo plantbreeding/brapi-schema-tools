@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.BrAPITypeUtils;
+import org.brapi.schematools.core.validiation.ValidatableAgainstCache;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -15,7 +17,7 @@ import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.BrAPITypeUtils.unwrapType;
 
-public abstract class AbstractPropertiesOptions implements Options {
+public abstract class AbstractPropertiesOptions implements Options, ValidatableAgainstCache {
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> linkTypeFor = new HashMap<>();
@@ -36,6 +38,20 @@ public abstract class AbstractPropertiesOptions implements Options {
                 }
             });
         }
+    }
+
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = Validation.valid() ;
+
+        linkTypeFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'linkTypeFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     public Response<LinkType> getLinkTypeFor(BrAPIObjectType type, BrAPIObjectProperty property) {

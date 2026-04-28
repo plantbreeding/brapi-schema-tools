@@ -389,7 +389,7 @@ __all__ = ["StrEnum"]
 
                     // Collect type names directly referenced by non-deprecated properties.
                     // This prevents deprecated-only dependencies (e.g. GermplasmMCPD) from
-                    // appearing in the exclusive/common dep lists.
+                    // appearing in the exclusive/common dep lists
                     Set<String> directNonDeprecatedTypeNames = new HashSet<>();
                     brAPIObjectType.getProperties().forEach(property -> {
                         if (!(options.getBrAPISchemaReader().isIgnoringDepreciatedProperties() && property.isDeprecated())) {
@@ -510,7 +510,7 @@ __all__ = ["StrEnum"]
                             builder.commonDependencies(commonDependencies);
 
                             // Direct property names on the primary entity (e.g. "commonCropName", "germplasmDbId").
-                            // These are never prefixed with "by_" even if they match a link property of another type.
+                            // These are never prefixed with "by_" even if they match a link property of another type
                             Set<String> ownPropertyNames = brAPIObjectType.getProperties().stream()
                                 .map(BrAPIObjectProperty::getName)
                                 .collect(Collectors.toSet());
@@ -518,7 +518,7 @@ __all__ = ["StrEnum"]
                             // Build the set of link property names (e.g. "programDbId", "programName",
                             // "studyDbId", "trialDbId") by collecting link properties from ALL primary classes
                             // OTHER than this entity.  Request params whose singular form is in this set
-                            // get the "by_" prefix, unless the name is also a direct property of the entity.
+                            // get the "by_" prefix, unless the name is also a direct property of the entity
                             Set<String> relationshipFilterSingularNames = brAPIClassCache.getPrimaryClasses().stream()
                                 .filter(cls -> !cls.getName().equals(brAPIObjectType.getName()))
                                 .filter(cls -> cls instanceof BrAPIObjectType)
@@ -618,7 +618,7 @@ __all__ = ["StrEnum"]
             // Process the exclusive queue until empty, then the common queue once.
             // Common deps of common deps are already defined in the common file —
             // the primary entity file only needs to import things it directly uses,
-            // so we do NOT expand through common deps.
+            // so we do NOT expand through common deps
             while (!exclusiveQueue.isEmpty()) {
                 BrAPIClass dep = exclusiveQueue.poll();
                 // exclusive → exclusive: keep exclusive
@@ -737,7 +737,7 @@ __all__ = ["StrEnum"]
                 builder.enumClass(true);
                 builder.enumBaseType(resolvePythonEnumBase(brAPIEnumType.getType()));
                 // Build enum values with deduplication: if toEnumMemberName produces a collision,
-                // append _2, _3, ... until the name is unique within this enum.
+                // append _2, _3, ... until the name is unique within this enum
                 Set<String> usedNames = new LinkedHashSet<>();
                 List<EnumValueModel> enumValues = new ArrayList<>();
                 for (var v : brAPIEnumType.getValues()) {

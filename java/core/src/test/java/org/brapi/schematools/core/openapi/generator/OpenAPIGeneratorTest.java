@@ -31,8 +31,8 @@ class OpenAPIGeneratorTest {
     void generate() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
@@ -54,8 +54,8 @@ class OpenAPIGeneratorTest {
     void generateWithMetadata() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     OpenAPIGeneratorMetadata.load().setTitle("Test").setVersion("1.2.3"));
@@ -77,8 +77,8 @@ class OpenAPIGeneratorTest {
     void generateByModule() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(true)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(true))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()));
         } catch (URISyntaxException e) {
@@ -109,8 +109,8 @@ class OpenAPIGeneratorTest {
     void generateBreedingMethod() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     List.of("BreedingMethod"));
@@ -132,8 +132,8 @@ class OpenAPIGeneratorTest {
     void generateStudy() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     List.of("Study"));
@@ -155,8 +155,8 @@ class OpenAPIGeneratorTest {
     void generateStudy3_1() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     OpenAPIGeneratorMetadata.load().setVersion("3.1.0"),
@@ -179,8 +179,8 @@ class OpenAPIGeneratorTest {
     void generateGermplasm() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(false))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     List.of("Germplasm"));
@@ -202,8 +202,8 @@ class OpenAPIGeneratorTest {
     void generateGermplasmAndStudySeparateByModule() {
         Response<List<OpenAPI>> specifications;
         try {
-            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(true)).
-                generate(
+            specifications = new OpenAPIGenerator(OpenAPIGeneratorOptions.load().setSeparateByModule(true))
+                .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
                     List.of("Study", "Germplasm"));

@@ -3,11 +3,13 @@ package org.brapi.schematools.core.openapi.generator.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
@@ -52,6 +55,14 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
+    @Getter(AccessLevel.PUBLIC)
+    private String defaultMediaType;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, String> mediaTypeForType = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, String>> mediaTypeForProperty = new LinkedHashMap<>();
 
     /**
      * Load the default options
@@ -139,6 +150,24 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             tagFor.putAll(overrideOptions.tagFor) ;
         }
 
+        if (overrideOptions.defaultMediaType != null) {
+            defaultMediaType = overrideOptions.defaultMediaType ;
+        }
+
+        if (overrideOptions.mediaTypeForProperty != null) {
+            mediaTypeForType.putAll(overrideOptions.mediaTypeForType) ;
+        }
+
+        if (overrideOptions.mediaTypeForProperty != null) {
+            overrideOptions.mediaTypeForProperty.forEach((key, value) -> {
+                if (mediaTypeForProperty.containsKey(key)) {
+                    mediaTypeForProperty.get(key).putAll(value);
+                } else {
+                    mediaTypeForProperty.put(key, new LinkedHashMap<>(value));
+                }
+            });
+        }
+
         return this ;
     }
 
@@ -154,7 +183,50 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
             .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
-            .assertNotNull(tagFor,  "'tagFor' option is null") ;
+            .assertNotNull(tagFor,  "'tagFor' option is null")
+            .assertNotNull(defaultMediaType,  "'defaultMediaType' option is null")
+            .assertNotNull(mediaTypeForType,  "'mediaTypeForType' option is null")
+            .assertNotNull(mediaTypeForProperty,  "'mediaTypeForProperty' option is null") ;
+    }
+
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+
+        Validation validation = Validation.valid() ;
+
+        generateNewRequestFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
+                        name,
+                        this.getClass().getSimpleName()
+                    )) ;
+        }) ;
+
+        getPathItemNameFor().keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        tagFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        validation.merge(getSingleGet().validateAgainstCache(brAPIClassCache))
+            .merge(getListGet().validateAgainstCache(brAPIClassCache))
+            .merge(getPost().validateAgainstCache(brAPIClassCache))
+            .merge(getPut().validateAgainstCache(brAPIClassCache))
+            .merge(getDelete().validateAgainstCache(brAPIClassCache))
+            .merge(getSearch().validateAgainstCache(brAPIClassCache))
+            .merge(getProperties().validateAgainstCache(brAPIClassCache))
+            .merge(getControlledVocabulary().validateAgainstCache(brAPIClassCache)) ;
+
+        return validation ;
     }
 
     /**
@@ -393,5 +465,56 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         tagFor.put(name, tagName) ;
 
         return this ;
+    }
+
+    /**
+     * Get the media type for a specific Primary Model. For example if the default media type is 'application/json'
+     * and the media type for 'Study' is set to 'application/vnd.api+json',
+     * then this method will return 'application/vnd.api+json' for the name 'Study' and 'application/json' for any other name.
+     * @param type the Primary Model
+     * @return the media type for a specific Primary Model
+     */
+    public String getMediaTypeForObject(@NonNull BrAPIType type) {
+        return getMediaTypeForObject(type.getName()) ;
+    }
+
+    /**
+     * Get the media type for a specific Primary Model. For example if the default media type is 'application/json'
+     * and the media type for 'Study' is set to 'application/vnd.api+json',
+     * then this method will return 'application/vnd.api+json' for the name 'Study' and 'application/json' for any other name.
+     * @param name the name of the primary model
+     * @return the media type for a specific Primary Model
+     */
+    public String getMediaTypeForObject(@NonNull String name) {
+        return mediaTypeForType.getOrDefault(name, defaultMediaType) ;
+    }
+
+    /**
+     * Get the media type for a specific property. For example if the default media type is
+     * 'application/json' and the media type for 'Study' is set to 'application/vnd.api+json',
+     * @param type the Primary Model
+     * @param property the property of the Primary Model
+     * @return the media type for a specific Primary Model
+     */
+    public String getMediaTypeForProperty(@NonNull BrAPIType type, @NonNull BrAPIObjectProperty property) {
+        return getMediaTypeForProperty(type.getName(), property.getName()) ;
+    }
+
+    /**
+     * Get the media type for a specific Primary Model. For example if the default media type is 'application/json'
+     * and the media type for 'imageContent' property in 'Image' is set to 'image/*',
+     * then this method will return 'image/*' for the name 'imageContent' property in 'Image' and 'application/json' for
+     * any other name.
+     * @param typeName the name of the primary model
+     * @param propertyName the name of the property
+     * @return the media type for a specific Primary Model
+     */
+    public String getMediaTypeForProperty(@NonNull String typeName, @NonNull String propertyName) {
+        Map<String, String> map = mediaTypeForProperty.get(typeName);
+        if (map != null) {
+            return map.getOrDefault(propertyName, defaultMediaType);
+        }
+
+        return defaultMediaType ;
     }
 }

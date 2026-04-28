@@ -19,6 +19,7 @@ public class BrAPIObjectType implements BrAPIClass {
     List<Object> examples;
     String module;
     BrAPIMetadata metadata;
+    BrAPIAdditionalProperties additionalProperties;
     List<BrAPIObjectProperty> properties;
     List<BrAPIObjectType> interfaces;
 }

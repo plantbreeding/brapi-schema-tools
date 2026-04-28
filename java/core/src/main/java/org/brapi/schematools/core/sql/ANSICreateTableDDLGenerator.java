@@ -395,12 +395,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
         private Response<String> createColumnDefinitions(BrAPIObjectType brAPIObjectType) {
 
-            // Group 1: Primary properties (dbId, name, PUI) — always come first.
+            // Group 1: Primary properties (dbId, name, PUI) — always come first
             List<BrAPIObjectProperty> primaryProps = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
             // Group 2: Link (ID-type / foreign-key) properties, sorted alphabetically.
             // Placed early so that clustering columns (Group 3) appear before complex
-            // nested types and remain within Databricks' default 32-column stats window.
+            // nested types and remain within Databricks' default 32-column stats window
             List<BrAPIObjectProperty> linkProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
@@ -411,7 +411,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             // Group 3: Clustering properties (not already included), in the configured
             // order.  Placing them here — before the remaining ARRAY/STRUCT columns —
-            // ensures they receive Delta Lake stats and avoid DELTA_CLUSTERING_COLUMN_MISSING_STATS.
+            // ensures they receive Delta Lake stats and avoid DELTA_CLUSTERING_COLUMN_MISSING_STATS
             List<BrAPIObjectProperty> seen = new ArrayList<>(primaryProps);
             seen.addAll(linkProps);
 
@@ -423,7 +423,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .forEach(clusterProps::add);
             seen.addAll(clusterProps);
 
-            // Group 4: All remaining properties with a non-NONE link type, sorted alphabetically.
+            // Group 4: All remaining properties with a non-NONE link type, sorted alphabetically
             List<BrAPIObjectProperty> otherProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
@@ -434,7 +434,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             // Only add the "-- Properties" separator when at least one earlier group
             // (link or clustering) contributed columns, so tables without those groups
-            // don't get a redundant separator.
+            // don't get a redundant separator
             String otherComment = (!linkProps.isEmpty() || !clusterProps.isEmpty()) ? "-- Properties" : "";
 
             return buildGroupedColumnDefinitions(brAPIObjectType,
@@ -473,7 +473,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
                 if (!comment.isBlank()) {
                     // Prepend "-- comment\n<indent>" to the first column definition of
-                    // this group so it appears on its own line between the groups.
+                    // this group so it appears on its own line between the groups
                     String commentPrefix = comment + newLine();
                     List<Response<String>> annotated = new ArrayList<>(groupCols);
                     annotated.set(0, groupCols.get(0).mapResult(col -> commentPrefix + col));

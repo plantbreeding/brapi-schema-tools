@@ -32,15 +32,6 @@
                         }
                     },
                     {
-                        "name" : "germplasmName",
-                        "in" : "query",
-                        "description" : "List of human readable names to identify germplasm to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "locationDbId",
                         "in" : "query",
                         "description" : "The location ids to search for",
@@ -50,27 +41,9 @@
                         }
                     },
                     {
-                        "name" : "locationName",
-                        "in" : "query",
-                        "description" : "A human readable names to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "programDbId",
                         "in" : "query",
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "programName",
-                        "in" : "query",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -104,36 +77,9 @@
                         }
                     },
                     {
-                        "name" : "trialName",
-                        "in" : "query",
-                        "description" : "The human readable name of a trial to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
                         "name" : "observationVariableDbId",
                         "in" : "query",
                         "description" : "The DbIds of Variables to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "observationVariableName",
-                        "in" : "query",
-                        "description" : "The names of Variables to search for",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "observationVariablePUI",
-                        "in" : "query",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -222,9 +168,6 @@
                         }
                     },
                     {
-                        "$ref" : "#/components/parameters/externalReferenceID"
-                    },
-                    {
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
@@ -270,7 +213,10 @@
                     "content" : {
                         "application/json" : {
                             "schema" : {
-                                "$ref" : "#/components/schemas/StudyNewRequest"
+                                "type" : "array",
+                                "items" : {
+                                    "$ref" : "#/components/schemas/StudyNewRequest"
+                                }
                             }
                         }
                     }
@@ -298,6 +244,17 @@
                 ],
                 "summary" : "Get the studyTypes of Study",
                 "description" : "List all available Study studyTypes",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/StudyStudyTypeListResponse"
@@ -321,6 +278,20 @@
                 ],
                 "summary" : "Get the details of a specific Study",
                 "description" : "Get details for a Study",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/StudySingleResponse"
@@ -333,6 +304,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },
@@ -345,6 +319,15 @@
                 "parameters" : [
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
                     }
                 ],
                 "requestBody" : {
@@ -368,6 +351,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -379,6 +365,20 @@
                 ],
                 "summary" : "Submit a search request for `Study`",
                 "description" : "Submit a search request for `Study`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/study/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/StudySearchRequest"
+                            }
+                        }
+                    }
+                },
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/StudyListResponse"
@@ -405,6 +405,26 @@
                 ],
                 "summary" : "Submit a search request for `Study`<br/>\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse the corresponding `GET /search/study/{searchResultsDbId}` to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
                 "description" : "Get the results of a `Study` search request <br/>\nClients should submit a search request using the corresponding `POST /search/study` endpoint.\nSearch requests allow a client to send a complex query for data. However, the server may not respond with the search results immediately. \nIf a server needs more time to process the request, it might respond with a `searchResultsDbId`. \nUse this endpoint to retrieve the results of the search. <br/> \nReview the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity\">Search Services documentation</a> for additional implementation details.",
+                "parameters" : [
+                    {
+                        "name" : "searchResultsDbId",
+                        "in" : "path",
+                        "description" : "searchResultsDbId",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/StudyListResponse"
@@ -611,28 +631,9 @@
             "StudySearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "active" : {
-                        "type" : "boolean",
-                        "description" : "A flag to indicate if a Study is currently active and ongoing",
-                        "example" : true
-                    },
-                    "commonCropNames" : {
-                        "type" : "array",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "germplasmNames" : {
-                        "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -651,30 +652,9 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
+                    "germplasmNames" : {
                         "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "List of human readable names to identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -693,6 +673,98 @@
                             "type" : "string"
                         }
                     },
+                    "active" : {
+                        "type" : "boolean",
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "example" : true
+                    },
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyCodes" : {
+                        "type" : "array",
+                        "description" : "A short human readable code for a study",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyPUIs" : {
+                        "type" : "array",
+                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariablePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialDbIds" : {
+                        "type" : "array",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyDbIds" : {
+                        "type" : "array",
+                        "description" : "List of study identifiers to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableNames" : {
+                        "type" : "array",
+                        "description" : "The names of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyNames" : {
+                        "type" : "array",
+                        "description" : "List of study names to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableDbIds" : {
+                        "type" : "array",
+                        "description" : "The DbIds of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "asc",
+                            "ASC",
+                            "desc",
+                            "DESC"
+                        ]
+                    },
                     "sortBy" : {
                         "type" : "string",
                         "description" : "Name of the field to sort by.",
@@ -708,61 +780,9 @@
                             "programName"
                         ]
                     },
-                    "sortOrder" : {
-                        "type" : "string",
-                        "description" : "Sort order direction. Ascending/Descending.",
-                        "enum" : [
-                            "asc",
-                            "ASC",
-                            "desc",
-                            "DESC"
-                        ]
-                    },
-                    "studyCodes" : {
-                        "type" : "array",
-                        "description" : "A short human readable code for a study",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyDbIds" : {
-                        "type" : "array",
-                        "description" : "List of study identifiers to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyNames" : {
-                        "type" : "array",
-                        "description" : "List of study names to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyPUIs" : {
-                        "type" : "array",
-                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyTypes" : {
                         "type" : "array",
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialDbIds" : {
-                        "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
