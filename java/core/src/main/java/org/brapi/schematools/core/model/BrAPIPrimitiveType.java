@@ -1,6 +1,9 @@
 package org.brapi.schematools.core.model;
 
 import lombok.Value;
+import org.brapi.schematools.core.response.Response;
+
+import static org.brapi.schematools.core.response.Response.fail;
 
 /**
  * A scalar or primitive type, which can be one of 4 possible instances:
@@ -68,5 +71,25 @@ public class BrAPIPrimitiveType implements BrAPIType {
 
     public static BrAPIPrimitiveType stringType(String format) {
         return new BrAPIPrimitiveType(STRING, format);
+    }
+
+    public static Response<BrAPIPrimitiveType> fromName(String type) {
+        return switch (type) {
+            case BOOLEAN ->  Response.success(booleanType()) ;
+            case INTEGER ->  Response.success(integerType()) ;
+            case NUMBER ->  Response.success(numberType()) ;
+            case STRING ->  Response.success(stringType()) ;
+            default -> fail(Response.ErrorType.VALIDATION, String.format("No BrAPI Primitive Type found for value [%s]",type)) ;
+        } ;
+    }
+
+    public static Response<BrAPIPrimitiveType> fromNameAndFormat(String type, String format) {
+        return switch (type) {
+            case BOOLEAN ->  Response.success(booleanType(format)) ;
+            case INTEGER ->  Response.success(integerType(format)) ;
+            case NUMBER ->  Response.success(numberType(format)) ;
+            case STRING ->  Response.success(stringType(format)) ;
+            default -> fail(Response.ErrorType.VALIDATION, String.format("No BrAPI Primitive Type found for value [%s] with format ",type, format)) ;
+        } ;
     }
 }
