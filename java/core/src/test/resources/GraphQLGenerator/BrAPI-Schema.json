@@ -133,13 +133,28 @@
       "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "additionalProperties",
-        "description" : "A free space containing any additional information related to a particular object.",
+        "name" : "additionalInfo",
+        "description" : null,
         "args" : [ ],
         "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
+          "kind" : "OBJECT",
+          "name" : "AdditionalInfo",
           "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "additionalProperties",
+        "description" : "Additional properties as a map of key-value pairs",
+        "args" : [ ],
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "OBJECT",
+            "name" : "KeyValuePair",
+            "ofType" : null
+          }
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -149,23 +164,12 @@
       "enumValues" : null,
       "possibleTypes" : null
     }, {
-      "kind" : "INPUT_OBJECT",
+      "kind" : "SCALAR",
       "name" : "AdditionalInfoInput",
       "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
-      "isOneOf" : false,
+      "isOneOf" : null,
       "fields" : null,
-      "inputFields" : [ {
-        "name" : "additionalProperties",
-        "description" : "A free space containing any additional information related to a particular object.",
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      } ],
+      "inputFields" : null,
       "interfaces" : null,
       "enumValues" : null,
       "possibleTypes" : null
@@ -1617,7 +1621,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -1945,7 +1949,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -3364,7 +3368,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -3935,7 +3939,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -5592,7 +5596,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -6474,7 +6478,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -8093,7 +8097,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -8499,7 +8503,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -9486,7 +9490,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -11118,7 +11122,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -11757,6 +11761,38 @@
       "possibleTypes" : null
     }, {
       "kind" : "OBJECT",
+      "name" : "KeyValuePair",
+      "description" : "A key-value pair representing a single map entry",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "key",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "value",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
       "name" : "LastUpdate",
       "description" : "The date and time when this study was last modified",
       "isOneOf" : null,
@@ -11938,7 +11974,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -12164,7 +12200,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -12902,7 +12938,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -13560,7 +13596,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -14006,7 +14042,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -15783,7 +15819,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -16317,7 +16353,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -17714,7 +17750,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -19080,7 +19116,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -19869,7 +19905,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -20802,7 +20838,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -21116,7 +21152,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -21615,7 +21651,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -22380,7 +22416,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -25961,7 +25997,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -26405,7 +26441,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -27422,7 +27458,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -28143,7 +28179,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -28833,7 +28869,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -29199,7 +29235,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -30417,7 +30453,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -31297,7 +31333,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -31848,7 +31884,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -33185,7 +33221,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },
@@ -33799,7 +33835,7 @@
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
+          "kind" : "SCALAR",
           "name" : "AdditionalInfoInput",
           "ofType" : null
         },

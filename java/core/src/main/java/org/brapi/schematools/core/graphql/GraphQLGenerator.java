@@ -14,6 +14,7 @@ import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -195,6 +196,18 @@ public class GraphQLGenerator {
         private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> primaryTypes) {
             GraphQLSchema.Builder builder = GraphQLSchema.newSchema();
 
+            GraphQLObjectType additionalInfo = objectOutputTypes.remove("AdditionalInfo");
+
+            if (additionalInfo != null) {
+                builder.additionalType(createAdditionalInfoType(additionalInfo));
+            }
+
+            GraphQLNamedInputType additionalInfoInput = inputTypes.remove("AdditionalInfoInput");
+
+            if (additionalInfoInput instanceof GraphQLInputObjectType graphQLInputObjectType) {
+                builder.additionalType(createAdditionalInfoInputType(graphQLInputObjectType));
+            }
+
             objectOutputTypes.values().forEach(builder::additionalType);
             interfaceTypes.values().forEach(builder::additionalType);
             enumTypes.values().forEach(builder::additionalType);
@@ -242,6 +255,92 @@ public class GraphQLGenerator {
                 return fail(Response.ErrorType.VALIDATION, e.getMessage());
             }
         }
+
+        private GraphQLType createAdditionalInfoType(GraphQLObjectType additionalInfo) {
+            if (additionalInfo.getFields().isEmpty()) {
+                return GraphQLScalarType.newScalar()
+                    .name(additionalInfo.getName())
+                    .description(additionalInfo.getDescription())
+                    .coercing(new graphql.schema.Coercing<Object, Object>() {
+                        @Override
+                        public Object serialize(Object dataFetcherResult) throws graphql.schema.CoercingSerializeException {
+                            return dataFetcherResult;
+                        }
+
+                        @Override
+                        public Object parseValue(Object input) throws graphql.schema.CoercingParseValueException {
+                            return input;
+                        }
+
+                        @Override
+                        public Object parseLiteral(Object input) throws graphql.schema.CoercingParseLiteralException {
+                            return input;
+                        }
+                    })
+                    .build();
+            } else {
+                GraphQLObjectType keyValuePairType = newObject()
+                    .name("KeyValuePair")
+                    .description("A key-value pair representing a single map entry")
+                    .field(newFieldDefinition().name("key").type(GraphQLString).build())
+                    .field(newFieldDefinition().name("value").type(GraphQLString).build())
+                    .build();
+                objectOutputTypes.put(keyValuePairType.getName(), keyValuePairType);
+
+                return additionalInfo.transform(builder -> builder.field(
+                    newFieldDefinition()
+                        .name("additionalProperties")
+                        .description("Additional properties as a map of key-value pairs")
+                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePair")))
+                        .build()
+                ));
+            }
+        }
+
+
+        private GraphQLType createAdditionalInfoInputType(GraphQLInputObjectType additionalInfoInput) {
+            if (additionalInfoInput.getFields().isEmpty()) {
+                return GraphQLScalarType.newScalar()
+                    .name(additionalInfoInput.getName())
+                    .description(additionalInfoInput.getDescription())
+                    .coercing(new graphql.schema.Coercing<Object, Object>() {
+                        @Override
+                        public Object serialize(Object dataFetcherResult) throws graphql.schema.CoercingSerializeException {
+                            return dataFetcherResult;
+                        }
+
+                        @Override
+                        public Object parseValue(Object input) throws graphql.schema.CoercingParseValueException {
+                            return input;
+                        }
+
+                        @Override
+                        public Object parseLiteral(Object input) throws graphql.schema.CoercingParseLiteralException {
+                            return input;
+                        }
+                    })
+                    .build();
+            } else {
+                GraphQLInputObjectType keyValuePairInputType = newInputObject()
+                    .name("KeyValuePairInput")
+                    .description("A key-value pair input representing a single map entry")
+                    .field(newInputObjectField().name("key").type(GraphQLString).build())
+                    .field(newInputObjectField().name("value").type(GraphQLString).build())
+                    .build();
+                inputTypes.put(keyValuePairInputType.getName(), keyValuePairInputType);
+
+                return newInputObject()
+                    .name(additionalInfoInput.getName())
+                    .description(additionalInfoInput.getDescription())
+                    .field(newInputObjectField()
+                        .name("additionalProperties")
+                        .description("Additional properties as a map of key-value pairs")
+                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePairInput")))
+                        .build())
+                    .build();
+            }
+        }
+
 
         private Response<GraphQLObjectType> generateQueryType(List<GraphQLObjectType> primaryTypes) {
             GraphQLObjectType.Builder query = newObject().name(options.getQueryType().getName());
@@ -322,6 +421,14 @@ public class GraphQLGenerator {
                     .description(brAPIObjectType.getDescription());
 
                 brAPIObjectType.getInterfaces().forEach(interfaceType -> builder.withInterface(GraphQLTypeReference.typeRef(interfaceType.getName())));
+
+                if (brAPIObjectType.getAdditionalProperties() != null) {
+
+                    builder.field(newFieldDefinition()
+                        .name("additionalInfo")
+                        .type(GraphQLTypeReference.typeRef("AdditionalInfo"))
+                        .build()) ;
+                }
 
                 return brAPIObjectType.getInterfaces().stream().map(
                         interfaceType -> createInterfaceType(interfaceType).onSuccessDoWithResult(builder::withInterface)).collect(Response.toList())
