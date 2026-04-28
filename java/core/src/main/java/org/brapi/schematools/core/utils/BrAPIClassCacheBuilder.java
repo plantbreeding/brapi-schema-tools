@@ -9,6 +9,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.isPrimaryModel;
+import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
+
 /**
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of classes and caches those in the list of primary classes if they pass the provided cachePredicate.
@@ -54,6 +57,7 @@ public class BrAPIClassCacheBuilder {
     }
 
     public static class BrAPIClassCache {
+        private static final String REQUEST_NAME_FORMAT = "%sRequest" ;
         private final Predicate<BrAPIClass> cachePredicate;
         private final Map<String, BrAPIClass> inputClassMap;
         @Getter(AccessLevel.PRIVATE)
@@ -110,7 +114,7 @@ public class BrAPIClassCacheBuilder {
         }
 
         private boolean isPrimaryClass(BrAPIClass brAPIClass) {
-            return inputClassMap.containsKey(brAPIClass.getName()) && cachePredicate.test(brAPIClass) ;
+            return inputClassMap.containsKey(brAPIClass.getName()) && cachePredicate.test(brAPIClass);
         }
 
         /**
@@ -172,7 +176,7 @@ public class BrAPIClassCacheBuilder {
 
                     if (brAPIClass == null) {
                         // if the class is not in the cache, then we need to cache it and its dependencies
-                        brAPIClass = inputClassMap.get(brAPIReferenceType.getName()) ;
+                        brAPIClass = inputClassMap.get(brAPIReferenceType.getName());
 
                         if (brAPIClass == null) {
                             throw new IllegalStateException("No BrAPIClass with name " + brAPIReferenceType.getName() + " found");
@@ -235,7 +239,7 @@ public class BrAPIClassCacheBuilder {
          * @return all the BrAPIClasses in the cache as a new map, including dependent classes
          */
         public Map<String, BrAPIClass> getBrAPIClassesAsMap() {
-            return new TreeMap<>(brAPIClassMap) ;
+            return new TreeMap<>(brAPIClassMap);
         }
 
         /**
@@ -322,6 +326,63 @@ public class BrAPIClassCacheBuilder {
          */
         public int size() {
             return brAPIClassMap.size();
+        }
+
+        /**
+         * Determines if the cache contains a BrAPIClass by name, and it is a primary model
+         *
+         * @param name the name of the BrAPIClass
+         * @return {@code true} if there is a BrAPIClass by this the provided name, and it is a primary model
+         * {@code false} otherwise
+         */
+        public boolean containsPrimaryModel(String name) {
+            BrAPIClass brAPIClass = brAPIClassMap.get(name);
+
+            return brAPIClass != null && isPrimaryModel(brAPIClass);
+        }
+
+        /**
+         * Gets the BrAPI Request class for a BrAPI Class
+         *
+         * @param name the name of the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIClass getBrAPIRequestClass(String name) {
+            return brAPIClassMap.get(String.format(REQUEST_NAME_FORMAT, name));
+        }
+
+        /**
+         * Gets the BrAPI Request class for a BrAPI Class
+         *
+         * @param brAPIClass the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIClass getBrAPIRequestClass(BrAPIClass brAPIClass) {
+            return brAPIClassMap.get(String.format(REQUEST_NAME_FORMAT, brAPIClass.getName()));
+        }
+
+        /**
+         * Gets the BrAPI Object for a BrAPI Request Class, if is not a BrAPI Request Class
+         * it returns the input object if possible or {code}null{code}.
+         *
+         * @param brAPIClass the BrAPIClass
+         * @return the BrAPI Request class for a BrAPI Class
+         */
+        public BrAPIObjectType getBrAPIObjectForRequestClass(BrAPIClass brAPIClass) {
+
+            BrAPIClass type = brAPIClass;
+
+            if (isRequest(brAPIClass)) {
+                if (brAPIClass.getName().endsWith("Request")) {
+                    type = brAPIClassMap.get(brAPIClass.getName().substring(0, brAPIClass.getName().length() - 7));
+                }
+            }
+
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
+                return brAPIObjectType;
+            }
+
+            return null;
         }
     }
 }

@@ -3,6 +3,7 @@ package org.brapi.schematools.core.openapi.comparator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -21,14 +22,14 @@ import org.openapitools.openapidiff.core.output.AsciidocRender;
 import org.openapitools.openapidiff.core.output.HtmlRender;
 import org.openapitools.openapidiff.core.output.MarkdownRender;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -36,10 +37,11 @@ import java.util.regex.Pattern;
  */
 public class OpenAPIComparator {
 
+    private static final List<String> DESCRIPTION_FIELDS = List.of("description", "summary");
+
     private final OpenAPIComparatorOptions options;
-
+    private final ObjectMapper mapper;
     private final List<Pattern> ignoreMissingEndpoints ;
-
     private final List<Pattern> ignoreNewEndpoints ;
     private final ObjectWriter writer;
     private final Configuration jsonpathConfig;
@@ -60,7 +62,7 @@ public class OpenAPIComparator {
         ignoreNewEndpoints = options.getIgnoreNewEndpoints() != null ?
             options.getIgnoreNewEndpoints().stream().map(Pattern::compile).toList() : new ArrayList<>() ;
 
-        ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
         if (options.getJson().isPrettyPrinting()) {
             writer = mapper.writerWithDefaultPrettyPrinter();
         } else {
@@ -84,6 +86,11 @@ public class OpenAPIComparator {
     public Response<ChangedOpenApi> openApiCompare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             try {
+                if (options.isIgnoringDescriptions()) {
+                    String firstContent = stripDescriptionsFromPath(firstPath);
+                    String secondContent = stripDescriptionsFromPath(secondPath);
+                    return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions())));
+                }
                 return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
             } catch (Exception e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
@@ -115,13 +122,23 @@ public class OpenAPIComparator {
      */
     public Response<JsonNode> jsonDiff(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
-            try { // uses file extension to determine if YAML or not, should replace with a better way
-                if (firstPath.getFileName().toString().endsWith(".yaml") || secondPath.getFileName().toString().endsWith(".yaml")) {
-                    return Response.success(filterDiff(JsonDiffCompare.fromFilesYAML(firstPath, secondPath)));
-                } else {
-                    return Response.success(filterDiff(JsonDiffCompare.fromFilesJSON(firstPath, secondPath)));
+            try {
+                boolean isYaml = firstPath.getFileName().toString().endsWith(".yaml") || secondPath.getFileName().toString().endsWith(".yaml");
+                if (options.isIgnoringDescriptions()) {
+                    Path strippedFirst = writeStripped(firstPath);
+                    Path strippedSecond = writeStripped(secondPath);
+                    try {
+                        // stripped files are always written as JSON
+                        return Response.success(filterDiff(JsonDiffCompare.fromFilesJSON(strippedFirst, strippedSecond)));
+                    } finally {
+                        Files.deleteIfExists(strippedFirst);
+                        Files.deleteIfExists(strippedSecond);
+                    }
                 }
-
+                JsonNode diff = isYaml
+                    ? JsonDiffCompare.fromFilesYAML(firstPath, secondPath)
+                    : JsonDiffCompare.fromFilesJSON(firstPath, secondPath);
+                return Response.success(filterDiff(diff));
             } catch (Exception e) {
                 return Response.fail(Response.ErrorType.VALIDATION,
                     String.format("Can not compare, Path 1: '%s' Path 2: '%s' due to exception: %s", firstPath, secondPath, e.getMessage()));
@@ -183,6 +200,14 @@ public class OpenAPIComparator {
      */
     public Response<ChangedOpenApi> compare(String firstContent, String secondContent) {
         if (StringUtils.isNotBlank(firstContent) && StringUtils.isNotBlank(secondContent)) {
+            try {
+                if (options.isIgnoringDescriptions()) {
+                    firstContent = stripDescriptionsFromString(firstContent);
+                    secondContent = stripDescriptionsFromString(secondContent);
+                }
+            } catch (IOException e) {
+                return Response.fail(Response.ErrorType.VALIDATION, "Failed to strip descriptions: " + e.getMessage());
+            }
             return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions()))) ;
         } else {
             if (!StringUtils.isNotBlank(firstContent) && !StringUtils.isNotBlank(secondContent)) {
@@ -217,6 +242,62 @@ public class OpenAPIComparator {
         return OpenApiDiffOptions.builder().build();
     }
 
+    /**
+     * Recursively removes all description and summary fields from a JSON node (in-place).
+     */
+    private void stripDescriptions(JsonNode node) {
+        if (node.isObject()) {
+            ObjectNode obj = (ObjectNode) node;
+            DESCRIPTION_FIELDS.forEach(obj::remove);
+            Iterator<Map.Entry<String, JsonNode>> fields = obj.fields();
+            while (fields.hasNext()) {
+                stripDescriptions(fields.next().getValue());
+            }
+        } else if (node.isArray()) {
+            node.forEach(this::stripDescriptions);
+        }
+    }
+
+    /**
+     * Loads a JSON or YAML file, strips description/summary fields, and returns the JSON string.
+     * Used for OpenApiCompare (fromContents) where format conversion is safe.
+     */
+    private String stripDescriptionsFromPath(Path sourcePath) throws IOException {
+        JsonNode node = readAsJsonNode(sourcePath);
+        stripDescriptions(node);
+        return mapper.writeValueAsString(node);
+    }
+
+    /**
+     * Loads a JSON or YAML file, strips description/summary fields, writes to a temp JSON file, and returns its path.
+     * Used for JsonDiff (fromFilesJSON) where temp files are needed.
+     */
+    private Path writeStripped(Path sourcePath) throws IOException {
+        JsonNode node = readAsJsonNode(sourcePath);
+        stripDescriptions(node);
+        Path tmp = Files.createTempFile("brapi-compare-", ".json");
+        mapper.writeValue(tmp.toFile(), node);
+        return tmp;
+    }
+
+    private JsonNode readAsJsonNode(Path sourcePath) throws IOException {
+        if (sourcePath.getFileName().toString().endsWith(".yaml")) {
+            return new com.fasterxml.jackson.dataformat.yaml.YAMLMapper().readTree(sourcePath.toFile());
+        } else {
+            return mapper.readTree(sourcePath.toFile());
+        }
+    }
+
+    /**
+     * Parses a JSON or YAML string, strips description/summary fields, and returns the modified JSON string.
+     */
+    private String stripDescriptionsFromString(String content) throws IOException {
+        // YAMLMapper can parse both YAML and JSON
+        JsonNode node = new com.fasterxml.jackson.dataformat.yaml.YAMLMapper().readTree(content);
+        stripDescriptions(node);
+        return mapper.writeValueAsString(node);
+    }
+
     private ChangedOpenApi filterDiff(ChangedOpenApi changedOpenApi) {
         return new ChangedOpenApi(createOptions())
             .setChangedExtensions(changedOpenApi.getChangedExtensions()) // TODO
@@ -229,11 +310,9 @@ public class OpenAPIComparator {
     }
 
     private JsonNode filterDiff(JsonNode diff) {
-
         DocumentContext jsonContext = JsonPath.using(jsonpathConfig).parse(diff);
         jsonContext.delete("$.[?(@.op == 'replace' && @.path == '/info/title')]");
         jsonContext.delete("$.[?(@.op == 'replace' && @.path == '/info/version')]");
-
         return jsonContext.json() ;
     }
 
@@ -286,13 +365,19 @@ public class OpenAPIComparator {
         } ;
     }
 
+    private OutputStreamWriter openWriter(Path outputPath) throws IOException {
+        return new OutputStreamWriter(
+            Files.newOutputStream(outputPath,
+                java.nio.file.StandardOpenOption.CREATE,
+                java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
+                java.nio.file.StandardOpenOption.WRITE));
+    }
+
     private Response<Path> renderHtml(ChangedOpenApi diff, Path outputPath) {
         try {
             HtmlRender htmlRender = new HtmlRender(options.getHtml().getTitle(), options.getHtml().getLinkCss(), options.getHtml().isShowingAllChanges());
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            htmlRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            htmlRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
@@ -301,24 +386,26 @@ public class OpenAPIComparator {
 
     private Response<Path> renderMarkdown(ChangedOpenApi diff, Path outputPath) {
         try {
-            MarkdownRender markdownRender = new MarkdownRender();
-            markdownRender.setShowChangedMetadata(options.getMarkdown().isShowingChangedMetadata());
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            markdownRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            OutputStreamWriter outputStreamWriter = openWriter(outputPath);
+            if (options.getMarkdown().isShowingChangedMetadata()) {
+                new DetailedMarkdownRender().render(diff, outputStreamWriter);
+            } else {
+                MarkdownRender markdownRender = new MarkdownRender();
+                markdownRender.setShowChangedMetadata(false);
+                markdownRender.render(diff, outputStreamWriter);
+            }
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
         return Response.success(outputPath) ;
     }
+
     private Response<Path> renderAsciidoc(ChangedOpenApi diff, Path outputPath) {
         try {
             AsciidocRender asciidocRender = new AsciidocRender();
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            asciidocRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            asciidocRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }
@@ -328,10 +415,8 @@ public class OpenAPIComparator {
     private Response<Path> renderJson(ChangedOpenApi diff, Path outputPath) {
         try {
             JsonRender jsonRender = new JsonRender(options.getJson().isPrettyPrinting());
-            FileOutputStream outputStream = new FileOutputStream(outputPath.toFile());
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-            jsonRender.render(diff, outputStreamWriter);
-        } catch (FileNotFoundException exception) {
+            jsonRender.render(diff, openWriter(outputPath));
+        } catch (IOException exception) {
             return Response.fail(Response.ErrorType.VALIDATION,
                 String.format("Can not create or use output file '%s'", outputPath)) ;
         }

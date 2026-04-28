@@ -38,6 +38,8 @@ public class OpenAPIComparatorOptions implements Options {
     private List<String> ignoreNewEndpoints ;
     @Getter(AccessLevel.NONE)
     private Boolean ignoreDepreciatedEndpoints ;
+    @Getter(AccessLevel.NONE)
+    private Boolean ignoreDescriptions ;
     private String comparisonAPI ;
 
     /**
@@ -112,6 +114,10 @@ public class OpenAPIComparatorOptions implements Options {
             this.ignoreDepreciatedEndpoints = overrideOptions.ignoreDepreciatedEndpoints ;
         }
 
+        if (overrideOptions.ignoreDescriptions != null) {
+            this.ignoreDescriptions = overrideOptions.ignoreDescriptions ;
+        }
+
         if (overrideOptions.comparisonAPI != null) {
             this.comparisonAPI = overrideOptions.comparisonAPI ;
         }
@@ -131,5 +137,10 @@ public class OpenAPIComparatorOptions implements Options {
     @JsonIgnore
     public boolean isIgnoringDeprecatedEndpoints() {
         return ignoreDepreciatedEndpoints != null ? ignoreDepreciatedEndpoints : false ;
+    }
+
+    @JsonIgnore
+    public boolean isIgnoringDescriptions() {
+        return ignoreDescriptions != null ? ignoreDescriptions : false ;
     }
 }

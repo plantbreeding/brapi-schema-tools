@@ -40,6 +40,20 @@
                 ],
                 "summary" : "Get the details of a specific BreedingMethod",
                 "description" : "Get details for a BreedingMethod",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "breedingMethodDbId",
+                        "in" : "path",
+                        "description" : "the unique identifier for this breeding method",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/BreedingMethodSingleResponse"
@@ -52,6 +66,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }

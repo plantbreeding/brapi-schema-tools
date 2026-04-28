@@ -79,7 +79,7 @@ public class GenerateSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-m", "--metadata"}, description = "The path of the metadata file. If not provided the default metadata for the specified output format will be used.")
     private Path metadataPath;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over written.")
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. False by default.")
     private Boolean overwrite;
 
     @CommandLine.Option(names = {"-y", "--separate"}, description = "Output into separate files if possible instead of a single file.")

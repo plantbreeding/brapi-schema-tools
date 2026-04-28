@@ -76,7 +76,7 @@ public class MarkdownSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-m", "--method"}, description = "If the schema path is an URL provide the HTTP method. The default is GET.")
     private String method;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
+    @CommandLine.Option(names = {"-r", "--overwrite"}, defaultValue = "false", description = "Overwrite the output file(s) if it already exists. False by default, use --overwrite to enable overwriting.")
     private Boolean overwrite ;
 
     @Override

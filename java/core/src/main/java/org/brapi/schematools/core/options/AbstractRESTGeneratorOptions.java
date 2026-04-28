@@ -31,7 +31,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     private Boolean overwrite;
     private Boolean addGeneratorComments;
 
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PROTECTED)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pathItemNameFor = new HashMap<>();
 

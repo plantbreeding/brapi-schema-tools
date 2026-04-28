@@ -45,11 +45,11 @@ public class CompareSubCommand extends AbstractSubCommand {
     @CommandLine.Option(names = {"-o", "--options"}, description = "The path of the options file. If not provided the default options for the specified output format will be used.")
     private Path optionsPath;
 
-    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. True by default, if set to False the output wll not be over writen.")
-    private boolean overwrite = true;
+    @CommandLine.Option(names = {"-r", "--overwrite"}, description = "Overwrite the output file(s) if it already exists. False by default.")
+    private boolean overwrite;
 
     @CommandLine.Option(names = {"-p", "--prettyprint"}, description = "Pretty print the JSON output if possible. True by default.")
-    private boolean prettyprint = true;
+    private boolean prettyprint;
 
     @CommandLine.Option(names = {"-k", "--comparisonAPI"}, description = "Comparison API to use. Options are 'OpenApiCompare' and 'JsonDiff' Default is OpenApiCompare.")
     private String comparisonAPI = "OpenApiCompare";
@@ -70,7 +70,8 @@ public class CompareSubCommand extends AbstractSubCommand {
 
                     OpenAPIComparatorOptions options = optionsPath != null ?
                         OpenAPIComparatorOptions.load(optionsPath) : OpenAPIComparatorOptions.load() ;
-                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options.setComparisonAPI(comparisonAPI));
+                    options.setComparisonAPI(comparisonAPI);
+                    OpenAPIComparator openAPIComparator = new OpenAPIComparator(options);
 
                     if (Files.isDirectory(firstPath) && Files.isDirectory(secondPath)) {
                         if (comparisonAPI.equals("OpenApiCompare")) {
@@ -85,6 +86,14 @@ public class CompareSubCommand extends AbstractSubCommand {
                         if (Files.isDirectory(outputPath)) {
                             handleError(String.format("Output path %s must not be a directory", outputPath)) ;
                         } else {
+                            if (Files.exists(outputPath)) {
+                                if (overwrite) {
+                                    Files.delete(outputPath);
+                                } else {
+                                    printError(String.format("Output file '%s' already exists and was not overwritten", outputPath));
+                                    return ;
+                                }
+                            }
                             openAPIComparator.compare(firstPath, secondPath, outputPath, outputFormat)
                                 .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
                         }
@@ -106,29 +115,26 @@ public class CompareSubCommand extends AbstractSubCommand {
 
                 if (Files.isDirectory(child)) {
                     if (compareDirectory(child)) {
-                        compare(openAPIComparator, child, sibling, outputPath);
+                        Path subOutputPath = outputPath.resolve(child.getFileName());
+                        try { Files.createDirectories(subOutputPath); } catch (IOException e) { printException(e); return; }
+                        compare(openAPIComparator, child, sibling, subOutputPath);
                     }
                 } else if (Files.isRegularFile(child)) {
                     if (child.getFileName().toString().endsWith(".yaml") || child.getFileName().toString().endsWith(".json")) {
                         if (Files.isRegularFile(sibling)) {
-                            outputMessage(String.format("Comparing %s with %s", child, sibling));
-                            openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + getFileExtension(outputFormat)), outputFormat)
-                                .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
-                        } else {
-                            if (Files.isRegularFile(sibling)) {
-                                outputMessage(String.format("Comparing %s with %s", child, sibling));
-                                openAPIComparator.compare(child, sibling, outputPath.resolve(child.getFileName() + getFileExtension(outputFormat)), outputFormat)
-                                    .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
+                            Path outputFile = outputPath.resolve(stripExtension(child.getFileName().toString()) + getFileExtension(outputFormat));
+                            if (!overwrite && Files.exists(outputFile)) {
+                                printError(String.format("Output file '%s' already exists and was not overwritten", outputFile));
                             } else {
-                                Path siblingAgain = componentsDirectory.resolve(child.getFileName());
-
-                                printError(String.format("No matching file for %s found at %s or %s", child, sibling, siblingAgain)) ;
+                                outputMessage(String.format("Comparing %s with %s", child, sibling));
+                                openAPIComparator.compare(child, sibling, outputFile, outputFormat)
+                                    .onSuccessDoWithResult(this::outputResponse).onFailDoWithResponse(this::printComparisonErrors);
                             }
-
-                            printError(String.format("No matching file for %s found at %s", child, sibling)) ;
+                        } else {
+                            printError(String.format("No matching file for %s found at %s", child, sibling));
                         }
                     } else {
-                        outputMessage(String.format("Skipping path %s", child)) ;
+                        outputMessage(String.format("Skipping path %s", child));
                     }
                 }
             });
@@ -139,6 +145,11 @@ public class CompareSubCommand extends AbstractSubCommand {
 
     private boolean compareDirectory(Path directory) {
         return !IGNORE_PATHS.contains(directory.getFileName().toString());
+    }
+
+    private String stripExtension(String filename) {
+        int dot = filename.lastIndexOf('.');
+        return dot > 0 ? filename.substring(0, dot) : filename;
     }
 
     private String getFileExtension(ComparisonOutputFormat outputFormat) {

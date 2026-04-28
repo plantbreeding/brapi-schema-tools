@@ -3,6 +3,8 @@ package org.brapi.schematools.core.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.validiation.ValidatableAgainstCache;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -17,7 +19,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractGeneratorOptions implements Options {
+public abstract class AbstractGeneratorOptions implements Options, ValidatableAgainstCache {
     private Boolean generate;
     private String descriptionFormat;
     @Getter(AccessLevel.PROTECTED)
@@ -60,6 +62,21 @@ public abstract class AbstractGeneratorOptions implements Options {
         if (overrideOptions.pluralFor != null) {
             pluralFor.putAll(overrideOptions.pluralFor);
         }
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = Validation.valid() ;
+
+        pluralFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                String.format("Invalid Primary Model name '%s' set for 'pluralFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     /**
