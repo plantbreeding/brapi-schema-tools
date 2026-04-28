@@ -92,8 +92,6 @@ class AdditionalInfo(BaseModel):
 
     # --- Scalar optional ---
 
-    additionalProperties: Optional[str] = None
-
 
 class AlleleMatrixPagination(BaseModel):
     """

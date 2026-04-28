@@ -18,7 +18,7 @@ public class SearchQueryOptions extends AbstractGraphQLQueryOptions {
     private String searchIdFieldName ;
 
     public Validation validate() {
-        return Validation.valid()
+        return super.validate()
             .assertNotNull(searchIdFieldName, "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName()) ;
     }
 

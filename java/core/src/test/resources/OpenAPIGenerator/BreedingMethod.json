@@ -14,6 +14,12 @@
                 "description" : "Get a list of BreedingMethod",
                 "parameters" : [
                     {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
