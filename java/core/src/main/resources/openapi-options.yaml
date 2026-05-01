@@ -424,6 +424,8 @@ properties:
     name:
         nameFormat: "%sName"
         link: true
+        linkFor:
+            Variant: false
         propertyFor:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
@@ -432,6 +434,8 @@ properties:
     pui:
         nameFormat: "%sPUI"
         link: true
+        linkFor:
+            GenomeMap: false
         propertyFor:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
