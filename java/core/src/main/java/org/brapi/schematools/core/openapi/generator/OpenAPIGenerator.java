@@ -673,6 +673,7 @@ public class OpenAPIGenerator {
 
             if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId"));
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
             }
 
@@ -1523,7 +1524,7 @@ public class OpenAPIGenerator {
             if (linkProperties.isEmpty()) {
                 return createSchemaForProperty(property, brAPIObjectType).mapResult(schema -> Collections.singletonMap(property.getName(), schema));
             } else {
-                return createLinkingProperties(linkProperties);
+                return createLinkingProperties(linkProperties, property.isNullable());
             }
         }
 
@@ -1547,10 +1548,11 @@ public class OpenAPIGenerator {
                 .or(() -> success(Collections.emptyMap()));
         }
 
-        private Response<Map<String, Schema>> createLinkingProperties(List<BrAPIObjectProperty> linkProperties) {
+        private Response<Map<String, Schema>> createLinkingProperties(List<BrAPIObjectProperty> linkProperties, boolean nullable) {
             Map<String, Schema> schemas = new HashMap<>();
 
             return linkProperties.stream().map(linkProperty -> createSchemaForType(linkProperty.getType())
+                    .onSuccessDoWithResultOnCondition(nullable, this::makeNullable)
                     .onSuccessDoWithResult(schema -> schemas.put(linkProperty.getName(), schema)))
                 .collect(Response.toList())
                 .merge(() -> success(schemas));
