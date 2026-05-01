@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id 'brapi.schema-tools.java-conventions'
     id 'java-library'
@@ -5,7 +7,7 @@ plugins {
 }
 
 mavenPublishing {
-    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.S01, true)
     signAllPublications()
 
     pom {
