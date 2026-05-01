@@ -101,7 +101,7 @@ public class GraphQLGenerator {
         private final GraphQLGeneratorMetadata metadata;
         // cache all the BrAPI classes
         private final BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache;
-        private final Map<String, GraphQLObjectType> objectOutputTypes;
+        private final Map<String, GraphQLNamedOutputType> outputTypes;
         private final Map<String, GraphQLInterfaceType> interfaceTypes;
         private final Map<String, GraphQLUnionType> unionTypes;
         private final Map<String, GraphQLEnumType> enumTypes;
@@ -115,7 +115,7 @@ public class GraphQLGenerator {
             this.metadata = metadata;
 
             this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPISchemas) ;
-            objectOutputTypes = new TreeMap<>();
+            outputTypes = new TreeMap<>();
             interfaceTypes = new TreeMap<>();
             unionTypes = new TreeMap<>();
             enumTypes = new TreeMap<>();
@@ -150,7 +150,7 @@ public class GraphQLGenerator {
                     .collect(Response.toList()))
                 .map(() -> brAPIClassCache.getBrAPIClasses().stream()
                     .filter(this::isPrimaryModel)
-                    .map(this::createObjectType)
+                    .map(this::createPrimaryModel)
                     .collect(Response.toList()))
                 .mapResultToResponse(this::createSchema);
         }
@@ -196,26 +196,26 @@ public class GraphQLGenerator {
         private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> primaryTypes) {
             GraphQLSchema.Builder builder = GraphQLSchema.newSchema();
 
-            GraphQLObjectType additionalInfo = objectOutputTypes.remove("AdditionalInfo");
+            GraphQLNamedOutputType additionalInfo = outputTypes.remove("AdditionalInfo");
 
             if (additionalInfo != null) {
-                builder.additionalType(createAdditionalInfoType(additionalInfo));
+                outputTypes.put("AdditionalInfo", createAdditionalInfoType(additionalInfo));
             }
 
             GraphQLNamedInputType additionalInfoInput = inputTypes.remove("AdditionalInfoInput");
 
-            if (additionalInfoInput instanceof GraphQLInputObjectType graphQLInputObjectType) {
-                builder.additionalType(createAdditionalInfoInputType(graphQLInputObjectType));
+            if (additionalInfoInput != null) {
+                inputTypes.put("AdditionalInfoInput", createAdditionalInfoInputType(additionalInfoInput));
             }
 
-            objectOutputTypes.values().forEach(builder::additionalType);
+            outputTypes.values().forEach(builder::additionalType);
             interfaceTypes.values().forEach(builder::additionalType);
             enumTypes.values().forEach(builder::additionalType);
             inputTypes.values().forEach(builder::additionalType);
             unionTypes.values().forEach(builder::additionalType);
 
             new HashMap<>(listResponseTypesToBeCreated).forEach((key, value) -> {
-                GraphQLObjectType type = objectOutputTypes.get(value);
+                GraphQLNamedOutputType type = outputTypes.get(value);
 
                 if (type != null) {
                     boolean paged = options.getQueryType().getListQuery().isPagedFor(type.getName());
@@ -256,8 +256,24 @@ public class GraphQLGenerator {
             }
         }
 
-        private GraphQLType createAdditionalInfoType(GraphQLObjectType additionalInfo) {
-            if (additionalInfo.getFields().isEmpty()) {
+        private GraphQLNamedOutputType createAdditionalInfoType(GraphQLNamedOutputType additionalInfo) {
+            if (additionalInfo instanceof GraphQLObjectType graphQLObjectType && !graphQLObjectType.getFields().isEmpty()) {
+                GraphQLObjectType keyValuePairType = newObject()
+                    .name("KeyValuePair")
+                    .description("A key-value pair representing a single map entry")
+                    .field(newFieldDefinition().name("key").type(GraphQLString).build())
+                    .field(newFieldDefinition().name("value").type(GraphQLString).build())
+                    .build();
+                outputTypes.put(keyValuePairType.getName(), keyValuePairType);
+
+                return graphQLObjectType.transform(builder -> builder.field(
+                    newFieldDefinition()
+                        .name("additionalProperties")
+                        .description("Additional properties as a map of key-value pairs")
+                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePair")))
+                        .build()
+                ));
+            } else {
                 return GraphQLScalarType.newScalar()
                     .name(additionalInfo.getName())
                     .description(additionalInfo.getDescription())
@@ -278,28 +294,30 @@ public class GraphQLGenerator {
                         }
                     })
                     .build();
-            } else {
-                GraphQLObjectType keyValuePairType = newObject()
-                    .name("KeyValuePair")
-                    .description("A key-value pair representing a single map entry")
-                    .field(newFieldDefinition().name("key").type(GraphQLString).build())
-                    .field(newFieldDefinition().name("value").type(GraphQLString).build())
-                    .build();
-                objectOutputTypes.put(keyValuePairType.getName(), keyValuePairType);
-
-                return additionalInfo.transform(builder -> builder.field(
-                    newFieldDefinition()
-                        .name("additionalProperties")
-                        .description("Additional properties as a map of key-value pairs")
-                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePair")))
-                        .build()
-                ));
             }
         }
 
 
-        private GraphQLType createAdditionalInfoInputType(GraphQLInputObjectType additionalInfoInput) {
-            if (additionalInfoInput.getFields().isEmpty()) {
+        private GraphQLNamedInputType createAdditionalInfoInputType(GraphQLNamedInputType additionalInfoInput) {
+            if (additionalInfoInput instanceof GraphQLInputObjectType graphQLInputObjectType && !graphQLInputObjectType.getFields().isEmpty()) {
+                GraphQLInputObjectType keyValuePairInputType = newInputObject()
+                    .name("KeyValuePairInput")
+                    .description("A key-value pair input representing a single map entry")
+                    .field(newInputObjectField().name("key").type(GraphQLString).build())
+                    .field(newInputObjectField().name("value").type(GraphQLString).build())
+                    .build();
+                inputTypes.put(keyValuePairInputType.getName(), keyValuePairInputType);
+
+                return newInputObject()
+                    .name(additionalInfoInput.getName())
+                    .description(additionalInfoInput.getDescription())
+                    .field(newInputObjectField()
+                        .name("additionalProperties")
+                        .description("Additional properties as a map of key-value pairs")
+                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePairInput")))
+                        .build())
+                    .build();
+            } else {
                 return GraphQLScalarType.newScalar()
                     .name(additionalInfoInput.getName())
                     .description(additionalInfoInput.getDescription())
@@ -319,24 +337,6 @@ public class GraphQLGenerator {
                             return input;
                         }
                     })
-                    .build();
-            } else {
-                GraphQLInputObjectType keyValuePairInputType = newInputObject()
-                    .name("KeyValuePairInput")
-                    .description("A key-value pair input representing a single map entry")
-                    .field(newInputObjectField().name("key").type(GraphQLString).build())
-                    .field(newInputObjectField().name("value").type(GraphQLString).build())
-                    .build();
-                inputTypes.put(keyValuePairInputType.getName(), keyValuePairInputType);
-
-                return newInputObject()
-                    .name(additionalInfoInput.getName())
-                    .description(additionalInfoInput.getDescription())
-                    .field(newInputObjectField()
-                        .name("additionalProperties")
-                        .description("Additional properties as a map of key-value pairs")
-                        .type(GraphQLList.list(GraphQLTypeReference.typeRef("KeyValuePairInput")))
-                        .build())
                     .build();
             }
         }
@@ -408,9 +408,57 @@ public class GraphQLGenerator {
             return createOutputType(type.getItems()).mapResult(GraphQLList::list);
         }
 
-        private Response<GraphQLObjectType> createObjectType(BrAPIClass brAPIClass) {
+        /**
+         * Converts a named output type (object, interface, union, enum) to a {@link GraphQLTypeReference}
+         * so that the schema builder resolves it by name at build time. This ensures that if the type
+         * is later replaced in the maps (e.g. AdditionalInfo), all field references pick up the new version.
+         * Scalars and type references are returned as-is.
+         */
+        private GraphQLOutputType asOutputTypeReference(GraphQLOutputType type) {
+            if (type instanceof GraphQLScalarType || type instanceof GraphQLTypeReference) {
+                return type;
+            }
+            if (type instanceof GraphQLNamedOutputType named) {
+                return GraphQLTypeReference.typeRef(named.getName());
+            }
+            if (type instanceof GraphQLList list) {
+                return GraphQLList.list(asOutputTypeReference((GraphQLOutputType) list.getWrappedType()));
+            }
+            return type;
+        }
+
+        /**
+         * Converts a named input type (input object, enum) to a {@link GraphQLTypeReference}
+         * so that the schema builder resolves it by name at build time. This ensures that if the type
+         * is later replaced in the maps (e.g. AdditionalInfoInput), all field references pick up the new version.
+         * Scalars and type references are returned as-is.
+         */
+        private GraphQLInputType asInputTypeReference(GraphQLInputType type) {
+            if (type instanceof GraphQLScalarType || type instanceof GraphQLTypeReference) {
+                return type;
+            }
+            if (type instanceof GraphQLNamedInputType named) {
+                return GraphQLTypeReference.typeRef(named.getName());
+            }
+            if (type instanceof GraphQLList list) {
+                return GraphQLList.list(asInputTypeReference((GraphQLInputType) list.getWrappedType()));
+            }
+            return type;
+        }
+
+        private Response<GraphQLObjectType> createPrimaryModel(BrAPIClass brAPIClass) {
+            return createObjectType(brAPIClass).mapResultToResponse(graphQLNamedOutputType -> {
+                if (graphQLNamedOutputType instanceof GraphQLObjectType graphQLObjectType) {
+                    return success(graphQLObjectType);
+                } else {
+                    return fail(Response.ErrorType.VALIDATION, String.format("Expected GraphQLObjectType but got '%s'", graphQLNamedOutputType.getClass()));
+                }
+            });
+        }
+
+        private Response<GraphQLNamedOutputType> createObjectType(BrAPIClass brAPIClass) {
             if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
-                GraphQLObjectType existingType = objectOutputTypes.get(brAPIObjectType.getName());
+                GraphQLNamedOutputType existingType = outputTypes.get(brAPIObjectType.getName());
 
                 if (existingType != null) {
                     return success(existingType);
@@ -486,6 +534,7 @@ public class GraphQLGenerator {
                             .description(property.getDescription());
 
                         yield createOutputType(property.getType())
+                            .mapResult(this::asOutputTypeReference)
                             .onSuccessDoWithResult(builder::type)
                             .map(() -> success(builder.build()));
                     }
@@ -648,7 +697,7 @@ public class GraphQLGenerator {
                 return success(newInputObjectField()
                     .name(StringUtils.toParameterCase(graphQLNamedInputType.getName()))
                     .description(String.format("Field for possible type '%s'", graphQLNamedInputType.getName()))
-                    .type(graphQLInputType)
+                    .type(GraphQLTypeReference.typeRef(graphQLNamedInputType.getName()))
                     .build());
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Input type must be GraphQLNamedInputType but was '%s'", graphQLInputType.getClass().getSimpleName()));
@@ -675,17 +724,13 @@ public class GraphQLGenerator {
         }
 
         private boolean typeEquals(GraphQLType typeA, GraphQLType typeB) {
-            if (typeA.equals(typeB)) {
-                return true;
-            } else {
-                if (typeA instanceof GraphQLNamedType graphQLNamedTypeA && typeB instanceof GraphQLNamedType graphQLNamedTypeB) {
-                    return graphQLNamedTypeA.equals(graphQLNamedTypeB);
-                } else if (typeA instanceof GraphQLList graphQLListA && typeB instanceof GraphQLList graphQLListB) {
-                    return typeEquals(graphQLListA.getWrappedType(), graphQLListB.getWrappedType());
-                }
+            if (typeA instanceof GraphQLNamedType graphQLNamedTypeA && typeB instanceof GraphQLNamedType graphQLNamedTypeB) {
+                return graphQLNamedTypeA.getName().equals(graphQLNamedTypeB.getName());
+            } else if (typeA instanceof GraphQLList graphQLListA && typeB instanceof GraphQLList graphQLListB) {
+                return typeEquals(graphQLListA.getWrappedType(), graphQLListB.getWrappedType());
             }
 
-            return false;
+            return typeA.equals(typeB);
         }
 
         private Stream<BrAPIObjectProperty> extractProperties(BrAPIType brAPIType) {
@@ -745,6 +790,7 @@ public class GraphQLGenerator {
                     .description(property.getDescription());
 
                 return createInputType(property.getType())
+                    .mapResult(this::asInputTypeReference)
                     .onSuccessDoWithResult(builder::type)
                     .map(() -> success(builder.build()));
             }
@@ -822,8 +868,8 @@ public class GraphQLGenerator {
             };
         }
 
-        private Response<GraphQLObjectType> addObjectType(GraphQLObjectType type) {
-            objectOutputTypes.put(type.getName(), type);
+        private Response<GraphQLNamedOutputType> addObjectType(GraphQLNamedOutputType type) {
+            outputTypes.put(type.getName(), type);
 
             return success(type);
         }
@@ -952,17 +998,17 @@ public class GraphQLGenerator {
             return false;
         }
 
-        private GraphQLOutputType createListResponse(boolean paged, GraphQLObjectType graphQLObjectType) {
-            String name = String.format(options.getQueryType().getListQuery().getResponseTypeNameForType(graphQLObjectType.getName()));
+        private GraphQLOutputType createListResponse(boolean paged, GraphQLNamedOutputType graphQLNamedOutputType) {
+            String name = String.format(options.getQueryType().getListQuery().getResponseTypeNameForType(graphQLNamedOutputType.getName()));
 
-            if (objectOutputTypes.containsKey(name)) {
+            if (outputTypes.containsKey(name)) {
                 // TODO possible that the cache version is paged and this is not, and vise versa
-                return objectOutputTypes.get(name);
+                return outputTypes.get(name);
             }
 
             GraphQLObjectType.Builder builder = newObject()
                 .name(name)
-                .field(createListDataField(graphQLObjectType));
+                .field(createListDataField(graphQLNamedOutputType));
 
             if (paged) {
                 builder.field(newFieldDefinition()
@@ -976,10 +1022,10 @@ public class GraphQLGenerator {
             return addObjectType(builder.build()).getResult();
         }
 
-        private GraphQLFieldDefinition createListDataField(GraphQLObjectType graphQLObjectType) {
+        private GraphQLFieldDefinition createListDataField(GraphQLNamedOutputType graphQLNamedOutputType) {
             return newFieldDefinition()
                 .name(options.getQueryType().getListQuery().getDataFieldName())
-                .type(GraphQLList.list(GraphQLTypeReference.typeRef(graphQLObjectType.getName())))
+                .type(GraphQLList.list(GraphQLTypeReference.typeRef(graphQLNamedOutputType.getName())))
                 .build();
         }
 

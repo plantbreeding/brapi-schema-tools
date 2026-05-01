@@ -151,7 +151,6 @@ properties:
             scale: none
         ValidValuesCategory:
             validValues: none
-
         Variant:
             alleleMatrices: none
             calls: none
