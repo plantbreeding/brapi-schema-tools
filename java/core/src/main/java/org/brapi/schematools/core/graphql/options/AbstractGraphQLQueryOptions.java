@@ -77,7 +77,8 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull String name) {
-        return input.getOrDefault(name, true) ;
+        Boolean value = input.get(name);
+        return value != null ? value : true ;
     }
 
     /**

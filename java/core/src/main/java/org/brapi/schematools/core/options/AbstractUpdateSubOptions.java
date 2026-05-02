@@ -59,7 +59,8 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public final boolean isMultipleFor(@NonNull String name) {
-        return multipleFor.getOrDefault(name, multiple);
+        Boolean value = multipleFor.get(name);
+        return value != null ? value : multiple;
     }
 
     /**
@@ -94,7 +95,8 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public final boolean isUsingAdditionalProperties(@NonNull String name) {
-        return useAdditionalProperties.getOrDefault(name, multiple);
+        Boolean value = useAdditionalProperties.get(name);
+        return value != null ? value : multiple;
     }
 
 

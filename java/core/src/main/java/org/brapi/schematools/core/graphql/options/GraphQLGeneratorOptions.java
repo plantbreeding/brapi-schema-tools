@@ -385,7 +385,8 @@ public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
      * @return {@code true} if the possible types of a 'OneOf' type are merged into a single type.
      */
     public final boolean isMergingOneOfType(BrAPIClass type) {
-        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
+        Boolean value = mergingOneOfTypeFor.get(type.getName());
+        return value != null ? value : mergeOneOfType ;
     }
 
     /**

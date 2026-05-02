@@ -190,6 +190,14 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertTrue(options.getSearch().isPagedFor("AlleleMatrix"),
             "search.paged.AlleleMatrix removed: should fall back to pagedDefault=true");
 
+        // listGet.inputFor.BreedingMethod was false; after null-removal it falls back to true.
+        assertTrue(options.getListGet().hasInputFor("BreedingMethod"),
+            "listGet.inputFor.BreedingMethod removed: should fall back to true");
+
+        // listGet.pagedToken.Call was true; after null-removal it falls back to pagedTokenDefault: false.
+        assertFalse(options.getListGet().hasPageTokenFor("Call"),
+            "listGet.pagedToken.Call removed: should fall back to pagedTokenDefault=false");
+
         // listGet.propertyFromRequestFor.CallSet was removed (outer null).
         // Every property lookup for CallSet now falls back to propertiesFromRequest: true.
         assertTrue(options.getListGet().isUsingPropertyFromRequestFor("CallSet", "commonCropNames"),

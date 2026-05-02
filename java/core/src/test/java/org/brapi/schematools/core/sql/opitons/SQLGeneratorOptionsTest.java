@@ -14,6 +14,7 @@ import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -99,6 +100,71 @@ class SQLGeneratorOptionsTest extends OptionsTestBase {
             fail(e.getMessage());
         }
 
+    }
+
+    /**
+     * Verifies that supplying {@code null} (~) as a map value in an override YAML
+     * removes that entry from the base map, so subsequent lookups fall back to the
+     * appropriate default.
+     */
+    @SuppressWarnings("null")
+    @Test
+    void overrideWithRemoval() {
+        SQLGeneratorOptions options = null;
+        try {
+            options = SQLGeneratorOptions.load(
+                Path.of(ClassLoader.getSystemResource("SQLGenerator/sql-remove-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+
+        checkValidation(options);
+
+        // clusteringFor.Observation.observationTimeStamp was true; after null-removal the
+        // Observation entry is fully removed (its only key gone → empty map removed).
+        // getClusteringPropertiesFor now uses only the base clustering list ("commonCropName"),
+        // so observationTimeStamp is NOT returned.
+        BrAPIObjectType observationType = BrAPIObjectType.builder()
+            .name("Observation")
+            .properties(java.util.List.of(
+                BrAPIObjectProperty.builder().name("observationTimeStamp").build(),
+                BrAPIObjectProperty.builder().name("commonCropName").build()
+            ))
+            .build();
+
+        assertTrue(
+            options.getProperties().getClusteringPropertiesFor(observationType)
+                .stream().noneMatch(p -> p.getName().equals("observationTimeStamp")),
+            "clusteringFor.Observation.observationTimeStamp removed: should not appear in clustering properties");
+
+        assertTrue(
+            options.getProperties().getClusteringPropertiesFor(observationType)
+                .stream().anyMatch(p -> p.getName().equals("commonCropName")),
+            "commonCropName is in base clustering list: should still appear");
+
+        // PropertyOptions.isLinkFor null-removal – tested programmatically.
+        // Step 1: load with id.linkFor.Trial=false (explicit false overrides the default link=true).
+        try {
+            SQLGeneratorOptions opts2 = SQLGeneratorOptions.load(
+                new ByteArrayInputStream("properties:\n  id:\n    linkFor:\n      Trial: false\n".getBytes()));
+
+            assertFalse(opts2.getProperties().getId().isLinkFor("Trial"),
+                "id.linkFor.Trial=false: should return false");
+
+            // Step 2: apply null-removal override – removes Trial from linkFor.
+            SQLGeneratorOptions removeOverride = ConfigurationUtils.load(
+                new ByteArrayInputStream("properties:\n  id:\n    linkFor:\n      Trial: ~\n".getBytes()),
+                SQLGeneratorOptions.class);
+            opts2.override(removeOverride);
+
+            // After removal, isLinkFor falls back to id.link=true.
+            assertTrue(opts2.getProperties().getId().isLinkFor("Trial"),
+                "id.linkFor.Trial removed: should fall back to id.link=true");
+
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test

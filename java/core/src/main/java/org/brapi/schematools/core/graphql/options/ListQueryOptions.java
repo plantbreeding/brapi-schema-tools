@@ -96,7 +96,8 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault) ;
+        Boolean value = paged.get(name);
+        return value != null ? value : pagedDefault ;
     }
 
     /**

@@ -80,7 +80,8 @@ public class AbstractListOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault);
+        Boolean value = paged.get(name);
+        return value != null ? value : pagedDefault;
     }
 
     /**
@@ -130,7 +131,8 @@ public class AbstractListOptions extends AbstractSubOptions {
         Map<String, Boolean> map = propertyFromRequestFor.get(typeName) ;
 
         if (map != null) {
-            return map.getOrDefault(propertyName, propertiesFromRequest) ;
+            Boolean value = map.get(propertyName);
+            return value != null ? value : propertiesFromRequest ;
         }
 
         return propertiesFromRequest ;
@@ -147,7 +149,8 @@ public class AbstractListOptions extends AbstractSubOptions {
     public boolean isUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
         if (map != null) {
-            return map.getOrDefault(property.getName(), propertiesFromRequest);
+            Boolean value = map.get(property.getName());
+            return value != null ? value : propertiesFromRequest;
         }
         return propertiesFromRequest;
     }

@@ -1,0 +1,13 @@
+# Override file that uses null (~) to REMOVE entries from maps.
+# Each null value signals that the corresponding key should be deleted
+# from the base map, causing that lookup to fall back to the default behaviour.
+
+properties:
+    clusteringFor:
+        # Remove the observationTimeStamp inner entry from Observation.
+        # Default was true; after removal isClusteringProperty falls back to checking
+        # the base clustering list, which contains only "commonCropName".
+        # observationTimeStamp is NOT in clustering → returns false.
+        Observation:
+            observationTimeStamp: ~
+

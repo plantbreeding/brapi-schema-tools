@@ -103,7 +103,8 @@ public abstract class AbstractGeneratorOptions implements Options, ValidatableAg
      */
     @JsonIgnore
     public boolean isGeneratingFor(@NonNull String name) {
-        return generateFor.getOrDefault(name, generate) ;
+        Boolean value = generateFor.get(name);
+        return value != null ? value : generate ;
     }
 
     /**

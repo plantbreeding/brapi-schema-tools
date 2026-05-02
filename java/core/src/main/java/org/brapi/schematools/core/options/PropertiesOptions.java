@@ -317,7 +317,7 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
 
         // First, add properties from the base clustering list that aren't explicitly set to false
         for (String clusteringPropertyName : clustering) {
-            if (typeClusteringConfig == null || typeClusteringConfig.getOrDefault(clusteringPropertyName, true)) {
+            if (typeClusteringConfig == null || Boolean.TRUE.equals(typeClusteringConfig.getOrDefault(clusteringPropertyName, true))) {
                 if (propertyMap.containsKey(clusteringPropertyName)) {
                     properties.add(propertyMap.get(clusteringPropertyName));
                 }
@@ -352,7 +352,8 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         Map<String, Boolean> map = clusteringFor.get(brAPIObjectType.getName());
 
         if (map != null) {
-            return map.getOrDefault(property.getName(), clustering.contains(property.getName()));
+            Boolean value = map.get(property.getName());
+            return value != null ? value : clustering.contains(property.getName());
         }
 
         return clustering.contains(property.getName());

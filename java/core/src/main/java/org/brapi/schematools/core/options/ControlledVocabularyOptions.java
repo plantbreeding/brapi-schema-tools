@@ -177,7 +177,8 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
         Map<String, Boolean> map = generateFor.get(typeName) ;
 
         if (map != null) {
-            return map.getOrDefault(propertyName, generate) ;
+            Boolean value = map.get(propertyName);
+            return value != null ? value : generate ;
         }
 
         return generate ;
@@ -250,7 +251,8 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
         Map<String, Boolean> map = pagedFor.get(typeName) ;
 
         if (map != null) {
-            return map.getOrDefault(propertyName, pagedDefault) ;
+            Boolean value = map.get(propertyName);
+            return value != null ? value : pagedDefault ;
         }
 
         return pagedDefault ;

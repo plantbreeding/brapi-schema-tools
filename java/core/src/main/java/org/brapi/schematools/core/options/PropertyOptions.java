@@ -100,7 +100,8 @@ public class PropertyOptions implements Options {
      */
     @JsonIgnore
     public final boolean isLinkFor(String name) {
-        return linkFor.getOrDefault(name, link) ;
+        Boolean value = linkFor.get(name);
+        return value != null ? value : link ;
     }
 
     /**

@@ -344,7 +344,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
      */
     @JsonIgnore
     public final boolean isGeneratingNewRequestFor(@NonNull String name) {
-        return generateNewRequestFor.getOrDefault(name, generateNewRequest) ;
+        Boolean value = generateNewRequestFor.get(name);
+        return value != null ? value : generateNewRequest ;
     }
 
     /**

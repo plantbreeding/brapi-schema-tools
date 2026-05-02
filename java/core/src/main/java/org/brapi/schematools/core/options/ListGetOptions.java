@@ -68,7 +68,8 @@ public class ListGetOptions extends AbstractListOptions {
      */
     @JsonIgnore
     public boolean hasInputFor(@NonNull String name) {
-        return inputFor.getOrDefault(name, true);
+        Boolean value = inputFor.get(name);
+        return value != null ? value : true;
     }
 
     /**
@@ -114,7 +115,8 @@ public class ListGetOptions extends AbstractListOptions {
      */
     @JsonIgnore
     public final boolean hasPageTokenFor(@NonNull String name) {
-        return pagedToken.getOrDefault(name, pagedTokenDefault);
+        Boolean value = pagedToken.get(name);
+        return value != null ? value : pagedTokenDefault;
     }
 
     /**

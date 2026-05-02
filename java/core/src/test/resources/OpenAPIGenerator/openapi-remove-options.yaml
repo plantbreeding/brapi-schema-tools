@@ -30,6 +30,14 @@ search:
         AlleleMatrix: ~
 
 listGet:
+    # Remove the BreedingMethod entry from inputFor.
+    # Default was false; after removal hasInputFor falls back to hardcoded default: true.
+    inputFor:
+        BreedingMethod: ~
+    # Remove the Call entry from pagedToken.
+    # Default was true; after removal hasPageTokenFor falls back to pagedTokenDefault: false.
+    pagedToken:
+        Call: ~
     propertyFromRequestFor:
         # Remove the entire CallSet type entry (outer null).
         # Previously the CallSet map held several false entries; after removal each property
