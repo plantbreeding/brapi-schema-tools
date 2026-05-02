@@ -70,6 +70,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -211,6 +214,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -343,6 +349,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -469,6 +478,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -811,6 +823,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -1023,6 +1038,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"

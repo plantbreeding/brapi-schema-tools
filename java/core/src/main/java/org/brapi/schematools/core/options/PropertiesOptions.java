@@ -72,10 +72,22 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                 pui.override(coreOverride.pui);
             }
 
+            if (coreOverride.clustering != null && !coreOverride.clustering.isEmpty()) {
+                clustering.addAll(coreOverride.clustering.stream()
+                    .filter(e -> !clustering.contains(e))
+                    .toList());
+            }
+
             if (coreOverride.clusteringFor != null) {
                 coreOverride.clusteringFor.forEach((key, value) -> {
-                    if (clusteringFor.containsKey(key)) {
-                        clusteringFor.get(key).putAll(value);
+                    if (value == null) {
+                        clusteringFor.remove(key);
+                    } else if (clusteringFor.containsKey(key)) {
+                        value.forEach((innerKey, innerValue) -> {
+                            if (innerValue == null) clusteringFor.get(key).remove(innerKey);
+                            else clusteringFor.get(key).put(innerKey, innerValue);
+                        });
+                        if (clusteringFor.get(key).isEmpty()) clusteringFor.remove(key);
                     } else {
                         clusteringFor.put(key, new LinkedHashMap<>(value));
                     }

@@ -42,13 +42,21 @@ public class ListGetOptions extends AbstractListOptions {
     public void override(ListGetOptions overrideOptions) {
         super.override(overrideOptions);
 
-        inputFor.putAll(overrideOptions.inputFor);
+        if (overrideOptions.inputFor != null) {
+            overrideOptions.inputFor.forEach((key, value) -> {
+                if (value == null) inputFor.remove(key);
+                else inputFor.put(key, value);
+            });
+        }
 
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedTokenDefault(overrideOptions.pagedTokenDefault);
         }
         if (overrideOptions.pagedToken != null) {
-            pagedToken.putAll(overrideOptions.pagedToken);
+            overrideOptions.pagedToken.forEach((key, value) -> {
+                if (value == null) pagedToken.remove(key);
+                else pagedToken.put(key, value);
+            });
         }
     }
 

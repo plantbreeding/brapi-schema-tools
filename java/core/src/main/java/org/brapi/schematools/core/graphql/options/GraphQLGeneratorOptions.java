@@ -115,7 +115,12 @@ public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
             setMergeOneOfType(overrideOptions.mergeOneOfType) ;
         }
 
-        mergingOneOfTypeFor.putAll(overrideOptions.mergingOneOfTypeFor);
+        if (overrideOptions.mergingOneOfTypeFor != null) {
+            overrideOptions.mergingOneOfTypeFor.forEach((key, value) -> {
+                if (value == null) mergingOneOfTypeFor.remove(key);
+                else mergingOneOfTypeFor.put(key, value);
+            });
+        }
 
         return this ;
     }

@@ -48,7 +48,12 @@ public class IdsOptions implements Options {
             setUseIDType(overrideOptions.useIDType);
         }
 
-        fieldFor.putAll(overrideOptions.fieldFor) ;
+        if (overrideOptions.fieldFor != null) {
+            overrideOptions.fieldFor.forEach((key, value) -> {
+                if (value == null) fieldFor.remove(key);
+                else fieldFor.put(key, value);
+            });
+        }
     }
 
     /**

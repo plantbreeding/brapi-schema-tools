@@ -1,0 +1,41 @@
+# Override file that uses null (~) to REMOVE entries from maps.
+# Each null value signals that the corresponding key should be deleted
+# from the base map, causing that lookup to fall back to the default behaviour.
+
+# Remove the GeoJSONGeometry entry from mergingOneOfTypeFor.
+# Default override was false; after removal it falls back to mergeOneOfType: true.
+mergingOneOfTypeFor:
+    GeoJSONGeometry: ~
+
+# Remove the pluralFor.AlleleMatrix entry (was "AlleleMatrix").
+# After removal toPlural("AlleleMatrix") is used → "AlleleMatrices".
+pluralFor:
+    AlleleMatrix: ~
+
+queryType:
+    listQuery:
+        # Remove the BreedingMethod entry from listQuery.paged.
+        # Default override was false; after removal it falls back to pagedDefault: true.
+        paged:
+            BreedingMethod: ~
+        # Remove the BreedingMethod entry from listQuery.input.
+        # Default override was false; after removal it falls back to hasInputFor default: true.
+        input:
+            BreedingMethod: ~
+
+properties:
+    ids:
+        # Remove the GermplasmAttribute entry from ids.fieldFor.
+        # Default was "attributeDbId"; after removal it falls back to nameFormat
+        # "%sDbId" applied to "GermplasmAttribute" → "germplasmAttributeDbId".
+        fieldFor:
+            GermplasmAttribute: ~
+    linkTypeFor:
+        # Remove the entire CallSet type entry (outer null).
+        # Previously CallSet.calls was "sub-query"; after removal the default logic applies → EMBEDDED.
+        CallSet: ~
+        # Remove only the germplasm inner property from BreedingMethod (inner null).
+        # Previously BreedingMethod.germplasm was "none"; after removal → EMBEDDED.
+        BreedingMethod:
+            germplasm: ~
+

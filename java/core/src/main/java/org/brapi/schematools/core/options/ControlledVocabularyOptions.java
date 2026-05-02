@@ -71,20 +71,32 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
 
         if (overrideOptions.generateFor != null) {
             overrideOptions.generateFor.forEach((key, value) -> {
-                if (generateFor.containsKey(key)) {
-                    generateFor.get(key).putAll(value) ;
+                if (value == null) {
+                    generateFor.remove(key);
+                } else if (generateFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) generateFor.get(key).remove(innerKey);
+                        else generateFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (generateFor.get(key).isEmpty()) generateFor.remove(key);
                 } else {
-                    generateFor.put(key, new HashMap<>(value)) ;
+                    generateFor.put(key, new HashMap<>(value));
                 }
             });
         }
 
         if (overrideOptions.pagedFor != null) {
             overrideOptions.pagedFor.forEach((key, value) -> {
-                if (pagedFor.containsKey(key)) {
-                    pagedFor.get(key).putAll(value) ;
+                if (value == null) {
+                    pagedFor.remove(key);
+                } else if (pagedFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) pagedFor.get(key).remove(innerKey);
+                        else pagedFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (pagedFor.get(key).isEmpty()) pagedFor.remove(key);
                 } else {
-                    pagedFor.put(key, new HashMap<>(value)) ;
+                    pagedFor.put(key, new HashMap<>(value));
                 }
             });
         }
@@ -94,7 +106,8 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
-        generateFor.keySet().forEach(name -> {
+        generateFor.forEach((name, generateForInner) -> {
+            if (generateForInner == null) return; // null = removal marker, skip validation
             validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
                 String.format("Invalid Primary Model name '%s' set for 'generateFor' on %s",
                     name,
@@ -104,7 +117,7 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
             BrAPIClass brAPIClass = brAPIClassCache.getBrAPIClass(name);
 
             if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
-                generateFor.get(name).keySet().forEach(propertyName -> {
+                generateForInner.keySet().forEach(propertyName -> {
                     validation.assertTrue(brAPIObjectType.getProperties().stream().anyMatch(property -> propertyName.equals(property.getName())),
                         String.format("Invalid Property name '%s' for BrAPIObjectType '%s' set for 'generateFor' on %s. Possible properties are: %s",
                             propertyName,
@@ -116,7 +129,8 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
             }
         }) ;
 
-        pagedFor.keySet().forEach(name -> {
+        pagedFor.forEach((name, pagedForInner) -> {
+            if (pagedForInner == null) return; // null = removal marker, skip validation
             validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
                 String.format("Invalid Primary Model name '%s' set for 'pagedFor' on %s",
                     name,
@@ -126,7 +140,7 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
             BrAPIClass brAPIClass = brAPIClassCache.getBrAPIClass(name);
 
             if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
-                pagedFor.get(name).keySet().forEach(propertyName -> {
+                pagedForInner.keySet().forEach(propertyName -> {
                     validation.assertTrue(brAPIObjectType.getProperties().stream().anyMatch(property -> propertyName.equals(property.getName())),
                         String.format("Invalid Property name '%s' for BrAPIObjectType '%s' set for 'pagedFor' on %s. Possible properties are: %s",
                             propertyName,

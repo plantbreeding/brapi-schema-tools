@@ -123,11 +123,17 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         }
 
         if (overrideOptions.supplementalSpecificationFor != null) {
-            supplementalSpecificationFor.putAll(overrideOptions.supplementalSpecificationFor) ;
+            overrideOptions.supplementalSpecificationFor.forEach((key, value) -> {
+                if (value == null) supplementalSpecificationFor.remove(key);
+                else supplementalSpecificationFor.put(key, value);
+            });
         }
 
         if (overrideOptions.generateNewRequestFor != null) {
-            generateNewRequestFor.putAll(overrideOptions.generateNewRequestFor) ;
+            overrideOptions.generateNewRequestFor.forEach((key, value) -> {
+                if (value == null) generateNewRequestFor.remove(key);
+                else generateNewRequestFor.put(key, value);
+            });
         }
 
         if (overrideOptions.newRequestNameFormat != null) {
@@ -147,21 +153,33 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         }
 
         if (overrideOptions.tagFor != null) {
-            tagFor.putAll(overrideOptions.tagFor) ;
+            overrideOptions.tagFor.forEach((key, value) -> {
+                if (value == null) tagFor.remove(key);
+                else tagFor.put(key, value);
+            });
         }
 
         if (overrideOptions.defaultMediaType != null) {
             defaultMediaType = overrideOptions.defaultMediaType ;
         }
 
-        if (overrideOptions.mediaTypeForProperty != null) {
-            mediaTypeForType.putAll(overrideOptions.mediaTypeForType) ;
+        if (overrideOptions.mediaTypeForType != null) {
+            overrideOptions.mediaTypeForType.forEach((key, value) -> {
+                if (value == null) mediaTypeForType.remove(key);
+                else mediaTypeForType.put(key, value);
+            });
         }
 
         if (overrideOptions.mediaTypeForProperty != null) {
             overrideOptions.mediaTypeForProperty.forEach((key, value) -> {
-                if (mediaTypeForProperty.containsKey(key)) {
-                    mediaTypeForProperty.get(key).putAll(value);
+                if (value == null) {
+                    mediaTypeForProperty.remove(key);
+                } else if (mediaTypeForProperty.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) mediaTypeForProperty.get(key).remove(innerKey);
+                        else mediaTypeForProperty.get(key).put(innerKey, innerValue);
+                    });
+                    if (mediaTypeForProperty.get(key).isEmpty()) mediaTypeForProperty.remove(key);
                 } else {
                     mediaTypeForProperty.put(key, new LinkedHashMap<>(value));
                 }
@@ -193,28 +211,34 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         Validation validation = Validation.valid() ;
 
-        generateNewRequestFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
-                String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
+        generateNewRequestFor.forEach((name, value) -> {
+            if (value != null) {
+                validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                    String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
+                            name,
+                            this.getClass().getSimpleName()
+                        )) ;
+            }
+        }) ;
+
+        getPathItemNameFor().forEach((name, value) -> {
+            if (value != null) {
+                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                    String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
                         name,
                         this.getClass().getSimpleName()
                     )) ;
+            }
         }) ;
 
-        getPathItemNameFor().keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
-                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
-                    name,
-                    this.getClass().getSimpleName()
-                )) ;
-        }) ;
-
-        tagFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
-                String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
-                    name,
-                    this.getClass().getSimpleName()
-                )) ;
+        tagFor.forEach((name, value) -> {
+            if (value != null) {
+                validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                    String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
+                        name,
+                        this.getClass().getSimpleName()
+                    )) ;
+            }
         }) ;
 
         validation.merge(getSingleGet().validateAgainstCache(brAPIClassCache))

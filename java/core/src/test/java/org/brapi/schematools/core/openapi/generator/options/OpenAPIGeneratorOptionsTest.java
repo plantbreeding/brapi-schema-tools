@@ -145,6 +145,101 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         );
     }
 
+    /**
+     * Verifies that supplying {@code null} (~) as a map value in an override YAML
+     * removes that entry from the base map, so subsequent lookups fall back to the
+     * appropriate default.
+     */
+    @SuppressWarnings("null")
+    @Test
+    void overrideWithRemoval() {
+        OpenAPIGeneratorOptions options = null;
+        try {
+            options = OpenAPIGeneratorOptions.load(
+                Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-remove-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+
+        // Validate the structure is still correct even after removals.
+        checkValidation(options);
+
+        // generateNewRequestFor.AlleleMatrix was false; after null-removal it falls back to
+        // generateNewRequest: true → isGeneratingNewRequestFor should now return true.
+        assertTrue(options.isGeneratingNewRequestFor("AlleleMatrix"),
+            "generateNewRequestFor.AlleleMatrix removed: should fall back to generateNewRequest=true");
+
+        // pluralFor.AlleleMatrix was "AlleleMatrix"; after null-removal the English inflector
+        // produces "AlleleMatrices".
+        assertEquals("AlleleMatrices", options.getPluralFor("AlleleMatrix"),
+            "pluralFor.AlleleMatrix removed: should fall back to English inflector");
+
+        // pathItemNameFor.PedigreeNode was "/pedigree"; after null-removal the computed default
+        // is used → "/" + toLowerCase(getPluralFor("PedigreeNode")) = "/pedigreenodes".
+        assertEquals("/pedigreenodes", options.getPathItemNameFor("PedigreeNode"),
+            "pathItemNameFor.PedigreeNode removed: should fall back to computed default");
+
+        // singleGet.generateFor.AlleleMatrix was false; after null-removal it falls back to
+        // singleGet.generate: true.
+        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"),
+            "singleGet.generateFor.AlleleMatrix removed: should fall back to generate=true");
+
+        // search.paged.AlleleMatrix was false; after null-removal it falls back to
+        // search.pagedDefault: true.
+        assertTrue(options.getSearch().isPagedFor("AlleleMatrix"),
+            "search.paged.AlleleMatrix removed: should fall back to pagedDefault=true");
+
+        // listGet.propertyFromRequestFor.CallSet was removed (outer null).
+        // Every property lookup for CallSet now falls back to propertiesFromRequest: true.
+        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("CallSet", "commonCropNames"),
+            "listGet.propertyFromRequestFor.CallSet removed: commonCropNames should fall back to propertiesFromRequest=true");
+        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("CallSet", "germplasmNames"),
+            "listGet.propertyFromRequestFor.CallSet removed: germplasmNames should fall back to propertiesFromRequest=true");
+
+        // listGet.propertyFromRequestFor.Germplasm.familyCodes was false; after null-removal of
+        // that inner key it falls back to propertiesFromRequest: true.
+        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("Germplasm", "familyCodes"),
+            "listGet.propertyFromRequestFor.Germplasm.familyCodes removed: should fall back to propertiesFromRequest=true");
+        // Other Germplasm entries that are still explicitly false should be unchanged.
+        assertFalse(options.getListGet().isUsingPropertyFromRequestFor("Germplasm", "programNames"),
+            "listGet.propertyFromRequestFor.Germplasm.programNames was not removed: should still be false");
+
+        // put.multipleFor.Call was true; after null-removal it falls back to put.multiple: false.
+        assertFalse(options.getPut().isMultipleFor("Call"),
+            "put.multipleFor.Call removed: should fall back to multiple=false");
+
+        // put.useAdditionalProperties.Cross was true; after null-removal it falls back to
+        // put.multiple: false.
+        assertFalse(options.getPut().isUsingAdditionalProperties("Cross"),
+            "put.useAdditionalProperties.Cross removed: should fall back to multiple=false");
+
+        // properties.linkTypeFor.CallSet was removed (outer null).
+        // getLinkTypeFor falls back to the default relationship-type logic → EMBEDDED
+        // (the test property has no relationship type set, which defaults to ONE_TO_ONE,
+        //  and the dereferenced type is unknown here → EMBEDDED).
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow(),
+            "properties.linkTypeFor.CallSet removed: should fall back to default EMBEDDED");
+
+        // properties.linkTypeFor.BreedingMethod.germplasm was removed (inner null).
+        // The BreedingMethod type entry still exists but germplasm key is gone → EMBEDDED.
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("germplasm").build()).getResultOrThrow(),
+            "properties.linkTypeFor.BreedingMethod.germplasm removed: should fall back to default EMBEDDED");
+
+        // Sibling entries that were NOT removed must retain their original values.
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build()).getResultOrThrow(),
+            "properties.linkTypeFor.BreedingMethod.pedigreeNodes was not removed: should still be NONE");
+    }
+
     @Test
     void compare() {
         try {
@@ -285,3 +380,5 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         );
     }
 }
+
+

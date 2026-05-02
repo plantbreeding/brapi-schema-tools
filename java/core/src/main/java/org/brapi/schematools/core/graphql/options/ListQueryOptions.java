@@ -55,7 +55,12 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
             setPagedDefault(overrideOptions.pagedDefault); ;
         }
 
-        paged.putAll(overrideOptions.paged);
+        if (overrideOptions.paged != null) {
+            overrideOptions.paged.forEach((key, value) -> {
+                if (value == null) paged.remove(key);
+                else paged.put(key, value);
+            });
+        }
 
         if (overrideOptions.pagingInputName != null) {
             setPagingInputName(overrideOptions.pagingInputName); ;

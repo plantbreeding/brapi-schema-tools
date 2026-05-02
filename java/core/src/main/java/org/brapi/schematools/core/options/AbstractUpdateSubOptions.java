@@ -37,11 +37,17 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         }
 
         if (overrideOptions.multipleFor != null) {
-            multipleFor.putAll(overrideOptions.multipleFor);
+            overrideOptions.multipleFor.forEach((key, value) -> {
+                if (value == null) multipleFor.remove(key);
+                else multipleFor.put(key, value);
+            });
         }
 
         if (overrideOptions.useAdditionalProperties != null) {
-            useAdditionalProperties.putAll(overrideOptions.useAdditionalProperties);
+            overrideOptions.useAdditionalProperties.forEach((key, value) -> {
+                if (value == null) useAdditionalProperties.remove(key);
+                else useAdditionalProperties.put(key, value);
+            });
         }
     }
 
