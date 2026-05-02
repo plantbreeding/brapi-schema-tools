@@ -46,7 +46,10 @@ public class AbstractListOptions extends AbstractSubOptions {
             setPagedDefault(overrideOptions.pagedDefault);
         }
 
-        paged.putAll(overrideOptions.paged);
+        overrideOptions.paged.forEach((key, value) -> {
+            if (value == null) paged.remove(key);
+            else paged.put(key, value);
+        });
 
         if (overrideOptions.propertiesFromRequest != null) {
             setPropertiesFromRequest(overrideOptions.propertiesFromRequest);
@@ -54,8 +57,14 @@ public class AbstractListOptions extends AbstractSubOptions {
 
         if (overrideOptions.propertyFromRequestFor != null) {
             overrideOptions.propertyFromRequestFor.forEach((key, value) -> {
-                if (propertyFromRequestFor.containsKey(key)) {
-                    propertyFromRequestFor.get(key).putAll(value);
+                if (value == null) {
+                    propertyFromRequestFor.remove(key);
+                } else if (propertyFromRequestFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) propertyFromRequestFor.get(key).remove(innerKey);
+                        else propertyFromRequestFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (propertyFromRequestFor.get(key).isEmpty()) propertyFromRequestFor.remove(key);
                 } else {
                     propertyFromRequestFor.put(key, new HashMap<>(value));
                 }
@@ -71,7 +80,8 @@ public class AbstractListOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault);
+        Boolean value = paged.get(name);
+        return value != null ? value : pagedDefault;
     }
 
     /**
@@ -121,7 +131,8 @@ public class AbstractListOptions extends AbstractSubOptions {
         Map<String, Boolean> map = propertyFromRequestFor.get(typeName) ;
 
         if (map != null) {
-            return map.getOrDefault(propertyName, propertiesFromRequest) ;
+            Boolean value = map.get(propertyName);
+            return value != null ? value : propertiesFromRequest ;
         }
 
         return propertiesFromRequest ;
@@ -138,7 +149,8 @@ public class AbstractListOptions extends AbstractSubOptions {
     public boolean isUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
         if (map != null) {
-            return map.getOrDefault(property.getName(), propertiesFromRequest);
+            Boolean value = map.get(property.getName());
+            return value != null ? value : propertiesFromRequest;
         }
         return propertiesFromRequest;
     }

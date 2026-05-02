@@ -152,6 +152,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {

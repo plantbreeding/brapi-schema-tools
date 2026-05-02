@@ -95,6 +95,73 @@ class GraphQLGeneratorOptionsTest extends OptionsTestBase {
         );
     }
 
+    /**
+     * Verifies that supplying {@code null} (~) as a map value in an override YAML
+     * removes that entry from the base map, so subsequent lookups fall back to the
+     * appropriate default.
+     */
+    @SuppressWarnings("null")
+    @Test
+    void overrideWithRemoval() {
+        GraphQLGeneratorOptions options = null;
+        try {
+            options = GraphQLGeneratorOptions.load(
+                Path.of(ClassLoader.getSystemResource("GraphQLGenerator/graphql-remove-options.yaml").toURI()));
+        } catch (IOException | URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+
+        checkValidation(options);
+
+        // mergingOneOfTypeFor.GeoJSONGeometry was false; after null-removal it falls back to
+        // mergeOneOfType: true.
+        assertTrue(options.isMergingOneOfType(BrAPIObjectType.builder().name("GeoJSONGeometry").build()),
+            "mergingOneOfTypeFor.GeoJSONGeometry removed: should fall back to mergeOneOfType=true");
+
+        // pluralFor.AlleleMatrix was "AlleleMatrix"; after null-removal the English inflector
+        // produces "AlleleMatrices".
+        assertEquals("AlleleMatrices", options.getPluralFor("AlleleMatrix"),
+            "pluralFor.AlleleMatrix removed: should fall back to English inflector");
+
+        // listQuery.paged.BreedingMethod was false; after null-removal it falls back to
+        // listQuery.pagedDefault: true.
+        assertTrue(options.getQueryType().getListQuery().isPagedFor("BreedingMethod"),
+            "listQuery.paged.BreedingMethod removed: should fall back to pagedDefault=true");
+
+        // listQuery.input.BreedingMethod was false; after null-removal it falls back to the
+        // default hasInputFor which returns true when no entry is present.
+        assertTrue(options.getQueryType().getListQuery().hasInputFor("BreedingMethod"),
+            "listQuery.input.BreedingMethod removed: should fall back to default true");
+
+        // properties.ids.fieldFor.GermplasmAttribute was "attributeDbId"; after null-removal it
+        // falls back to nameFormat "%sDbId" applied to "GermplasmAttribute" → "germplasmAttributeDbId".
+        assertEquals("germplasmAttributeDbId",
+            options.getProperties().getIds().getIDFieldFor("GermplasmAttribute"),
+            "ids.fieldFor.GermplasmAttribute removed: should fall back to nameFormat");
+
+        // properties.linkTypeFor.CallSet was removed (outer null) → default EMBEDDED.
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("CallSet").build(),
+                BrAPIObjectProperty.builder().name("calls").build()).getResultOrThrow(),
+            "properties.linkTypeFor.CallSet removed: should fall back to default EMBEDDED");
+
+        // properties.linkTypeFor.BreedingMethod.germplasm was removed (inner null) → EMBEDDED.
+        assertEquals(LinkType.EMBEDDED,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("germplasm").build()).getResultOrThrow(),
+            "properties.linkTypeFor.BreedingMethod.germplasm removed: should fall back to default EMBEDDED");
+
+        // Sibling entry NOT removed must retain its original value.
+        assertEquals(LinkType.NONE,
+            options.getProperties().getLinkTypeFor(
+                BrAPIObjectType.builder().name("BreedingMethod").build(),
+                BrAPIObjectProperty.builder().name("pedigreeNodes").build()).getResultOrThrow(),
+            "properties.linkTypeFor.BreedingMethod.pedigreeNodes was not removed: should still be NONE");
+    }
+
     //@Test
     void compare() {
         try {

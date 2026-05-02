@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.brapi.schematools.core.markdown.options.MarkdownGeneratorOptions;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.options.OptionsTestBase;
+import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -78,6 +81,38 @@ class MarkdownGeneratorOptionsTest extends OptionsTestBase {
         checkOptions(options);
 
         assertFalse(options.isAddingGeneratorComments()) ;
+    }
+
+    /**
+     * Verifies that supplying {@code null} (~) as a map value in an override removes that entry
+     * from generateFor, so subsequent lookups via {@code isGeneratingFor(BrAPIType)} fall back
+     * to the class-based default (and ultimately to {@code generate=true}).
+     */
+    @SuppressWarnings("null")
+    @Test
+    void overrideWithRemoval() {
+        try {
+            // Load defaults with generateFor.Trial=false so the key is explicitly in the map.
+            MarkdownGeneratorOptions options = MarkdownGeneratorOptions.load(
+                new ByteArrayInputStream("generateFor:\n  Trial: false\n".getBytes()));
+
+            assertFalse(options.isGeneratingFor(BrAPIObjectType.builder().name("Trial").build()),
+                "generateFor.Trial=false: should return false");
+
+            // Apply null-removal override – removes Trial from generateFor.
+            MarkdownGeneratorOptions removeOverride = ConfigurationUtils.load(
+                new ByteArrayInputStream("generateFor:\n  Trial: ~\n".getBytes()),
+                MarkdownGeneratorOptions.class);
+            options.override(removeOverride);
+
+            // After removal, Trial is no longer in generateFor; isGeneratingFor falls back to
+            // isGeneratingForClass → isGeneratingFor(name) → generate=true.
+            assertTrue(options.isGeneratingFor(BrAPIObjectType.builder().name("Trial").build()),
+                "generateFor.Trial removed: should fall back to generate=true");
+
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test

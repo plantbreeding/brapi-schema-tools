@@ -37,11 +37,17 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         }
 
         if (overrideOptions.multipleFor != null) {
-            multipleFor.putAll(overrideOptions.multipleFor);
+            overrideOptions.multipleFor.forEach((key, value) -> {
+                if (value == null) multipleFor.remove(key);
+                else multipleFor.put(key, value);
+            });
         }
 
         if (overrideOptions.useAdditionalProperties != null) {
-            useAdditionalProperties.putAll(overrideOptions.useAdditionalProperties);
+            overrideOptions.useAdditionalProperties.forEach((key, value) -> {
+                if (value == null) useAdditionalProperties.remove(key);
+                else useAdditionalProperties.put(key, value);
+            });
         }
     }
 
@@ -53,7 +59,8 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public final boolean isMultipleFor(@NonNull String name) {
-        return multipleFor.getOrDefault(name, multiple);
+        Boolean value = multipleFor.get(name);
+        return value != null ? value : multiple;
     }
 
     /**
@@ -88,7 +95,8 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public final boolean isUsingAdditionalProperties(@NonNull String name) {
-        return useAdditionalProperties.getOrDefault(name, multiple);
+        Boolean value = useAdditionalProperties.get(name);
+        return value != null ? value : multiple;
     }
 
 

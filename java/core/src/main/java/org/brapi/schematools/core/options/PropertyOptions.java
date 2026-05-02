@@ -50,20 +50,29 @@ public class PropertyOptions implements Options {
      */
     public void override(PropertyOptions overrideOptions) {
         if (overrideOptions.nameFormat != null) {
-            setNameFormat(overrideOptions.nameFormat); ;
+            setNameFormat(overrideOptions.nameFormat);
         }
 
         if (overrideOptions.pluralNameFormat != null) {
-            setNameFormat(overrideOptions.pluralNameFormat); ;
+            setPluralNameFormat(overrideOptions.pluralNameFormat);
         }
 
         if (overrideOptions.link != null) {
-            setLink(overrideOptions.link); ;
+            setLink(overrideOptions.link);
         }
 
-        linkFor.putAll(overrideOptions.linkFor);
-        propertyFor.putAll(overrideOptions.propertyFor);
-        pluralPropertyFor.putAll(overrideOptions.pluralPropertyFor);
+        overrideOptions.linkFor.forEach((key, value) -> {
+            if (value == null) linkFor.remove(key);
+            else linkFor.put(key, value);
+        });
+        overrideOptions.propertyFor.forEach((key, value) -> {
+            if (value == null) propertyFor.remove(key);
+            else propertyFor.put(key, value);
+        });
+        overrideOptions.pluralPropertyFor.forEach((key, value) -> {
+            if (value == null) pluralPropertyFor.remove(key);
+            else pluralPropertyFor.put(key, value);
+        });
     }
 
     /**
@@ -91,7 +100,8 @@ public class PropertyOptions implements Options {
      */
     @JsonIgnore
     public final boolean isLinkFor(String name) {
-        return linkFor.getOrDefault(name, link) ;
+        Boolean value = linkFor.get(name);
+        return value != null ? value : link ;
     }
 
     /**

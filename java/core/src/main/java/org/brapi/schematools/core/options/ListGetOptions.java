@@ -42,13 +42,21 @@ public class ListGetOptions extends AbstractListOptions {
     public void override(ListGetOptions overrideOptions) {
         super.override(overrideOptions);
 
-        inputFor.putAll(overrideOptions.inputFor);
+        if (overrideOptions.inputFor != null) {
+            overrideOptions.inputFor.forEach((key, value) -> {
+                if (value == null) inputFor.remove(key);
+                else inputFor.put(key, value);
+            });
+        }
 
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedTokenDefault(overrideOptions.pagedTokenDefault);
         }
         if (overrideOptions.pagedToken != null) {
-            pagedToken.putAll(overrideOptions.pagedToken);
+            overrideOptions.pagedToken.forEach((key, value) -> {
+                if (value == null) pagedToken.remove(key);
+                else pagedToken.put(key, value);
+            });
         }
     }
 
@@ -60,7 +68,8 @@ public class ListGetOptions extends AbstractListOptions {
      */
     @JsonIgnore
     public boolean hasInputFor(@NonNull String name) {
-        return inputFor.getOrDefault(name, true);
+        Boolean value = inputFor.get(name);
+        return value != null ? value : true;
     }
 
     /**
@@ -106,7 +115,8 @@ public class ListGetOptions extends AbstractListOptions {
      */
     @JsonIgnore
     public final boolean hasPageTokenFor(@NonNull String name) {
-        return pagedToken.getOrDefault(name, pagedTokenDefault);
+        Boolean value = pagedToken.get(name);
+        return value != null ? value : pagedTokenDefault;
     }
 
     /**

@@ -72,10 +72,22 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                 pui.override(coreOverride.pui);
             }
 
+            if (coreOverride.clustering != null && !coreOverride.clustering.isEmpty()) {
+                clustering.addAll(coreOverride.clustering.stream()
+                    .filter(e -> !clustering.contains(e))
+                    .toList());
+            }
+
             if (coreOverride.clusteringFor != null) {
                 coreOverride.clusteringFor.forEach((key, value) -> {
-                    if (clusteringFor.containsKey(key)) {
-                        clusteringFor.get(key).putAll(value);
+                    if (value == null) {
+                        clusteringFor.remove(key);
+                    } else if (clusteringFor.containsKey(key)) {
+                        value.forEach((innerKey, innerValue) -> {
+                            if (innerValue == null) clusteringFor.get(key).remove(innerKey);
+                            else clusteringFor.get(key).put(innerKey, innerValue);
+                        });
+                        if (clusteringFor.get(key).isEmpty()) clusteringFor.remove(key);
                     } else {
                         clusteringFor.put(key, new LinkedHashMap<>(value));
                     }
@@ -305,7 +317,7 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
 
         // First, add properties from the base clustering list that aren't explicitly set to false
         for (String clusteringPropertyName : clustering) {
-            if (typeClusteringConfig == null || typeClusteringConfig.getOrDefault(clusteringPropertyName, true)) {
+            if (typeClusteringConfig == null || Boolean.TRUE.equals(typeClusteringConfig.getOrDefault(clusteringPropertyName, true))) {
                 if (propertyMap.containsKey(clusteringPropertyName)) {
                     properties.add(propertyMap.get(clusteringPropertyName));
                 }
@@ -340,7 +352,8 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         Map<String, Boolean> map = clusteringFor.get(brAPIObjectType.getName());
 
         if (map != null) {
-            return map.getOrDefault(property.getName(), clustering.contains(property.getName()));
+            Boolean value = map.get(property.getName());
+            return value != null ? value : clustering.contains(property.getName());
         }
 
         return clustering.contains(property.getName());

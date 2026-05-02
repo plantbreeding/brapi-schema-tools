@@ -55,7 +55,12 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
             setPagedDefault(overrideOptions.pagedDefault); ;
         }
 
-        paged.putAll(overrideOptions.paged);
+        if (overrideOptions.paged != null) {
+            overrideOptions.paged.forEach((key, value) -> {
+                if (value == null) paged.remove(key);
+                else paged.put(key, value);
+            });
+        }
 
         if (overrideOptions.pagingInputName != null) {
             setPagingInputName(overrideOptions.pagingInputName); ;
@@ -91,7 +96,8 @@ public class ListQueryOptions extends AbstractGraphQLQueryOptions {
      */
     @JsonIgnore
     public final boolean isPagedFor(@NonNull String name) {
-        return paged.getOrDefault(name, pagedDefault) ;
+        Boolean value = paged.get(name);
+        return value != null ? value : pagedDefault ;
     }
 
     /**

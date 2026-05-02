@@ -42,7 +42,12 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
             setResponseTypeNameFormat(overrideOptions.responseTypeNameFormat);
         }
 
-        input.putAll(overrideOptions.input);
+        if (overrideOptions.input != null) {
+            overrideOptions.input.forEach((key, value) -> {
+                if (value == null) input.remove(key);
+                else input.put(key, value);
+            });
+        }
     }
 
     /**
@@ -72,7 +77,8 @@ public class AbstractGraphQLQueryOptions extends AbstractGraphQLOptions {
      */
     @JsonIgnore
     public final boolean hasInputFor(@NonNull String name) {
-        return input.getOrDefault(name, true) ;
+        Boolean value = input.get(name);
+        return value != null ? value : true ;
     }
 
     /**

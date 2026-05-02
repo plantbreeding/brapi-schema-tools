@@ -1,0 +1,73 @@
+# Override file that uses null (~) to REMOVE entries from maps.
+# Each null value signals that the corresponding key should be deleted
+# from the base map, causing that lookup to fall back to the default behaviour.
+
+# Remove the AlleleMatrix entry from generateNewRequestFor.
+# Default override was false; after removal it falls back to generateNewRequest: true.
+generateNewRequestFor:
+    AlleleMatrix: ~
+
+# Remove the AlleleMatrix entry from pluralFor.
+# Default override was "AlleleMatrix"; after removal toPlural("AlleleMatrix") is used → "AlleleMatrices".
+pluralFor:
+    AlleleMatrix: ~
+
+# Remove the PedigreeNode entry from pathItemNameFor.
+# Default override was "/pedigree"; after removal the computed default is used → "/pedigreenodes".
+pathItemNameFor:
+    PedigreeNode: ~
+
+singleGet:
+    # Remove AlleleMatrix from generateFor.
+    # Default override was false; after removal it falls back to generate: true.
+    generateFor:
+        AlleleMatrix: ~
+
+search:
+    # Remove AlleleMatrix from paged.
+    # Default override was false; after removal it falls back to pagedDefault: true.
+    paged:
+        AlleleMatrix: ~
+
+listGet:
+    # Remove the BreedingMethod entry from inputFor.
+    # Default was false; after removal hasInputFor falls back to hardcoded default: true.
+    inputFor:
+        BreedingMethod: ~
+    # Remove the Call entry from pagedToken.
+    # Default was true; after removal hasPageTokenFor falls back to pagedTokenDefault: false.
+    pagedToken:
+        Call: ~
+    propertyFromRequestFor:
+        # Remove the entire CallSet type entry (outer null).
+        # Previously the CallSet map held several false entries; after removal each property
+        # falls back to propertiesFromRequest: true.
+        CallSet: ~
+        # Remove only the commonCropNames inner property from Germplasm.
+        # Previously Germplasm.commonCropNames was absent (not configured), added here to confirm
+        # that a null inner value removes an *existing* inner key.
+        # We use a well-known entry: Germplasm.familyCodes was false.
+        Germplasm:
+            familyCodes: ~
+
+put:
+    multipleFor:
+        # Remove the Call entry from multipleFor.
+        # Default override was true; after removal it falls back to multiple: false.
+        Call: ~
+    useAdditionalProperties:
+        # Remove the Cross entry from useAdditionalProperties.
+        # Default override was true; after removal it falls back to multiple: false.
+        Cross: ~
+
+properties:
+    linkTypeFor:
+        # Remove the entire CallSet type entry (outer null).
+        # Previously CallSet.calls was "sub-query"; after removal the default link type logic
+        # applies → EMBEDDED (no relationship type configured in test builders).
+        CallSet: ~
+        # Remove only the germplasm inner property from BreedingMethod (inner null).
+        # Previously BreedingMethod.germplasm was "none"; after removal the default applies → EMBEDDED.
+        BreedingMethod:
+            germplasm: ~
+

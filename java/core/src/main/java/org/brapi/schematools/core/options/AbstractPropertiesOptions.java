@@ -31,8 +31,14 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
     public void override(AbstractPropertiesOptions overrideOptions) {
         if (overrideOptions.linkTypeFor != null) {
             overrideOptions.linkTypeFor.forEach((key, value) -> {
-                if (linkTypeFor.containsKey(key)) {
-                    linkTypeFor.get(key).putAll(value);
+                if (value == null) {
+                    linkTypeFor.remove(key);
+                } else if (linkTypeFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) linkTypeFor.get(key).remove(innerKey);
+                        else linkTypeFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (linkTypeFor.get(key).isEmpty()) linkTypeFor.remove(key);
                 } else {
                     linkTypeFor.put(key, new HashMap<>(value));
                 }

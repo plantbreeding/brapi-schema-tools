@@ -108,13 +108,22 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         }
 
         if (overrideOptions.pathItemNameFor != null) {
-            pathItemNameFor.putAll(overrideOptions.pathItemNameFor);
+            overrideOptions.pathItemNameFor.forEach((key, value) -> {
+                if (value == null) pathItemNameFor.remove(key);
+                else pathItemNameFor.put(key, value);
+            });
         }
 
         if (overrideOptions.pathItemNameForProperty != null) {
             overrideOptions.pathItemNameForProperty.forEach((key, value) -> {
-                if (pathItemNameForProperty.containsKey(key)) {
-                    pathItemNameForProperty.get(key).putAll(value);
+                if (value == null) {
+                    pathItemNameForProperty.remove(key);
+                } else if (pathItemNameForProperty.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) pathItemNameForProperty.get(key).remove(innerKey);
+                        else pathItemNameForProperty.get(key).put(innerKey, innerValue);
+                    });
+                    if (pathItemNameForProperty.get(key).isEmpty()) pathItemNameForProperty.remove(key);
                 } else {
                     pathItemNameForProperty.put(key, new HashMap<>(value));
                 }

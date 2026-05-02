@@ -158,8 +158,10 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
             if (tableProperties == null) {
                 tableProperties = new HashMap<>();
             }
-
-            tableProperties.putAll(overrideOptions.tableProperties); ;
+            overrideOptions.tableProperties.forEach((key, value) -> {
+                if (value == null) tableProperties.remove(key);
+                else tableProperties.put(key, value);
+            });
         }
 
         if (overrideOptions.clustering != null) {

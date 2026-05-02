@@ -105,6 +105,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -265,6 +268,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -478,6 +484,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -702,6 +711,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -832,6 +844,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -1094,6 +1109,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -1238,6 +1256,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -1418,6 +1439,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -3326,22 +3350,28 @@
                 "type" : "object",
                 "properties" : {
                     "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"

@@ -57,10 +57,16 @@ public abstract class AbstractGeneratorOptions implements Options, ValidatableAg
             setDescriptionFormat(overrideOptions.descriptionFormat);
         }
 
-        generateFor.putAll(overrideOptions.generateFor);
-    
+        overrideOptions.generateFor.forEach((key, value) -> {
+            if (value == null) generateFor.remove(key);
+            else generateFor.put(key, value);
+        });
+
         if (overrideOptions.pluralFor != null) {
-            pluralFor.putAll(overrideOptions.pluralFor);
+            overrideOptions.pluralFor.forEach((key, value) -> {
+                if (value == null) pluralFor.remove(key);
+                else pluralFor.put(key, value);
+            });
         }
     }
 
@@ -97,7 +103,8 @@ public abstract class AbstractGeneratorOptions implements Options, ValidatableAg
      */
     @JsonIgnore
     public boolean isGeneratingFor(@NonNull String name) {
-        return generateFor.getOrDefault(name, generate) ;
+        Boolean value = generateFor.get(name);
+        return value != null ? value : generate ;
     }
 
     /**

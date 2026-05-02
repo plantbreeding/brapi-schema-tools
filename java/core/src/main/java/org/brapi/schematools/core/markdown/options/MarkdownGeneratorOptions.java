@@ -189,7 +189,8 @@ public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull BrAPIType type) {
         if (type instanceof BrAPIClass brAPIClass) {
-           return getGenerateFor().getOrDefault(brAPIClass.getName(), isGeneratingForClass(brAPIClass)) ;
+       Boolean value = getGenerateFor().get(brAPIClass.getName());
+           return value != null ? value : isGeneratingForClass(brAPIClass) ;
         } else {
             return isGeneratingFor(type.getName());
         }

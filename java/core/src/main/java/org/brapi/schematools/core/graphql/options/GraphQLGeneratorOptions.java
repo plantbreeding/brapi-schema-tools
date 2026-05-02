@@ -115,7 +115,12 @@ public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
             setMergeOneOfType(overrideOptions.mergeOneOfType) ;
         }
 
-        mergingOneOfTypeFor.putAll(overrideOptions.mergingOneOfTypeFor);
+        if (overrideOptions.mergingOneOfTypeFor != null) {
+            overrideOptions.mergingOneOfTypeFor.forEach((key, value) -> {
+                if (value == null) mergingOneOfTypeFor.remove(key);
+                else mergingOneOfTypeFor.put(key, value);
+            });
+        }
 
         return this ;
     }
@@ -380,7 +385,8 @@ public class GraphQLGeneratorOptions extends AbstractMainGeneratorOptions {
      * @return {@code true} if the possible types of a 'OneOf' type are merged into a single type.
      */
     public final boolean isMergingOneOfType(BrAPIClass type) {
-        return mergingOneOfTypeFor.getOrDefault(type.getName(), mergeOneOfType) ;
+        Boolean value = mergingOneOfTypeFor.get(type.getName());
+        return value != null ? value : mergeOneOfType ;
     }
 
     /**
