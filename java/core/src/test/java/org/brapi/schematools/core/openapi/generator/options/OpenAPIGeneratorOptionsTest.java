@@ -118,8 +118,8 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
         assertEquals("/pedigree2", options.getPathItemNameFor("PedigreeNode"));
         assertEquals("/pedigree2", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
-        assertTrue(options.getSingleGet().isGenerating());
-        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+        assertTrue(options.getGetWithId().isGenerating());
+        assertTrue(options.getGetWithId().isGeneratingFor("AlleleMatrix"));
 
         assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
@@ -177,10 +177,10 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertEquals("/pedigreenodes", options.getPathItemNameFor("PedigreeNode"),
             "pathItemNameFor.PedigreeNode removed: should fall back to computed default");
 
-        // singleGet.generateFor.AlleleMatrix was false; after null-removal it falls back to
-        // singleGet.generate: true.
-        assertTrue(options.getSingleGet().isGeneratingFor("AlleleMatrix"),
-            "singleGet.generateFor.AlleleMatrix removed: should fall back to generate=true");
+        // getWithId.generateFor.AlleleMatrix was false; after null-removal it falls back to
+        // getWithId.generate: true.
+        assertTrue(options.getGetWithId().isGeneratingFor("AlleleMatrix"),
+            "getWithId.generateFor.AlleleMatrix removed: should fall back to generate=true");
 
         // search.paged.AlleleMatrix was false; after null-removal it falls back to
         // search.pagedDefault: true.
@@ -276,8 +276,8 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
         assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
 
-        assertTrue(options.getSingleGet().isGenerating());
-        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+        assertTrue(options.getGetWithId().isGenerating());
+        assertFalse(options.getGetWithId().isGeneratingFor("AlleleMatrix"));
 
         assertEquals("Get a filtered list of PedigreeNode", options.getGet().getSummaryFor("PedigreeNode"));
 
@@ -309,7 +309,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertNotNull(options);
 
         assertNotNull(options.getProperties());
-        assertNotNull(options.getSingleGet());
+        assertNotNull(options.getGetWithId());
         assertNotNull(options.getGet());
         assertNotNull(options.getPost());
         assertNotNull(options.getPut());

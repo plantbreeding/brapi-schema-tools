@@ -26,7 +26,7 @@ public class OpenAPIGeneratorMetadata implements Metadata {
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> titleFor = new HashMap<>();
 
-    private SingleGetMetadata singleGet = new SingleGetMetadata() ;
+    private GetWithIdMetadata getWithId = new GetWithIdMetadata() ;
     private ListGetMetadata get = new ListGetMetadata() ;
     private PostMetadata post = new PostMetadata() ;
     private PutMetadata put = new PutMetadata() ;
@@ -84,8 +84,8 @@ public class OpenAPIGeneratorMetadata implements Metadata {
 
         titleFor.putAll(overrideMetadata.titleFor);
 
-        if (overrideMetadata.singleGet != null) {
-            singleGet.override(overrideMetadata.getSingleGet()) ;
+        if (overrideMetadata.getWithId != null) {
+            getWithId.override(overrideMetadata.getGetWithId()) ;
         }
 
         if (overrideMetadata.get != null) {

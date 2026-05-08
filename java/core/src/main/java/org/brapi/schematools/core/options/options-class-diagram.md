@@ -73,7 +73,7 @@ classDiagram
 
     %% ── Generator Options (top-level) ───────────────────────────────────────
     class OpenAPIGeneratorOptions {
-        -SingleGetOptions singleGet
+        -GetWithIdOptions getWithId
         -ListGetOptions get
         -PostOptions post
         -PutOptions put
@@ -99,7 +99,7 @@ classDiagram
     OpenAPIGeneratorOptions --|> AbstractRESTGeneratorOptions
 
     class RGeneratorOptions {
-        -SingleGetOptions singleGet
+        -GetWithIdOptions getWithId
         -ListGetOptions get
         -PostOptions post
         -PutOptions put
@@ -117,7 +117,7 @@ classDiagram
 
     class PythonGeneratorOptions {
         -String entitiesDirectory
-        -SingleGetOptions singleGet
+        -GetWithIdOptions getWithId
         -ListGetOptions get
         -TableOptions table
         -PostOptions post
@@ -222,9 +222,9 @@ classDiagram
     }
     AbstractOpenAPISubOptions --|> AbstractSubOptions
 
-    class openapi_SingleGetOptions["SingleGetOptions"] {
+    class openapi_GetWithIdOptions["GetWithIdOptions"] {
     }
-    openapi_SingleGetOptions --|> AbstractOpenAPISubOptions
+    openapi_GetWithIdOptions --|> AbstractOpenAPISubOptions
 
     class openapi_ListGetOptions["ListGetOptions"] {
         -Boolean pagedDefault
@@ -268,9 +268,9 @@ classDiagram
     }
     AbstractRGeneratorSubOptions --|> AbstractSubOptions
 
-    class r_SingleGetOptions["SingleGetOptions"] {
+    class r_GetWithIdOptions["GetWithIdOptions"] {
     }
-    r_SingleGetOptions --|> AbstractRGeneratorSubOptions
+    r_GetWithIdOptions --|> AbstractRGeneratorSubOptions
 
     class r_ListGetOptions["ListGetOptions"] {
     }
@@ -308,9 +308,9 @@ classDiagram
     }
     AbstractPythonGeneratorSubOptions --|> AbstractSubOptions
 
-    class py_SingleGetOptions["SingleGetOptions"] {
+    class py_GetWithIdOptions["GetWithIdOptions"] {
     }
-    py_SingleGetOptions --|> AbstractPythonGeneratorSubOptions
+    py_GetWithIdOptions --|> AbstractPythonGeneratorSubOptions
 
     class py_ListGetOptions["ListGetOptions"] {
     }
@@ -485,7 +485,7 @@ classDiagram
     HTMLOutputOptions ..|> Options
 
     %% ── Composition links ────────────────────────────────────────────────────
-    OpenAPIGeneratorOptions o-- openapi_SingleGetOptions : singleGet
+    OpenAPIGeneratorOptions o-- openapi_GetWithIdOptions : getWithId
     OpenAPIGeneratorOptions o-- openapi_ListGetOptions : get
     OpenAPIGeneratorOptions o-- openapi_PostOptions : post
     OpenAPIGeneratorOptions o-- openapi_PutOptions : put
@@ -494,7 +494,7 @@ classDiagram
     OpenAPIGeneratorOptions o-- core_PropertiesOptions : properties
     OpenAPIGeneratorOptions o-- openapi_ControlledVocabularyOptions : controlledVocabulary
 
-    RGeneratorOptions o-- r_SingleGetOptions : singleGet
+    RGeneratorOptions o-- r_GetWithIdOptions : getWithId
     RGeneratorOptions o-- r_ListGetOptions : get
     RGeneratorOptions o-- r_PostOptions : post
     RGeneratorOptions o-- r_PutOptions : put
@@ -503,7 +503,7 @@ classDiagram
     RGeneratorOptions o-- core_PropertiesOptions : properties
     RGeneratorOptions o-- r_ControlledVocabularyOptions : controlledVocabulary
 
-    PythonGeneratorOptions o-- py_SingleGetOptions : singleGet
+    PythonGeneratorOptions o-- py_GetWithIdOptions : getWithId
     PythonGeneratorOptions o-- py_ListGetOptions : get
     PythonGeneratorOptions o-- py_TableOptions : table
     PythonGeneratorOptions o-- py_PostOptions : post
@@ -549,9 +549,9 @@ classDiagram
 | Package | Classes |
 |---|---|
 | `core.options` | `Options`, `AbstractGeneratorOptions`, `AbstractMainGeneratorOptions`, `AbstractSubOptions`, `AbstractRESTGeneratorOptions`, `AbstractPropertiesOptions`, `PropertiesOptions`, `PropertyOptions`, `LinkType` |
-| `core.openapi.generator.options` | `OpenAPIGeneratorOptions`, `AbstractOpenAPISubOptions`, `SingleGetOptions`, `ListGetOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
-| `core.r6.options` | `RGeneratorOptions`, `AbstractRGeneratorSubOptions`, `SingleGetOptions`, `ListGetOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
-| `core.python.options` | `PythonGeneratorOptions`, `AbstractPythonGeneratorSubOptions`, `SingleGetOptions`, `ListGetOptions`, `TableOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
+| `core.openapi.generator.options` | `OpenAPIGeneratorOptions`, `AbstractOpenAPISubOptions`, `GetWithIdOptions`, `ListGetOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
+| `core.r6.options` | `RGeneratorOptions`, `AbstractRGeneratorSubOptions`, `GetWithIdOptions`, `ListGetOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
+| `core.python.options` | `PythonGeneratorOptions`, `AbstractPythonGeneratorSubOptions`, `GetWithIdOptions`, `ListGetOptions`, `TableOptions`, `PostOptions`, `PutOptions`, `DeleteOptions`, `SearchOptions`, `ControlledVocabularyOptions` |
 | `core.graphql.options` | `GraphQLGeneratorOptions`, `AbstractGraphQLOptions`, `AbstractGraphQLQueryOptions`, `SingleQueryOptions`, `ListQueryOptions`, `SearchQueryOptions`, `CreateMutationOptions`, `UpdateMutationOptions`, `DeleteMutationOptions`, `QueryTypeOptions`, `MutationTypeOptions`, `InputOptions`, `IdsOptions`, `PropertiesOptions` |
 | `core.markdown.options` | `MarkdownGeneratorOptions`, `GraphQLMarkdownGeneratorOptions` |
 | `core.ontmodel.options` | `OntModelGeneratorOptions` |

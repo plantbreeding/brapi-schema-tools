@@ -10,6 +10,7 @@ import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
 import org.brapi.schematools.core.options.GetOptions;
+import org.brapi.schematools.core.options.GetWithIdOptions;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -214,7 +215,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         generateNewRequestFor.forEach((name, value) -> {
             if (value != null) {
-                validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                     String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
                             name,
                             this.getClass().getSimpleName()
@@ -234,20 +235,22 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         tagFor.forEach((name, value) -> {
             if (value != null) {
-                validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
-                    String.format("Invalid Primary Model name '%s' set for 'tagFor' on %s",
+                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                    String.format("Invalid BrAPI Class name '%s' set for 'tagFor' on %s",
                         name,
                         this.getClass().getSimpleName()
                     )) ;
             }
         }) ;
 
-        validation.merge(getSingleGet().validateAgainstCache(brAPIClassCache))
+        validation.merge(getGetWithId().validateAgainstCache(brAPIClassCache))
+            .merge(getGetWithId().validateAgainstCache(brAPIClassCache))
             .merge(getGet().validateAgainstCache(brAPIClassCache))
             .merge(getPost().validateAgainstCache(brAPIClassCache))
             .merge(getPut().validateAgainstCache(brAPIClassCache))
             .merge(getDelete().validateAgainstCache(brAPIClassCache))
             .merge(getSearch().validateAgainstCache(brAPIClassCache))
+            .merge(getSearchTable().validateAgainstCache(brAPIClassCache))
             .merge(getProperties().validateAgainstCache(brAPIClassCache))
             .merge(getControlledVocabulary().validateAgainstCache(brAPIClassCache)) ;
 
@@ -298,25 +301,25 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate any Endpoints with an ID parameter. Returns {@code true} if
-     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()} or
+     * {@link GetWithIdOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()} or
      * {@link org.brapi.schematools.core.options.DeleteOptions#isGenerating()} is set to {@code true}
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointWithId() {
-        return getSingleGet().isGenerating() || getPut().isGenerating() || getDelete().isGenerating() ;
+        return getGetWithId().isGenerating() || getPut().isGenerating() || getDelete().isGenerating() ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link org.brapi.schematools.core.options.SingleGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
+     * {@link GetWithIdOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingEndpointNameWithIdFor(String)} or
      * {@link org.brapi.schematools.core.options.DeleteOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints with an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
-        return getSingleGet().isGeneratingFor(name) || getPut().isGeneratingEndpointNameWithIdFor(name) || getDelete().isGeneratingFor(name) ;
+        return getGetWithId().isGeneratingFor(name) || getPut().isGeneratingEndpointNameWithIdFor(name) || getDelete().isGeneratingFor(name) ;
     }
 
     /**

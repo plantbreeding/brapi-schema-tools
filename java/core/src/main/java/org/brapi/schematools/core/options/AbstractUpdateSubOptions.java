@@ -7,6 +7,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,29 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
                 else useAdditionalProperties.put(key, value);
             });
         }
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        multipleFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'multipleFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        useAdditionalProperties.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'useAdditionalProperties' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     /**

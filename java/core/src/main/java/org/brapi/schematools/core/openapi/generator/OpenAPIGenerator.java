@@ -412,7 +412,7 @@ public class OpenAPIGenerator {
             PathItem pathItem = new PathItem();
 
             return Response.empty()
-                .mergeOnCondition(options.getSingleGet().isGeneratingFor(type), () -> generateSingleGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
+                .mergeOnCondition(options.getGetWithId().isGeneratingFor(type), () -> generateGetWithIdOperation(type).onSuccessDoWithResult(pathItem::setGet))
                 .mergeOnCondition(options.getPut().isGeneratingEndpointNameWithIdFor(type), () -> generateSinglePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
                 .mergeOnCondition(options.getDelete().isGeneratingFor(type), () -> generateDeleteOperation(type).onSuccessDoWithResult(pathItem::setDelete))
                 .merge(() -> generateSingleResponse(type))
@@ -427,7 +427,7 @@ public class OpenAPIGenerator {
             if (type instanceof BrAPIObjectType || type instanceof BrAPIPrimitiveType) {
                 return Response.empty()
                     .mergeOnCondition(isGeneratingGetSubPathOperationFor(parentType, property),
-                        () -> generateSubPathSingleGetOperation(parentType, type)
+                        () -> generateSubPathGetWithIdOperation(parentType, type)
                             .onSuccessDoWithResult(pathItem::setGet)
                             .map(() -> generateSingleResponse(type))
                     )
@@ -849,11 +849,11 @@ public class OpenAPIGenerator {
             return String.format("%08x", hash).substring(0, 8);
         }
 
-        private Response<Operation> generateSingleGetOperation(BrAPIObjectType type) {
+        private Response<Operation> generateGetWithIdOperation(BrAPIObjectType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGetWithId().getSummaryOrDefault(type.getName(), options.getGetWithId().getSummaryFor(type)));
+            operation.setDescription(metadata.getGetWithId().getDescriptionOrDefault(type.getName(), options.getGetWithId().getDescriptionFor(type)));
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
@@ -915,11 +915,11 @@ public class OpenAPIGenerator {
                 .map(() -> success(operation));
         }
 
-        private Response<Operation> generateSubPathSingleGetOperation(BrAPIObjectType parentType, BrAPIType type) {
+        private Response<Operation> generateSubPathGetWithIdOperation(BrAPIObjectType parentType, BrAPIType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGetWithId().getSummaryOrDefault(type.getName(), options.getGetWithId().getSummaryFor(type)));
+            operation.setDescription(metadata.getGetWithId().getDescriptionOrDefault(type.getName(), options.getGetWithId().getDescriptionFor(type)));
 
             List<Parameter> parameters = new ArrayList<>();
 

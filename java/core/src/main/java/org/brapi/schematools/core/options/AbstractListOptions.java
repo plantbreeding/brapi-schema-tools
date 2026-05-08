@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -70,6 +71,29 @@ public class AbstractListOptions extends AbstractSubOptions {
                 }
             });
         }
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        paged.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'paged' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        propertyFromRequestFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'propertyFromRequestFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     /**

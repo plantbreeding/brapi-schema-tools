@@ -251,7 +251,7 @@ public class BrAPIClassCacheBuilder {
          * {@code false} otherwise
          */
         public boolean containsBrAPIClass(String name) {
-            return brAPIClassMap.containsKey(name);
+            return brAPIClassMap.containsKey(name) || "ServerInfo".equals(name) ; //TODO remove this workaround
         }
 
         /**

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.validiation.ValidatableAgainstCache;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -22,7 +24,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toPlural;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PropertyOptions implements Options {
+public class PropertyOptions implements Options, ValidatableAgainstCache {
     @Getter(AccessLevel.PUBLIC)
     private String nameFormat;
     private String pluralNameFormat;
@@ -65,14 +67,47 @@ public class PropertyOptions implements Options {
             if (value == null) linkFor.remove(key);
             else linkFor.put(key, value);
         });
+
         overrideOptions.propertyFor.forEach((key, value) -> {
             if (value == null) propertyFor.remove(key);
             else propertyFor.put(key, value);
         });
+
         overrideOptions.pluralPropertyFor.forEach((key, value) -> {
             if (value == null) pluralPropertyFor.remove(key);
             else pluralPropertyFor.put(key, value);
         });
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = Validation.valid() ;
+
+        linkFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'clusteringFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        propertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'propertyFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        pluralPropertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pluralPropertyFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     /**

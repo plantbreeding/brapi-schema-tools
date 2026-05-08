@@ -7,6 +7,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.response.Response;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -94,6 +95,23 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                 });
             }
         }
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        clusteringFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'clusteringFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation.merge(id.validateAgainstCache(brAPIClassCache))
+            .merge(name.validateAgainstCache(brAPIClassCache))
+            .merge(pui.validateAgainstCache(brAPIClassCache)) ;
     }
 
     /**

@@ -17,7 +17,7 @@ pluralFor:
 pathItemNameFor:
     PedigreeNode: ~
 
-singleGet:
+getWithId:
     # Remove AlleleMatrix from generateFor.
     # Default override was false; after removal it falls back to generate: true.
     generateFor:

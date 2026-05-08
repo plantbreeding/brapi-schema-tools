@@ -443,7 +443,7 @@ __all__ = ["StrEnum"]
 
                     Endpoints.EndpointsBuilder endpoints = Endpoints.builder();
 
-                    if (options.getSingleGet().isGeneratingFor(brAPIObjectType) ||
+                    if (options.getGetWithId().isGeneratingFor(brAPIObjectType) ||
                         options.getPost().isGeneratingFor(brAPIObjectType) ||
                         options.getPut().isGeneratingFor(brAPIObjectType) ||
                         options.getPost().isGeneratingFor(brAPIObjectType)) {
@@ -469,7 +469,7 @@ __all__ = ["StrEnum"]
                         endpoints.searchTable(stripLeadingSlash(options.getSearchPathItemNameFor(brAPIClass)) + "/table");
                     }
 
-                    endpoints.get(options.getSingleGet().isGeneratingFor(brAPIObjectType));
+                    endpoints.get(options.getGetWithId().isGeneratingFor(brAPIObjectType));
                     endpoints.list(options.getGet().isGeneratingFor(brAPIObjectType));
                     endpoints.create(options.getPost().isGeneratingFor(brAPIObjectType));
                     endpoints.createMany(options.getPost().isGeneratingFor(brAPIObjectType));

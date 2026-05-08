@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -23,13 +24,18 @@ public class GetOptions extends AbstractListOptions {
     private Boolean pagedTokenDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> pagedToken = new HashMap<>();
+    private Boolean list;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> listFor = new HashMap<>();
 
     @Override
     public Validation validate() {
         return super.validate()
             .assertNotNull(inputFor, "'inputFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(list, "'list' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(listFor, "'listFor' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**
@@ -56,6 +62,47 @@ public class GetOptions extends AbstractListOptions {
                 else pagedToken.put(key, value);
             });
         }
+
+        if (overrideOptions.list != null) {
+            setPagedTokenDefault(overrideOptions.list);
+        }
+        if (overrideOptions.listFor != null) {
+            overrideOptions.listFor.forEach((key, value) -> {
+                if (value == null) listFor.remove(key);
+                else listFor.put(key, value);
+            });
+        }
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        inputFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'inputFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        pagedToken.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pagedToken' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        listFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'listFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     /**
@@ -107,9 +154,9 @@ public class GetOptions extends AbstractListOptions {
     }
 
     /**
-     * Determines if the list endpoint has a page token for the named primary model.
+     * Determines if the get endpoint has a page token for the named primary model.
      * @param name the name of the primary model
-     * @return {@code true} if the list endpoint has a page token, {@code false} otherwise
+     * @return {@code true} if the get endpoint has a page token, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasPageTokenFor(@NonNull String name) {
@@ -118,9 +165,9 @@ public class GetOptions extends AbstractListOptions {
     }
 
     /**
-     * Determines if the list endpoint has a page token for the given primary model.
+     * Determines if the get endpoint has a page token for the given primary model.
      * @param type the primary model
-     * @return {@code true} if the list endpoint has a page token, {@code false} otherwise
+     * @return {@code true} if the get endpoint has a page token, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean hasPageTokenFor(@NonNull BrAPIType type) {
@@ -130,7 +177,7 @@ public class GetOptions extends AbstractListOptions {
     /**
      * Sets the page token flag for the named primary model.
      * @param name       the name of the primary model
-     * @param hasPageToken {@code true} if the list endpoint has a page token
+     * @param hasPageToken {@code true} if the get endpoint has a page token
      * @return this
      */
     @JsonIgnore
@@ -142,11 +189,55 @@ public class GetOptions extends AbstractListOptions {
     /**
      * Sets the page token flag for the given primary model.
      * @param type         the primary model
-     * @param hasPageToken {@code true} if the list endpoint has a page token
+     * @param hasPageToken {@code true} if the get endpoint has a page token
      * @return this
      */
     @JsonIgnore
     public final GetOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
         return setHasPageTokenFor(type.getName(), hasPageToken);
+    }
+
+    /**
+     * Determines if the get endpoint returns a list for the primary model
+     * @param name the name of the primary model
+     * @return {@code true} if the get endpoint returns a list for the primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isReturningListFor(@NonNull String name) {
+        Boolean value = listFor.get(name);
+        return value != null ? value : list;
+    }
+
+    /**
+     * Determines if the get endpoint returns a list for the primary model.
+     * @param type the primary model
+     * @return {@code true} if the get endpoint returns a list for the primary model, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isReturningListFor(@NonNull BrAPIType type) {
+        return isReturningListFor(type.getName());
+    }
+
+    /**
+     * Sets if the get endpoint returns a list for the primary model
+     * @param name       the name of the primary model
+     * @param returnsListFor {@code true} if the get endpoint returns a list for the primary model
+     * @return this
+     */
+    @JsonIgnore
+    public final GetOptions setReturnsListFor(@NonNull String name, boolean returnsListFor) {
+        listFor.put(name, returnsListFor);
+        return this;
+    }
+
+    /**
+     * Sets if the get endpoint returns a list for the primary model
+     * @param type         the primary model
+     * @param returnsListFor {@code true} if the get endpoint returns a list for the primary model
+     * @return this
+     */
+    @JsonIgnore
+    public final GetOptions setReturnsListFor(@NonNull BrAPIType type, boolean returnsListFor) {
+        return setReturnsListFor(type.getName(), returnsListFor);
     }
 }

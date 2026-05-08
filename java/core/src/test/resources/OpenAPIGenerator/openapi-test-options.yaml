@@ -30,7 +30,7 @@ pathItemNameFor:
 tagFor:
     BreedingMethod: Germplasm
     PlannedCross: Crosses
-singleGet:
+getWithId:
     generate: true
     summaryFormat: Get the details of a specific %s
     descriptionFormat: Get details for a %s
