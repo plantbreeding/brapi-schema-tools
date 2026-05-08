@@ -29,7 +29,7 @@ search:
     paged:
         AlleleMatrix: ~
 
-listGet:
+get:
     # Remove the BreedingMethod entry from inputFor.
     # Default was false; after removal hasInputFor falls back to hardcoded default: true.
     inputFor:

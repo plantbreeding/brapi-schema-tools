@@ -9,7 +9,7 @@ singleGet:
     generate: false
     generateFor:
         AlleleMatrix: true
-listGet:
+get:
     summaryFormat: Get a filtered list of %s X
 post:
     summaryFormat: Create new %s X

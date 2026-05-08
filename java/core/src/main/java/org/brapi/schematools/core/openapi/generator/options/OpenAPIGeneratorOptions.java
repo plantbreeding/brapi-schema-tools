@@ -9,6 +9,7 @@ import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
 import org.brapi.schematools.core.openapi.generator.OpenAPIGenerator;
 import org.brapi.schematools.core.options.AbstractGeneratorOptions;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
+import org.brapi.schematools.core.options.GetOptions;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
 import org.brapi.schematools.core.validiation.Validation;
@@ -242,7 +243,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         }) ;
 
         validation.merge(getSingleGet().validateAgainstCache(brAPIClassCache))
-            .merge(getListGet().validateAgainstCache(brAPIClassCache))
+            .merge(getGet().validateAgainstCache(brAPIClassCache))
             .merge(getPost().validateAgainstCache(brAPIClassCache))
             .merge(getPut().validateAgainstCache(brAPIClassCache))
             .merge(getDelete().validateAgainstCache(brAPIClassCache))
@@ -269,19 +270,19 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
      */
     @JsonIgnore
     public final boolean isGeneratingEndpoint() {
-        return getListGet().isGenerating() || getPost().isGenerating() || getPut().isGenerating() ;
+        return getGet().isGenerating() || getPost().isGenerating() || getPut().isGenerating() ;
     }
 
     /**
      * Determines if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model. Returns {@code true} if
-     * {@link org.brapi.schematools.core.options.ListGetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)}
+     * {@link GetOptions#isGeneratingFor(String)} or {@link org.brapi.schematools.core.options.PostOptions#isGeneratingFor(String)}
      *  or {@link org.brapi.schematools.core.options.PutOptions#isGeneratingFor(String)} is set to {@code true}
      * @param name the name of the Primary Model
      * @return {@code true} if the Generator should generate the Endpoints without an ID parameter for a specific Primary Model, {@code false} otherwise
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointFor(@NonNull String name) {
-        return getListGet().isGeneratingFor(name) || getPost().isGeneratingFor(name) || getPut().isGeneratingEndpointFor(name) ;
+        return getGet().isGeneratingFor(name) || getPost().isGeneratingFor(name) || getPut().isGeneratingEndpointFor(name) ;
     }
 
     /**

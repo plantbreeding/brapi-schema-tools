@@ -361,7 +361,7 @@ public class OpenAPIGenerator {
             PathItem pathItem = new PathItem();
 
             return Response.empty()
-                .mergeOnCondition(options.getListGet().isGeneratingFor(type), () -> generateListGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
+                .mergeOnCondition(options.getGet().isGeneratingFor(type), () -> generateListGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
                 .mergeOnCondition(options.getPost().isGeneratingFor(type), () -> generatePostOperation(type).onSuccessDoWithResult(pathItem::setPost))
                 .mergeOnCondition(options.getPut().isGeneratingEndpointFor(type), () -> generateMultiplePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
                 .merge(() -> generateListResponse(type))
@@ -644,8 +644,8 @@ public class OpenAPIGenerator {
         private Response<Operation> generateListGetOperation(BrAPIObjectType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getListGet().getSummaryOrDefault(type.getName(), options.getListGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getListGet().getDescriptionOrDefault(type.getName(), options.getListGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGet().getSummaryOrDefault(type.getName(), options.getGet().getSummaryFor(type)));
+            operation.setDescription(metadata.getGet().getDescriptionOrDefault(type.getName(), options.getGet().getDescriptionFor(type)));
 
             operation.addTagsItem(options.getTagFor(type));
 
@@ -673,22 +673,22 @@ public class OpenAPIGenerator {
 
             if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId"));
-                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
+                //parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
             }
 
-            if (options.getListGet().hasPageTokenFor(type)) {
+            if (options.getGet().hasPageTokenFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
-            if (options.getListGet().isPagedFor(type)) {
+            if (options.getGet().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
             }
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            if (options.getListGet().hasInputFor(type)) {
+            if (options.getGet().hasInputFor(type)) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
 
                 if (requestClass == null) {
@@ -697,7 +697,7 @@ public class OpenAPIGenerator {
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
                     return brAPIObjectType.getProperties().stream()
-                        .filter(property -> options.getListGet().isUsingPropertyFromRequestFor(type, property))
+                        .filter(property -> options.getGet().isUsingPropertyFromRequestFor(type, property))
                         .map(this::createListGetParameter)
                         .collect(Response.toList())
                         .onSuccessDoWithResult(result -> parameters.addAll(0, result))
@@ -714,18 +714,18 @@ public class OpenAPIGenerator {
 
             List<Parameter> parameters = new ArrayList<>();
 
-            if (options.getListGet().isPagedFor(type)) {
+            if (options.getGet().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
             }
 
-            if (options.getListGet().hasPageTokenFor(type)) {
+            if (options.getGet().hasPageTokenFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            if (options.getListGet().hasInputFor(type)) {
+            if (options.getGet().hasInputFor(type)) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type) ;
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
@@ -923,7 +923,7 @@ public class OpenAPIGenerator {
 
             List<Parameter> parameters = new ArrayList<>();
 
-            if (options.getListGet().hasInputFor(type) && type instanceof BrAPIObjectType brAPIObjectType) {
+            if (options.getGet().hasInputFor(type) && type instanceof BrAPIObjectType brAPIObjectType) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(brAPIObjectType) ;
 
                 if (requestClass instanceof BrAPIObjectType requestObjectType) {
@@ -993,8 +993,8 @@ public class OpenAPIGenerator {
         private Response<Operation> generateSubPathListGetOperation(BrAPIObjectType parentType, BrAPIType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getListGet().getSummaryOrDefault(type.getName(), options.getListGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getListGet().getDescriptionOrDefault(type.getName(), options.getListGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGet().getSummaryOrDefault(type.getName(), options.getGet().getSummaryFor(type)));
+            operation.setDescription(metadata.getGet().getDescriptionOrDefault(type.getName(), options.getGet().getDescriptionFor(type)));
 
             operation.addTagsItem(options.getTagFor(parentType));
 

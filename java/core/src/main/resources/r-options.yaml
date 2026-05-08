@@ -35,7 +35,7 @@ singleGet:
         PedigreeNode: false
         PlannedCross: false
         ServerInfo: false
-listGet:
+get:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s

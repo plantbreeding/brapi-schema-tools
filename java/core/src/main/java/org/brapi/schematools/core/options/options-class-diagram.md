@@ -74,7 +74,7 @@ classDiagram
     %% ── Generator Options (top-level) ───────────────────────────────────────
     class OpenAPIGeneratorOptions {
         -SingleGetOptions singleGet
-        -ListGetOptions listGet
+        -ListGetOptions get
         -PostOptions post
         -PutOptions put
         -DeleteOptions delete
@@ -100,7 +100,7 @@ classDiagram
 
     class RGeneratorOptions {
         -SingleGetOptions singleGet
-        -ListGetOptions listGet
+        -ListGetOptions get
         -PostOptions post
         -PutOptions put
         -DeleteOptions delete
@@ -118,7 +118,7 @@ classDiagram
     class PythonGeneratorOptions {
         -String entitiesDirectory
         -SingleGetOptions singleGet
-        -ListGetOptions listGet
+        -ListGetOptions get
         -TableOptions table
         -PostOptions post
         -PutOptions put
@@ -486,7 +486,7 @@ classDiagram
 
     %% ── Composition links ────────────────────────────────────────────────────
     OpenAPIGeneratorOptions o-- openapi_SingleGetOptions : singleGet
-    OpenAPIGeneratorOptions o-- openapi_ListGetOptions : listGet
+    OpenAPIGeneratorOptions o-- openapi_ListGetOptions : get
     OpenAPIGeneratorOptions o-- openapi_PostOptions : post
     OpenAPIGeneratorOptions o-- openapi_PutOptions : put
     OpenAPIGeneratorOptions o-- openapi_DeleteOptions : delete
@@ -495,7 +495,7 @@ classDiagram
     OpenAPIGeneratorOptions o-- openapi_ControlledVocabularyOptions : controlledVocabulary
 
     RGeneratorOptions o-- r_SingleGetOptions : singleGet
-    RGeneratorOptions o-- r_ListGetOptions : listGet
+    RGeneratorOptions o-- r_ListGetOptions : get
     RGeneratorOptions o-- r_PostOptions : post
     RGeneratorOptions o-- r_PutOptions : put
     RGeneratorOptions o-- r_DeleteOptions : delete
@@ -504,7 +504,7 @@ classDiagram
     RGeneratorOptions o-- r_ControlledVocabularyOptions : controlledVocabulary
 
     PythonGeneratorOptions o-- py_SingleGetOptions : singleGet
-    PythonGeneratorOptions o-- py_ListGetOptions : listGet
+    PythonGeneratorOptions o-- py_ListGetOptions : get
     PythonGeneratorOptions o-- py_TableOptions : table
     PythonGeneratorOptions o-- py_PostOptions : post
     PythonGeneratorOptions o-- py_PutOptions : put

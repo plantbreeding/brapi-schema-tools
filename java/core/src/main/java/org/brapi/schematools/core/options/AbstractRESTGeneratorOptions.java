@@ -41,7 +41,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Setter(AccessLevel.PRIVATE)
     private SingleGetOptions singleGet;
     @Setter(AccessLevel.PRIVATE)
-    private ListGetOptions listGet;
+    private GetOptions get;
     @Setter(AccessLevel.PRIVATE)
     private PostOptions post;
     @Setter(AccessLevel.PRIVATE)
@@ -68,7 +68,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         return super.validate()
             .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null")
             .assertNotNull(singleGet, "Single Get Endpoint Options are null")
-            .assertNotNull(listGet,  "List Get Endpoint Options are null")
+            .assertNotNull(get,  "List Get Endpoint Options are null")
             .assertNotNull(post, "Post Endpoint Options are null")
             .assertNotNull(put, "Put Endpoint Options are null")
             .assertNotNull(delete, "Delete Endpoint Options are null")
@@ -133,8 +133,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         if (overrideOptions.singleGet != null) {
             singleGet.override(overrideOptions.singleGet);
         }
-        if (overrideOptions.listGet != null) {
-            listGet.override(overrideOptions.getListGet()) ;
+        if (overrideOptions.get != null) {
+            get.override(overrideOptions.getGet()) ;
         }
         if (overrideOptions.post != null) {
             post.override(overrideOptions.post);
@@ -304,7 +304,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Override
     public boolean isGeneratingFor(@NonNull String name) {
         return super.isGeneratingFor(name) && (getSingleGet().isGeneratingFor(name) ||
-            getListGet().isGeneratingFor(name) ||
+            getGet().isGeneratingFor(name) ||
             getPost().isGeneratingFor(name) ||
             getPut().isGeneratingFor(name) ||
             getDelete().isGeneratingFor(name) ||
@@ -321,7 +321,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @Override
     public boolean isGeneratingFor(@NonNull BrAPIType type) {
         return getSingleGet().isGeneratingFor(type) ||
-            getListGet().isGeneratingFor(type) ||
+            getGet().isGeneratingFor(type) ||
             getPost().isGeneratingFor(type) ||
             getPut().isGeneratingFor(type) ||
             getDelete().isGeneratingFor(type) ||

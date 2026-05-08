@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.validiation.Validation;
 
@@ -18,7 +16,7 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class ListGetOptions extends AbstractListOptions {
+public class GetOptions extends AbstractListOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
@@ -39,7 +37,7 @@ public class ListGetOptions extends AbstractListOptions {
      *
      * @param overrideOptions the options which will be used to override this Options Object
      */
-    public void override(ListGetOptions overrideOptions) {
+    public void override(GetOptions overrideOptions) {
         super.override(overrideOptions);
 
         if (overrideOptions.inputFor != null) {
@@ -91,7 +89,7 @@ public class ListGetOptions extends AbstractListOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setInputFor(@NonNull String name, boolean hasInput) {
+    public GetOptions setInputFor(@NonNull String name, boolean hasInput) {
         inputFor.put(name, hasInput);
         return this;
     }
@@ -104,7 +102,7 @@ public class ListGetOptions extends AbstractListOptions {
      * @return the options for chaining
      */
     @JsonIgnore
-    public ListGetOptions setInputFor(@NonNull BrAPIType type, boolean hasInput) {
+    public GetOptions setInputFor(@NonNull BrAPIType type, boolean hasInput) {
         return setInputFor(type.getName(), hasInput);
     }
 
@@ -136,7 +134,7 @@ public class ListGetOptions extends AbstractListOptions {
      * @return this
      */
     @JsonIgnore
-    public final ListGetOptions setHasPageTokenFor(@NonNull String name, boolean hasPageToken) {
+    public final GetOptions setHasPageTokenFor(@NonNull String name, boolean hasPageToken) {
         pagedToken.put(name, hasPageToken);
         return this;
     }
@@ -148,7 +146,7 @@ public class ListGetOptions extends AbstractListOptions {
      * @return this
      */
     @JsonIgnore
-    public final ListGetOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
+    public final GetOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
         return setHasPageTokenFor(type.getName(), hasPageToken);
     }
 }

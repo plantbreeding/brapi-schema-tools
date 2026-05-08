@@ -668,6 +668,9 @@ public class BrAPISchemaReader {
             findChildValue(path, jsonNode, "example", false)
                 .ifPresentDoWithResult(builder::example);
 
+            findChildValue(path, jsonNode, "default", false)
+                .ifPresentDoWithResult(builder::defaultValue);
+
             findChildValues(path, jsonNode, "example", false)
                 .ifPresentDoWithResult(examples -> examples.forEach(builder::example));
 

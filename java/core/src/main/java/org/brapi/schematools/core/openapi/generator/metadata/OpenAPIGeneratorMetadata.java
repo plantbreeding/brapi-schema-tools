@@ -27,7 +27,7 @@ public class OpenAPIGeneratorMetadata implements Metadata {
     private Map<String, String> titleFor = new HashMap<>();
 
     private SingleGetMetadata singleGet = new SingleGetMetadata() ;
-    private ListGetMetadata listGet = new ListGetMetadata() ;
+    private ListGetMetadata get = new ListGetMetadata() ;
     private PostMetadata post = new PostMetadata() ;
     private PutMetadata put = new PutMetadata() ;
     private DeleteMetadata delete = new DeleteMetadata() ;
@@ -88,8 +88,8 @@ public class OpenAPIGeneratorMetadata implements Metadata {
             singleGet.override(overrideMetadata.getSingleGet()) ;
         }
 
-        if (overrideMetadata.listGet != null) {
-            listGet.override(overrideMetadata.getListGet()) ;
+        if (overrideMetadata.get != null) {
+            get.override(overrideMetadata.getGet()) ;
         }
 
         if (overrideMetadata.post != null) {

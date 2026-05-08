@@ -16,6 +16,7 @@ public class BrAPIObjectProperty {
     String description;
     @Singular
     List<Object> examples ;
+    Object defaultValue ;
     BrAPIType type;
     boolean deprecated;
     boolean required;

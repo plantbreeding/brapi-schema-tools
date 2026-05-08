@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -126,7 +123,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
         assertTrue(options.isGeneratingEndpointNameWithIdFor("AlleleMatrix"));
 
-        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
+        assertEquals("Get a filtered list of PedigreeNode X", options.getGet().getSummaryFor("PedigreeNode"));
 
         assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
 
@@ -190,28 +187,28 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertTrue(options.getSearch().isPagedFor("AlleleMatrix"),
             "search.paged.AlleleMatrix removed: should fall back to pagedDefault=true");
 
-        // listGet.inputFor.BreedingMethod was false; after null-removal it falls back to true.
-        assertTrue(options.getListGet().hasInputFor("BreedingMethod"),
-            "listGet.inputFor.BreedingMethod removed: should fall back to true");
+        // get.inputFor.BreedingMethod was false; after null-removal it falls back to true.
+        assertTrue(options.getGet().hasInputFor("BreedingMethod"),
+            "get.inputFor.BreedingMethod removed: should fall back to true");
 
-        // listGet.pagedToken.Call was true; after null-removal it falls back to pagedTokenDefault: false.
-        assertFalse(options.getListGet().hasPageTokenFor("Call"),
-            "listGet.pagedToken.Call removed: should fall back to pagedTokenDefault=false");
+        // get.pagedToken.Call was true; after null-removal it falls back to pagedTokenDefault: false.
+        assertFalse(options.getGet().hasPageTokenFor("Call"),
+            "get.pagedToken.Call removed: should fall back to pagedTokenDefault=false");
 
-        // listGet.propertyFromRequestFor.CallSet was removed (outer null).
+        // get.propertyFromRequestFor.CallSet was removed (outer null).
         // Every property lookup for CallSet now falls back to propertiesFromRequest: true.
-        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("CallSet", "commonCropNames"),
-            "listGet.propertyFromRequestFor.CallSet removed: commonCropNames should fall back to propertiesFromRequest=true");
-        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("CallSet", "germplasmNames"),
-            "listGet.propertyFromRequestFor.CallSet removed: germplasmNames should fall back to propertiesFromRequest=true");
+        assertTrue(options.getGet().isUsingPropertyFromRequestFor("CallSet", "commonCropNames"),
+            "get.propertyFromRequestFor.CallSet removed: commonCropNames should fall back to propertiesFromRequest=true");
+        assertTrue(options.getGet().isUsingPropertyFromRequestFor("CallSet", "germplasmNames"),
+            "get.propertyFromRequestFor.CallSet removed: germplasmNames should fall back to propertiesFromRequest=true");
 
-        // listGet.propertyFromRequestFor.Germplasm.familyCodes was false; after null-removal of
+        // get.propertyFromRequestFor.Germplasm.familyCodes was false; after null-removal of
         // that inner key it falls back to propertiesFromRequest: true.
-        assertTrue(options.getListGet().isUsingPropertyFromRequestFor("Germplasm", "familyCodes"),
-            "listGet.propertyFromRequestFor.Germplasm.familyCodes removed: should fall back to propertiesFromRequest=true");
+        assertTrue(options.getGet().isUsingPropertyFromRequestFor("Germplasm", "familyCodes"),
+            "get.propertyFromRequestFor.Germplasm.familyCodes removed: should fall back to propertiesFromRequest=true");
         // Other Germplasm entries that are still explicitly false should be unchanged.
-        assertFalse(options.getListGet().isUsingPropertyFromRequestFor("Germplasm", "programNames"),
-            "listGet.propertyFromRequestFor.Germplasm.programNames was not removed: should still be false");
+        assertFalse(options.getGet().isUsingPropertyFromRequestFor("Germplasm", "programNames"),
+            "get.propertyFromRequestFor.Germplasm.programNames was not removed: should still be false");
 
         // put.multipleFor.Call was true; after null-removal it falls back to put.multiple: false.
         assertFalse(options.getPut().isMultipleFor("Call"),
@@ -282,7 +279,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertTrue(options.getSingleGet().isGenerating());
         assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
 
-        assertEquals("Get a filtered list of PedigreeNode", options.getListGet().getSummaryFor("PedigreeNode"));
+        assertEquals("Get a filtered list of PedigreeNode", options.getGet().getSummaryFor("PedigreeNode"));
 
         assertEquals("Create new PedigreeNode", options.getPost().getSummaryFor("PedigreeNode"));
 
@@ -313,7 +310,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
         assertNotNull(options.getProperties());
         assertNotNull(options.getSingleGet());
-        assertNotNull(options.getListGet());
+        assertNotNull(options.getGet());
         assertNotNull(options.getPost());
         assertNotNull(options.getPut());
         assertNotNull(options.getDelete());
