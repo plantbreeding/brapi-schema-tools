@@ -651,7 +651,7 @@ public class OpenAPIGenerator {
 
             return createListGetParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
-                .map(() -> createListApiResponses(type))
+                .mapOnConditionOr(options.getGet().isReturningListFor(type), () -> createListApiResponses(type), () -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }

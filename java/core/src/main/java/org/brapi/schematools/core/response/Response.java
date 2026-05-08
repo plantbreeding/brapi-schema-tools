@@ -402,6 +402,93 @@ public class Response<T> {
     }
 
     /**
+     * Merges any errors from this response into a response obtained from one of the two supplied providers,
+     * depending on {@code condition}. The result from this response is lost in either case.
+     * <p>
+     * If {@code condition} is {@code true}, the response from {@code supplier} is used;
+     * otherwise the response from {@code alternativeSupplier} is used.
+     * </p>
+     * @param condition set to {@code true} to use {@code supplier}, {@code false} to use {@code alternativeSupplier}
+     * @param supplier a supplier of the response to use when {@code condition} is {@code true}
+     * @param alternativeSupplier a supplier of the response to use when {@code condition} is {@code false}
+     * @return the response from {@code supplier} or {@code alternativeSupplier}, with any errors from this response merged in
+     * @param <U> the result type of the provided response
+     */
+    public <U> Response<U> mergeOnCondition(boolean condition, Supplier<Response<U>> supplier, Supplier<Response<U>> alternativeSupplier) {
+        return condition ? this.merge(supplier.get()) :
+            this.merge(alternativeSupplier.get()) ;
+    }
+
+    /**
+     * If this response has no errors, merges any errors from this response into the response obtained
+     * from one of the two provided functions, depending on {@code condition}. If this response has
+     * errors, a new response is returned with the errors from this response merged in.
+     * The result from this response is lost in all cases.
+     * <p>
+     * If {@code condition} is {@code true}, {@code function} is applied to this response;
+     * otherwise {@code alternativeFunction} is applied to the result of this response.
+     * </p>
+     * @param condition set to {@code true} to use {@code function}, {@code false} to use {@code alternativeFunction}
+     * @param function a function that takes this response and provides a new response, used when {@code condition} is {@code true}
+     * @param alternativeFunction a function that takes the result of this response and provides a new response,
+     *                            used when {@code condition} is {@code false}
+     * @return the response from {@code function} or {@code alternativeFunction} with errors merged in,
+     *         or a new empty response with errors from this response if this response has errors
+     * @param <U> the result type of the provided response
+     */
+    public <U> Response<U> mapOnConditionOr(boolean condition, Function<Response<T>, Response<U>> function, Function<Response<T>, Response<U>> alternativeFunction) {
+        return this.hasNoErrors() ? condition ? this.merge(function.apply(this)) :
+            this.merge(alternativeFunction.apply(this)) :
+            new Response<U>().mergeErrors(this);
+    }
+
+    /**
+     * If this response has no errors, merges any errors from this response into the response obtained
+     * from one of the two provided suppliers, depending on {@code condition}. If this response has
+     * errors, a new response is returned with the errors from this response merged in.
+     * The result from this response is lost in all cases.
+     * <p>
+     * If {@code condition} is {@code true}, {@code supplier} is used;
+     * otherwise {@code alternativeSupplier} is used.
+     * </p>
+     * @param condition set to {@code true} to use {@code supplier}, {@code false} to use {@code alternativeSupplier}
+     * @param supplier a supplier that provides a new response, used when {@code condition} is {@code true}
+     * @param alternativeSupplier a supplier that provides a new response, used when {@code condition} is {@code false}
+     * @return the response from {@code supplier} or {@code alternativeSupplier} with errors merged in,
+     *         or a new empty response with errors from this response if this response has errors
+     * @param <U> the result type of the provided response
+     */
+    public <U> Response<U> mapOnConditionOr(boolean condition, Supplier<Response<U>> supplier, Supplier<Response<U>> alternativeSupplier) {
+        return this.hasNoErrors() ? condition ? this.merge(supplier.get()) :
+            this.merge(alternativeSupplier.get()) :
+            new Response<U>().mergeErrors(this);
+    }
+
+    /**
+     * If this response has no errors, applies one of the two provided functions to the result of this response,
+     * depending on {@code condition}, and merges any errors from this response into the returned response.
+     * If this response has errors, a new response is returned with the errors from this response merged in.
+     * The result from this response is lost in all cases.
+     * <p>
+     * If {@code condition} is {@code true}, {@code function} is applied to the result of this response;
+     * otherwise {@code alternativeFunction} is applied to the result of this response.
+     * </p>
+     * @param condition set to {@code true} to use {@code function}, {@code false} to use {@code alternativeFunction}
+     * @param function a function that takes the result of this response and provides a new response,
+     *                 used when {@code condition} is {@code true}
+     * @param alternativeFunction a function that takes the result of this response and provides a new response,
+     *                            used when {@code condition} is {@code false}
+     * @return the response from {@code function} or {@code alternativeFunction} with errors merged in,
+     *         or a new empty response with errors from this response if this response has errors
+     * @param <U> the result type of the provided response
+     */
+    public <U> Response<U> mapResponseOnConditionOr(boolean condition, Function<T, Response<U>> function, Function<T, Response<U>> alternativeFunction) {
+        return this.hasNoErrors() ? condition ? this.merge(function.apply(this.getResult())) :
+            this.merge(alternativeFunction.apply(this.getResult())) :
+            new Response<U>().mergeErrors(this);
+    }
+
+    /**
      * Merges the response from the supplier if this response has no errors, otherwise create a new response and merges in the errors
      * from this response. In either case the result from this response is lost.
      * @param supplier a supplier that provides a new response

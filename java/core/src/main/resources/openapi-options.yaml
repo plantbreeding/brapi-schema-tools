@@ -68,6 +68,9 @@ get:
     generateFor:
         AlleleMatrix: false
         #ServerInfo: false
+    list: true
+    listFor:
+        AlleleMatrix: false
     pagedDefault: true
     pagedTokenDefault: false
     pagedToken:
