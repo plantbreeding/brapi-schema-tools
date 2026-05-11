@@ -792,6 +792,24 @@ public class Response<T> {
     }
 
     /**
+     * If the condition is {@code true} and this response has no errors call run the action and return this
+     * @param condition if is {@code true} run the action, {@code false} do not run the action
+     * @param action the action to be run if the predicate returns {@code true} and there are no errors
+     * @param alternativeAction the action to be run if the predicate returns {@code false} and there are no errors
+     * @return this response
+     */
+    public Response<T> onSuccessDoOnConditionOr(final boolean condition, final Runnable action, final Runnable alternativeAction) {
+        if (!this.hasErrors()) {
+            if (condition) {
+                action.run();
+            } else {
+                alternativeAction.run();
+            }
+        }
+        return this;
+    }
+
+    /**
      * If this response has no errors pass the result of this response to the provider consumer
      * @param consumer a consumer for the result of this response
      * @return this response

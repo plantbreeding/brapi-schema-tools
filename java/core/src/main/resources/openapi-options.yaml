@@ -65,8 +65,7 @@ get:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
-    generateFor:
-        AlleleMatrix: false
+    #generateFor:
         #ServerInfo: false
     list: true
     listFor:
@@ -295,6 +294,9 @@ search:
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
     pagedDefault: true
     paged:
+        AlleleMatrix: false
+    list: true
+    listFor:
         AlleleMatrix: false
     generateFor:
         BreedingMethod: false

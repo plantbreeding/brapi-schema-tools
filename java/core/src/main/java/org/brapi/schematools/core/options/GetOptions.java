@@ -56,6 +56,7 @@ public class GetOptions extends AbstractListOptions {
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedTokenDefault(overrideOptions.pagedTokenDefault);
         }
+
         if (overrideOptions.pagedToken != null) {
             overrideOptions.pagedToken.forEach((key, value) -> {
                 if (value == null) pagedToken.remove(key);
@@ -64,8 +65,9 @@ public class GetOptions extends AbstractListOptions {
         }
 
         if (overrideOptions.list != null) {
-            setPagedTokenDefault(overrideOptions.list);
+            setList(overrideOptions.list);
         }
+
         if (overrideOptions.listFor != null) {
             overrideOptions.listFor.forEach((key, value) -> {
                 if (value == null) listFor.remove(key);
