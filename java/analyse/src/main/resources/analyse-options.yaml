@@ -51,6 +51,11 @@ properties:
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
             ListDetails: listDbId
+            Variable: observationVariableDbId
+            Observationunit: observationUnitDbId
+            Crossingproject: crossingProjectDbId
+            Attributevalue: attributeValueDbId
+            Seedlot: seedLotDbId
     name:
         nameFormat: "%sName"
         link: true
