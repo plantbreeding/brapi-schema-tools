@@ -1183,7 +1183,12 @@ public class BrAPISpecificationAnalyserFactory {
                     .map(() -> createBody(request)
                         .mapResult(bodyPublisher -> builder.method(request.getValidatorRequest().getMethod().name(), bodyPublisher))
                         .mapOnCondition(authorizationProvider.required(), authorizationProvider::getAuthorization)
-                        .onSuccessDoWithResult(authorization -> builder.header("Authorization", authorization))
+                        .onSuccessDoWithResult(authorization -> {
+                            // Ensure this step does not occur if NoAuthorizationProvider is passed here
+                            if (authorization != null) {
+                                builder.header("Authorization", authorization);
+                            }
+                        })
                         .merge(() -> createURI(builder, request))
                         .mapResult(HttpRequest.Builder::build)
                         .mapResultToResponse(this::send)
