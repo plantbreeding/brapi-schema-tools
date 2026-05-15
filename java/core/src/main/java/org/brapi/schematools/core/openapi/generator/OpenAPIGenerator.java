@@ -1430,10 +1430,10 @@ public class OpenAPIGenerator {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
 
             return options.getProperties().getLinkTypeFor(parentType, property, dereferencedType)
-                .mapResultToResponse(linkType -> createProperty(objectSchema, property, property.getType(), linkType)) ;
+                .mapResultToResponse(linkType -> createProperty(objectSchema, parentType, property, property.getType(), linkType)) ;
         }
 
-        private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
+        private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(type);
 
             if (LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
@@ -1447,7 +1447,7 @@ public class OpenAPIGenerator {
 
                 return switch (relationshipType) {
                     case ONE_TO_ONE, MANY_TO_ONE -> LinkType.ID.equals(linkType) ?
-                        createLinkedProperty(objectSchema, property, brAPIObjectType) :
+                        createLinkedProperty(objectSchema, parentType, property, brAPIObjectType) :
                         createEmbeddedProperty(objectSchema, property, brAPIObjectType);
                     case ONE_TO_MANY, MANY_TO_MANY ->
                         fail(Response.ErrorType.VALIDATION, String.format("Property '%s' has relationshipType '%s', referenced type '%s' is an object",
@@ -1557,7 +1557,7 @@ public class OpenAPIGenerator {
 
                 schema.setType(null);
             } else {
-                if (type instanceof BrAPIClass brAPIClass && brAPIClass.getNullable() != null && brAPIClass.getNullable()) {
+                if (type instanceof BrAPIClass brAPIClass && brAPIClass.isNullable()) {
                     return schema ;
                 }
 
@@ -1580,9 +1580,9 @@ public class OpenAPIGenerator {
             return schema ;
         }
 
-        private Response<Map<String, Schema>> createLinkedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
+        private Response<Map<String, Schema>> createLinkedProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
 
-            List<BrAPIObjectProperty> linkProperties = options.getProperties().getLinkPropertiesFor(brAPIObjectType);
+            List<BrAPIObjectProperty> linkProperties = options.getProperties().getLinkPropertiesFor(parentType, property, brAPIObjectType);
 
             if (property.isRequired()) {
                 for (BrAPIObjectProperty linkProperty : linkProperties) {

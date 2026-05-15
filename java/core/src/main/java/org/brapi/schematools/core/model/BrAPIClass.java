@@ -44,4 +44,11 @@ public interface BrAPIClass extends BrAPIType {
      * @return the examples associated with this class
      */
     List<Object> getExamples();
+
+    /**
+     * Indicates whether this class can be used in a nullable context, e.f. it can be
+     * replaced by null in property for example. This overrides the nullable status of the property
+     * @return {{@code true} if this class can be used in a nullable context, {@code false} otherwise
+     */
+    boolean isNullable();
 }

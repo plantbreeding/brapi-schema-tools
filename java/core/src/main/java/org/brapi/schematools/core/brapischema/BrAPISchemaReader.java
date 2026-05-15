@@ -541,7 +541,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findBooleanChildValue(path, jsonNode, "nullable", false, null)
-                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);
@@ -601,7 +601,7 @@ public class BrAPISchemaReader {
 
             findStringFieldList(path, jsonNode, "type", false)
                 .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, null))
-                .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findStringFieldList(path, jsonNode, "type", false)
                 .mapResult(list -> list.stream()
@@ -685,7 +685,7 @@ public class BrAPISchemaReader {
 
             findStringFieldList(path, jsonNode, "type", false)
                 .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, null))
-                .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findChildNode(path, jsonNode, "anyOf", false)
                 .mapResultToResponse(childNode -> findNullable(path, childNode))
@@ -744,7 +744,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findBooleanChildValue(path, jsonNode, "nullable", false, null)
-                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);
@@ -787,7 +787,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findBooleanChildValue(path, jsonNode, "nullable", false, null)
-                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);
@@ -851,7 +851,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findBooleanChildValue(path, jsonNode, "nullable", false, null)
-                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+                .onSuccessDoWithResult(builder::nullable);
 
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);

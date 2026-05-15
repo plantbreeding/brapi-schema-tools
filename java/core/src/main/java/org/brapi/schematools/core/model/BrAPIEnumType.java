@@ -22,4 +22,9 @@ public class BrAPIEnumType implements BrAPIClass {
     BrAPIMetadata metadata;
     String type;
     List<BrAPIEnumValue> values;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

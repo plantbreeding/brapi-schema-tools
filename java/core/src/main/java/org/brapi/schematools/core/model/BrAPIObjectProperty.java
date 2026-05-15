@@ -20,7 +20,11 @@ public class BrAPIObjectProperty {
     BrAPIType type;
     boolean deprecated;
     boolean required;
-    boolean nullable;
+    Boolean nullable;
     String referencedAttribute;
     BrAPIRelationshipType relationshipType;
+
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

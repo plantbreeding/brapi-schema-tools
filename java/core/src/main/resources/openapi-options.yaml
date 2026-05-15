@@ -97,6 +97,8 @@ get:
             programNames: false
         Event:
             studyNames: false
+        EventDateRange:
+            event: false
         GenomeMap:
             programNames: false
             studyNames: false
@@ -429,23 +431,41 @@ properties:
     name:
         nameFormat: "%sName"
         link: true
-        linkFor:
-            Variant: false
         propertyFor:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
             GenomeMap: mapName
             ObservationUnitHierarchyLevel: levelName
+        linkPropertyFor:
+            CallSet:
+                sample: false
+                study: false
     pui:
         nameFormat: "%sPUI"
         link: true
         linkFor:
             GenomeMap: false
+            Germplasm: false
+            ObservationUnit: false
+            Study: false
+            Trial: false
         propertyFor:
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
             GenomeMap: mapPUI
+        linkPropertyFor:
+            CallSet:
+                sample: false
+                study: false
+            GermplasmAttributeValue:
+                attribute: false
     linkTypeFor:
+        AlleleMatrix:
+            callSets: id
+            variants: id
+            variantSets: id
+        Analysis:
+            variantSet: id
         BreedingMethod:
             germplasm: none
             pedigreeNodes: none
@@ -453,6 +473,8 @@ properties:
             calls: sub-query
         Cross:
             observationUnits: none
+        CrossAttribute:
+            cross: none
         CrossingProject:
             crosses: none
             plannedCrosses: none
@@ -461,6 +483,14 @@ properties:
             alleleMatrix: none
         DocumentationLink:
             ontologyReference: none
+        Donor:
+            germplasm: none
+        ExperimentalDesign:
+            study: none
+        Event:
+            study: none
+        EventParameter:
+            event: none
         GeoJSON:
             image: none
             observation: none
@@ -471,7 +501,7 @@ properties:
         GenotypeMetadata:
             call: none
         Germplasm:
-            sample: none
+            samples: none
             attributeValues: none
             observations: none
             observationUnits: none
@@ -481,6 +511,10 @@ properties:
             reference: none
             referenceSet: none
             siblingPedigreeNodes: none
+        GermplasmMCPD:
+            germplasm: none
+        GermplasmOrigin:
+            germplasm: none
         GrowthFacility:
             study: none
         Image:
@@ -501,6 +535,12 @@ properties:
             events: none
             images: none
             observations: none
+        ObservationUnitPosition:
+            observationUnit: none
+        ObservationUnitLevelRelationship:
+            observationUnit: none
+        ObservationTreatment:
+            observationUnit: none
         ObservationVariable:
             studies: none
             observations: none
@@ -511,6 +551,8 @@ properties:
             programs: none
         PlannedCross:
             crosses: none
+        PollinationEvent:
+            cross: none
         Program:
             crossingProjects: none
             observationUnits: none
@@ -524,9 +566,10 @@ properties:
             bases: sub-query
             variant: none
         SeedLot:
-            fromSeedLotTransactions: sub-query
+            transactions: sub-query
             observationUnits: none
-            toSeedLotTransactions: sub-query
+        StorageType:
+            germplasm: none
         Study:
             callSets: none
             events: none
@@ -535,6 +578,10 @@ properties:
             plates: none
             samples: none
             variantSets: none
+        Synonym:
+            germplasm: none
+        TaxonId:
+            germplasm: none
         Trial:
             contacts: embedded
             observationUnits: none
@@ -545,6 +592,7 @@ properties:
         VariantSet:
             calls: sub-query
             callSets: sub-query
+            study: none
             variants: sub-query
         ValidValuesCategory:
             validValues: none

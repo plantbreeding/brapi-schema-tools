@@ -21,4 +21,9 @@ public class BrAPIOneOfType implements BrAPIClass {
     String module;
     BrAPIMetadata metadata;
     List<BrAPIType> possibleTypes;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

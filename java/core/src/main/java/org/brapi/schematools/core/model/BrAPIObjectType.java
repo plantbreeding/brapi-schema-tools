@@ -23,4 +23,9 @@ public class BrAPIObjectType implements BrAPIClass {
     BrAPIAdditionalProperties additionalProperties;
     List<BrAPIObjectProperty> properties;
     List<BrAPIObjectType> interfaces;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

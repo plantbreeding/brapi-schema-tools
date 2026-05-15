@@ -1,11 +1,9 @@
 package org.brapi.schematools.core.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
+import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.ValidatableAgainstCache;
@@ -36,6 +34,8 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     private Map<String, String> propertyFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> pluralPropertyFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> linkPropertyFor = new HashMap<>();
 
     public Validation validate() {
         return Validation.valid()
@@ -43,7 +43,8 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
             .assertNotNull(link, "'link' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(linkFor, "'linkFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(pluralPropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(pluralPropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(linkPropertyFor, "'linkPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -77,6 +78,20 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
             if (value == null) pluralPropertyFor.remove(key);
             else pluralPropertyFor.put(key, value);
         });
+
+        if (overrideOptions.linkPropertyFor != null) {
+            overrideOptions.linkPropertyFor.forEach((key, value) -> {
+                if (value == null) {
+                    linkPropertyFor.remove(key);
+                } else if (linkPropertyFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) linkPropertyFor.get(key).remove(innerKey);
+                        else linkPropertyFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (linkPropertyFor.get(key).isEmpty()) linkPropertyFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
     }
 
     @Override
@@ -102,6 +117,14 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         pluralPropertyFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'pluralPropertyFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        linkPropertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'linkPropertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -278,4 +301,59 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     public final PropertyOptions setPluralPropertyNameFor(BrAPIType type, String idParameter) {
         return setPluralPropertyNameFor(type.getName(), idParameter) ;
     }
+
+    /**
+     * Gets whether a property can be used to link from a parent type to a child type
+     * @param parentTypeName The BrAPI parent object type name
+     * @param propertyName The BrAPI property name
+     * @param childTypeName The BrAPI child type name
+     * @return <code>true</code> a property can be used to link from a parent type to a child type
+     */
+    public final boolean isLinkForProperty(@NonNull String parentTypeName, String propertyName, String childTypeName) {
+        Map<String, Boolean> map = linkPropertyFor.get(parentTypeName) ;
+
+        if (map != null) {
+            Boolean value = map.get(propertyName);
+            return value != null ? value && isLinkFor(childTypeName) : isLinkFor(childTypeName);
+        }
+
+        return isLinkFor(childTypeName)  ;
+    }
+
+    /**
+     * Gets whether a property can be used to link from a parent type to a child type
+     *
+     * @param parentType The BrAPI parent object type
+     * @param property The BrAPI property
+     * @param childType The BrAPI child type
+     * @return {@code true} a property can be used to link from a parent type to a child type
+     */
+    @JsonIgnore
+    public boolean isLinkForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property, @NonNull BrAPIObjectType childType) {
+        Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
+        if (map != null) {
+            Boolean value = map.get(property.getName());
+            return value != null ? value && isLinkFor(childType.getName()) : isLinkFor(childType.getName());
+        }
+        return isLinkFor(childType.getName()) ;
+    }
+
+    /**
+     * Sets if this property is used as a foreign key link between entities for a specific primary model and a specific property.
+     *
+     * @param type                  the primary model
+     * @param property              the request property
+     * @param usePropertyFromRequest {@code true} if this property is used as a foreign key link between entities for a specific primary model and a specific property.
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public PropertyOptions setLinkFor(@NonNull BrAPIObjectType type,
+                                                              @NonNull BrAPIObjectProperty property,
+                                                              boolean usePropertyFromRequest) {
+        linkPropertyFor
+            .computeIfAbsent(type.getName(), k -> new HashMap<>())
+            .put(property.getName(), usePropertyFromRequest);
+        return this;
+    }
+
 }
