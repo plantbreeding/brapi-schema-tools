@@ -3,6 +3,7 @@ package org.brapi.schematools.core.utils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.brapi.schematools.core.model.*;
+import org.brapi.schematools.core.response.Response;
 
 import java.util.*;
 import java.util.function.Function;
@@ -126,6 +127,23 @@ public class BrAPIClassCacheBuilder {
          */
         public BrAPIClass getBrAPIClass(String typeName) {
             return brAPIClassMap.get(typeName);
+        }
+
+        /**
+         * Finds the class by name, which includes all classes even those that did not match the {@link #cachePredicate}
+         * and dependent classes
+         *
+         * @param typeName the class name
+         * @return the requested class as a successful response or failed response.
+         */
+        public Response<BrAPIClass> findBrAPIClass(String typeName) {
+            BrAPIClass brAPIClass = brAPIClassMap.get(typeName);
+
+            if (brAPIClass != null) {
+                return Response.success(brAPIClass);
+            } else {
+                return Response.fail(Response.ErrorType.VALIDATION,  String.format("Can not find '%s' in cache!", typeName)) ;
+            }
         }
 
         /**

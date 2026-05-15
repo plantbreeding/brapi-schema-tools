@@ -15,6 +15,7 @@ public class BrAPIObjectType implements BrAPIClass {
     String name;
     String description;
     boolean deprecated;
+    Boolean nullable;
     @Singular
     List<Object> examples;
     String module;

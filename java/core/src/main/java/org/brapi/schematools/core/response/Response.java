@@ -573,6 +573,24 @@ public class Response<T> {
             return new Response<U>().mergeErrors(this);
         }
     }
+
+    /**
+     * If this response has no errors, applies one of the two provided functions to the result of this response,
+     * depending on {@code condition}, and merges any errors from this response into the returned response.
+     * If this response has errors, a new response is returned with the errors from this response merged in.
+     * The result from this response is lost in all cases.
+     *
+     * @param condition set to {@code true} to use {@code function}, {@code false} to use {@code alternativeFunction}
+     * @param function a function that takes the result of this response as an input
+     * @param alternativeFunction a function that takes the result of this response as an input
+     * @return a new response with result of the function, or with any merged errors
+     * @param <U> the result type of the new response
+     */
+    public <U> Response<U> mapResultOnConditionOr(boolean condition, Function<T, U> function, Function<T, U> alternativeFunction) {
+        return this.hasNoErrors() ? condition ? new Response<>(function.apply(this.getResult())) :
+            new Response<>(alternativeFunction.apply(this.getResult())) :
+            new Response<U>().mergeErrors(this);
+    }
     
     /**
      * If this response has no errors creates a new Response with the provided result, otherwise

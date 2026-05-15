@@ -540,6 +540,9 @@ public class BrAPISchemaReader {
             findBooleanChildValue(path, jsonNode, "deprecated", false, false)
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
+            findBooleanChildValue(path, jsonNode, "nullable", false, null)
+                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);
 
@@ -597,7 +600,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(builder::description);
 
             findStringFieldList(path, jsonNode, "type", false)
-                .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, false))
+                .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, null))
                 .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
 
             findStringFieldList(path, jsonNode, "type", false)
@@ -681,7 +684,7 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(builder::referencedAttribute);
 
             findStringFieldList(path, jsonNode, "type", false)
-                .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, false))
+                .ifPresentMapResultOr(types -> types.contains("null"), () -> findBooleanChildValue(path, jsonNode, "nullable", false, null))
                 .onSuccessDoWithResult(value -> builder.nullable(Boolean.TRUE.equals(value)));
 
             findChildNode(path, jsonNode, "anyOf", false)
@@ -740,6 +743,9 @@ public class BrAPISchemaReader {
             findBooleanChildValue(path, jsonNode, "deprecated", false, false)
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
+            findBooleanChildValue(path, jsonNode, "nullable", false, null)
+                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);
 
@@ -778,6 +784,9 @@ public class BrAPISchemaReader {
                 .module(module);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false)
+                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
+            findBooleanChildValue(path, jsonNode, "nullable", false, null)
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false)
@@ -839,6 +848,9 @@ public class BrAPISchemaReader {
                 .module(module);
 
             findBooleanChildValue(path, jsonNode, "deprecated", false, false)
+                .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
+            findBooleanChildValue(path, jsonNode, "nullable", false, null)
                 .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
 
             findStringChildValue(path, jsonNode, "description", false)
@@ -939,7 +951,7 @@ public class BrAPISchemaReader {
                 });
         }
 
-        private Response<Boolean> findBooleanChildValue(Path path, JsonNode parentNode, String fieldName, boolean required, boolean defaultValue) {
+        private Response<Boolean> findBooleanChildValue(Path path, JsonNode parentNode, String fieldName, boolean required, Boolean defaultValue) {
             return findChildNode(path, parentNode, fieldName, required)
                 .mapResultToResponse(jsonNode -> {
                     if (jsonNode instanceof BooleanNode booleanNode) {
