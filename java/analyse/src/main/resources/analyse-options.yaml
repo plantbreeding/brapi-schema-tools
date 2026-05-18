@@ -9,6 +9,9 @@ listEntity:
     analyseFor:
         VendorPlateSubmission: false
         VendorOrder: false
+        VendorOrderStatus: false
+        VendorPlate: false
+        VendorResultFile: false
     requiredParametersFor:
         PedigreeNode:
             - parameterName: germplasmDbId

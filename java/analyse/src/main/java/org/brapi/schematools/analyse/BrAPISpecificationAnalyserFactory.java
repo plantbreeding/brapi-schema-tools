@@ -20,6 +20,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.authorization.AuthorizationProvider;
 import org.brapi.schematools.core.response.Response;
@@ -166,6 +167,7 @@ public class BrAPISpecificationAnalyserFactory {
     @SuppressWarnings("unchecked")
     public class Analyser {
 
+        @Getter
         private final OpenAPI openAPI;
         private final OpenApiInteractionValidator validator;
 
