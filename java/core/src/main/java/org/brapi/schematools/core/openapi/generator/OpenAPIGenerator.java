@@ -190,6 +190,12 @@ public class OpenAPIGenerator {
 
             // maintain a list of schemas that have been referenced elsewhere, but not yet generated
             this.referencedSchemas = new TreeSet<>();
+
+            brAPIClassCache.getBrAPIClasses()
+                .stream()
+                .filter(BrAPITypeUtils::isResponse)
+                .forEach(brAPIClass -> this.responses.put(brAPIClass.getName(), createApiResponse(brAPIClass)
+                    .getResultOrThrow()));
         }
 
         public Response<List<OpenAPI>> generate() {
@@ -275,7 +281,7 @@ public class OpenAPIGenerator {
             // TODO merge in openAPIMetadata
 
             // get a list of non-primary classes (those with 'primaryModel=false' in their BrAPI metadata or has no metadata)
-            List<BrAPIClass> nonPrimaryClasses = new ArrayList<>(classes.stream().filter(BrAPITypeUtils::isNonPrimaryModel).toList());
+            List<BrAPIClass> nonPrimaryClasses = new ArrayList<>(classes.stream().filter(BrAPITypeUtils::isNonPrimaryModel).filter(BrAPITypeUtils::isNotResponse).toList());
 
             // get a list of primary classes (those with 'primaryModel=true' in their BrAPI metadata) sorted by name
             List<BrAPIObjectType> primaryClasses = classes.stream()
@@ -593,6 +599,11 @@ public class OpenAPIGenerator {
             } else {
                 return fail(Response.ErrorType.VALIDATION, "Can not create a List response for type '" + type.getName() + "'");
             }
+        }
+
+        private Response<ApiResponse> createApiResponse(BrAPIClass brAPIClass) {
+            return createSchemaForType(brAPIClass)
+                .mapResult(schema -> createApiResponse(brAPIClass.getName(), schema));
         }
 
         private ApiResponse createApiResponse(String title, Schema schema) {
@@ -1478,6 +1489,7 @@ public class OpenAPIGenerator {
                 return createReferenceSchema(property.getName())
                     .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                     .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
+                    .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
                     .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
                     .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                     .mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
@@ -1485,6 +1497,7 @@ public class OpenAPIGenerator {
             return createSchemaForProperty(property, type)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                 .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
+                .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
                 .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
                 .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
@@ -1614,10 +1627,11 @@ public class OpenAPIGenerator {
         private Response<Map<String, Schema>> createArrayProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType) {
             return createArraySchema(brAPIArrayType)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, brAPIArrayType))
+                .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
                 .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, null), schema -> schema)
                 .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
-                .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(property)))
+                .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(property.getName()))
                 .or(() -> success(Collections.emptyMap()));
         }
 

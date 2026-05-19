@@ -43,7 +43,7 @@ public class BrAPIClassCacheBuilder {
      * @return the cache of classes
      */
     public static BrAPIClassCache createCache(List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(brAPIClass -> true, brAPIClasses);
+        return new BrAPIClassCache(brAPIClass -> true, true, brAPIClasses);
     }
 
     /**
@@ -53,8 +53,30 @@ public class BrAPIClassCacheBuilder {
      * @param brAPIClasses   the list of classes to be cached.
      * @return the cache of classes
      */
-    public static BrAPIClassCache createCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(cachePredicate, brAPIClasses);
+    public static BrAPIClassCache createCacheWithPredicate(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+        return new BrAPIClassCache(cachePredicate, true, brAPIClasses);
+    }
+
+    /**
+     * Creates the cache, but switches off any validation
+     *
+     * @param brAPIClasses the list of possible classes to be cached.
+     * @return the cache of classes
+     */
+    public static BrAPIClassCache createCacheWithoutValidation(List<BrAPIClass> brAPIClasses) {
+        return new BrAPIClassCache(brAPIClass -> true, false, brAPIClasses);
+    }
+
+    /**
+     * Creates the cache with a cache predicate that determines if a class is added to the cache as a primary class,
+     * and switches off any validation.
+     *
+     * @param cachePredicate the cache predicate that determines if a class is added to the cache as a primary class.
+     * @param brAPIClasses   the list of classes to be cached.
+     * @return the cache of classes
+     */
+    public static BrAPIClassCache createCacheWithPredicateAndNoValidation(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+        return new BrAPIClassCache(cachePredicate, false, brAPIClasses);
     }
 
     public static class BrAPIClassCache {
@@ -74,11 +96,13 @@ public class BrAPIClassCacheBuilder {
         private final List<BrAPIClass> primaryClasses;
         @Getter
         private final List<BrAPIClass> allNonPrimaryDependencies;
+        private final boolean validate;
 
-        public BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
+        private BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, boolean validate, List<BrAPIClass> brAPIClasses) {
             this.inputClassMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
             this.cachePredicate = cachePredicate;
+            this.validate = validate;
             brAPIClassMap = new TreeMap<>();
 
             usedBy = new TreeMap<>();
@@ -116,6 +140,10 @@ public class BrAPIClassCacheBuilder {
 
         private boolean isPrimaryClass(BrAPIClass brAPIClass) {
             return inputClassMap.containsKey(brAPIClass.getName()) && cachePredicate.test(brAPIClass);
+        }
+
+        public boolean isValidating() {
+            return validate;
         }
 
         /**
@@ -213,6 +241,7 @@ public class BrAPIClassCacheBuilder {
 
         private void cacheProperty(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
             BrAPIType type = cacheType(property.getType());
+
 
             if (type instanceof BrAPIClass brAPIClass) {
                 usedBy.computeIfAbsent(brAPIClass.getName(), list -> new TreeSet<>()).add(brAPIObjectType.getName());

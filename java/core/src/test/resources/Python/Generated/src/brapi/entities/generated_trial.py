@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from brapi.entities.generated_plate import Plate
     from brapi.entities.generated_observation_unit import ObservationUnit
     
-from brapi.generated_common import ExternalReference, Contact, AdditionalInfo, SortOrder, SortBy
+from brapi.generated_common import ExternalReference, Contact, AdditionalInfo
 
 from .._query import BaseQuery
 from .._http import HttpTransport
@@ -171,9 +171,6 @@ _LIST_PARAM_MAP: Dict[str, Optional[str]] = {
     "commonCropNames": "commonCropName", 
     "locationDbIds": "locationDbId", 
     "locationNames": "locationName", 
-    "observationVariableDbIds": "observationVariableDbId", 
-    "observationVariableNames": "observationVariableName", 
-    "observationVariablePUIs": "observationVariablePUI", 
     "programDbIds": "programDbId", 
     "programNames": "programName", 
     "studyDbIds": "studyDbId", 
@@ -185,9 +182,7 @@ _LIST_PARAM_MAP: Dict[str, Optional[str]] = {
     "trialPUIs": "trialPUI", 
     # Already singular — pass through unchanged:
     "searchDateRangeStart": "searchDateRangeStart", 
-    "searchDateRangeEnd": "searchDateRangeEnd", 
-    "sortBy": "sortBy", 
-    "sortOrder": "sortOrder"
+    "searchDateRangeEnd": "searchDateRangeEnd"
     
 }
 class TrialQuery(BaseQuery[Trial]):
@@ -287,63 +282,6 @@ Use `GET /commoncropnames` to find the list of available crops on a server.
             
         """
         return self._set_param("locationNames", location_names)  # type: ignore[return-value]
-
-    # --- observationVariableDbIds ---
-
-    def by_observation_variable_db_id(self, observation_variable_db_ids: Union[str, List[str]]) -> "TrialQuery":
-        """The DbIds of Variables to search for
-
-        Example::
-            client.trial
-                .by_observation_variable_db_id("a646187d")
-                .fetch()
-                .to_df()
-            
-            client.trial
-                .by_observation_variable_db_id(["a646187d", "6d23513b"])
-                .fetch()
-                .to_df()
-            
-        """
-        return self._set_param("observationVariableDbIds", observation_variable_db_ids)  # type: ignore[return-value]
-
-    # --- observationVariableNames ---
-
-    def by_observation_variable_name(self, observation_variable_names: Union[str, List[str]]) -> "TrialQuery":
-        """The names of Variables to search for
-
-        Example::
-            client.trial
-                .by_observation_variable_name("Plant Height in meters")
-                .fetch()
-                .to_df()
-            
-            client.trial
-                .by_observation_variable_name(["Plant Height in meters", "Wheat rust score 1-5"])
-                .fetch()
-                .to_df()
-            
-        """
-        return self._set_param("observationVariableNames", observation_variable_names)  # type: ignore[return-value]
-
-    # --- observationVariablePUIs ---
-
-    def by_observation_variable_pui(self, observation_variable_puis: Union[str, List[str]]) -> "TrialQuery":
-        """The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
-
-        Example::
-            client.trial
-                .by_observation_variable_pui("http://my-traits.com/trait/CO_123:0008012")
-                .fetch()
-                .to_df()
-            
-            client.trial
-                .by_observation_variable_pui(["http://my-traits.com/trait/CO_123:0008012", "http://my-traits.com/trait/CO_123:0007261"])
-                .fetch()
-                .to_df()
-            
-        """
-        return self._set_param("observationVariablePUIs", observation_variable_puis)  # type: ignore[return-value]
 
     # --- programDbIds ---
 
@@ -555,24 +493,6 @@ Return a Trial entity if any of the following cases are true
         """
         return self._set_param("trialPUIs", trial_puis)  # type: ignore[return-value]
 
-    # --- sortBy ---
-
-    def sort_by(self, sort_by: SortBy) -> "TrialQuery":
-        """Name of the field to sort by.
-
-        
-        """
-        return self._set_param("sortBy", sort_by)  # type: ignore[return-value]
-
-    # --- sortOrder ---
-
-    def sort_order(self, sort_order: SortOrder) -> "TrialQuery":
-        """Sort order direction. Ascending/Descending.
-
-        
-        """
-        return self._set_param("sortOrder", sort_order)  # type: ignore[return-value]
-
     # --- Bulk convenience ---
 
     def filter(
@@ -581,9 +501,6 @@ Return a Trial entity if any of the following cases are true
         common_crop_names: Optional[List[str]] = None,
         location_db_ids: Optional[List[str]] = None,
         location_names: Optional[List[str]] = None,
-        observation_variable_db_ids: Optional[List[str]] = None,
-        observation_variable_names: Optional[List[str]] = None,
-        observation_variable_puis: Optional[List[str]] = None,
         program_db_ids: Optional[List[str]] = None,
         program_names: Optional[List[str]] = None,
         study_db_ids: Optional[List[str]] = None,
@@ -595,8 +512,6 @@ Return a Trial entity if any of the following cases are true
         search_date_range_start: Optional[date] = None,
         search_date_range_end: Optional[date] = None,
         trial_puis: Optional[List[str]] = None,
-        sort_by: Optional[SortBy] = None,
-        sort_order: Optional[SortOrder] = None,
     ) -> "TrialQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -622,12 +537,6 @@ Return a Trial entity if any of the following cases are true
             q = q.by_location_db_id(location_db_ids)
         if location_names:
             q = q.by_location_name(location_names)
-        if observation_variable_db_ids:
-            q = q.by_observation_variable_db_id(observation_variable_db_ids)
-        if observation_variable_names:
-            q = q.by_observation_variable_name(observation_variable_names)
-        if observation_variable_puis:
-            q = q.by_observation_variable_pui(observation_variable_puis)
         if program_db_ids:
             q = q.by_program_db_id(program_db_ids)
         if program_names:
@@ -650,10 +559,6 @@ Return a Trial entity if any of the following cases are true
             q = q.search_date_range_end(search_date_range_end)
         if trial_puis:
             q = q.trial_puis(trial_puis)
-        if sort_by:
-            q = q.sort_by(sort_by)
-        if sort_order:
-            q = q.sort_order(sort_order)
         return q
 
     # ------------------------------------------------------------------

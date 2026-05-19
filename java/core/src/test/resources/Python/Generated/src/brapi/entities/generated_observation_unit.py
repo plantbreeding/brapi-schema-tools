@@ -64,7 +64,6 @@ class ObservationUnit(BaseModel):
     Required fields: ``observationUnitDbId``
 
     All other fields are optional.  Nested relationship lists (``externalReferences``,
-    ``observationUnitPosition``,
     ``treatments``) are parsed into sub-models when present; unknown extra fields are
     accepted (``extra="allow"``) to survive schema evolution without breaking.
     """
@@ -79,7 +78,6 @@ class ObservationUnit(BaseModel):
 
     # --- Nested lists ---
     externalReferences: Optional[list[ExternalReference]] = None
-    observationUnitPosition: Optional[list[ObservationUnitPosition]] = None
     treatments: Optional[list[ObservationTreatment]] = None
     # --- Relationship fields (embedded objects and enums) ---
 
@@ -87,6 +85,7 @@ class ObservationUnit(BaseModel):
     cross: Optional[Cross] = None
     germplasm: Optional[Germplasm] = None
     location: Optional[Location] = None
+    observationUnitPosition: Optional[ObservationUnitPosition] = None
     program: Optional[Program] = None
     seedLot: Optional[SeedLot] = None
     study: Optional[Study] = None
@@ -102,12 +101,12 @@ def observation_unit_to_df(items: list[ObservationUnit]) -> pd.DataFrame:
     Convert a list of ``ObservationUnit`` objects to a flat ``pd.DataFrame``.
 
     Nested sub-model lists (``externalReferences``,
-    ``observationUnitPosition``,
     ``treatments``) are serialised to JSON strings so each ObservationUnit remains
     one row.  Relationship objects (``additionalInfo``,
     ``cross``,
     ``germplasm``,
     ``location``,
+    ``observationUnitPosition``,
     ``program``,
     ``seedLot``,
     ``study``,
@@ -125,6 +124,7 @@ def observation_unit_to_df(items: list[ObservationUnit]) -> pd.DataFrame:
             "cross",
             "germplasm",
             "location",
+            "observationUnitPosition",
             "program",
             "seedLot",
             "study",
@@ -141,7 +141,6 @@ def observation_unit_to_df(items: list[ObservationUnit]) -> pd.DataFrame:
         for arr_field in (
 
             "externalReferences",
-            "observationUnitPosition",
             "treatments",
 
         ):

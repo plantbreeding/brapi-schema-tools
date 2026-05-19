@@ -24,7 +24,7 @@ class GetOptionsTest {
     void isGeneratingFor() {
         assertTrue(subject.isGeneratingFor("Trial"));
         assertTrue(subject.isGeneratingFor("BreedingMethod"));
-        assertFalse(subject.isGeneratingFor("AlleleMatrix"));
+        assertTrue(subject.isGeneratingFor("AlleleMatrix"));
     }
 
     @Test

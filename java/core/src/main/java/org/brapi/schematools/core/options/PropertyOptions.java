@@ -98,6 +98,10 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         linkFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'clusteringFor' on %s",
@@ -306,10 +310,46 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * Gets whether a property can be used to link from a parent type to a child type
      * @param parentTypeName The BrAPI parent object type name
      * @param propertyName The BrAPI property name
+     * @return <code>true</code> a property can be used to link from a parent type to a child type
+     */
+    public final boolean isLinkForProperty(@NonNull String parentTypeName, String propertyName) {
+        Map<String, Boolean> map = linkPropertyFor.get(parentTypeName) ;
+
+        if (map != null) {
+            Boolean value = map.get(propertyName);
+            return value != null && value ;
+        }
+
+        return false ;
+    }
+
+    /**
+     * Gets whether a property can be used to link from a parent type to a child type
+     *
+     * @param parentType The BrAPI parent object type
+     * @param property The BrAPI property
+     * @return {@code true} a property can be used to link from a parent type to a child type
+     */
+    @JsonIgnore
+    public boolean isLinkForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property) {
+        Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
+        if (map != null) {
+            Boolean value = map.get(property.getName());
+            return value != null && value ;
+        }
+
+        return false ;
+    }
+
+
+    /**
+     * Gets whether a property can be used to link from a parent type to a child type
+     * @param parentTypeName The BrAPI parent object type name
+     * @param propertyName The BrAPI property name
      * @param childTypeName The BrAPI child type name
      * @return <code>true</code> a property can be used to link from a parent type to a child type
      */
-    public final boolean isLinkForProperty(@NonNull String parentTypeName, String propertyName, String childTypeName) {
+    public final boolean isLinkForTypeOrProperty(@NonNull String parentTypeName, String propertyName, String childTypeName) {
         Map<String, Boolean> map = linkPropertyFor.get(parentTypeName) ;
 
         if (map != null) {
@@ -329,7 +369,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * @return {@code true} a property can be used to link from a parent type to a child type
      */
     @JsonIgnore
-    public boolean isLinkForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property, @NonNull BrAPIObjectType childType) {
+    public boolean isLinkForTypeOrProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property, @NonNull BrAPIObjectType childType) {
         Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
         if (map != null) {
             Boolean value = map.get(property.getName());

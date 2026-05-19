@@ -22,7 +22,7 @@ CREATE TABLE brapi_ObservationUnits (
   seedLotName STRING NOT NULL COMMENT 'A human readable name for this Seed Lot',
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
   trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
@@ -31,60 +31,59 @@ CREATE TABLE brapi_ObservationUnits (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
-  observationUnitPosition
-    ARRAY<
-      STRUCT<
-        -- Link properties
-        observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
-        observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
-        observationUnitName STRING COMMENT 'A human readable name for an observation unit',
-        -- Properties
-        entryType STRING COMMENT 'The type of entry for this observation unit. ex. "CHECK", "TEST", "FILLER"',
-        geoCoordinates
-          ARRAY<
-            STRUCT<
-              geometry1
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'A single position',
-                  type STRING COMMENT 'The literal string "Point"'
-                >,
-              geometry2
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
-                  type STRING COMMENT 'The literal string "Polygon"'
-                > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
-              type STRING COMMENT 'The literal string "Feature"'
-            >
-          > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
-        observationLevel 
+  observationUnitPosition 
+    STRUCT<
+      -- Link properties
+      observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
+      observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
+      observationUnitName STRING COMMENT 'A human readable name for an observation unit',
+      -- Properties
+      entryType STRING COMMENT 'The type of entry for this observation unit. ex. "CHECK", "TEST", "FILLER"',
+      geoCoordinates
+        ARRAY<
           STRUCT<
+            geometry1
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'A single position',
+                type STRING COMMENT 'The literal string "Point"'
+              >,
+            geometry2
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
+                type STRING COMMENT 'The literal string "Polygon"'
+              > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
+            type STRING COMMENT 'The literal string "Feature"'
+          >
+        > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
+      observationLevel 
+        STRUCT<
+          levelCode STRING COMMENT 'An ID code or number to represent a real thing that may or may not be an an observation unit. <br/>For example, if the ''levelName'' is ''plot'', then the ''levelCode'' would be the plot number or plot barcode. If this plot is also considered an ObservationUnit, then the appropriate observationUnitDbId should also be recorded. <br/>If the ''levelName'' is ''field'', then the ''levelCode'' might be something like ''3'' or ''F3'' to indicate the third field at a research station. ',
+          levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
+          levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+        > COMMENT 'The exact level and level code of an observation unit.   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>.   MIAPPE V1.1 DM-71 Observation unit type "Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended.  The observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables).  Alternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead." ',
+      observationLevelRelationships
+        ARRAY<
+          STRUCT<
+            -- Link properties
+            observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
+            observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
+            observationUnitName STRING COMMENT 'A human readable name for an observation unit',
+            -- Properties
             levelCode STRING COMMENT 'An ID code or number to represent a real thing that may or may not be an an observation unit. <br/>For example, if the ''levelName'' is ''plot'', then the ''levelCode'' would be the plot number or plot barcode. If this plot is also considered an ObservationUnit, then the appropriate observationUnitDbId should also be recorded. <br/>If the ''levelName'' is ''field'', then the ''levelCode'' might be something like ''3'' or ''F3'' to indicate the third field at a research station. ',
             levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
             levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
-          > COMMENT 'The exact level and level code of an observation unit.   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>.   MIAPPE V1.1 DM-71 Observation unit type "Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended.  The observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables).  Alternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead." ',
-        observationLevelRelationships
-          ARRAY<
-            STRUCT<
-              -- Link properties
-              observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
-              observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
-              observationUnitName STRING COMMENT 'A human readable name for an observation unit',
-              -- Properties
-              levelCode STRING COMMENT 'An ID code or number to represent a real thing that may or may not be an an observation unit. <br/>For example, if the ''levelName'' is ''plot'', then the ''levelCode'' would be the plot number or plot barcode. If this plot is also considered an ObservationUnit, then the appropriate observationUnitDbId should also be recorded. <br/>If the ''levelName'' is ''field'', then the ''levelCode'' might be something like ''3'' or ''F3'' to indicate the third field at a research station. ',
-              levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
-              levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
-            >
-          > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6). `levelCode` is an ID code for this level tag. Identify  this observation unit by each level of the hierarchy where it exists.   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>.   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** ',
-        positionCoordinateX STRING COMMENT 'The X position coordinate for an observation unit. Different systems may use different coordinate systems.',
-        positionCoordinateXType STRING COMMENT 'The type of positional coordinate used for the X coordinate of the position.',
-        positionCoordinateY STRING COMMENT 'The Y position coordinate for an observation unit. Different systems may use different coordinate systems.',
-        positionCoordinateYType STRING COMMENT 'The type of positional coordinate used for the Y coordinate of the position.'
-      >
-    > COMMENT 'All positional and layout information related to this Observation Unit   MIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative)  or level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value.  Levels of observation must be consistent with those listed in the Study section.',
+          >
+        > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6). `levelCode` is an ID code for this level tag. Identify  this observation unit by each level of the hierarchy where it exists.   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>.   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** ',
+      positionCoordinateX STRING COMMENT 'The X position coordinate for an observation unit. Different systems may use different coordinate systems.',
+      positionCoordinateXType STRING COMMENT 'The type of positional coordinate used for the X coordinate of the position.',
+      positionCoordinateY STRING COMMENT 'The Y position coordinate for an observation unit. Different systems may use different coordinate systems.',
+      positionCoordinateYType STRING COMMENT 'The type of positional coordinate used for the Y coordinate of the position.'
+    > NOT NULL COMMENT 'All positional and layout information related to this Observation Unit   MIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative)  or level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value.  Levels of observation must be consistent with those listed in the Study section.',
   treatments
     ARRAY<
       STRUCT<

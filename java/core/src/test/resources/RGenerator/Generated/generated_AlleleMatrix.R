@@ -27,6 +27,10 @@ AlleleMatrix <- R6Class(
     #' may return the paged results or a search result ID for later retrieval
     #' @param pagination Pagination for the matrix
     #' @param preview Default Value = false &lt;br/&gt; If &#39;preview&#39; is set to true, then the server should only return the lists of &#39;callSetDbIds&#39;,  &#39;variantDbIds&#39;, and &#39;variantSetDbIds&#39;.
+    #' @param dimensionVariantPage The requested page number for the Variant dimension of the matrix
+    #' @param dimensionVariantPageSize The requested page size for the Variant dimension of the matrix
+    #' @param dimensionCallSetPage The requested page number for the CallSet dimension of the matrix
+    #' @param dimensionCallSetPageSize The requested page size for the CallSet dimension of the matrix
     #' @param dataMatrixNames `dataMatrixNames` is a list of names (ie &#39;Genotype&#39;, &#39;Read Depth&#39; etc).
     #' @param dataMatrixAbbreviations `dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie &#39;GT&#39;, &#39;RD&#39; etc).
     #' @param positionRanges The postion range to search &lt;br/&gt; Uses the format &quot;&lt;chrom&gt;:&lt;start&gt;-&lt;end&gt;&quot; where &lt;chrom&gt; is the chromosome name, &lt;start&gt; is  the starting position of the range, and &lt;end&gt; is the ending position of the range
@@ -49,6 +53,10 @@ AlleleMatrix <- R6Class(
     search = function(
         pagination = NULL,
         preview = NULL,
+        dimensionVariantPage = NULL,
+        dimensionVariantPageSize = NULL,
+        dimensionCallSetPage = NULL,
+        dimensionCallSetPageSize = NULL,
         dataMatrixNames = NULL,
         dataMatrixAbbreviations = NULL,
         positionRanges = NULL,
@@ -72,6 +80,18 @@ AlleleMatrix <- R6Class(
       }
       if (!is.null(preview)) {
         queryParams$preview <- to_list(preview)
+      }
+      if (!is.null(dimensionVariantPage)) {
+        queryParams$dimensionVariantPage <- to_list(dimensionVariantPage)
+      }
+      if (!is.null(dimensionVariantPageSize)) {
+        queryParams$dimensionVariantPageSize <- to_list(dimensionVariantPageSize)
+      }
+      if (!is.null(dimensionCallSetPage)) {
+        queryParams$dimensionCallSetPage <- to_list(dimensionCallSetPage)
+      }
+      if (!is.null(dimensionCallSetPageSize)) {
+        queryParams$dimensionCallSetPageSize <- to_list(dimensionCallSetPageSize)
       }
       if (!is.null(dataMatrixNames)) {
         queryParams$dataMatrixNames <- to_list(dataMatrixNames)

@@ -22,7 +22,7 @@ CREATE TABLE brapi_Samples (
   programName STRING NOT NULL COMMENT 'Human readable name of the program',
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
   trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
@@ -32,14 +32,15 @@ CREATE TABLE brapi_Samples (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
-    > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
+    > NOT NULL COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   row STRING COMMENT 'The Row identifier for this `Sample` location in the `Plate`',
   sampleBarcode STRING COMMENT 'A unique identifier physically attached to the `Sample`',
   sampleDescription STRING COMMENT 'Description of a `Sample` <br>MIAPPE V1.1 (DM-79) Sample description - Any information not captured by the other sample fields, including quantification, sample treatments and processing.',
-  sampleGroupId STRING COMMENT 'The ID which uniquely identifies a group of `Samples`',
+  sampleGroupDbId STRING COMMENT 'The ID which uniquely identifies a group of `Samples`',
   sampleTimestamp STRING COMMENT 'The date and time a `Sample` was collected from the field <br> MIAPPE V1.1 (DM-80) Collection date - The date and time when the sample was collected / harvested',
   sampleType STRING COMMENT 'The type of `Sample` taken. ex. ''DNA'', ''RNA'', ''Tissue'', etc',
   takenBy STRING COMMENT 'The name or identifier of the entity which took the `Sample` from the field',

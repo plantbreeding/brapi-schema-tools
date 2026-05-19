@@ -211,7 +211,11 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
 
-        Validation validation = Validation.valid() ;
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
 
         generateNewRequestFor.forEach((name, value) -> {
             if (value != null) {

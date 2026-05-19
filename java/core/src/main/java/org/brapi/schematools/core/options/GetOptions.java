@@ -80,6 +80,10 @@ public class GetOptions extends AbstractListOptions {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         inputFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'inputFor' on %s",

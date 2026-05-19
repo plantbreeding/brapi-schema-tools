@@ -42,6 +42,7 @@ get:
     generateFor:
         AlleleMatrix: false
         ServerInfo: false
+    list: true
     pagedDefault: true
     paged:
         BreedingMethod: false
@@ -83,6 +84,7 @@ search:
         If a server needs more time to process the request, it might respond with a `searchResultsDbId`. 
         Use this endpoint to retrieve the results of the search. <br/> 
         Review the <a target="_blank" href="https://wiki.brapi.org/index.php/Search_Services#POST_Search_Entity">Search Services documentation</a> for additional implementation details.
+    list: true
     pagedDefault: true
     paged:
         AlleleMatrix: false

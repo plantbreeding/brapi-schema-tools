@@ -60,7 +60,7 @@ class Sample(BaseModel):
     sampleBarcode: Optional[str] = None
     sampleDescription: Optional[str] = None
     sampleDbId: Optional[str] = None
-    sampleGroupId: Optional[str] = None
+    sampleGroupDbId: Optional[str] = None
     samplePUI: Optional[str] = None
     sampleTimestamp: Optional[datetime] = None
     sampleType: Optional[str] = None

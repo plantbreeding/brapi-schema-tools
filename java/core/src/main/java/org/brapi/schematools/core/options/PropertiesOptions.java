@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIPrimitiveType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
@@ -100,6 +101,10 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     @Override
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
 
         clusteringFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
@@ -256,31 +261,42 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
         List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
 
-        if (id.isLinkForProperty(parentType, property, brAPIObjectType))  {
+        if (id.isLinkForTypeOrProperty(parentType, property, brAPIObjectType))  {
             brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)))
+                .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)) )
                 .findFirst()
                 .map(childProperty -> childProperty.toBuilder().name(String.format(id.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
+                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(id.getNameFormat(), property.getName()))));
         }
 
-        if (pui.isLinkForProperty(parentType, property, brAPIObjectType)) {
+        if (pui.isLinkForTypeOrProperty(parentType, property, brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)))
+                .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)) )
                 .findFirst()
                 .map(childProperty -> childProperty.toBuilder().name(String.format(pui.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
+                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(pui.getNameFormat(), property.getName()))));
         }
 
-        if (name.isLinkForProperty(parentType, property, brAPIObjectType)) {
+        if (name.isLinkForTypeOrProperty(parentType, property, brAPIObjectType)) {
             brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)))
+                .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)) )
                 .findFirst()
                 .map(childProperty -> childProperty.toBuilder().name(String.format(name.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
+                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(name.getNameFormat(), property.getName()))));
         }
 
         return linkProperties ;
+    }
+
+    private BrAPIObjectProperty createStringProperty(String name) {
+        return BrAPIObjectProperty.builder()
+            .name(name)
+            .type(BrAPIPrimitiveType.stringType())
+            .build();
+    }
+
+    private boolean isLink(PropertyOptions propertyOptions, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty childProperty) {
+        return propertyOptions.isLinkForProperty(parentType, property) || childProperty.getName().equals(propertyOptions.getPropertyNameFor(brAPIObjectType)) ;
     }
 
     /**

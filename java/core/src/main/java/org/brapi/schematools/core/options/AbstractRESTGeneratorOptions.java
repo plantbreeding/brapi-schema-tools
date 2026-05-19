@@ -169,6 +169,10 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         pathItemNameFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",

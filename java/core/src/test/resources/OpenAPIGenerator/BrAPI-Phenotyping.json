@@ -170,6 +170,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -291,6 +294,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -542,6 +548,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -814,6 +823,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -860,7 +872,7 @@
                                 "additionalProperties" : {
                                     "$ref" : "#/components/schemas/ObservationUnitNewRequest"
                                 },
-                                "example" : "{<observationUnitDbId>_1={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af8, observationUnitName=5a5b18e6, observationUnitPUI=491c6d6d, observationUnitPosition=[{}], program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}, <observationUnitDbId>_2={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af9, observationUnitName=5a5b18e7, observationUnitPUI=491c6d6e, observationUnitPosition=[{}], program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}}"
+                                "example" : "{<observationUnitDbId>_1={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af8, observationUnitName=5a5b18e6, observationUnitPUI=491c6d6d, observationUnitPosition={}, program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}, <observationUnitDbId>_2={additionalInfo={}, cross={}, externalReferences=[{}], germplasm={}, location={}, observationUnitDbId=59ce1af9, observationUnitName=5a5b18e7, observationUnitPUI=491c6d6e, observationUnitPosition={}, program={}, seedLot={}, study={}, treatments=[{}], trial={}, samples=[{}], events=[{}], images=[{}], observations=[{}]}}"
                             }
                         }
                     }
@@ -1093,6 +1105,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -1306,6 +1321,9 @@
                         "$ref" : "#/components/parameters/externalReferenceId"
                     },
                     {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
                         "$ref" : "#/components/parameters/externalReferenceSource"
                     },
                     {
@@ -1427,6 +1445,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -2338,6 +2359,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/ImageListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -2380,6 +2407,12 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/ObservationListResponse"
+                    },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -2424,6 +2457,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/ObservationUnitListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -2466,6 +2505,12 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/ObservationVariableListResponse"
+                    },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -2529,6 +2574,7 @@
                     "dataMatrixAbbreviations" : {
                         "type" : "array",
                         "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2536,18 +2582,45 @@
                     "dataMatrixNames" : {
                         "type" : "array",
                         "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
+                    "dimensionCallSetPage" : {
+                        "type" : "integer",
+                        "description" : "The requested page number for the CallSet dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionCallSetPageSize" : {
+                        "type" : "integer",
+                        "description" : "The requested page size for the CallSet dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionVariantPage" : {
+                        "type" : "integer",
+                        "description" : "The requested page number for the Variant dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionVariantPageSize" : {
+                        "type" : "integer",
+                        "description" : "The requested page size for the Variant dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "nullable" : true,
                         "example" : true
                     },
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Germplasm` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2555,6 +2628,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "A list of human readable `Germplasm` names",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2562,6 +2636,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "A list of permanent unique identifiers associated with `Germplasm`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2569,6 +2644,7 @@
                     "pagination" : {
                         "type" : "array",
                         "description" : "Pagination for the matrix",
+                        "nullable" : true,
                         "items" : {
                             "type" : "object",
                             "properties" : {
@@ -2599,6 +2675,7 @@
                     "positionRanges" : {
                         "type" : "array",
                         "description" : "The postion range to search\n<br/>\nUses the format \"<chrom>:<start>-<end>\" where <chrom> is the chromosome name, <start> is \nthe starting position of the range, and <end> is the ending position of the range",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2606,11 +2683,13 @@
                     "preview" : {
                         "type" : "boolean",
                         "description" : "Default Value = false\n<br/>\nIf 'preview' is set to true, then the server should only return the lists of 'callSetDbIds', \n'variantDbIds', and 'variantSetDbIds'. The server should not return any matrix data. This\nis intended to be a preview and give the client a sense of how large the matrix returned will be\n<br/>\nIf 'preview' is set to false or not set (default), then the server should return all the matrix\ndata as requested.",
-                        "example" : true
+                        "example" : true,
+                        "default" : false
                     },
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2618,21 +2697,25 @@
                     "sepPhased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for phased allele calls.",
+                        "nullable" : true,
                         "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for unphased allele calls.",
+                        "nullable" : true,
                         "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
                         "description" : "The string used as a representation for missing data.",
+                        "nullable" : true,
                         "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2640,6 +2723,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2649,11 +2733,9 @@
             "Attribute" : {
                 "required" : [
                     "attributeName",
-                    "methodDbId",
-                    "methodName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "method",
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -2731,26 +2813,14 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -2776,14 +2846,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 }
             },
@@ -2793,6 +2857,7 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2800,26 +2865,35 @@
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "nullable" : true,
                         "example" : true
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
                     },
                     "sepPhased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for phased allele calls.",
+                        "nullable" : true,
                         "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for unphased allele calls.",
+                        "nullable" : true,
                         "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
                         "description" : "The string used as a representation for missing data.",
+                        "nullable" : true,
                         "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2827,6 +2901,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2839,6 +2914,7 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2846,6 +2922,7 @@
                     "callSetNames" : {
                         "type" : "array",
                         "description" : "A list of human readable names associated with `CallSets`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2860,6 +2937,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2867,6 +2945,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2888,6 +2967,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2895,6 +2975,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "A list of human readable names associated with `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2930,6 +3011,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3102,13 +3184,11 @@
                     "URL" : {
                         "type" : "string",
                         "description" : "The URL or URI to the documentation",
-                        "format" : "uri",
-                        "nullable" : true
+                        "format" : "uri"
                     },
                     "type" : {
                         "type" : "string",
                         "description" : "The type of documentation, which can be OBO Foundry, an RDF term or a webpage.",
-                        "nullable" : true,
                         "enum" : [
                             "OBO",
                             "RDF",
@@ -3146,13 +3226,18 @@
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
-                    "eventDateRange" : {
+                    "date" : {
                         "type" : "array",
-                        "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+                        "description" : "**Deprecated in v2.1** Please use `eventDateRange.discreteDates`. Github issue number #440\n<br>A list of dates when the event occurred\n<br>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
                         "nullable" : true,
+                        "deprecated" : true,
                         "items" : {
-                            "$ref" : "#/components/schemas/EventDateRange"
+                            "type" : "string",
+                            "format" : "date-time"
                         }
+                    },
+                    "eventDateRange" : {
+                        "$ref" : "#/components/schemas/EventDateRange"
                     },
                     "eventDbId" : {
                         "type" : "string",
@@ -3173,22 +3258,28 @@
                     },
                     "eventType" : {
                         "type" : "string",
-                        "description" : "An identifier for this event type, in the form of an ontology class reference\n<br/>ICASA Management events allow for the following types: planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other\n<br/>MIAPPE V1.1 (DM-66) Event accession number - Accession number of the event type in a suitable controlled vocabulary (Crop Ontology).",
-                        "nullable" : true
+                        "description" : "An identifier for this event type, in the form of an ontology class reference\n<br/>ICASA Management events allow for the following types: planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other\n<br/>MIAPPE V1.1 (DM-66) Event accession number - Accession number of the event type in a suitable controlled vocabulary (Crop Ontology)."
                     },
                     "eventTypeDbId" : {
                         "type" : "string",
                         "description" : "An identifier for this event type, in the form of an ontology class reference\n<br/>ICASA Management events allow for the following types: planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other\n<br/>MIAPPE V1.1 (DM-66) Event accession number - Accession number of the event type in a suitable controlled vocabulary (Crop Ontology).",
                         "nullable" : true
                     },
+                    "observationUnitDbIds" : {
+                        "type" : "array",
+                        "description" : "A list of the affected observation units. If this parameter is not given, it is understood that the event affected all units in the study",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "studyDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "studyName" : {
-                        "type" : "string"
-                    },
-                    "studyPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     }
                 },
                 "description" : "An event is discrete occurrence at a particular time in the experiment. Events may be the realization of Treatments or parts of Treatments, or may be confounding to Treatments. \n<br> ICASA Management Events allow for the following types -> planting, fertilizer, irrigation, tillage, organic_material, harvest, bed_prep, inorg_mulch, inorg_mul_rem, chemicals, mowing, observation, weeding, puddling, flood_level, other"
@@ -3211,9 +3302,6 @@
                         "format" : "date-time",
                         "nullable" : true
                     },
-                    "eventDbId" : {
-                        "type" : "string"
-                    },
                     "startDate" : {
                         "type" : "string",
                         "description" : "The beginning of a continuous or regularly repetitive event\n<br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
@@ -3221,7 +3309,8 @@
                         "nullable" : true
                     }
                 },
-                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)"
+                "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+                "nullable" : true
             },
             "EventParameter" : {
                 "type" : "object",
@@ -3236,13 +3325,24 @@
                         "description" : "A human readable description of this event parameter. This description is usually associated with the 'name' and 'code' of an event parameter.",
                         "nullable" : true
                     },
-                    "eventDbId" : {
-                        "type" : "string"
+                    "key" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `name`. Github issue number #440             \n<br>Specifies the relationship between the event and the given property. E.g. fertilizer, operator",
+                        "nullable" : true,
+                        "example" : "operator",
+                        "deprecated" : true
                     },
                     "name" : {
                         "type" : "string",
                         "description" : "The full name of an event parameter\n<br>ICASA \"Variable_Name\"",
                         "nullable" : true
+                    },
+                    "rdfValue" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `code`. Github issue number #440             \n<brThe type of the value given above, e.g. http://xmlns.com/foaf/0.1/Agent",
+                        "nullable" : true,
+                        "example" : "http://xmlns.com/foaf/0.1/Agent",
+                        "deprecated" : true
                     },
                     "units" : {
                         "type" : "string",
@@ -3323,15 +3423,46 @@
             "ExternalReference" : {
                 "type" : "object",
                 "properties" : {
+                    "referenceID" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.",
+                        "nullable" : true,
+                        "deprecated" : true
+                    },
                     "referenceId" : {
                         "type" : "string",
-                        "description" : "The external reference ID. Could be a simple string or a URI.",
-                        "nullable" : true
+                        "description" : "The external reference ID. Could be a simple string or a URI."
                     },
                     "referenceSource" : {
                         "type" : "string",
-                        "description" : "An identifier for the source system or database of this reference",
-                        "nullable" : true
+                        "description" : "An identifier for the source system or database of this reference"
+                    }
+                }
+            },
+            "ExternalReferencesParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 }
             },
@@ -3426,16 +3557,19 @@
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
-                        "example" : "Feature"
+                        "example" : "Feature",
+                        "default" : "Feature"
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
+                "nullable" : true
             },
             "GeoJSONGeometry" : {
+                "nullable" : true,
                 "oneOf" : [
                     {
                         "required" : [
-                            "coordinateDbIds",
+                            "coordinates",
                             "type"
                         ],
                         "type" : "object",
@@ -3449,14 +3583,15 @@
                             },
                             "type" : {
                                 "type" : "string",
-                                "description" : "The literal string \"Point\""
+                                "description" : "The literal string \"Point\"",
+                                "default" : "Point"
                             }
                         },
                         "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
-                            "coordinateDbIds",
+                            "coordinates",
                             "type"
                         ],
                         "type" : "object",
@@ -3476,7 +3611,8 @@
                             },
                             "type" : {
                                 "type" : "string",
-                                "description" : "The literal string \"Polygon\""
+                                "description" : "The literal string \"Polygon\"",
+                                "default" : "Polygon"
                             }
                         },
                         "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -3485,7 +3621,7 @@
             },
             "GeoJSONPoint" : {
                 "required" : [
-                    "coordinateDbIds",
+                    "coordinates",
                     "type"
                 ],
                 "type" : "object",
@@ -3499,14 +3635,15 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Point\""
+                        "description" : "The literal string \"Point\"",
+                        "default" : "Point"
                     }
                 },
                 "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONPolygon" : {
                 "required" : [
-                    "coordinateDbIds",
+                    "coordinates",
                     "type"
                 ],
                 "type" : "object",
@@ -3526,7 +3663,8 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Polygon\""
+                        "description" : "The literal string \"Polygon\"",
+                        "default" : "Polygon"
                     }
                 },
                 "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -3546,7 +3684,16 @@
                     "imageName" : {
                         "type" : "string"
                     },
+                    "imagePUI" : {
+                        "type" : "string"
+                    },
                     "observationDbId" : {
+                        "type" : "string"
+                    },
+                    "observationName" : {
+                        "type" : "string"
+                    },
+                    "observationPUI" : {
                         "type" : "string"
                     },
                     "observationUnit" : {
@@ -3555,7 +3702,8 @@
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
-                        "example" : "Feature"
+                        "example" : "Feature",
+                        "default" : "Feature"
                     }
                 }
             },
@@ -3565,6 +3713,7 @@
                     "attributeCategories" : {
                         "type" : "array",
                         "description" : "General category for the attribute. very similar to Trait class.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3572,6 +3721,7 @@
                     "attributeDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3579,6 +3729,7 @@
                     "attributeNames" : {
                         "type" : "array",
                         "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3586,6 +3737,7 @@
                     "attributePUIs" : {
                         "type" : "array",
                         "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3607,6 +3759,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3614,6 +3767,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3684,6 +3838,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3780,6 +3935,7 @@
                     "attributeDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3787,6 +3943,7 @@
                     "attributeNames" : {
                         "type" : "array",
                         "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3794,6 +3951,7 @@
                     "attributeValueDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute Value IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3808,6 +3966,7 @@
                     "dataTypes" : {
                         "type" : "array",
                         "description" : "List of scale data types to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/TraitDataType"
                         }
@@ -3815,6 +3974,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3822,6 +3982,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3829,6 +3990,7 @@
                     "methodDbIds" : {
                         "type" : "array",
                         "description" : "List of methods to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3836,6 +3998,7 @@
                     "ontologyDbIds" : {
                         "type" : "array",
                         "description" : "List of ontology IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3857,6 +4020,7 @@
                     "scaleDbIds" : {
                         "type" : "array",
                         "description" : "List of scales to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3864,6 +4028,7 @@
                     "traitClasses" : {
                         "type" : "array",
                         "description" : "List of trait classes to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3871,6 +4036,7 @@
                     "traitDbIds" : {
                         "type" : "array",
                         "description" : "List of trait unique ID to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3883,6 +4049,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3890,6 +4057,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3902,6 +4070,7 @@
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3909,6 +4078,7 @@
                     "binomialNames" : {
                         "type" : "array",
                         "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3916,6 +4086,7 @@
                     "collections" : {
                         "type" : "array",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3930,6 +4101,7 @@
                     "familyCodes" : {
                         "type" : "array",
                         "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3937,6 +4109,7 @@
                     "genus" : {
                         "type" : "array",
                         "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3944,6 +4117,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3951,6 +4125,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3958,6 +4133,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3965,6 +4141,7 @@
                     "instituteCodes" : {
                         "type" : "array",
                         "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3972,6 +4149,7 @@
                     "parentDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these parents",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3979,6 +4157,7 @@
                     "progenyDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these children",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4000,6 +4179,7 @@
                     "species" : {
                         "type" : "array",
                         "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4021,6 +4201,7 @@
                     "synonyms" : {
                         "type" : "array",
                         "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4088,7 +4269,6 @@
                     "externalReferences" : {
                         "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
-                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
@@ -4146,13 +4326,12 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitName" : {
-                        "type" : "string"
-                    },
-                    "observationUnitPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     }
                 },
                 "description" : "The metadata for an image file that is connected to some phenotypic observation data."
@@ -4284,74 +4463,9 @@
             "ImageSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "imageFileSizeMax" : {
-                        "type" : "integer",
-                        "description" : "A maximum image file size to search for.",
-                        "format" : "int32",
-                        "example" : 20000000
-                    },
-                    "imageFileNames" : {
-                        "type" : "array",
-                        "description" : "Image file names to search for.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "imageTimeStampRangeStart" : {
-                        "type" : "string",
-                        "description" : "The earliest timestamp to search for.",
-                        "format" : "date-time"
-                    },
-                    "imageDbIds" : {
-                        "type" : "array",
-                        "description" : "A list of image Ids to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationUnitDbIds" : {
-                        "type" : "array",
-                        "description" : "A set of observation unit identifiers to search for.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "imageNames" : {
-                        "type" : "array",
-                        "description" : "Human readable names to search for.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "imageWidthMin" : {
-                        "type" : "integer",
-                        "description" : "A minimum image width to search for.",
-                        "format" : "int32",
-                        "example" : 1280
-                    },
-                    "imageHeightMax" : {
-                        "type" : "integer",
-                        "description" : "A maximum image height to search for.",
-                        "format" : "int32",
-                        "example" : 1080
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "commonCropNames" : {
                         "type" : "array",
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -4363,13 +4477,97 @@
                             "type" : "string"
                         }
                     },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "imageDbIds" : {
+                        "type" : "array",
+                        "description" : "A list of image Ids to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "imageFileNames" : {
+                        "type" : "array",
+                        "description" : "Image file names to search for.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "imageFileSizeMax" : {
+                        "type" : "integer",
+                        "description" : "A maximum image file size to search for.",
+                        "format" : "int32",
+                        "example" : 20000000
+                    },
+                    "imageFileSizeMin" : {
+                        "type" : "integer",
+                        "description" : "A minimum image file size to search for.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "imageHeightMax" : {
+                        "type" : "integer",
+                        "description" : "A maximum image height to search for.",
+                        "format" : "int32",
+                        "example" : 1080
+                    },
+                    "imageHeightMin" : {
+                        "type" : "integer",
+                        "description" : "A minimum image height to search for.",
+                        "format" : "int32",
+                        "example" : 720
+                    },
                     "imageLocation" : {
                         "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                    },
+                    "imageNames" : {
+                        "type" : "array",
+                        "description" : "Human readable names to search for.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "imageTimeStampRangeEnd" : {
                         "type" : "string",
                         "description" : "The latest timestamp to search for.",
                         "format" : "date-time"
+                    },
+                    "imageTimeStampRangeStart" : {
+                        "type" : "string",
+                        "description" : "The earliest timestamp to search for.",
+                        "format" : "date-time"
+                    },
+                    "imageWidthMax" : {
+                        "type" : "integer",
+                        "description" : "A maximum image width to search for.",
+                        "format" : "int32",
+                        "example" : 1920
+                    },
+                    "imageWidthMin" : {
+                        "type" : "integer",
+                        "description" : "A minimum image width to search for.",
+                        "format" : "int32",
+                        "example" : 1280
                     },
                     "mimeTypes" : {
                         "type" : "array",
@@ -4385,23 +4583,38 @@
                             "type" : "string"
                         }
                     },
-                    "imageHeightMin" : {
-                        "type" : "integer",
-                        "description" : "A minimum image height to search for.",
-                        "format" : "int32",
-                        "example" : 720
+                    "observationUnitDbIds" : {
+                        "type" : "array",
+                        "description" : "A set of observation unit identifiers to search for.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
-                    "imageFileSizeMin" : {
+                    "page" : {
                         "type" : "integer",
-                        "description" : "A minimum image file size to search for.",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
                         "format" : "int32",
                         "example" : 1000
                     },
-                    "imageWidthMax" : {
-                        "type" : "integer",
-                        "description" : "A maximum image width to search for.",
-                        "format" : "int32",
-                        "example" : 1920
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 },
                 "description" : "The metadata for an image file that is connected to some phenotypic observation data."
@@ -4419,26 +4632,31 @@
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateCreatedRangeStart" : {
                         "type" : "string",
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateModifiedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateModifiedRangeStart" : {
                         "type" : "string",
                         "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "listDbIds" : {
                         "type" : "array",
                         "description" : "An array of primary database identifiers to identify a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4446,6 +4664,7 @@
                     "listNames" : {
                         "type" : "array",
                         "description" : "An array of human readable names to identify a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4453,6 +4672,7 @@
                     "listOwnerNames" : {
                         "type" : "array",
                         "description" : "An array of names for the people or entities who are responsible for a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4460,6 +4680,7 @@
                     "listOwnerPersonDbIds" : {
                         "type" : "array",
                         "description" : "An array of primary database identifiers to identify people or entities who are responsible for a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4467,6 +4688,7 @@
                     "listSources" : {
                         "type" : "array",
                         "description" : "An array of terms identifying lists from different sources (ie 'USER', 'SYSTEM', etc)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4515,6 +4737,7 @@
                     "abbreviations" : {
                         "type" : "array",
                         "description" : "A list of shortened human readable names for a set of Locations",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4522,11 +4745,13 @@
                     "altitudeMax" : {
                         "type" : "number",
                         "description" : "The maximum altitude to search for",
+                        "nullable" : true,
                         "example" : 200
                     },
                     "altitudeMin" : {
                         "type" : "number",
                         "description" : "The minimum altitude to search for",
+                        "nullable" : true,
                         "example" : 20
                     },
                     "commonCropNames" : {
@@ -4542,6 +4767,7 @@
                     "countryCodes" : {
                         "type" : "array",
                         "description" : "[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4549,6 +4775,7 @@
                     "countryNames" : {
                         "type" : "array",
                         "description" : "The full name of the country to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4556,6 +4783,7 @@
                     "instituteAddresses" : {
                         "type" : "array",
                         "description" : "The street address of the institute to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4563,6 +4791,7 @@
                     "instituteNames" : {
                         "type" : "array",
                         "description" : "The name of the institute to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4584,6 +4813,7 @@
                     "locationTypes" : {
                         "type" : "array",
                         "description" : "The type of location this represents (ex. Breeding Location, Storage Location, etc)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4591,6 +4821,7 @@
                     "parentLocationDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a Location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4598,6 +4829,7 @@
                     "parentLocationNames" : {
                         "type" : "array",
                         "description" : "A human readable name for a location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4624,6 +4856,7 @@
                     "linkageGroupNames" : {
                         "type" : "array",
                         "description" : "A list of Uniquely Identifiable linkage group names",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4631,6 +4864,7 @@
                     "mapDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `GenomeMaps` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4639,17 +4873,20 @@
                         "type" : "integer",
                         "description" : "The maximum position of markers in a given map",
                         "format" : "int32",
+                        "nullable" : true,
                         "example" : 4000
                     },
                     "minPosition" : {
                         "type" : "integer",
                         "description" : "The minimum position of markers in a given map",
                         "format" : "int32",
+                        "nullable" : true,
                         "example" : 250
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4819,13 +5056,12 @@
                         "$ref" : "#/components/schemas/GeoJSON"
                     },
                     "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationTimeStamp" : {
                         "type" : "string",
@@ -4834,37 +5070,44 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitName" : {
-                        "type" : "string"
-                    },
-                    "observationUnitPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationVariableDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationVariableName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationVariablePUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "seasonDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "seasonName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "seasonPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "studyDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "studyName" : {
-                        "type" : "string"
-                    },
-                    "studyPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "uploadedBy" : {
                         "type" : "string",
@@ -4892,6 +5135,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4899,6 +5143,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4920,6 +5165,7 @@
                     "observationDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an Observation",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4927,6 +5173,7 @@
                     "observationLevelRelationships" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
                         }
@@ -4934,6 +5181,7 @@
                     "observationLevels" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevel"
                         }
@@ -4941,16 +5189,19 @@
                     "observationTimeStampRangeEnd" : {
                         "type" : "string",
                         "description" : "Timestamp range end",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "observationTimeStampRangeStart" : {
                         "type" : "string",
                         "description" : "Timestamp range start",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an Observation Unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5042,6 +5293,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5079,9 +5331,47 @@
             "ObservationSearchRequest" : {
                 "type" : "object",
                 "properties" : {
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5100,16 +5390,86 @@
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "observationDbIds" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "The unique id of an Observation",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
+                    "observationLevelRelationships" : {
+                        "type" : "array",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
+                        }
+                    },
+                    "observationLevels" : {
+                        "type" : "array",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/ObservationUnitLevel"
+                        }
+                    },
+                    "observationTimeStampRangeEnd" : {
+                        "type" : "string",
+                        "description" : "Timestamp range end",
+                        "format" : "date-time",
+                        "nullable" : true
+                    },
+                    "observationTimeStampRangeStart" : {
+                        "type" : "string",
+                        "description" : "Timestamp range start",
+                        "format" : "date-time",
+                        "nullable" : true
+                    },
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an Observation Unit",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableDbIds" : {
+                        "type" : "array",
+                        "description" : "The DbIds of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableNames" : {
+                        "type" : "array",
+                        "description" : "The names of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariablePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -5124,48 +5484,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "commonCropNames" : {
-                        "type" : "array",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationLevelRelationships" : {
-                        "type" : "array",
-                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
-                        "items" : {
-                            "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
-                        }
-                    },
-                    "observationLevels" : {
-                        "type" : "array",
-                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
-                        "items" : {
-                            "$ref" : "#/components/schemas/ObservationUnitLevel"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialDbIds" : {
-                        "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5177,27 +5496,6 @@
                             "type" : "string"
                         }
                     },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationDbIds" : {
-                        "type" : "array",
-                        "description" : "The unique id of an Observation",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyNames" : {
                         "type" : "array",
                         "description" : "List of study names to filter search results",
@@ -5205,22 +5503,19 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
+                        "description" : "The ID which uniquely identifies a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "observationTimeStampRangeStart" : {
-                        "type" : "string",
-                        "description" : "Timestamp range start",
-                        "format" : "date-time"
-                    },
-                    "observationTimeStampRangeEnd" : {
-                        "type" : "string",
-                        "description" : "Timestamp range end",
-                        "format" : "date-time"
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 },
                 "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
@@ -5239,15 +5534,6 @@
                         "description" : "The treatment/factor description. ex. 'low fertilizer', 'yellow rust inoculation', 'high water', etc\n\nMIAPPE V1.1 (DM-62) Experimental Factor description - Free text description of the experimental factor. This includes all relevant treatments planned and protocol planned for all the plants targeted by a given experimental factor. ",
                         "nullable" : true,
                         "example" : "test-factor:dia2020-2-nv.lf"
-                    },
-                    "observationUnitDbId" : {
-                        "type" : "string"
-                    },
-                    "observationUnitName" : {
-                        "type" : "string"
-                    },
-                    "observationUnitPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "A Treatment applied an Observation Unit at a given Modality/Level for a specific Factor."
@@ -5268,7 +5554,8 @@
                                 "description" : "The ID which uniquely identifies an observation unit\n\nMIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. "
                             }
                         },
-                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
+                        "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
+                        "nullable" : true
                     }
                 ]
             },
@@ -5332,12 +5619,6 @@
                     },
                     "observationUnitDbId" : {
                         "type" : "string"
-                    },
-                    "observationUnitName" : {
-                        "type" : "string"
-                    },
-                    "observationUnitPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). `levelCode` is an ID code for this level tag. Identify \nthis observation unit by each level of the hierarchy where it exists. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** "
@@ -5349,10 +5630,16 @@
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
                     "crossDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "crossPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -5363,19 +5650,24 @@
                         }
                     },
                     "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "locationDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "locationName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "locationPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "observationUnitName" : {
                         "type" : "string",
@@ -5388,33 +5680,39 @@
                         "nullable" : true
                     },
                     "observationUnitPosition" : {
-                        "type" : "array",
-                        "description" : "All positional and layout information related to this Observation Unit \n\nMIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative) \nor level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value. \nLevels of observation must be consistent with those listed in the Study section.",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/ObservationUnitPosition"
-                        }
+                        "$ref" : "#/components/schemas/ObservationUnitPosition"
                     },
                     "programDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "programName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "programPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "seedLotDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "seedLotName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "seedLotPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "studyDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "studyName" : {
-                        "type" : "string"
-                    },
-                    "studyPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "treatments" : {
                         "type" : "array",
@@ -5425,16 +5723,16 @@
                         }
                     },
                     "trialDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "trialName" : {
-                        "type" : "string"
-                    },
-                    "trialPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     }
                 },
-                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
+                "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples.",
+                "nullable" : true
             },
             "ObservationUnitPosition" : {
                 "type" : "object",
@@ -5468,15 +5766,6 @@
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
                         }
                     },
-                    "observationUnitDbId" : {
-                        "type" : "string"
-                    },
-                    "observationUnitName" : {
-                        "type" : "string"
-                    },
-                    "observationUnitPUI" : {
-                        "type" : "string"
-                    },
                     "positionCoordinateX" : {
                         "type" : "string",
                         "description" : "The X position coordinate for an observation unit. Different systems may use different coordinate systems.",
@@ -5494,7 +5783,8 @@
                         "$ref" : "#/components/schemas/PositionCoordinateType"
                     }
                 },
-                "description" : "All positional and layout information related to this Observation Unit"
+                "description" : "All positional and layout information related to this Observation Unit",
+                "nullable" : true
             },
             "ObservationUnitRequest" : {
                 "type" : "object",
@@ -5509,6 +5799,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5516,6 +5807,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5523,6 +5815,7 @@
                     "includeObservations" : {
                         "type" : "boolean",
                         "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
+                        "nullable" : true,
                         "example" : false
                     },
                     "locationDbIds" : {
@@ -5542,6 +5835,7 @@
                     "observationLevelRelationships" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
                         }
@@ -5549,6 +5843,7 @@
                     "observationLevels" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevel"
                         }
@@ -5556,6 +5851,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an observation unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5612,6 +5908,7 @@
                     "observationUnitNames" : {
                         "type" : "array",
                         "description" : "The human readable identifier for an Observation Unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5654,6 +5951,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5691,12 +5989,56 @@
             "ObservationUnitSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbIds" : {
+                    "commonCropNames" : {
                         "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "items" : {
                             "type" : "string"
                         }
+                    },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "includeObservations" : {
+                        "type" : "boolean",
+                        "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
+                        "nullable" : true,
+                        "example" : false
                     },
                     "locationDbIds" : {
                         "type" : "array",
@@ -5712,9 +6054,26 @@
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "observationLevelRelationships" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
+                        }
+                    },
+                    "observationLevels" : {
+                        "type" : "array",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/ObservationUnitLevel"
+                        }
+                    },
+                    "observationUnitDbIds" : {
+                        "type" : "array",
+                        "description" : "The unique id of an observation unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5722,13 +6081,47 @@
                     "observationUnitNames" : {
                         "type" : "array",
                         "description" : "The human readable identifier for an Observation Unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "observationUnitDbIds" : {
+                    "observationVariableDbIds" : {
                         "type" : "array",
-                        "description" : "The unique id of an observation unit",
+                        "description" : "The DbIds of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableNames" : {
+                        "type" : "array",
+                        "description" : "The names of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariablePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -5743,74 +6136,14 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
-                    },
-                    "commonCropNames" : {
-                        "type" : "array",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationLevelRelationships" : {
-                        "type" : "array",
-                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
-                        "items" : {
-                            "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
-                        }
-                    },
-                    "observationLevels" : {
-                        "type" : "array",
-                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
-                        "items" : {
-                            "$ref" : "#/components/schemas/ObservationUnitLevel"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialDbIds" : {
-                        "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "includeObservations" : {
-                        "type" : "boolean",
-                        "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
-                        "example" : false
                     },
                     "studyDbIds" : {
                         "type" : "array",
                         "description" : "List of study identifiers to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -5822,9 +6155,16 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -5853,12 +6193,10 @@
             },
             "ObservationVariableNewRequest" : {
                 "required" : [
-                    "methodDbId",
-                    "methodName",
+                    "method",
                     "observationVariableName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -5912,14 +6250,8 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "observationVariableName" : {
                         "type" : "string",
@@ -5933,14 +6265,8 @@
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -5966,14 +6292,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 }
             },
@@ -6107,6 +6427,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6200,37 +6521,9 @@
             "ObservationVariableSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "methodDbIds" : {
+                    "commonCropNames" : {
                         "type" : "array",
-                        "description" : "List of methods to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyDbId" : {
-                        "type" : "array",
-                        "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -6242,37 +6535,31 @@
                             "$ref" : "#/components/schemas/TraitDataType"
                         }
                     },
-                    "methodPUIs" : {
+                    "externalReferenceIDs" : {
                         "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "scalePUIs" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "traitAttributes" : {
+                    "externalReferenceSources" : {
                         "type" : "array",
-                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "scaleDbIds" : {
+                    "methodDbIds" : {
                         "type" : "array",
-                        "description" : "The unique identifier for a Scale",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitEntityPUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
+                        "description" : "List of methods to filter search results",
                         "items" : {
                             "type" : "string"
                         }
@@ -6284,86 +6571,9 @@
                             "type" : "string"
                         }
                     },
-                    "scaleNames" : {
+                    "methodPUIs" : {
                         "type" : "array",
-                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitPUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitClasses" : {
-                        "type" : "array",
-                        "description" : "List of trait classes to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "commonCropNames" : {
-                        "type" : "array",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialDbIds" : {
-                        "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "ontologyDbIds" : {
-                        "type" : "array",
-                        "description" : "List of ontology IDs to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyDbIds" : {
-                        "type" : "array",
-                        "description" : "List of study identifiers to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyNames" : {
-                        "type" : "array",
-                        "description" : "List of study names to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitDbIds" : {
-                        "type" : "array",
-                        "description" : "The unique identifier for a Trait",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
+                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
                         "items" : {
                             "type" : "string"
                         }
@@ -6375,6 +6585,96 @@
                             "type" : "string"
                         }
                     },
+                    "observationVariableNames" : {
+                        "type" : "array",
+                        "description" : "The names of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariablePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "ontologyDbIds" : {
+                        "type" : "array",
+                        "description" : "List of ontology IDs to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scaleDbIds" : {
+                        "type" : "array",
+                        "description" : "The unique identifier for a Scale",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scaleNames" : {
+                        "type" : "array",
+                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scalePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyDbId" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyDbIds" : {
+                        "type" : "array",
+                        "description" : "List of study identifiers to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyNames" : {
+                        "type" : "array",
+                        "description" : "List of study names to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "traitAttributePUIs" : {
                         "type" : "array",
                         "description" : "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
@@ -6382,9 +6682,65 @@
                             "type" : "string"
                         }
                     },
+                    "traitAttributes" : {
+                        "type" : "array",
+                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitClasses" : {
+                        "type" : "array",
+                        "description" : "List of trait classes to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitDbIds" : {
+                        "type" : "array",
+                        "description" : "The unique identifier for a Trait",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "traitEntities" : {
                         "type" : "array",
                         "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitEntityPUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitPUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialDbIds" : {
+                        "type" : "array",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -6448,7 +6804,8 @@
                     },
                     "ontologyName" : {
                         "type" : "string",
-                        "description" : "Ontology name"
+                        "description" : "Ontology name",
+                        "nullable" : true
                     },
                     "version" : {
                         "type" : "string",
@@ -6491,6 +6848,9 @@
                     "ontologyName" : {
                         "type" : "string"
                     },
+                    "ontologyPUI" : {
+                        "type" : "string"
+                    },
                     "ontologyReferenceDbId" : {
                         "type" : "string",
                         "description" : "The ID which uniquely identifies a ontology reference",
@@ -6502,7 +6862,8 @@
                         "nullable" : true
                     }
                 },
-                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology)."
+                "description" : "MIAPPE V1.1 (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology \nMIAPPE V1.1 (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).\nMIAPPE V1.1 (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).",
+                "nullable" : false
             },
             "OntologyRequest" : {
                 "type" : "object",
@@ -6539,12 +6900,30 @@
                 },
                 "description" : "A pointer to an ontology used by a genomic reference"
             },
+            "PagingParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    }
+                }
+            },
             "PedigreeNodeRequest" : {
                 "type" : "object",
                 "properties" : {
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6552,6 +6931,7 @@
                     "binomialNames" : {
                         "type" : "array",
                         "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6559,6 +6939,7 @@
                     "collections" : {
                         "type" : "array",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6573,6 +6954,7 @@
                     "familyCodes" : {
                         "type" : "array",
                         "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6580,6 +6962,7 @@
                     "genus" : {
                         "type" : "array",
                         "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6587,6 +6970,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6594,6 +6978,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6601,6 +6986,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6608,26 +6994,31 @@
                     "includeFullTree" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, recursively include ALL of the nodes available in this pedigree tree",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeParents" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of parents in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeProgeny" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of progeny in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeSiblings" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of siblings in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "instituteCodes" : {
                         "type" : "array",
                         "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6661,6 +7052,7 @@
                     "species" : {
                         "type" : "array",
                         "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6682,6 +7074,7 @@
                     "synonyms" : {
                         "type" : "array",
                         "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6715,6 +7108,7 @@
                     "emailAddresses" : {
                         "type" : "array",
                         "description" : "email address for this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6722,6 +7116,7 @@
                     "firstNames" : {
                         "type" : "array",
                         "description" : "Persons first name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6729,6 +7124,7 @@
                     "lastNames" : {
                         "type" : "array",
                         "description" : "Persons last name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6736,6 +7132,7 @@
                     "mailingAddresses" : {
                         "type" : "array",
                         "description" : "physical address of this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6743,6 +7140,7 @@
                     "middleNames" : {
                         "type" : "array",
                         "description" : "Persons middle name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6750,6 +7148,7 @@
                     "personDbIds" : {
                         "type" : "array",
                         "description" : "Unique ID for this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6757,6 +7156,7 @@
                     "phoneNumbers" : {
                         "type" : "array",
                         "description" : "phone number of this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6778,6 +7178,7 @@
                     "userIDs" : {
                         "type" : "array",
                         "description" : "A systems user ID associated with this person. Different from personDbId because you could have a person who is not a user of the system.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6863,6 +7264,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6870,6 +7272,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6877,6 +7280,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies an observation unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6884,6 +7288,7 @@
                     "plateBarcodes" : {
                         "type" : "array",
                         "description" : "A unique identifier physically attached to the plate",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6891,6 +7296,7 @@
                     "plateDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a plate of samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6898,6 +7304,7 @@
                     "plateNames" : {
                         "type" : "array",
                         "description" : "The human readable name of a plate of samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6919,6 +7326,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a sample",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6926,6 +7334,7 @@
                     "sampleGroupDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a group of related Samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6933,6 +7342,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "The human readable name of the sample",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7006,6 +7416,7 @@
                     "abbreviations" : {
                         "type" : "array",
                         "description" : "A list of shortened human readable names for a set of Programs",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7020,6 +7431,7 @@
                     "leadPersonDbIds" : {
                         "type" : "array",
                         "description" : "The person DbIds of the program leader to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7027,6 +7439,7 @@
                     "leadPersonNames" : {
                         "type" : "array",
                         "description" : "The names of the program leader to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7034,6 +7447,7 @@
                     "objectives" : {
                         "type" : "array",
                         "description" : "A program objective to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7055,6 +7469,7 @@
                     "programTypes" : {
                         "type" : "array",
                         "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding ",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string",
                             "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
@@ -7099,6 +7514,7 @@
                     "accessions" : {
                         "type" : "array",
                         "description" : "If specified, return the references for which the `accession` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7113,6 +7529,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7120,6 +7537,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7127,7 +7545,8 @@
                     "isDerived" : {
                         "type" : "boolean",
                         "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases.",
-                        "format" : "boolean"
+                        "format" : "boolean",
+                        "nullable" : true
                     },
                     "maxLength" : {
                         "type" : "integer",
@@ -7138,6 +7557,7 @@
                     "md5checksums" : {
                         "type" : "array",
                         "description" : "If specified, return the references for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7165,6 +7585,7 @@
                     "referenceDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `References` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7172,6 +7593,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `ReferenceSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7212,6 +7634,7 @@
                     "accessions" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7219,6 +7642,7 @@
                     "assemblyPUIs" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7233,6 +7657,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7240,6 +7665,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7247,6 +7673,7 @@
                     "md5checksums" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7268,6 +7695,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "The `ReferenceSets` to search.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7315,6 +7743,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7322,6 +7751,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7329,6 +7759,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies an `ObservationUnit`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7336,6 +7767,7 @@
                     "plateDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a `Plate` of `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7343,6 +7775,7 @@
                     "plateNames" : {
                         "type" : "array",
                         "description" : "The human readable name of a `Plate` of `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7364,6 +7797,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a `Sample`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7371,6 +7805,7 @@
                     "sampleGroupDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a group of related `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7378,6 +7813,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "The human readable name of the `Sample`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7487,7 +7923,14 @@
                         "nullable" : true
                     },
                     "validValues" : {
-                        "$ref" : "#/components/schemas/ValidValues"
+                        "anyOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ValidValues"
+                            },
+                            {
+                                "type" : "null"
+                            }
+                        ]
                     }
                 },
                 "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
@@ -7565,9 +8008,10 @@
                     },
                     "years" : {
                         "type" : "array",
-                        "description" : "The 4 digit year of a season. Example \"2017\"",
+                        "description" : "The 4 digit year of a season. Example 2017",
                         "items" : {
-                            "type" : "string"
+                            "type" : "integer",
+                            "format" : "int32"
                         }
                     }
                 }
@@ -7599,6 +8043,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7606,6 +8051,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7637,22 +8083,24 @@
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
+                    "studyDbId",
                     "trialDbId",
-                    "trialName",
                     "programDbId",
-                    "programName",
                     "locationDbId",
-                    "startDate",
-                    "endDate"
+                    "seasonDbId",
+                    "studyType",
+                    "studyName",
+                    "studyLocation",
+                    "programName",
+                    "germplasmDbId",
+                    "observationVariableDbId"
                 ]
             },
             "SortOrder" : {
                 "type" : "string",
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
-                    "asc",
                     "ASC",
-                    "desc",
                     "DESC"
                 ]
             },
@@ -7681,6 +8129,7 @@
                     "active" : {
                         "type" : "boolean",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "nullable" : true,
                         "example" : true
                     },
                     "commonCropNames" : {
@@ -7693,6 +8142,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7700,6 +8150,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7756,6 +8207,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a season",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7763,6 +8215,7 @@
                     "sortBy" : {
                         "type" : "string",
                         "description" : "Name of the field to sort by.",
+                        "nullable" : true,
                         "enum" : [
                             "studyDbId",
                             "trialDbId",
@@ -7772,22 +8225,24 @@
                             "studyType",
                             "studyName",
                             "studyLocation",
-                            "programName"
+                            "programName",
+                            "germplasmDbId",
+                            "observationVariableDbId"
                         ]
                     },
                     "sortOrder" : {
                         "type" : "string",
                         "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
                         "enum" : [
-                            "asc",
                             "ASC",
-                            "desc",
                             "DESC"
                         ]
                     },
                     "studyCodes" : {
                         "type" : "array",
                         "description" : "A short human readable code for a study",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7809,6 +8264,7 @@
                     "studyPUIs" : {
                         "type" : "array",
                         "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7816,6 +8272,7 @@
                     "studyTypes" : {
                         "type" : "array",
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7833,6 +8290,29 @@
                         "items" : {
                             "type" : "string"
                         }
+                    }
+                }
+            },
+            "TokenPagingParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>Used to request a specific page of data to be returned.\n<br>Tokenized pages are for large data sets which can not be efficiently broken into indexed pages. Use the nextPageToken and prevPageToken from a prior response to construct a query and move to the next or previous page respectively. ",
+                        "example" : "33c27874",
+                        "deprecated" : true
                     }
                 }
             },
@@ -8057,27 +8537,6 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
-                        "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "programDbIds" : {
                         "type" : "array",
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
@@ -8101,29 +8560,6 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
-                    },
-                    "sortBy" : {
-                        "type" : "string",
-                        "description" : "Name of the field to sort by.",
-                        "enum" : [
-                            "trialDbId",
-                            "trialName",
-                            "programDbId",
-                            "programName",
-                            "locationDbId",
-                            "startDate",
-                            "endDate"
-                        ]
-                    },
-                    "sortOrder" : {
-                        "type" : "string",
-                        "description" : "Sort order direction. Ascending/Descending.",
-                        "enum" : [
-                            "asc",
-                            "ASC",
-                            "desc",
-                            "DESC"
-                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -8213,11 +8649,9 @@
             },
             "Variable" : {
                 "required" : [
-                    "methodDbId",
-                    "methodName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "method",
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -8271,26 +8705,14 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -8316,14 +8738,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 },
                 "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
@@ -8411,6 +8827,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8507,6 +8924,8 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Parameter unnecessary. Github issue number #474 \n<br/>Only return variant calls which belong to call sets with these IDs. If unspecified, return all variants and no variant call objects.",
+                        "nullable" : true,
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8541,11 +8960,14 @@
                     "referenceDbId" : {
                         "type" : "string",
                         "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
-                        "example" : "120a2d5c"
+                        "nullable" : true,
+                        "example" : "120a2d5c",
+                        "deprecated" : true
                     },
                     "referenceDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier representing a genotype `Reference`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8553,6 +8975,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier representing a genotype `ReferenceSet`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8594,6 +9017,7 @@
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8601,6 +9025,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9782,6 +10207,32 @@
                     }
                 }
             },
+            "AlleleMatrixSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "AlleleMatrixSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/AlleleMatrix"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "PersonListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -10767,9 +11218,34 @@
                                     "properties" : {
                                         "data" : {
                                             "type" : "array",
+                                            "description" : "The `data` array is part of the BrAPI standard List Response JSON container. `data` will always contain the primary list of objects being returned by a BrAPI endpoint. `data` is also the only array impacted by the `metadata.pagination` details. When the pagination parameters change, the `data` array will reflect those changes in the JSON response.",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/Call"
                                             }
+                                        },
+                                        "expandHomozygotes" : {
+                                            "type" : "boolean",
+                                            "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                                            "nullable" : true,
+                                            "example" : true
+                                        },
+                                        "sepPhased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for phased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "|"
+                                        },
+                                        "sepUnphased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for unphased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "/"
+                                        },
+                                        "unknownString" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a representation for missing data.",
+                                            "nullable" : true,
+                                            "example" : "."
                                         }
                                     }
                                 }

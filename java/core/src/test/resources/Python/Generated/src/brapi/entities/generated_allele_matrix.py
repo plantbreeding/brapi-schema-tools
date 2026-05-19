@@ -223,6 +223,42 @@ data as requested.
         """
         return self._set_param("preview", preview)  # type: ignore[return-value]
 
+    # --- dimensionVariantPage ---
+
+    def dimension_variant_page(self, dimension_variant_page: int) -> "AlleleMatrixQuery":
+        """The requested page number for the Variant dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionVariantPage", dimension_variant_page)  # type: ignore[return-value]
+
+    # --- dimensionVariantPageSize ---
+
+    def dimension_variant_page_size(self, dimension_variant_page_size: int) -> "AlleleMatrixQuery":
+        """The requested page size for the Variant dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionVariantPageSize", dimension_variant_page_size)  # type: ignore[return-value]
+
+    # --- dimensionCallSetPage ---
+
+    def dimension_call_set_page(self, dimension_call_set_page: int) -> "AlleleMatrixQuery":
+        """The requested page number for the CallSet dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionCallSetPage", dimension_call_set_page)  # type: ignore[return-value]
+
+    # --- dimensionCallSetPageSize ---
+
+    def dimension_call_set_page_size(self, dimension_call_set_page_size: int) -> "AlleleMatrixQuery":
+        """The requested page size for the CallSet dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionCallSetPageSize", dimension_call_set_page_size)  # type: ignore[return-value]
+
     # --- dataMatrixNames ---
 
     def data_matrix_names(self, data_matrix_names: Union[str, List[str]]) -> "AlleleMatrixQuery":
@@ -479,6 +515,10 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
         *,
         pagination: Optional[List[AlleleMatrixPagination]] = None,
         preview: Optional[bool] = None,
+        dimension_variant_page: Optional[int] = None,
+        dimension_variant_page_size: Optional[int] = None,
+        dimension_call_set_page: Optional[int] = None,
+        dimension_call_set_page_size: Optional[int] = None,
         data_matrix_names: Optional[List[str]] = None,
         data_matrix_abbreviations: Optional[List[str]] = None,
         position_ranges: Optional[List[str]] = None,
@@ -516,6 +556,14 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
             q = q.pagination(pagination)
         if preview:
             q = q.preview(preview)
+        if dimension_variant_page:
+            q = q.dimension_variant_page(dimension_variant_page)
+        if dimension_variant_page_size:
+            q = q.dimension_variant_page_size(dimension_variant_page_size)
+        if dimension_call_set_page:
+            q = q.dimension_call_set_page(dimension_call_set_page)
+        if dimension_call_set_page_size:
+            q = q.dimension_call_set_page_size(dimension_call_set_page_size)
         if data_matrix_names:
             q = q.data_matrix_names(data_matrix_names)
         if data_matrix_abbreviations:

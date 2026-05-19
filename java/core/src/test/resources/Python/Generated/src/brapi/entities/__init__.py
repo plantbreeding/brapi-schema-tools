@@ -24,6 +24,8 @@ from .generated_study import (
     ExperimentalDesign,
     EnvironmentParameter,
     DataLink,
+    SortOrder,
+    SortBy,
 )
 from .generated_trial import (
     Trial,
@@ -61,6 +63,7 @@ from .generated_plate import (
 from .generated_reference import (
     Reference,
     ReferenceQuery,
+    SourceGermplasm,
     ReferenceBases,
 )
 from .generated_reference_set import ReferenceSet, ReferenceSetQuery
@@ -169,6 +172,8 @@ __all__ = [
     "ExperimentalDesign",
     "EnvironmentParameter",
     "DataLink",
+    "SortOrder",
+    "SortBy",
     # generated_trial
     "Trial",
     "TrialQuery",
@@ -202,6 +207,7 @@ __all__ = [
     # generated_reference
     "Reference",
     "ReferenceQuery",
+    "SourceGermplasm",
     "ReferenceBases",
     # generated_reference_set
     "ReferenceSet",

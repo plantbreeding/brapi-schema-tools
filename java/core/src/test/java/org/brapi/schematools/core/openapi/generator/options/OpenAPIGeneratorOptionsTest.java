@@ -98,6 +98,46 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
     }
 
     @Test
+    void validateAgainstCacheInvalid() {
+        try {
+            List<BrAPIClass> schemas = new BrAPISchemaReader()
+                .readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()))
+                .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
+                .getResult();
+
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas));
+
+            validation.getErrors().forEach(error -> log.error(error.getMessage()));
+
+            assertFalse(validation.isValid());
+
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void notValidatingAgainstCacheInvalid() {
+        try {
+            List<BrAPIClass> schemas = new BrAPISchemaReader()
+                .readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()))
+                .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
+                .getResult();
+
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.createCacheWithoutValidation(schemas));
+
+            validation.getErrors().forEach(error -> log.error(error.getMessage()));
+
+            assertTrue(validation.isValid());
+
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     void overwrite() {
         OpenAPIGeneratorOptions options = null;
 
@@ -319,7 +359,6 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
 
         assertTrue(options.isGeneratingEndpoint()) ;
         assertTrue(options.isGeneratingEndpointFor("Trial"));
-        assertFalse(options.isGeneratingEndpointFor("AlleleMatrix"));
 
         assertTrue(options.isGeneratingEndpointWithId()) ;
         assertTrue(options.isGeneratingEndpointNameWithIdFor("Trial"));

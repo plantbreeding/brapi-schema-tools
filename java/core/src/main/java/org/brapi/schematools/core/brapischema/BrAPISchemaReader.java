@@ -43,7 +43,7 @@ import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 @Slf4j
 public class BrAPISchemaReader {
     private static final Pattern REF_PATTERN = Pattern.compile("((?:\\.{1,2}+/)*(?:[\\w-]+\\/)*(?:\\w+).json)?#\\/\\$defs\\/(\\w+)");
-    private static final List<String> COMMON_MODULES = List.of("Schemas", "Parameters", "Requests");
+    private static final List<String> COMMON_MODULES = List.of("Schemas", "Parameters", "Requests", "Responses");
 
     private final BrAPISchemaReaderOptions options ;
     private final JsonSchemaFactory factory;
@@ -166,7 +166,8 @@ public class BrAPISchemaReader {
             Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
             return types.stream()
-                .map(type -> dereference(type, typeMap))
+                .map(type -> dereference(type, typeMap)
+                    .onSuccessDoWithResult(t -> typeMap.replace(t.getName(), t)))
                 .collect(Response.toList());
         }
 
@@ -177,12 +178,13 @@ public class BrAPISchemaReader {
                     .name(brAPIAllOfType.getName())
                     .description(brAPIAllOfType.getDescription())
                     .module(brAPIAllOfType.getModule())
-                    .metadata(mergeBrAPITypeMetadata(brAPIAllOfType, typeMap))
-                    .interfaces(extractInterfaces(brAPIAllOfType, typeMap));
+                    .metadata(mergeBrAPITypeMetadata(brAPIAllOfType, typeMap)) ;
 
                 brAPIAllOfType.getExamples().forEach(builder::example);
 
-                return validateProperties(null, brAPIAllOfType.getName(), extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap))
+                return extractInterfaces(brAPIAllOfType, typeMap)
+                    .onSuccessDoWithResult(builder::interfaces)
+                    .map(() -> validateProperties(null, brAPIAllOfType.getName(), extractProperties(new ArrayList<>(), brAPIAllOfType, typeMap)))
                     .onSuccessDoWithResult(builder::properties)
                     .map(() -> success(builder.build()));
             } else {
@@ -305,19 +307,39 @@ public class BrAPISchemaReader {
             return properties;
         }
 
-        private List<BrAPIObjectType> extractInterfaces(BrAPIAllOfType brAPIAllOfType, Map<String, BrAPIType> typeMap) {
+        private Response<List<BrAPIObjectType>> extractInterfaces(BrAPIAllOfType brAPIAllOfType, Map<String, BrAPIType> typeMap) {
 
             List<BrAPIObjectType> interfaces = new ArrayList<>();
+
+            List<Response<BrAPIObjectType>> responses = new ArrayList<>();
 
             brAPIAllOfType.getAllTypes().forEach(type -> {
                 BrAPIType allType = typeMap.get(type.getName());
 
-                if (allType instanceof BrAPIObjectType && isInterface((BrAPIObjectType) allType)) {
-                    interfaces.add((BrAPIObjectType) allType);
+                if (allType instanceof BrAPIClass && isInterface((BrAPIClass) allType)) {
+                    if (allType instanceof BrAPIAllOfType) {
+                        dereference((BrAPIAllOfType) allType, typeMap)
+                            .onSuccessDoWithResult(t -> {
+                                if (t instanceof BrAPIObjectType) {
+                                    interfaces.add((BrAPIObjectType) t);
+                                } else {
+                                    responses.add(fail(Response.ErrorType.VALIDATION, String.format("Interface '%s' is not BrAPIAllOfType or BrAPIObjectType, but was '%s'", t.getName(), t.getClass().getSimpleName())));
+                                }
+                            });
+                    } else if (allType instanceof BrAPIObjectType) {
+                        interfaces.add((BrAPIObjectType) allType);
+                    } else {
+                        responses.add(fail(Response.ErrorType.VALIDATION, String.format("Interface '%s' is not BrAPIAllOfType or BrAPIObjectType, but was '%s'", allType.getName(), allType.getClass().getSimpleName())));
+
+                    }
                 }
             });
 
-            return interfaces;
+            if (responses.isEmpty()) {
+                return success(interfaces);
+            } else {
+                return responses.stream().collect(Response.toList()) ;
+            }
         }
 
         private boolean isInterface(BrAPIClass brAPIClass) {
@@ -330,6 +352,10 @@ public class BrAPISchemaReader {
             } else {
                 if (brAPIType instanceof BrAPIAllOfType brAPIAllOfType) {
                     BrAPIMetadata metadata = brAPIAllOfType.getMetadata();
+
+                    if (metadata == null) {
+                        metadata = BrAPIMetadata.builder().build();
+                    }
 
                     for (BrAPIType type : brAPIAllOfType.getAllTypes()) {
                         metadata = mergeMetadata(metadata, mergeBrAPITypeMetadata(type, typeMap));
@@ -723,6 +749,8 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.parameters(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "interface", false, false))
                 .onSuccessDoWithResult(value -> builder.interfaceClass(Boolean.TRUE.equals(value)))
+                .merge(findBooleanChildValue(path, metadata, "response", false, false))
+                .onSuccessDoWithResult(value -> builder.response(Boolean.TRUE.equals(value)))
                 .merge(findStringFieldList(path, metadata, "controlledVocabularyProperties", false))
                 .onSuccessDoWithResult(builder::controlledVocabularyProperties)
                 .merge(findStringFieldList(path, metadata, "subQueryProperties", false))

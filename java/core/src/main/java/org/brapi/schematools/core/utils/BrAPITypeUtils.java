@@ -29,6 +29,15 @@ public class BrAPITypeUtils {
     }
 
     /**
+     * Determines if a BrAPI Class is a Not a Response class
+     * @param brAPIClass the BrAPI Class to be checked
+     * @return {@code true} if the BrAPI Class is not a Response class
+     */
+    public static boolean isNotResponse(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() == null || !brAPIClass.getMetadata().isResponse() ;
+    }
+
+    /**
      * Determines if a BrAPI Class is a primary model
      * @param brAPIClass the BrAPI Class to be checked
      * @return {@code true} if the BrAPI Class is a primary model
@@ -66,6 +75,15 @@ public class BrAPITypeUtils {
     }
 
     /**
+     * Determines if a BrAPI Class is a Response class
+     * @param brAPIClass the BrAPI Class to be checked
+     * @return {@code true} if the BrAPI Class is a Response class
+     */
+    public static boolean isResponse(BrAPIClass brAPIClass) {
+        return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isResponse() ;
+    }
+
+    /**
      * Unwraps a BrAPIType, by finding the inner type
      *
      * @param type the type to be unwrapped
@@ -99,6 +117,9 @@ public class BrAPITypeUtils {
             if (metadata.isParameters()) {
                 flags.add("parameters");
             }
+            if (metadata.isResponse()) {
+                flags.add("response");
+            }
             if (flags.size() > 1) {
                 return fail(Response.ErrorType.VALIDATION,
                     String.format("In class '%s', '%s' are mutually exclusive, only one can be set to to 'true'", brAPIClass.getName(), String.join("', '", flags)));
@@ -117,11 +138,12 @@ public class BrAPITypeUtils {
      */
     public static BrAPIMetadata mergeMetadata(BrAPIMetadata first, BrAPIMetadata second) {
         if (first != null && second != null) {
-            return BrAPIMetadata.builder()
-                .primaryModel(first.isPrimaryModel() || second.isPrimaryModel())
-                .request(!first.isPrimaryModel() && (first.isRequest() || second.isRequest()))
-                .parameters(!first.isPrimaryModel() && !first.isRequest() && (first.isParameters() || second.isParameters()))
-                .interfaceClass(!first.isPrimaryModel() && (first.isInterfaceClass() || second.isInterfaceClass()))
+            return first.toBuilder()
+                //.primaryModel(first.isPrimaryModel() || second.isPrimardyModel())
+                //.request(!first.isPrimaryModel() && (first.isRequest() || second.isRequest()))
+                //.parameters(!first.isPrimaryModel() && !first.isRequest() && (first.isParameters() || second.isParameters()))
+                //.interfaceClass(!first.isPrimaryModel() && (first.isInterfaceClass() || second.isInterfaceClass()))
+                //.response(!first.isPrimaryModel() && !first.isRequest() && !first.isParameters() && (first.isResponse() || second.isResponse()))
                 .controlledVocabularyProperties(mergePropertyNames(first.getControlledVocabularyProperties(), second.getControlledVocabularyProperties()))
                 .subQueryProperties(mergePropertyNames(first.getSubQueryProperties(), second.getSubQueryProperties()))
                 .updatableProperties(mergePropertyNames(first.getUpdatableProperties(), second.getUpdatableProperties()))

@@ -11,7 +11,7 @@ CREATE TABLE brapi_Programs (
   leadPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop which this program is for',
-  programType STRING COMMENT 'The type of program entity this object represents <br/> ''STANDARD'' represents a standard, permanent breeding program <br/> ''PROJECT'' represents a short term project, usually with a set time limit based on funding   ',
+  programType STRING NOT NULL COMMENT 'The type of program entity this object represents <br/> ''STANDARD'' represents a standard, permanent breeding program <br/> ''PROJECT'' represents a short term project, usually with a set time limit based on funding   ',
   -- Properties
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Program',
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -19,6 +19,7 @@ CREATE TABLE brapi_Programs (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >

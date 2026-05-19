@@ -78,6 +78,7 @@ class Cross(BaseModel):
     crossDbId: str
     # --- Scalar optional ---
     crossName: Optional[str] = None
+    pollinationTimeStamp: Optional[datetime] = None
 
     # --- Nested lists ---
     crossAttributes: Optional[list[CrossAttribute]] = None

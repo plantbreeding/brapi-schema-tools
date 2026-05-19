@@ -147,7 +147,9 @@
                                 "studyType",
                                 "studyName",
                                 "studyLocation",
-                                "programName"
+                                "programName",
+                                "germplasmDbId",
+                                "observationVariableDbId"
                             ]
                         }
                     },
@@ -160,15 +162,16 @@
                             "type" : "string",
                             "description" : "Sort order direction. Ascending/Descending.",
                             "enum" : [
-                                "asc",
                                 "ASC",
-                                "desc",
                                 "DESC"
                             ]
                         }
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
                     },
                     {
                         "$ref" : "#/components/parameters/externalReferenceSource"
@@ -429,6 +432,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/StudyListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -507,6 +516,16 @@
                         ],
                         "description" : "Common name for the crop associated with this study"
                     },
+                    "contacts" : {
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
+                        "description" : "List of contact entities associated with this study",
+                        "items" : {
+                            "$ref" : "#/components/schemas/Contact"
+                        }
+                    },
                     "culturalPractices" : {
                         "type" : [
                             "null",
@@ -551,6 +570,7 @@
                         }
                     },
                     "experimentalDesign" : {
+                        "type" : "null",
                         "$ref" : "#/components/schemas/ExperimentalDesign",
                         "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology"
                     },
@@ -565,10 +585,12 @@
                         }
                     },
                     "growthFacility" : {
+                        "type" : "null",
                         "$ref" : "#/components/schemas/GrowthFacility",
                         "description" : "Short description of the facility in which the study was carried out."
                     },
                     "lastUpdate" : {
+                        "type" : "null",
                         "$ref" : "#/components/schemas/LastUpdate",
                         "description" : "The date and time when this study was last modified"
                     },
@@ -580,10 +602,16 @@
                         "description" : "The usage license associated with the study data"
                     },
                     "locationDbId" : {
-                        "type" : "string"
+                        "type" : [
+                            "null",
+                            "string"
+                        ]
                     },
                     "locationName" : {
-                        "type" : "string"
+                        "type" : [
+                            "null",
+                            "string"
+                        ]
                     },
                     "observationLevels" : {
                         "type" : [
@@ -601,6 +629,13 @@
                             "string"
                         ],
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study."
+                    },
+                    "observationVariableDbIds" : {
+                        "type" : "array",
+                        "description" : "The list of Observation Variables being used in this study. \n\nThis list is intended to be the wishlist of variables to collect in this study. It may or may not match the set of variables used in the collected observation records. ",
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "seasons" : {
                         "type" : [
@@ -628,14 +663,14 @@
                         "description" : "A short human readable code for a study"
                     },
                     "studyDescription" : {
+                        "type" : "string",
+                        "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study"
+                    },
+                    "studyName" : {
                         "type" : [
                             "null",
                             "string"
                         ],
-                        "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study"
-                    },
-                    "studyName" : {
-                        "type" : "string",
                         "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study"
                     },
                     "studyPUI" : {
@@ -657,9 +692,6 @@
                     },
                     "trialName" : {
                         "type" : "string"
-                    },
-                    "trialPUI" : {
-                        "type" : "string"
                     }
                 },
                 "required" : [
@@ -670,9 +702,59 @@
                 "type" : "object",
                 "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
                 "properties" : {
-                    "germplasmDbIds" : {
+                    "active" : {
+                        "type" : [
+                            "null",
+                            "boolean"
+                        ],
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "example" : true
+                    },
+                    "commonCropNames" : {
                         "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "deprecated" : true,
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
+                        "description" : "List of human readable names to identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -691,9 +773,42 @@
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "observationVariableDbIds" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "The DbIds of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariableNames" : {
+                        "type" : "array",
+                        "description" : "The names of Variables to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "observationVariablePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "format" : "int32",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -706,55 +821,52 @@
                         }
                     },
                     "seasonDbIds" : {
-                        "type" : "array",
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
                         "description" : "The ID which uniquely identifies a season",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "active" : {
-                        "type" : "boolean",
-                        "description" : "A flag to indicate if a Study is currently active and ongoing",
-                        "example" : true
+                    "sortBy" : {
+                        "type" : [
+                            "null",
+                            "string"
+                        ],
+                        "description" : "Name of the field to sort by.",
+                        "enum" : [
+                            "studyDbId",
+                            "trialDbId",
+                            "programDbId",
+                            "locationDbId",
+                            "seasonDbId",
+                            "studyType",
+                            "studyName",
+                            "studyLocation",
+                            "programName",
+                            "germplasmDbId",
+                            "observationVariableDbId"
+                        ]
                     },
-                    "commonCropNames" : {
-                        "type" : "array",
-                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programDbIds" : {
-                        "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
-                        "items" : {
-                            "type" : "string"
-                        }
+                    "sortOrder" : {
+                        "type" : [
+                            "null",
+                            "string"
+                        ],
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "enum" : [
+                            "ASC",
+                            "DESC"
+                        ]
                     },
                     "studyCodes" : {
-                        "type" : "array",
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
                         "description" : "A short human readable code for a study",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyPUIs" : {
-                        "type" : "array",
-                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "trialDbIds" : {
-                        "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -766,20 +878,6 @@
                             "type" : "string"
                         }
                     },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyNames" : {
                         "type" : "array",
                         "description" : "List of study names to filter search results",
@@ -787,41 +885,36 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
-                        "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
+                    "studyPUIs" : {
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
+                        "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "sortOrder" : {
-                        "type" : "string",
-                        "description" : "Sort order direction. Ascending/Descending.",
-                        "enum" : [
-                            "asc",
-                            "ASC",
-                            "desc",
-                            "DESC"
-                        ]
-                    },
-                    "sortBy" : {
-                        "type" : "string",
-                        "description" : "Name of the field to sort by.",
-                        "enum" : [
-                            "studyDbId",
-                            "trialDbId",
-                            "programDbId",
-                            "locationDbId",
-                            "seasonDbId",
-                            "studyType",
-                            "studyName",
-                            "studyLocation",
-                            "programName"
-                        ]
-                    },
                     "studyTypes" : {
-                        "type" : "array",
+                        "type" : [
+                            "null",
+                            "array"
+                        ],
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialDbIds" : {
+                        "type" : "array",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -1183,6 +1276,66 @@
                                 "result"
                             ],
                             "title" : "StudyListResponse"
+                        }
+                    }
+                }
+            },
+            "CallListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "description" : "The `data` array is part of the BrAPI standard List Response JSON container. `data` will always contain the primary list of objects being returned by a BrAPI endpoint. `data` is also the only array impacted by the `metadata.pagination` details. When the pagination parameters change, the `data` array will reflect those changes in the JSON response.",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Call"
+                                            }
+                                        },
+                                        "expandHomozygotes" : {
+                                            "type" : "boolean",
+                                            "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                                            "example" : true
+                                        },
+                                        "sepPhased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for phased allele calls.",
+                                            "example" : "|"
+                                        },
+                                        "sepUnphased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for unphased allele calls.",
+                                            "example" : "/"
+                                        },
+                                        "unknownString" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a representation for missing data.",
+                                            "example" : "."
+                                        }
+                                    },
+                                    "required" : [
+                                        "data"
+                                    ]
+                                }
+                            },
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "title" : "CallListResponse"
                         }
                     }
                 }

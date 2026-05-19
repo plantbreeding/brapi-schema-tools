@@ -77,6 +77,10 @@ public class AbstractListOptions extends AbstractSubOptions {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         paged.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'paged' on %s",

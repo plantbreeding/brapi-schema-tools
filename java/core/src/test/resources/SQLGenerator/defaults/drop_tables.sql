@@ -36,6 +36,7 @@ DROP TABLE IF EXISTS brapi_StudyTypes ;
 DROP TABLE IF EXISTS brapi_Traits ;
 DROP TABLE IF EXISTS brapi_Trials ;
 DROP TABLE IF EXISTS brapi_VariantSetByCallSet ;
+DROP TABLE IF EXISTS brapi_VariantSetByVariant ;
 DROP TABLE IF EXISTS brapi_VariantSets ;
 DROP TABLE IF EXISTS brapi_Variants ;
 

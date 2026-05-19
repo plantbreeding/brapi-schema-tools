@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from brapi.entities.generated_event import Event
     from brapi.entities.generated_call_set import CallSet
     
-from brapi.generated_common import ExternalReference, Contact, AdditionalInfo, SortOrder, SortBy
+from brapi.generated_common import ExternalReference, Contact, AdditionalInfo
 
 from .._query import BaseQuery
 from .._http import HttpTransport
@@ -58,8 +58,6 @@ class LastUpdate(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    # --- Required ---
-    lastUpdateDbId: str = None
     # --- Scalar optional ---
     timestamp: Optional[datetime] = None
     version: Optional[str] = None
@@ -92,7 +90,6 @@ class EnvironmentParameter(BaseModel):
 
     # --- Required ---
     description: str = None
-    environmentParametersDbId: str = None
     parameterName: str = None
     # --- Scalar optional ---
     parameterPUI: Optional[str] = None
@@ -116,6 +113,27 @@ class DataLink(BaseModel):
     scientificType: Optional[str] = None
     url: Optional[str] = None
     version: Optional[str] = None
+
+
+class SortOrder(StrEnum):
+    """"""
+    ASC = "ASC"
+    DESC = "DESC"
+
+
+class SortBy(StrEnum):
+    """"""
+    STUDY_DB_ID = "studyDbId"
+    TRIAL_DB_ID = "trialDbId"
+    PROGRAM_DB_ID = "programDbId"
+    LOCATION_DB_ID = "locationDbId"
+    SEASON_DB_ID = "seasonDbId"
+    STUDY_TYPE = "studyType"
+    STUDY_NAME = "studyName"
+    STUDY_LOCATION = "studyLocation"
+    PROGRAM_NAME = "programName"
+    GERMPLASM_DB_ID = "germplasmDbId"
+    OBSERVATION_VARIABLE_DB_ID = "observationVariableDbId"
 
 # ---------------------------------------------------------------------------
 # Primary model

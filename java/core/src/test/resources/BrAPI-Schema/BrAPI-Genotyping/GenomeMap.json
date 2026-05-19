@@ -41,7 +41,7 @@
                     ]
                 },
                 "linkageGroups": {
-                    "title": "observationUnits",
+                    "title": "linkageGroups",
                     "description": "The linkage groups present in a `GenomeMap`",
                     "referencedAttribute": "genomeMap",
                     "relationshipType": "one-to-many",
@@ -63,17 +63,11 @@
                 },
                 "mapDbId": {
                     "description": "The unique identifier for a `GenomeMap`",
-                    "type": [
-                        "null",
-                        "string"
-                    ]
+                    "type":  "string"
                 },
                 "mapName": {
                     "description": "The human readable identifier for a `GenomeMap`",
-                    "type": [
-                        "null",
-                        "string"
-                    ]
+                    "type": "string"
                 },
                 "mapPUI": {
                     "description": "The DOI or other permanent identifier for a `GenomeMap`",
@@ -118,6 +112,7 @@
             },
             "required": [
                 "mapDbId",
+                "mapName",
                 "commonCropName",
                 "type"
             ],

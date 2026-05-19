@@ -71,8 +71,7 @@ class SeedLot(BaseModel):
 
     All other fields are optional.  Nested relationship lists (``contentMixture``,
     ``externalReferences``,
-    ``fromSeedLotTransactions``,
-    ``toSeedLotTransactions``) are parsed into sub-models when present; unknown extra fields are
+    ``transactions``) are parsed into sub-models when present; unknown extra fields are
     accepted (``extra="allow"``) to survive schema evolution without breaking.
     """
 
@@ -93,8 +92,7 @@ class SeedLot(BaseModel):
     # --- Nested lists ---
     contentMixture: Optional[list[ContentMixture]] = None
     externalReferences: Optional[list[ExternalReference]] = None
-    fromSeedLotTransactions: Optional[list[SeedLotTransaction]] = None
-    toSeedLotTransactions: Optional[list[SeedLotTransaction]] = None
+    transactions: Optional[list[SeedLotTransaction]] = None
     # --- Relationship fields (embedded objects and enums) ---
 
     additionalInfo: Optional[AdditionalInfo] = None
@@ -112,8 +110,7 @@ def seed_lot_to_df(items: list[SeedLot]) -> pd.DataFrame:
 
     Nested sub-model lists (``contentMixture``,
     ``externalReferences``,
-    ``fromSeedLotTransactions``,
-    ``toSeedLotTransactions``) are serialised to JSON strings so each SeedLot remains
+    ``transactions``) are serialised to JSON strings so each SeedLot remains
     one row.  Relationship objects (``additionalInfo``,
     ``location``,
     ``program``) are expanded one level: any ``*DbId`` and ``*Name`` fields are hoisted
@@ -142,8 +139,7 @@ def seed_lot_to_df(items: list[SeedLot]) -> pd.DataFrame:
 
             "contentMixture",
             "externalReferences",
-            "fromSeedLotTransactions",
-            "toSeedLotTransactions",
+            "transactions",
 
         ):
             arr = row.pop(arr_field, None)

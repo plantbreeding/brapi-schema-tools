@@ -74,6 +74,10 @@ public abstract class AbstractGeneratorOptions implements Options, ValidatableAg
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         generateFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'generateFor' on %s",

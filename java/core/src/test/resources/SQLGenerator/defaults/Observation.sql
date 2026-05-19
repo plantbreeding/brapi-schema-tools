@@ -20,7 +20,7 @@ CREATE TABLE brapi_Observations (
   seasonName STRING COMMENT 'Name of the season. ex. ''Spring'', ''Q2'', ''Season A'', etc.',
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Clustering properties
   observationTimeStamp STRING COMMENT 'The date and time when this observation was made',
   -- Properties
@@ -29,6 +29,7 @@ CREATE TABLE brapi_Observations (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
@@ -46,7 +47,7 @@ CREATE TABLE brapi_Observations (
           type STRING COMMENT 'The literal string "Polygon"'
         > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
       type STRING COMMENT 'The literal string "Feature"'
-    > NOT NULL COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
+    > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
   uploadedBy STRING COMMENT 'The name or id of the user who uploaded the observation to the database system',
   value STRING COMMENT 'The value of the data collected as an observation'
 ) 

@@ -83,7 +83,7 @@ public class XSSFWorkbookGenerator {
 
         public Generator(List<BrAPIClass> brAPIClasses) {
 
-            this.brAPIClasses = BrAPIClassCacheBuilder.createCache(this::isGenerating, brAPIClasses).getBrAPIClassesAsMap() ;
+            this.brAPIClasses = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isGenerating, brAPIClasses).getBrAPIClassesAsMap() ;
         }
 
         public Response<List<Path>> generate() {

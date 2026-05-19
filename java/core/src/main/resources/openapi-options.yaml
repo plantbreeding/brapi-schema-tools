@@ -15,7 +15,6 @@ generateNewRequestFor:
     MarkerPosition: false
     Reference: false
     PedigreeNode: false
-    PlannedCross: false
     Season: false
     #ServerInfo: false
     Variant: false
@@ -71,6 +70,8 @@ get:
     listFor:
         AlleleMatrix: false
     pagedDefault: true
+    paged:
+        AlleleMatrix: false
     pagedTokenDefault: false
     pagedToken:
         Call: true
@@ -79,6 +80,9 @@ get:
         BreedingMethod: false
     propertiesFromRequest: true
     propertyFromRequestFor:
+        AlleleMatrix:
+            pagination: false
+            sampleDbId : false
         AdditionalInfo:
             additionalProperties: false
         CallSet:
@@ -435,30 +439,77 @@ properties:
             GermplasmAttribute: attributeName
             GermplasmAttributeValue: attributeValueName
             GenomeMap: mapName
+            EnvironmentParameter: parameterName
             ObservationUnitHierarchyLevel: levelName
         linkPropertyFor:
+            Call:
+                variant: true
             CallSet:
                 sample: false
                 study: false
+            GermplasmMCPD:
+                germplasm: false
+            MarkerPosition:
+                variant: true
+            ObservationUnitLevelRelationship:
+                observationUnit: false
+            Plate:
+                program: false
+                study: false
+                trial: false
+            Sample:
+                observationUnit: false
+                germplasm: false
+                program: false
+                study: false
+                trial: false
+            SeedLotTransaction:
+                fromSeedLot: false
+                toSeedLot: false
     pui:
         nameFormat: "%sPUI"
         link: true
         linkFor:
+            CallSet: false
+            CrossingProject: false
             GenomeMap: false
             Germplasm: false
             ObservationUnit: false
+            PlannedCross: false
+            Reference: false
+            ReferenceSet: false
             Study: false
             Trial: false
+            VariantSet: false
         propertyFor:
+            EnvironmentParameter: parameterPUI
             GermplasmAttribute: attributePUI
             GermplasmAttributeValue: attributeValuePUI
             GenomeMap: mapPUI
         linkPropertyFor:
+            Call:
+                variant: false
             CallSet:
                 sample: false
                 study: false
+            CrossingProject:
+                program: false
+            ContentMixture:
+                cross: false
             GermplasmAttributeValue:
                 attribute: false
+            MarkerPosition:
+                variant: false
+            Plate:
+                program: false
+            SeedLot:
+                location: false
+                program: false
+            Sample:
+                plate: false
+                program: false
+            Study:
+                location: false
     linkTypeFor:
         AlleleMatrix:
             callSets: id
@@ -466,19 +517,30 @@ properties:
             variantSets: id
         Analysis:
             variantSet: id
+        Attribute:
+            method: embedded
+            scale: embedded
+            trait: embedded
         BreedingMethod:
             germplasm: none
             pedigreeNodes: none
         CallSet:
             calls: sub-query
+            variantSets: id
+        CallListResponse:
+            data: embedded
         Cross:
             observationUnits: none
+        ContentMixture:
+            seedLot: none
         CrossAttribute:
             cross: none
         CrossingProject:
             crosses: none
             plannedCrosses: none
             pedigreeNodes: none
+        DatasetAuthorships:
+            trial: none
         DataMatrix:
             alleleMatrix: none
         DocumentationLink:
@@ -488,9 +550,15 @@ properties:
         ExperimentalDesign:
             study: none
         Event:
+            observationUnits: id
+            study: id
+        EventDateRange:
+            event: none
+        EnvironmentParameter:
             study: none
         EventParameter:
             event: none
+            study: none
         GeoJSON:
             image: none
             observation: none
@@ -511,14 +579,21 @@ properties:
             reference: none
             referenceSet: none
             siblingPedigreeNodes: none
+        GermplasmAttribute:
+            attributeValues: none
+            method: embedded
+            scale: embedded
+            trait: embedded
         GermplasmMCPD:
-            germplasm: none
+            germplasm: id
         GermplasmOrigin:
             germplasm: none
         GrowthFacility:
             study: none
         Image:
             imagecontent: sub-query
+        LastUpdate:
+            study: none
         LinkageGroup:
             genomeMap: none
         Location:
@@ -537,13 +612,14 @@ properties:
             observations: none
         ObservationUnitPosition:
             observationUnit: none
-        ObservationUnitLevelRelationship:
-            observationUnit: none
         ObservationTreatment:
             observationUnit: none
         ObservationVariable:
             studies: none
             observations: none
+            method: embedded
+            scale: embedded
+            trait: embedded
         Pagination:
             alleleMatrix: none
         Person:
@@ -564,17 +640,27 @@ properties:
             samples: none
         Reference:
             bases: sub-query
-            variant: none
+            variants: none
+        Publication:
+            trial: none
+        Sample:
+            callSets: none
+            variants: none
         SeedLot:
             transactions: sub-query
             observationUnits: none
+        SourceGermplasm:
+            reference: none
         StorageType:
             germplasm: none
         Study:
             callSets: none
+            contacts: embedded
             events: none
+            environmentParameters: embedded
             observations: none
             observationUnits: none
+            observationVariables: id
             plates: none
             samples: none
             variantSets: none
@@ -587,8 +673,13 @@ properties:
             observationUnits: none
             plates: none
             samples: none
+        Variable:
+            method: embedded
+            scale: embedded
+            trait: embedded
         Variant:
             calls: sub-query
+            variantSets: id
         VariantSet:
             calls: sub-query
             callSets: sub-query
