@@ -9,6 +9,9 @@ listEntity:
     analyseFor:
         VendorPlateSubmission: false
         VendorOrder: false
+        VendorOrderStatus: false
+        VendorPlate: false
+        VendorResultFile: false
     requiredParametersFor:
         PedigreeNode:
             - parameterName: germplasmDbId
@@ -51,6 +54,11 @@ properties:
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
             ListDetails: listDbId
+            Variable: observationVariableDbId
+            Observationunit: observationUnitDbId
+            Crossingproject: crossingProjectDbId
+            Attributevalue: attributeValueDbId
+            Seedlot: seedLotDbId
     name:
         nameFormat: "%sName"
         link: true

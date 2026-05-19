@@ -2,6 +2,7 @@ package org.brapi.schematools.analyse;
 
 import com.atlassian.oai.validator.model.Request;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.Value;
@@ -22,6 +23,7 @@ public class APIRequest {
     List<ParameterLink> pathParameters ;
     @Singular
     List<ParameterLink> queryParameters ;
+    @Getter
     Request validatorRequest;
     @Singular
     List<Variable> cacheVariables ;

@@ -2,6 +2,7 @@ package org.brapi.schematools.analyse;
 
 import com.atlassian.oai.validator.report.ValidationReport;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.ZoneId;
 @Value
 @Builder
 public class AnalysisReport {
+    @Getter
     APIRequest request;
     String uri;
     LocalDateTime startTime;
