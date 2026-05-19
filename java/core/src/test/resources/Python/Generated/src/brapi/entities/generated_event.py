@@ -47,6 +47,8 @@ class EventParameter(BaseModel):
     units: Optional[str] = None
     value: Optional[str] = None
     valueDescription: Optional[str] = None
+    key: Optional[str] = None
+    rdfValue: Optional[str] = None
 
 
 class EventDateRange(BaseModel):
@@ -70,8 +72,7 @@ class Event(BaseModel):
     Required fields: ``eventDbId``,
     ``eventType``
 
-    All other fields are optional.  Nested relationship lists (``eventDateRange``,
-    ``eventParameters``,
+    All other fields are optional.  Nested relationship lists (``eventParameters``,
     ``observationUnits``) are parsed into sub-models when present; unknown extra fields are
     accepted (``extra="allow"``) to survive schema evolution without breaking.
     """
@@ -86,12 +87,12 @@ class Event(BaseModel):
     eventTypeDbId: Optional[str] = None
 
     # --- Nested lists ---
-    eventDateRange: Optional[list[EventDateRange]] = None
     eventParameters: Optional[list[EventParameter]] = None
     observationUnits: Optional[list[ObservationUnit]] = None
     # --- Relationship fields (embedded objects and enums) ---
 
     additionalInfo: Optional[AdditionalInfo] = None
+    eventDateRange: Optional[EventDateRange] = None
     study: Optional[Study] = None
 
 
@@ -103,10 +104,10 @@ def event_to_df(items: list[Event]) -> pd.DataFrame:
     """
     Convert a list of ``Event`` objects to a flat ``pd.DataFrame``.
 
-    Nested sub-model lists (``eventDateRange``,
-    ``eventParameters``,
+    Nested sub-model lists (``eventParameters``,
     ``observationUnits``) are serialised to JSON strings so each Event remains
     one row.  Relationship objects (``additionalInfo``,
+    ``eventDateRange``,
     ``study``) are expanded one level: any ``*DbId`` and ``*Name`` fields are hoisted
     to top-level columns.
     """
@@ -118,6 +119,7 @@ def event_to_df(items: list[Event]) -> pd.DataFrame:
         for rel in (
 
             "additionalInfo",
+            "eventDateRange",
             "study",
 
         ):
@@ -130,7 +132,6 @@ def event_to_df(items: list[Event]) -> pd.DataFrame:
         # Serialise one-to-many lists to strings (one row per Event)
         for arr_field in (
 
-            "eventDateRange",
             "eventParameters",
             "observationUnits",
 

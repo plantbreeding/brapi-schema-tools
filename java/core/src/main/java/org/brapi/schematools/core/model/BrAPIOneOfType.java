@@ -15,9 +15,15 @@ public class BrAPIOneOfType implements BrAPIClass {
     String name;
     String description;
     boolean deprecated;
+    Boolean nullable;
     @Singular
     List<Object> examples ;
     String module;
     BrAPIMetadata metadata;
     List<BrAPIType> possibleTypes;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

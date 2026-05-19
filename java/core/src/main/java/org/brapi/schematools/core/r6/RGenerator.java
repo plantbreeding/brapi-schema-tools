@@ -142,9 +142,9 @@ public class RGenerator {
                 context.setVariable("entityPath", options.getPathItemNameFor(brAPIClass));
                 context.setVariable("searchPath", options.getSearchPathItemNameFor(brAPIClass));
                 context.setVariable("entityName", brAPIObjectType.getName());
-                context.setVariable("get-description", options.getSingleGet().getDescriptionFor(brAPIClass.getName()));
-                context.setVariable("get", options.getSingleGet().isGeneratingFor(brAPIObjectType));
-                context.setVariable("getAll", options.getListGet().isGeneratingFor(brAPIObjectType));
+                context.setVariable("get-description", options.getGetWithId().getDescriptionFor(brAPIClass.getName()));
+                context.setVariable("get", options.getGetWithId().isGeneratingFor(brAPIObjectType));
+                context.setVariable("getAll", options.getGet().isGeneratingFor(brAPIObjectType));
                 context.setVariable("search", options.getSearch().isGeneratingFor(brAPIObjectType));
                 context.setVariable("create", options.getPost().isGeneratingFor(brAPIObjectType));
                 context.setVariable("update", options.getPut().isGeneratingFor(brAPIObjectType));

@@ -5,8 +5,8 @@ The GenomeMap represents the metadata associated with a reference map of a parti
  */
 CREATE TABLE brapi_GenomeMaps (
   -- Primary properties
-  mapDbId STRING PRIMARY KEY COMMENT 'The unique identifier for a `GenomeMap`',
-  mapName STRING PRIMARY KEY COMMENT 'The human readable identifier for a `GenomeMap`',
+  mapDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a `GenomeMap`',
+  mapName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable identifier for a `GenomeMap`',
   mapPUI STRING PRIMARY KEY COMMENT 'The DOI or other permanent identifier for a `GenomeMap`',
   -- Clustering properties
   commonCropName STRING NOT NULL COMMENT 'The common name of the `Crop`',

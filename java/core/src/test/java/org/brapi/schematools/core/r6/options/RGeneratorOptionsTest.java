@@ -110,10 +110,10 @@ class RGeneratorOptionsTest extends OptionsTestBase {
         assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
         assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
 
-        assertTrue(options.getSingleGet().isGenerating());
-        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+        assertTrue(options.getGetWithId().isGenerating());
+        assertFalse(options.getGetWithId().isGeneratingFor("AlleleMatrix"));
 
-        assertEquals("Get a filtered list of PedigreeNode", options.getListGet().getSummaryFor("PedigreeNode"));
+        assertEquals("Get a filtered list of PedigreeNode", options.getGet().getSummaryFor("PedigreeNode"));
 
         assertEquals("Create new PedigreeNode", options.getPost().getSummaryFor("PedigreeNode"));
 
@@ -141,10 +141,10 @@ class RGeneratorOptionsTest extends OptionsTestBase {
 
         assertEquals("/pedigree", options.getPathItemNameFor("PedigreeNode"));
         assertEquals("/pedigree", options.getPathItemNameFor(BrAPIObjectType.builder().name("PedigreeNode").build()));
-        assertTrue(options.getSingleGet().isGenerating());
-        assertFalse(options.getSingleGet().isGeneratingFor("AlleleMatrix"));
+        assertTrue(options.getGetWithId().isGenerating());
+        assertFalse(options.getGetWithId().isGeneratingFor("AlleleMatrix"));
 
-        assertEquals("Get a filtered list of PedigreeNode X", options.getListGet().getSummaryFor("PedigreeNode"));
+        assertEquals("Get a filtered list of PedigreeNode X", options.getGet().getSummaryFor("PedigreeNode"));
 
         assertEquals("Create new PedigreeNode X", options.getPost().getSummaryFor("PedigreeNode"));
 
@@ -173,8 +173,8 @@ class RGeneratorOptionsTest extends OptionsTestBase {
         assertNotNull(options);
 
         assertNotNull(options.getProperties());
-        assertNotNull(options.getSingleGet());
-        assertNotNull(options.getListGet());
+        assertNotNull(options.getGetWithId());
+        assertNotNull(options.getGet());
         assertNotNull(options.getPost());
         assertNotNull(options.getPut());
         assertNotNull(options.getDelete());

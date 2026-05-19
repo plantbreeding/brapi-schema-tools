@@ -114,7 +114,7 @@ public class GraphQLGenerator {
             this.options = options;
             this.metadata = metadata;
 
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPISchemas) ;
+            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPISchemas);
             outputTypes = new TreeMap<>();
             interfaceTypes = new TreeMap<>();
             unionTypes = new TreeMap<>();
@@ -191,6 +191,10 @@ public class GraphQLGenerator {
 
         private boolean isInterface(BrAPIClass type) {
             return type.getMetadata() != null && type.getMetadata().isInterfaceClass();
+        }
+
+        private boolean isResponse(BrAPIClass type) {
+            return type.getMetadata() != null && type.getMetadata().isResponse();
         }
 
         private Response<GraphQLSchema> createSchema(List<GraphQLObjectType> primaryTypes) {
@@ -464,18 +468,24 @@ public class GraphQLGenerator {
                     return success(existingType);
                 }
 
+                if (isInterface(brAPIObjectType)) {
+                    System.out.println(brAPIObjectType.getName());
+                }
+
                 GraphQLObjectType.Builder builder = newObject()
                     .name(brAPIObjectType.getName())
                     .description(brAPIObjectType.getDescription());
 
-                brAPIObjectType.getInterfaces().forEach(interfaceType -> builder.withInterface(GraphQLTypeReference.typeRef(interfaceType.getName())));
+                if (brAPIObjectType.getInterfaces() != null && !brAPIObjectType.getInterfaces().isEmpty()) {
+                    findInterfaces(brAPIObjectType).forEach(interfaceType -> builder.withInterface(GraphQLTypeReference.typeRef(interfaceType.getName())));
+                }
 
                 if (brAPIObjectType.getAdditionalProperties() != null) {
 
                     builder.field(newFieldDefinition()
                         .name("additionalInfo")
                         .type(GraphQLTypeReference.typeRef("AdditionalInfo"))
-                        .build()) ;
+                        .build());
                 }
 
                 return brAPIObjectType.getInterfaces().stream().map(
@@ -491,11 +501,23 @@ public class GraphQLGenerator {
             }
         }
 
+        private List<BrAPIObjectType> findInterfaces(BrAPIObjectType brAPIObjectType) {
+
+            List<BrAPIObjectType> interfaces = new ArrayList<>();
+
+            brAPIObjectType.getInterfaces().forEach(interfaceType -> {
+                interfaces.add(interfaceType);
+                interfaces.addAll(findInterfaces(interfaceType)) ;
+            }) ;
+
+            return interfaces;
+        }
+
         private Response<LinkType> getLinkTypeFor(BrAPIObjectType brAPIObjectType, BrAPIObjectProperty property) {
             BrAPIType unwrappedType = unwrapType(property.getType());
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
 
-            return options.getProperties().getLinkTypeFor(brAPIObjectType, property, dereferencedType) ;
+            return options.getProperties().getLinkTypeFor(brAPIObjectType, property, dereferencedType);
         }
 
         private Response<GraphQLInterfaceType> createInterfaceType(BrAPIClass brAPIClass) {
@@ -823,12 +845,29 @@ public class GraphQLGenerator {
                 .mapResult(result -> result);
         }
 
-        private Response<GraphQLNamedOutputType> createNamedOutputType(BrAPIType type) {
-            try {
-                return createOutputType(type).mapResult(t -> (GraphQLNamedOutputType) t);
-            } catch (ClassCastException e) {
+        private Response<GraphQLNamedOutputType> createNamedOutputType(BrAPIType brAPIType) {
+            if (brAPIType instanceof BrAPIObjectType brAPIObjectType) {
+                return createObjectType(brAPIObjectType).mapResult(t -> t);
+            } else if (brAPIType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
+                String name = StringUtils.toSentenceCase(brAPIPrimitiveType.getName()) + "Value";
+
+                GraphQLNamedOutputType existingType = outputTypes.get(name);
+
+                if (existingType != null) {
+                    return success(existingType);
+                }
+
+                GraphQLObjectType.Builder builder = newObject()
+                    .name(name)
+                    .description(String.format("A value type wrapper for %s", brAPIPrimitiveType.getName()));
+
+                return createScalarType(brAPIPrimitiveType)
+                    .mapResult(t -> newFieldDefinition().name("value").type(t))
+                    .mapResult(builder::field)
+                    .map(() -> addObjectType(builder.build()));
+            } else {
                 return fail(Response.ErrorType.VALIDATION,
-                    String.format("Type cannot be cast to GraphQLNamedOutputType, due to '%s'", e));
+                    String.format("Can not create GraphQLObjectType, type is not BrAPIObjectType or BrAPIPrimitiveType, but was '%s'", brAPIType.getClass()));
             }
         }
 

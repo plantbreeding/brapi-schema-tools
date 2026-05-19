@@ -19,10 +19,11 @@ CREATE TABLE brapi_Images (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
-    > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
+    > NOT NULL COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   imageContent STRING NOT NULL COMMENT 'The content of the image',
   imageFileName STRING COMMENT 'The name of the image file. Might be the same as ''imageName'', but could be different.',
   imageFileSize INT COMMENT 'The size of the image in Bytes.',
@@ -40,7 +41,7 @@ CREATE TABLE brapi_Images (
           type STRING COMMENT 'The literal string "Polygon"'
         > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
       type STRING COMMENT 'The literal string "Feature"'
-    > NOT NULL COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
+    > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
   imageTimeStamp STRING COMMENT 'The date and time the image was taken',
   imageURL STRING COMMENT 'The complete, absolute URI path to the image file. Images might be stored on a different host or path than the BrAPI web server.',
   imageWidth INT COMMENT 'The width of the image in Pixels.',

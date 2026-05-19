@@ -38,10 +38,7 @@ class BreedingMethod(BaseModel):
     """
     The techniques and protocol used to produce a Cross or Germplasm
 
-    Required fields: ``abbreviation``,
-    ``breedingMethodDbId``,
-    ``breedingMethodName``,
-    ``description``
+    Required fields: ``breedingMethodDbId``
 
     All other fields are optional.  Nested relationship lists (``) are parsed into sub-models when present; unknown extra fields are
     accepted (``extra="allow"``) to survive schema evolution without breaking.
@@ -50,10 +47,11 @@ class BreedingMethod(BaseModel):
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     # --- Required ---
-    abbreviation: str
     breedingMethodDbId: str
-    breedingMethodName: str
-    description: str
+    # --- Scalar optional ---
+    abbreviation: Optional[str] = None
+    breedingMethodName: Optional[str] = None
+    description: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------

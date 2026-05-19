@@ -30,10 +30,11 @@ CREATE TABLE brapi_Crosses (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
-    > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
+    > NOT NULL COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   parent1 
     STRUCT<
       -- Link properties
@@ -69,7 +70,8 @@ CREATE TABLE brapi_Crosses (
         pollinationSuccessful BOOLEAN COMMENT 'True if the pollination was successful',
         pollinationTimeStamp STRING COMMENT 'The timestamp when the pollination took place'
       >
-    > COMMENT 'The list of pollination events that occurred for this cross.'
+    > COMMENT 'The list of pollination events that occurred for this cross.',
+  pollinationTimeStamp STRING COMMENT '**Deprecated in v2.1** Please use `pollinationEvents`. Github issue number #265 <br>The timestamp when the pollination took place'
 ) 
 COMMENT 'The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present.';
 

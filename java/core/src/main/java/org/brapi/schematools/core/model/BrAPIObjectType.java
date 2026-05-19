@@ -15,6 +15,7 @@ public class BrAPIObjectType implements BrAPIClass {
     String name;
     String description;
     boolean deprecated;
+    Boolean nullable;
     @Singular
     List<Object> examples;
     String module;
@@ -22,4 +23,9 @@ public class BrAPIObjectType implements BrAPIClass {
     BrAPIAdditionalProperties additionalProperties;
     List<BrAPIObjectProperty> properties;
     List<BrAPIObjectType> interfaces;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

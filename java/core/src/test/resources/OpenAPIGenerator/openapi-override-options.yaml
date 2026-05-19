@@ -5,11 +5,11 @@ pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
     PedigreeNode: /pedigree2
-singleGet:
+getWithId:
     generate: false
     generateFor:
         AlleleMatrix: true
-listGet:
+get:
     summaryFormat: Get a filtered list of %s X
 post:
     summaryFormat: Create new %s X

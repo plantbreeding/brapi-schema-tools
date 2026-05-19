@@ -169,8 +169,8 @@ class AlleleMatrixQuery(BaseQuery[AlleleMatrix]):
     pattern) so the same base query can be forked::
 
         base = client.allele_matrix.preview(true)
-        q1   = base.data_matrix_names("Genotype")
-        q2   = base.data_matrix_abbreviations("GT")
+        q1   = base.data_matrix_names("Genotype,Read Depth")
+        q2   = base.data_matrix_abbreviations("GT,RD")
     
     Materialise with::
 
@@ -223,19 +223,50 @@ data as requested.
         """
         return self._set_param("preview", preview)  # type: ignore[return-value]
 
+    # --- dimensionVariantPage ---
+
+    def dimension_variant_page(self, dimension_variant_page: int) -> "AlleleMatrixQuery":
+        """The requested page number for the Variant dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionVariantPage", dimension_variant_page)  # type: ignore[return-value]
+
+    # --- dimensionVariantPageSize ---
+
+    def dimension_variant_page_size(self, dimension_variant_page_size: int) -> "AlleleMatrixQuery":
+        """The requested page size for the Variant dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionVariantPageSize", dimension_variant_page_size)  # type: ignore[return-value]
+
+    # --- dimensionCallSetPage ---
+
+    def dimension_call_set_page(self, dimension_call_set_page: int) -> "AlleleMatrixQuery":
+        """The requested page number for the CallSet dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionCallSetPage", dimension_call_set_page)  # type: ignore[return-value]
+
+    # --- dimensionCallSetPageSize ---
+
+    def dimension_call_set_page_size(self, dimension_call_set_page_size: int) -> "AlleleMatrixQuery":
+        """The requested page size for the CallSet dimension of the matrix
+
+        
+        """
+        return self._set_param("dimensionCallSetPageSize", dimension_call_set_page_size)  # type: ignore[return-value]
+
     # --- dataMatrixNames ---
 
-    def data_matrix_names(self, data_matrix_names: Union[str, List[str]]) -> "AlleleMatrixQuery":
-        """`dataMatrixNames` is a list of names (ie &#39;Genotype&#39;, &#39;Read Depth&#39; etc). This list controls which data matrices are returned in the response.
+    def data_matrix_names(self, data_matrix_names: str) -> "AlleleMatrixQuery":
+        """`dataMatrixNames` is a comma separated list of names (ie &#39;Genotype&#39;, &#39;Read Depth&#39; etc). This list controls which data matrices are returned in the response.
 
         Example::
             client.allele_matrix
-                .data_matrix_names("Genotype")
-                .fetch()
-                .to_df()
-            
-            client.allele_matrix
-                .data_matrix_names(["Genotype", "Read Depth"])
+                .data_matrix_names("Genotype,Read Depth")
                 .fetch()
                 .to_df()
             
@@ -244,17 +275,12 @@ data as requested.
 
     # --- dataMatrixAbbreviations ---
 
-    def data_matrix_abbreviations(self, data_matrix_abbreviations: Union[str, List[str]]) -> "AlleleMatrixQuery":
-        """`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie &#39;GT&#39;, &#39;RD&#39; etc). This list controls which data matrices are returned in the response.
+    def data_matrix_abbreviations(self, data_matrix_abbreviations: str) -> "AlleleMatrixQuery":
+        """`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie &#39;GT&#39;, &#39;RD&#39; etc). This list controls which data matrices are returned in the response.
 
         Example::
             client.allele_matrix
-                .data_matrix_abbreviations("GT")
-                .fetch()
-                .to_df()
-            
-            client.allele_matrix
-                .data_matrix_abbreviations(["GT", "RD"])
+                .data_matrix_abbreviations("GT,RD")
                 .fetch()
                 .to_df()
             
@@ -479,8 +505,12 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
         *,
         pagination: Optional[List[AlleleMatrixPagination]] = None,
         preview: Optional[bool] = None,
-        data_matrix_names: Optional[List[str]] = None,
-        data_matrix_abbreviations: Optional[List[str]] = None,
+        dimension_variant_page: Optional[int] = None,
+        dimension_variant_page_size: Optional[int] = None,
+        dimension_call_set_page: Optional[int] = None,
+        dimension_call_set_page_size: Optional[int] = None,
+        data_matrix_names: Optional[str] = None,
+        data_matrix_abbreviations: Optional[str] = None,
         position_ranges: Optional[List[str]] = None,
         germplasm_names: Optional[List[str]] = None,
         germplasm_puis: Optional[List[str]] = None,
@@ -504,8 +534,8 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
                 client.allele_matrix
                     .filter(
                         preview=,
-                        data_matrix_names=["Genotype"],
-                        data_matrix_abbreviations=["GT"],
+                        data_matrix_names=,
+                        data_matrix_abbreviations=,
                    )
                     .fetch()
                     .to_df()
@@ -516,6 +546,14 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
             q = q.pagination(pagination)
         if preview:
             q = q.preview(preview)
+        if dimension_variant_page:
+            q = q.dimension_variant_page(dimension_variant_page)
+        if dimension_variant_page_size:
+            q = q.dimension_variant_page_size(dimension_variant_page_size)
+        if dimension_call_set_page:
+            q = q.dimension_call_set_page(dimension_call_set_page)
+        if dimension_call_set_page_size:
+            q = q.dimension_call_set_page_size(dimension_call_set_page_size)
         if data_matrix_names:
             q = q.data_matrix_names(data_matrix_names)
         if data_matrix_abbreviations:
@@ -567,8 +605,8 @@ the starting position of the range, and &lt;end&gt; is the ending position of th
             df = (
                 client.allele_matrix
                     .preview(true)
-                    .data_matrix_names("Genotype")
-                    .data_matrix_abbreviations("GT")
+                    .data_matrix_names("Genotype,Read Depth")
+                    .data_matrix_abbreviations("GT,RD")
                     .search()
                     .to_df()
             )

@@ -33,6 +33,7 @@ Calls <- R6Class(
     #' @param sepPhased The string used as a separator for phased allele calls.
     #' @param sepUnphased The string used as a separator for unphased allele calls.
     #' @param unknownString The string used as a representation for missing data.
+    #' @param pageToken The continuation token, which is used to page through large result sets.
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of Call objects.
@@ -45,6 +46,7 @@ Calls <- R6Class(
         sepPhased = NULL,
         sepUnphased = NULL,
         unknownString = NULL,
+        pageToken = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -70,6 +72,9 @@ Calls <- R6Class(
       if (!is.null(unknownString)) {
         queryParams$unknownString <- unknownString
       }
+      if (!is.null(pageToken)) {
+        queryParams$pageToken <- pageToken
+      }
       private$.client$perform_get_request("/calls", queryParams, page, pageSize)
     },
     #' @description
@@ -82,6 +87,7 @@ Calls <- R6Class(
     #' @param sepPhased The string used as a separator for phased allele calls.
     #' @param sepUnphased The string used as a separator for unphased allele calls.
     #' @param unknownString The string used as a representation for missing data.
+    #' @param pageToken The continuation token, which is used to page through large result sets.
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -95,6 +101,7 @@ Calls <- R6Class(
         sepPhased = NULL,
         sepUnphased = NULL,
         unknownString = NULL,
+        pageToken = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -119,6 +126,9 @@ Calls <- R6Class(
       }
       if (!is.null(unknownString)) {
         queryParams$unknownString <- to_list(unknownString)
+      }
+      if (!is.null(pageToken)) {
+        queryParams$pageToken <- to_list(pageToken)
       }
       private$.client$perform_post_request("/search/calls", queryParams, page, pageSize)
     },

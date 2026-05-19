@@ -44,14 +44,15 @@ class Variant(BaseModel):
 
     Required fields: ``variantDbId``
 
-    All other fields are optional.  Nested relationship lists (``markerPositions``,
+    All other fields are optional.  Nested relationship lists (``alternateBases``,
+    ``markerPositions``,
     ``alleleMatrices``,
-    ``analysis``,
     ``ciend``,
     ``cipos``,
     ``externalReferences``,
     ``filtersFailed``,
-    ``variantNames``) are parsed into sub-models when present; unknown extra fields are
+    ``variantNames``,
+    ``variantSets``) are parsed into sub-models when present; unknown extra fields are
     accepted (``extra="allow"``) to survive schema evolution without breaking.
     """
 
@@ -71,20 +72,20 @@ class Variant(BaseModel):
     variantType: Optional[str] = None
 
     # --- Nested lists ---
+    alternateBases: Optional[list[str]] = None
     markerPositions: Optional[list[MarkerPosition]] = None
     alleleMatrices: Optional[list[AlleleMatrix]] = None
-    analysis: Optional[list[str]] = None
     ciend: Optional[list[int]] = None
     cipos: Optional[list[int]] = None
     externalReferences: Optional[list[ExternalReference]] = None
     filtersFailed: Optional[list[str]] = None
     variantNames: Optional[list[str]] = None
+    variantSets: Optional[list[VariantSet]] = None
     # --- Relationship fields (embedded objects and enums) ---
 
     additionalInfo: Optional[AdditionalInfo] = None
     reference: Optional[Reference] = None
     referenceSet: Optional[ReferenceSet] = None
-    variantSet: Optional[VariantSet] = None
 
 
 # ---------------------------------------------------------------------------
@@ -95,18 +96,18 @@ def variant_to_df(items: list[Variant]) -> pd.DataFrame:
     """
     Convert a list of ``Variant`` objects to a flat ``pd.DataFrame``.
 
-    Nested sub-model lists (``markerPositions``,
+    Nested sub-model lists (``alternateBases``,
+    ``markerPositions``,
     ``alleleMatrices``,
-    ``analysis``,
     ``ciend``,
     ``cipos``,
     ``externalReferences``,
     ``filtersFailed``,
-    ``variantNames``) are serialised to JSON strings so each Variant remains
+    ``variantNames``,
+    ``variantSets``) are serialised to JSON strings so each Variant remains
     one row.  Relationship objects (``additionalInfo``,
     ``reference``,
-    ``referenceSet``,
-    ``variantSet``) are expanded one level: any ``*DbId`` and ``*Name`` fields are hoisted
+    ``referenceSet``) are expanded one level: any ``*DbId`` and ``*Name`` fields are hoisted
     to top-level columns.
     """
     rows: list[dict[str, Any]] = []
@@ -119,7 +120,6 @@ def variant_to_df(items: list[Variant]) -> pd.DataFrame:
             "additionalInfo",
             "reference",
             "referenceSet",
-            "variantSet",
 
         ):
             obj = row.pop(rel, None)
@@ -131,14 +131,15 @@ def variant_to_df(items: list[Variant]) -> pd.DataFrame:
         # Serialise one-to-many lists to strings (one row per Variant)
         for arr_field in (
 
+            "alternateBases",
             "markerPositions",
             "alleleMatrices",
-            "analysis",
             "ciend",
             "cipos",
             "externalReferences",
             "filtersFailed",
             "variantNames",
+            "variantSets",
 
         ):
             arr = row.pop(arr_field, None)

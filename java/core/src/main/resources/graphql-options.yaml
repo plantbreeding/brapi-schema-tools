@@ -205,3 +205,4 @@ properties:
 mergeOneOfType: true
 mergingOneOfTypeFor:
     GeoJSONGeometry: false
+    Value: false

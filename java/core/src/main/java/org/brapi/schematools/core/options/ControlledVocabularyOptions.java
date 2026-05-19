@@ -106,10 +106,14 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
         generateFor.forEach((name, generateForInner) -> {
             if (generateForInner == null) return; // null = removal marker, skip validation
             validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
-                String.format("Invalid Primary Model name '%s' set for 'generateFor' on %s",
+                String.format("Invalid BrAPI Class name '%s' set for 'generateFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -131,8 +135,8 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
 
         pagedFor.forEach((name, pagedForInner) -> {
             if (pagedForInner == null) return; // null = removal marker, skip validation
-            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
-                String.format("Invalid Primary Model name '%s' set for 'pagedFor' on %s",
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pagedFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;

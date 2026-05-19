@@ -511,7 +511,6 @@ class EnvironmentParameter(BaseModel):
     
 
     Required fields: ``description``,
-    ``environmentParametersDbId``,
     ``parameterName``
 
     All other fields are optional.
@@ -522,7 +521,6 @@ class EnvironmentParameter(BaseModel):
     # --- Required ---
 
     description: str
-    environmentParametersDbId: str
     parameterName: str
 
     # --- Scalar optional ---
@@ -574,6 +572,8 @@ class EventParameter(BaseModel):
     units: Optional[str] = None
     value: Optional[str] = None
     valueDescription: Optional[str] = None
+    key: Optional[str] = None
+    rdfValue: Optional[str] = None
 
 
 class ExperimentalDesign(BaseModel):
@@ -611,6 +611,7 @@ class ExternalReference(BaseModel):
     # --- Scalar optional ---
 
     referenceId: Optional[str] = None
+    referenceID: Optional[str] = None
     referenceSource: Optional[str] = None
 
 
@@ -834,7 +835,7 @@ class LastUpdate(BaseModel):
     """
     
 
-    Required fields: ``lastUpdateDbId``
+    Required fields: ``
 
     All other fields are optional.
     """
@@ -842,8 +843,6 @@ class LastUpdate(BaseModel):
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     # --- Required ---
-
-    lastUpdateDbId: str
 
     # --- Scalar optional ---
 
@@ -885,6 +884,22 @@ class ListType(StrEnum):
     OBSERVATIONS = "observations"
     OBSERVATION_VARIABLES = "observationVariables"
     SAMPLES = "samples"
+
+
+class ListValue(BaseModel):
+    """
+    
+
+    Required fields: ``
+
+    All other fields are optional.
+    """
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    # --- Required ---
+
+    # --- Scalar optional ---
 
 
 class MetadataField(BaseModel):
@@ -1085,7 +1100,6 @@ class ParentType(StrEnum):
     FEMALE = "FEMALE"
     SELF = "SELF"
     POPULATION = "POPULATION"
-    CLONAL = "CLONAL"
 
 
 class PlannedCrossStatus(StrEnum):
@@ -1223,23 +1237,44 @@ class SortBy(StrEnum):
     """
     
     """
+    STUDY_DB_ID = "studyDbId"
     TRIAL_DB_ID = "trialDbId"
-    TRIAL_NAME = "trialName"
     PROGRAM_DB_ID = "programDbId"
-    PROGRAM_NAME = "programName"
     LOCATION_DB_ID = "locationDbId"
-    START_DATE = "startDate"
-    END_DATE = "endDate"
+    SEASON_DB_ID = "seasonDbId"
+    STUDY_TYPE = "studyType"
+    STUDY_NAME = "studyName"
+    STUDY_LOCATION = "studyLocation"
+    PROGRAM_NAME = "programName"
+    GERMPLASM_DB_ID = "germplasmDbId"
+    OBSERVATION_VARIABLE_DB_ID = "observationVariableDbId"
 
 
 class SortOrder(StrEnum):
     """
     
     """
-    ASC = "asc"
-    ASC_2 = "ASC"
-    DESC = "desc"
-    DESC_2 = "DESC"
+    ASC = "ASC"
+    DESC = "DESC"
+
+
+class SourceGermplasm(BaseModel):
+    """
+    
+
+    Required fields: ``
+
+    All other fields are optional.
+    """
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    # --- Required ---
+
+    # --- Scalar optional ---
+
+    germplasmDbId: Optional[str] = None
+    germplasmName: Optional[str] = None
 
 
 class StorageType(BaseModel):
@@ -1364,6 +1399,22 @@ class ValidValuesCategory(BaseModel):
 
     label: Optional[str] = None
     value: Optional[str] = None
+
+
+class Value(BaseModel):
+    """
+    
+
+    Required fields: ``
+
+    All other fields are optional.
+    """
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    # --- Required ---
+
+    # --- Scalar optional ---
 
 
 

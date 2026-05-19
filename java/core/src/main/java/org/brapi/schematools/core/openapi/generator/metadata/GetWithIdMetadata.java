@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Provides metadata for the Single Get endpoints
+ * Provides metadata for the Get with ID endpoints
  */
 @Getter
 @Setter
-public class SingleGetMetadata extends AbstractOpenAPIMetadata {
+public class GetWithIdMetadata extends AbstractOpenAPIMetadata {
 
 }

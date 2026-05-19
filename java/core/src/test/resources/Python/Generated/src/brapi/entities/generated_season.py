@@ -200,12 +200,12 @@ class SeasonQuery(BaseQuery[Season]):
 
     # --- years ---
 
-    def years(self, years: Union[str, List[str]]) -> "SeasonQuery":
-        """The 4 digit year of a season. Example &quot;2017&quot;
+    def years(self, years: Union[int, List[int]]) -> "SeasonQuery":
+        """The 4 digit year of a season. Example 2017
 
         Example::
             client.season
-                .years("2017")
+                .years(2017)
                 .fetch()
                 .to_df()
             
@@ -220,7 +220,7 @@ class SeasonQuery(BaseQuery[Season]):
         season_db_ids: Optional[List[str]] = None,
         seasons: Optional[List[str]] = None,
         season_names: Optional[List[str]] = None,
-        years: Optional[List[str]] = None,
+        years: Optional[List[int]] = None,
     ) -> "SeasonQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only

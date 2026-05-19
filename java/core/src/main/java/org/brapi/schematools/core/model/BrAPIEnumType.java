@@ -15,10 +15,16 @@ public class BrAPIEnumType implements BrAPIClass {
     String name;
     String description;
     boolean deprecated;
+    Boolean nullable;
     @Singular
     List<Object> examples ;
     String module;
     BrAPIMetadata metadata;
     String type;
     List<BrAPIEnumValue> values;
+
+    @Override
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

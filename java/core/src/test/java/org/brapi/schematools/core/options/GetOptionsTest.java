@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ListGetOptionsTest {
+class GetOptionsTest {
 
-    ListGetOptions subject ;
+    GetOptions subject ;
     @BeforeEach
     void setUp() {
-        subject = OpenAPIGeneratorOptions.load().getListGet() ;
+        subject = OpenAPIGeneratorOptions.load().getGet() ;
     }
 
     @Test
@@ -24,7 +24,7 @@ class ListGetOptionsTest {
     void isGeneratingFor() {
         assertTrue(subject.isGeneratingFor("Trial"));
         assertTrue(subject.isGeneratingFor("BreedingMethod"));
-        assertFalse(subject.isGeneratingFor("AlleleMatrix"));
+        assertTrue(subject.isGeneratingFor("AlleleMatrix"));
     }
 
     @Test
