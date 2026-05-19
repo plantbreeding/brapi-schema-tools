@@ -2349,20 +2349,16 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "Genotype,Read Depth"
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -4196,12 +4192,6 @@
                         "nullable" : true
                     },
                     "listOwnerPersonDbId" : {
-                        "type" : "string"
-                    },
-                    "listOwnerPersonName" : {
-                        "type" : "string"
-                    },
-                    "listOwnerPersonPUI" : {
                         "type" : "string"
                     },
                     "listSize" : {
@@ -6415,10 +6405,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "leadPersonPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "objective" : {
                         "type" : "string",
                         "description" : "The primary objective of the program",
@@ -7947,10 +7933,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "programPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "publications" : {
                         "type" : "array",
                         "description" : "MIAPPE V1.1 (DM-9) Associated publication - An identifier for a literature publication where the investigation is described. Use of DOIs is recommended.",
@@ -7963,14 +7945,6 @@
                         "type" : "string",
                         "description" : "The date this trial started",
                         "nullable" : true
-                    },
-                    "studyDbIds" : {
-                        "type" : "array",
-                        "description" : "",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
                     },
                     "trialDescription" : {
                         "type" : "string",

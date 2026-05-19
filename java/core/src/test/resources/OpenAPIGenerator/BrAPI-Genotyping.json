@@ -63,18 +63,18 @@
                         }
                     },
                     {
-                        "name" : "dataMatrixName",
+                        "name" : "dataMatrixNames",
                         "in" : "query",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
                         }
                     },
                     {
-                        "name" : "dataMatrixAbbreviation",
+                        "name" : "dataMatrixAbbreviations",
                         "in" : "query",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -111,15 +111,6 @@
                         "name" : "germplasmDbId",
                         "in" : "query",
                         "description" : "A list of IDs which uniquely identify `Germplasm` within the given database server",
-                        "required" : false,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "name" : "sampleDbId",
-                        "in" : "query",
-                        "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -3263,20 +3254,16 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "Genotype,Read Depth"
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -3432,20 +3419,16 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "Genotype,Read Depth"
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -3636,12 +3619,6 @@
                         "description" : "The time at which this record was last updated, in ISO 8601 format.",
                         "format" : "date-time",
                         "nullable" : true
-                    },
-                    "variantSetDbId" : {
-                        "type" : "string"
-                    },
-                    "variantSetName" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "An analysis contains an interpretation of one or several experiments. (e.g. SNVs, copy number variations, methylation status) together with information about the methodology used."
@@ -3819,12 +3796,6 @@
                         "type" : "string",
                         "description" : "The string used as a representation for missing data.",
                         "nullable" : true
-                    },
-                    "variantSetDbId" : {
-                        "type" : "string"
-                    },
-                    "variantSetName" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Each 'availableFormat' object is a pairing of dataFormat and fileFormat. These must be communicated in pairs because they are not independent parameters and sometimes one influences the other."
@@ -3847,7 +3818,12 @@
                         "type" : "string"
                     },
                     "genotype" : {
-                        "$ref" : "#/components/schemas/ListValue"
+                        "deprecated" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ListValue"
+                            }
+                        ]
                     },
                     "genotypeMetadata" : {
                         "type" : "array",
@@ -6056,12 +6032,6 @@
                         "type" : "string",
                         "description" : "The name of the field represented in this Genotype Field. Examples include: \"Genotype Quality\", \"Read Depth\", and \"Haplotype Quality\"",
                         "nullable" : true
-                    },
-                    "variantSetDbId" : {
-                        "type" : "string"
-                    },
-                    "variantSetName" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard "

@@ -2572,20 +2572,16 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "Genotype,Read Depth"
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",

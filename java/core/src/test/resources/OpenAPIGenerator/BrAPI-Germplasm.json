@@ -2537,20 +2537,16 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "example" : "Genotype,Read Depth"
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -4948,7 +4944,8 @@
             "GermplasmMCPD" : {
                 "required" : [
                     "commonCropName",
-                    "germplasmDbId"
+                    "germplasmDbId",
+                    "germplasmName"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -5186,6 +5183,9 @@
                         "example" : "Aspergillus"
                     },
                     "germplasmDbId" : {
+                        "type" : "string"
+                    },
+                    "germplasmName" : {
                         "type" : "string"
                     },
                     "instituteCode" : {
@@ -5524,15 +5524,6 @@
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
-                    },
-                    "pedigreeNodeDbId" : {
-                        "type" : "string"
-                    },
-                    "pedigreeNodeName" : {
-                        "type" : "string"
-                    },
-                    "pedigreeNodePUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes."
@@ -7102,13 +7093,7 @@
                     "breedingMethodName" : {
                         "type" : "string"
                     },
-                    "breedingMethodPUI" : {
-                        "type" : "string"
-                    },
                     "crossingProjectDbId" : {
-                        "type" : "string"
-                    },
-                    "crossingProjectName" : {
                         "type" : "string"
                     },
                     "crossingYear" : {
@@ -7166,12 +7151,12 @@
                             "$ref" : "#/components/schemas/GermplasmChild"
                         }
                     },
-                    "siblingDbIds" : {
+                    "siblings" : {
                         "type" : "array",
                         "description" : "A list of sibling germplasm references in the pedigree tree for this germplasm. These represent edges in the tree, connecting to other nodes.\n<br/> Siblings share at least one parent with the given germplasm. \n<br/> If the parameter 'includeSiblings' is set to false, then this array should be empty, null, or not present in the response.",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "$ref" : "#/components/schemas/Germplasm"
                         }
                     }
                 },

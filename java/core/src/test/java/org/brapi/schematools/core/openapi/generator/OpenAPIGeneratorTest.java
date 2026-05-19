@@ -47,7 +47,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Complete.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Complete.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -70,7 +70,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Complete-md.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Complete-md.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -99,10 +99,15 @@ class OpenAPIGeneratorTest {
         assertTrue(byTitle.containsKey("BrAPI-Phenotyping"));
         assertTrue(byTitle.containsKey("BrAPI-Genotyping"));
 
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core.json", byTitle.get("BrAPI-Core")) ;
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm.json", byTitle.get("BrAPI-Germplasm")) ;
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Phenotyping.json", byTitle.get("BrAPI-Phenotyping")) ;
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Genotyping.json", byTitle.get("BrAPI-Genotyping")) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core.json", byTitle.get("BrAPI-Core"), false) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm.json", byTitle.get("BrAPI-Germplasm"), false) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Phenotyping.json", byTitle.get("BrAPI-Phenotyping"), false) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Genotyping.json", byTitle.get("BrAPI-Genotyping"), false) ;
+
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core.json", byTitle.get("BrAPI-Core"), true) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm.json", byTitle.get("BrAPI-Germplasm"), true) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Phenotyping.json", byTitle.get("BrAPI-Phenotyping"), true) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Genotyping.json", byTitle.get("BrAPI-Genotyping"), true) ;
     }
 
     @Test
@@ -125,7 +130,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/BreedingMethod.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/BreedingMethod.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -148,7 +153,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/Study.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/Study.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -172,7 +177,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/Study3_1.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/Study3_1.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -195,7 +200,7 @@ class OpenAPIGeneratorTest {
 
         assertEquals(1, specifications.getResult().size());
 
-        assertSpecificationEquals("OpenAPIGenerator/Germplasm.json", specifications.getResult().getFirst()) ;
+        assertSpecificationEquals("OpenAPIGenerator/Germplasm.json", specifications.getResult().getFirst(), true) ;
     }
 
     @Test
@@ -225,15 +230,18 @@ class OpenAPIGeneratorTest {
         assertFalse(byTitle.containsKey("BrAPI-Phenotyping"));
         assertFalse(byTitle.containsKey("BrAPI-Genotyping"));
 
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core-Study.json", byTitle.get("BrAPI-Core")) ;
-        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm-Germplasm.json", byTitle.get("BrAPI-Germplasm")) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core-Study.json", byTitle.get("BrAPI-Core"), false) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm-Germplasm.json", byTitle.get("BrAPI-Germplasm"), false) ;
+
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Core-Study.json", byTitle.get("BrAPI-Core"), true) ;
+        assertSpecificationEquals("OpenAPIGenerator/BrAPI-Germplasm-Germplasm.json", byTitle.get("BrAPI-Germplasm"), true) ;
     }
 
     private void printError(Response.Error error) {
         System.out.println(error.toString());
     }
 
-    private void assertSpecificationEquals(String classPath, OpenAPI specification) {
+    private void assertSpecificationEquals(String classPath, OpenAPI specification, boolean doAssert) {
         try {
             String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource(classPath).toURI())).getResultOrThrow();
             String actual = prettyPrint(specification, OUTPUT_FORMAT_JSON);
@@ -249,7 +257,9 @@ class OpenAPIGeneratorTest {
                 Files.writeString(build, actual);
             }
 
-            assertEquals(expectedObj, actualObj, "OpenAPI spec does not match (ignoring property order)");
+            if (doAssert) {
+                assertEquals(expectedObj, actualObj, "OpenAPI spec does not match (ignoring property order)");
+            }
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
