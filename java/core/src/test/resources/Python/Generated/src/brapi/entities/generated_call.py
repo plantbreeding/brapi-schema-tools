@@ -146,7 +146,8 @@ _LIST_PARAM_MAP: Dict[str, Optional[str]] = {
     # Already singular — pass through unchanged:
     "sepPhased": "sepPhased", 
     "sepUnphased": "sepUnphased", 
-    "unknownString": "unknownString"
+    "unknownString": "unknownString", 
+    "pageToken": "pageToken"
     
 }
 class CallQuery(BaseQuery[Call]):
@@ -299,6 +300,17 @@ class CallQuery(BaseQuery[Call]):
         """
         return self._set_param("unknownString", unknown_string)  # type: ignore[return-value]
 
+    # --- pageToken ---
+
+    def page_token(self, page_token: str) -> "CallQuery":
+        """The continuation token, which is used to page through large result sets.
+To get the next page of results, set this parameter to the value of
+`next_page_token` from the previous response.
+
+        
+        """
+        return self._set_param("pageToken", page_token)  # type: ignore[return-value]
+
     # --- Bulk convenience ---
 
     def filter(
@@ -311,6 +323,7 @@ class CallQuery(BaseQuery[Call]):
         sep_phased: Optional[str] = None,
         sep_unphased: Optional[str] = None,
         unknown_string: Optional[str] = None,
+        page_token: Optional[str] = None,
     ) -> "CallQuery":
         """
         Apply multiple filters in one call.  All parameters are optional; only
@@ -344,6 +357,8 @@ class CallQuery(BaseQuery[Call]):
             q = q.sep_unphased(sep_unphased)
         if unknown_string:
             q = q.unknown_string(unknown_string)
+        if page_token:
+            q = q.page_token(page_token)
         return q
 
     # ------------------------------------------------------------------

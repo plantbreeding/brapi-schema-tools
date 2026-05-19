@@ -34,39 +34,16 @@ CREATE TABLE brapi_SeedLots (
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
-  fromSeedLotTransactions
-    ARRAY<
-      STRUCT<
-        -- Link properties
-        fromSeedLotDbId STRING COMMENT 'Unique DbId for the Seed Lot',
-        fromSeedLotName STRING COMMENT 'A human readable name for this Seed Lot',
-        toSeedLotDbId STRING COMMENT 'Unique DbId for the Seed Lot',
-        toSeedLotName STRING COMMENT 'A human readable name for this Seed Lot',
-        -- Properties
-        additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
-        amount DOUBLE COMMENT 'The number of units being transferred between SeedLots. Could be a count (seeds, bulbs, etc) or a weight (kg of seed).',
-        externalReferences
-          ARRAY<
-            STRUCT<
-              referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
-              referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
-            >
-          > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
-        transactionDbId STRING COMMENT 'Unique DbId for the Seed Lot Transaction',
-        transactionDescription STRING COMMENT 'A general description of this Seed Lot Transaction',
-        transactionTimestamp STRING COMMENT 'The time stamp for when the transaction occurred',
-        units STRING COMMENT 'A description of the things being transferred between SeedLots in a transaction (seeds, bulbs, kg, etc)'
-      >
-    > COMMENT 'fromSeedLotTransactions',
   lastUpdated STRING COMMENT 'The timestamp for the last update to this Seed Lot (including transactions)',
   seedLotDescription STRING COMMENT 'A general description of this Seed Lot',
   sourceCollection STRING COMMENT 'The description of the source where this material was originally collected (wild, nursery, etc)',
   storageLocation STRING COMMENT 'Description the storage location',
-  toSeedLotTransactions
+  transactions
     ARRAY<
       STRUCT<
         -- Link properties
@@ -80,6 +57,7 @@ CREATE TABLE brapi_SeedLots (
         externalReferences
           ARRAY<
             STRUCT<
+              referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
               referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
               referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
             >
@@ -89,7 +67,7 @@ CREATE TABLE brapi_SeedLots (
         transactionTimestamp STRING COMMENT 'The time stamp for when the transaction occurred',
         units STRING COMMENT 'A description of the things being transferred between SeedLots in a transaction (seeds, bulbs, kg, etc)'
       >
-    > COMMENT 'toSeedLotTransactions',
+    > COMMENT 'The complete history of transactions for this seed lot. This includes seed increases, seed usage (planting), and trading with other breeding programs.',
   units STRING COMMENT 'A description of the things being counted in a SeedLot (seeds, bulbs, kg, tree, etc)'
 ) 
 COMMENT 'A SeedLot, also known as an InventoryLot, is a collection of starting material (seeds, bulbs, root-stock, etc) for a particular Germplasm. The amount of material available for each Germplasm can be increased by seed production and decreased by planting or trading with another breeding Program.';

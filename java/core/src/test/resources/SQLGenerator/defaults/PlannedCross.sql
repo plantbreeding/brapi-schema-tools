@@ -12,10 +12,11 @@ CREATE TABLE brapi_PlannedCrosses (
   crossingProjectName STRING NOT NULL COMMENT 'The human readable name for a crossing project',
   -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
-  crossType STRING NOT NULL COMMENT 'the type of cross',
+  crossType STRING COMMENT 'the type of cross',
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
@@ -31,7 +32,7 @@ CREATE TABLE brapi_PlannedCrosses (
       observationUnitName STRING COMMENT 'A human readable name for an observation unit',
       -- Properties
       parentType STRING COMMENT 'The type of parent ex. ''MALE'', ''FEMALE'', ''SELF'', ''POPULATION'', etc.'
-    > NOT NULL COMMENT 'the first parent used in the cross',
+    > COMMENT 'the first parent used in the cross',
   parent2 
     STRUCT<
       -- Link properties
@@ -43,7 +44,7 @@ CREATE TABLE brapi_PlannedCrosses (
       observationUnitName STRING COMMENT 'A human readable name for an observation unit',
       -- Properties
       parentType STRING COMMENT 'The type of parent ex. ''MALE'', ''FEMALE'', ''SELF'', ''POPULATION'', etc.'
-    > NOT NULL COMMENT 'the second parent used in the cross',
+    > COMMENT 'the second parent used in the cross',
   status STRING COMMENT 'The status of this planned cross. Is it waiting to be performed (''TODO''), has it been completed successfully (''DONE''), or has it not been done on purpose (''SKIPPED'').'
 ) 
 COMMENT 'Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field.';

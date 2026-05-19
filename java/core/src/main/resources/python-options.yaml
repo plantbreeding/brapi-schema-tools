@@ -22,7 +22,7 @@ pathItemNameForProperty:
     Study:
         studyType:
             /studytypes
-singleGet:
+getWithId:
     generate: true
     summaryFormat: Get the details of a specific %s
     descriptionFormat: Get details for a %s
@@ -36,7 +36,7 @@ singleGet:
         PedigreeNode: false
         PlannedCross: false
         ServerInfo: false
-listGet:
+get:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s

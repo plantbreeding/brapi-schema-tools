@@ -22,7 +22,6 @@ from pydantic import BaseModel, ConfigDict
 if TYPE_CHECKING:
     from brapi.entities.generated_variant import Variant
     from brapi.entities.generated_reference_set import ReferenceSet
-    from brapi.entities.generated_germplasm import Germplasm
     
 from brapi.generated_common import OntologyTerm, ExternalReference, AdditionalInfo
 
@@ -34,6 +33,16 @@ from .._result import BrapiResult
 # ---------------------------------------------------------------------------
 # Sub-models (embedded in Reference)
 # ---------------------------------------------------------------------------
+
+
+class SourceGermplasm(BaseModel):
+    """"""
+
+    model_config = ConfigDict(extra="allow")
+
+    # --- Scalar optional ---
+    germplasmDbId: Optional[str] = None
+    germplasmName: Optional[str] = None
 
 
 class ReferenceBases(BaseModel):
@@ -80,7 +89,7 @@ class Reference(BaseModel):
     # --- Nested lists ---
     externalReferences: Optional[list[ExternalReference]] = None
     sourceAccessions: Optional[list[str]] = None
-    sourceGermplasm: Optional[list[Germplasm]] = None
+    sourceGermplasm: Optional[list[SourceGermplasm]] = None
     variants: Optional[list[Variant]] = None
     # --- Relationship fields (embedded objects and enums) ---
 

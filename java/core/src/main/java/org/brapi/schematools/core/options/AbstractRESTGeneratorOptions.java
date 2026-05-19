@@ -7,6 +7,7 @@ import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 
 import java.util.HashMap;
@@ -39,9 +40,9 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     private Map<String, Map<String, String>> pathItemNameForProperty = new HashMap<>();
 
     @Setter(AccessLevel.PRIVATE)
-    private SingleGetOptions singleGet;
+    private GetWithIdOptions getWithId;
     @Setter(AccessLevel.PRIVATE)
-    private ListGetOptions listGet;
+    private GetOptions get;
     @Setter(AccessLevel.PRIVATE)
     private PostOptions post;
     @Setter(AccessLevel.PRIVATE)
@@ -67,8 +68,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     public Validation validate() {
         return super.validate()
             .assertNotNull(pathItemNameFor, "'pathItemNameFor' option is null")
-            .assertNotNull(singleGet, "Single Get Endpoint Options are null")
-            .assertNotNull(listGet,  "List Get Endpoint Options are null")
+            .assertNotNull(getWithId, "Single Get Endpoint Options are null")
+            .assertNotNull(get,  "List Get Endpoint Options are null")
             .assertNotNull(post, "Post Endpoint Options are null")
             .assertNotNull(put, "Put Endpoint Options are null")
             .assertNotNull(delete, "Delete Endpoint Options are null")
@@ -77,7 +78,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
             .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
             .assertNotNull(table, "Table Options are null")
             .assertNotNull(searchTable, "Search Table Options are null")
-            .merge(singleGet)
+            .merge(getWithId)
             .merge(post)
             .merge(put)
             .merge(delete)
@@ -130,11 +131,11 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
             });
         }
 
-        if (overrideOptions.singleGet != null) {
-            singleGet.override(overrideOptions.singleGet);
+        if (overrideOptions.getWithId != null) {
+            getWithId.override(overrideOptions.getWithId);
         }
-        if (overrideOptions.listGet != null) {
-            listGet.override(overrideOptions.getListGet()) ;
+        if (overrideOptions.get != null) {
+            get.override(overrideOptions.getGet()) ;
         }
         if (overrideOptions.post != null) {
             post.override(overrideOptions.post);
@@ -162,6 +163,33 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         }
 
         return this;
+    }
+
+    @Override
+    public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
+        Validation validation = super.validateAgainstCache(brAPIClassCache);
+
+        if (!brAPIClassCache.isValidating()) {
+            return validation;
+        }
+
+        pathItemNameFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        pathItemNameForProperty.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameForProperty' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        return validation ;
     }
 
     // -------------------------------------------------------------------------
@@ -303,8 +331,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @JsonIgnore
     @Override
     public boolean isGeneratingFor(@NonNull String name) {
-        return super.isGeneratingFor(name) && (getSingleGet().isGeneratingFor(name) ||
-            getListGet().isGeneratingFor(name) ||
+        return super.isGeneratingFor(name) && (getGetWithId().isGeneratingFor(name) ||
+            getGet().isGeneratingFor(name) ||
             getPost().isGeneratingFor(name) ||
             getPut().isGeneratingFor(name) ||
             getDelete().isGeneratingFor(name) ||
@@ -320,8 +348,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     @JsonIgnore
     @Override
     public boolean isGeneratingFor(@NonNull BrAPIType type) {
-        return getSingleGet().isGeneratingFor(type) ||
-            getListGet().isGeneratingFor(type) ||
+        return getGetWithId().isGeneratingFor(type) ||
+            getGet().isGeneratingFor(type) ||
             getPost().isGeneratingFor(type) ||
             getPut().isGeneratingFor(type) ||
             getDelete().isGeneratingFor(type) ||

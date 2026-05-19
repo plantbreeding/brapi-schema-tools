@@ -19,5 +19,9 @@ public class BrAPIAdditionalProperties {
     String type;
     boolean deprecated;
     boolean required;
-    boolean nullable;
+    Boolean nullable;
+
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

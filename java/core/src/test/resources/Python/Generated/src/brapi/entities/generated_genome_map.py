@@ -54,6 +54,7 @@ class GenomeMap(BaseModel):
 
     Required fields: ``commonCropName``,
     ``mapDbId``,
+    ``mapName``,
     ``type``
 
     All other fields are optional.  Nested relationship lists (``markerPositions``,
@@ -66,12 +67,12 @@ class GenomeMap(BaseModel):
     # --- Required ---
     commonCropName: str
     mapDbId: str
+    mapName: str
     type: str
     # --- Scalar optional ---
     comments: Optional[str] = None
     documentationURL: Optional[str] = None
     linkageGroupCount: Optional[int] = None
-    mapName: Optional[str] = None
     mapPUI: Optional[str] = None
     markerCount: Optional[int] = None
     publishedDate: Optional[datetime] = None

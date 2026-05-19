@@ -16,10 +16,15 @@ public class BrAPIObjectProperty {
     String description;
     @Singular
     List<Object> examples ;
+    Object defaultValue ;
     BrAPIType type;
     boolean deprecated;
     boolean required;
-    boolean nullable;
+    Boolean nullable;
     String referencedAttribute;
     BrAPIRelationshipType relationshipType;
+
+    public boolean isNullable() {
+        return nullable != null && nullable ;
+    }
 }

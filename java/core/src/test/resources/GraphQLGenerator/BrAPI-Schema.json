@@ -1035,7 +1035,11 @@
         "ofType" : null
       } ],
       "enumValues" : null,
-      "possibleTypes" : [ ]
+      "possibleTypes" : [ {
+        "kind" : "OBJECT",
+        "name" : "GermplasmAttribute",
+        "ofType" : null
+      } ]
     }, {
       "kind" : "OBJECT",
       "name" : "AvailableFormat",
@@ -1359,6 +1363,27 @@
       "possibleTypes" : null
     }, {
       "kind" : "OBJECT",
+      "name" : "BooleanValue",
+      "description" : "A value type wrapper for boolean",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "value",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "Boolean",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
       "name" : "BreedingMethod",
       "description" : "The techniques and protocol used to produce a Cross or Germplasm",
       "isOneOf" : null,
@@ -1585,6 +1610,32 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
+        "name" : "genotype",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "OBJECT",
+          "name" : "ListValue",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "genotype_likelihood",
+        "description" : "**Deprecated in v2.1** Please use `genotypeMetadata`. Github issue number #491             \n<br>The genotype likelihood for this variant call. Each array entry represents how likely a specific genotype is for this call as log10(P(data | genotype)), analogous to the GL tag in the VCF spec. The value ordering is defined by the GL tag in the VCF spec.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "Float",
+            "ofType" : null
+          }
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "variantDbIds",
         "description" : "The ID of the variant this call belongs to.",
         "args" : [ ],
@@ -1677,6 +1728,32 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
+        "name" : "genotype",
+        "description" : null,
+        "type" : {
+          "kind" : "INPUT_OBJECT",
+          "name" : "ListValueInput",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "genotype_likelihood",
+        "description" : "**Deprecated in v2.1** Please use `genotypeMetadata`. Github issue number #491             \n<br>The genotype likelihood for this variant call. Each array entry represents how likely a specific genotype is for this call as log10(P(data | genotype)), analogous to the GL tag in the VCF spec. The value ordering is defined by the GL tag in the VCF spec.",
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "Float",
+            "ofType" : null
+          }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "variant",
         "description" : "The ID of the variant this call belongs to.",
         "type" : {
@@ -1708,27 +1785,60 @@
       "description" : null,
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "data",
-        "description" : null,
+        "name" : "dataDbId",
+        "description" : "The `data` array is part of the BrAPI standard List Response JSON container. `data` will always contain the primary list of objects being returned by a BrAPI endpoint. `data` is also the only array impacted by the `metadata.pagination` details. When the pagination parameters change, the `data` array will reflect those changes in the JSON response.",
         "args" : [ ],
         "type" : {
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
-            "kind" : "OBJECT",
-            "name" : "Call",
+            "kind" : "SCALAR",
+            "name" : "ID",
             "ofType" : null
           }
         },
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "page",
-        "description" : null,
+        "name" : "expandHomozygotes",
+        "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
         "args" : [ ],
         "type" : {
-          "kind" : "OBJECT",
-          "name" : "PageInfo",
+          "kind" : "SCALAR",
+          "name" : "Boolean",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "sepPhased",
+        "description" : "The string used as a separator for phased allele calls.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "sepUnphased",
+        "description" : "The string used as a separator for unphased allele calls.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "unknownString",
+        "description" : "The string used as a representation for missing data.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
           "ofType" : null
         },
         "isDeprecated" : false,
@@ -2465,6 +2575,17 @@
       }, {
         "name" : "unknownString",
         "description" : "The string used as a representation for missing data.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "pageToken",
+        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
         "type" : {
           "kind" : "SCALAR",
           "name" : "String",
@@ -3253,6 +3374,17 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
+        "name" : "pollinationTimeStamp",
+        "description" : "**Deprecated in v2.1** Please use `pollinationEvents`. Github issue number #265\n<br>The timestamp when the pollination took place",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "pollinationEvents",
         "description" : "The list of pollination events that occurred for this cross.",
         "args" : [ ],
@@ -3477,6 +3609,17 @@
         "type" : {
           "kind" : "INPUT_OBJECT",
           "name" : "PlannedCrossInput",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "pollinationTimeStamp",
+        "description" : "**Deprecated in v2.1** Please use `pollinationEvents`. Github issue number #265\n<br>The timestamp when the pollination took place",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
           "ofType" : null
         },
         "defaultValue" : null,
@@ -5130,17 +5273,6 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "environmentParametersDbId",
-        "description" : "Human-readable value of the environment parameter (defined above) constant within the experiment",
-        "args" : [ ],
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "parameterName",
         "description" : "Name of the environment parameter constant within the experiment\n\nMIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ",
         "args" : [ ],
@@ -5230,17 +5362,6 @@
       "fields" : null,
       "inputFields" : [ {
         "name" : "description",
-        "description" : "Human-readable value of the environment parameter (defined above) constant within the experiment",
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "environmentParametersDbId",
         "description" : "Human-readable value of the environment parameter (defined above) constant within the experiment",
         "type" : {
           "kind" : "SCALAR",
@@ -5348,17 +5469,28 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "eventDateRange",
-        "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+        "name" : "date",
+        "description" : "**Deprecated in v2.1** Please use `eventDateRange.discreteDates`. Github issue number #440\n<br>A list of dates when the event occurred\n<br>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
         "args" : [ ],
         "type" : {
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
-            "kind" : "OBJECT",
-            "name" : "EventDateRange",
+            "kind" : "SCALAR",
+            "name" : "String",
             "ofType" : null
           }
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "eventDateRange",
+        "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+        "args" : [ ],
+        "type" : {
+          "kind" : "OBJECT",
+          "name" : "EventDateRange",
+          "ofType" : null
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -5604,16 +5736,27 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "eventDateRange",
-        "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+        "name" : "date",
+        "description" : "**Deprecated in v2.1** Please use `eventDateRange.discreteDates`. Github issue number #440\n<br>A list of dates when the event occurred\n<br>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.",
         "type" : {
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
-            "kind" : "INPUT_OBJECT",
-            "name" : "EventDateRangeInput",
+            "kind" : "SCALAR",
+            "name" : "String",
             "ofType" : null
           }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "eventDateRange",
+        "description" : "An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)",
+        "type" : {
+          "kind" : "INPUT_OBJECT",
+          "name" : "EventDateRangeInput",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -5815,6 +5958,28 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
+        "name" : "key",
+        "description" : "**Deprecated in v2.1** Please use `name`. Github issue number #440             \n<br>Specifies the relationship between the event and the given property. E.g. fertilizer, operator",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "rdfValue",
+        "description" : "**Deprecated in v2.1** Please use `code`. Github issue number #440             \n<brThe type of the value given above, e.g. http://xmlns.com/foaf/0.1/Agent",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "valuesByDate",
         "description" : "An array of values corresponding to each timestamp in the 'discreteDates' array of this event. The 'valuesByDate' array should exactly match the size of the 'discreteDates' array. If 'valuesByDate' is populated then 'value' should NOT be populated.",
         "args" : [ ],
@@ -5909,6 +6074,28 @@
       }, {
         "name" : "valueDescription",
         "description" : "If the event parameter 'unit' field is 'code', then use 'valueDescription' to add a human readable description to the value.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "key",
+        "description" : "**Deprecated in v2.1** Please use `name`. Github issue number #440             \n<br>Specifies the relationship between the event and the given property. E.g. fertilizer, operator",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "rdfValue",
+        "description" : "**Deprecated in v2.1** Please use `code`. Github issue number #440             \n<brThe type of the value given above, e.g. http://xmlns.com/foaf/0.1/Agent",
         "type" : {
           "kind" : "SCALAR",
           "name" : "String",
@@ -6193,6 +6380,17 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
+        "name" : "referenceID",
+        "description" : "**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "referenceSource",
         "description" : "An identifier for the source system or database of this reference",
         "args" : [ ],
@@ -6217,6 +6415,17 @@
       "inputFields" : [ {
         "name" : "referenceId",
         "description" : "The external reference ID. Could be a simple string or a URI.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "referenceID",
+        "description" : "**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.",
         "type" : {
           "kind" : "SCALAR",
           "name" : "String",
@@ -8084,7 +8293,15 @@
         "deprecationReason" : null
       } ],
       "inputFields" : null,
-      "interfaces" : [ ],
+      "interfaces" : [ {
+        "kind" : "INTERFACE",
+        "name" : "Attribute",
+        "ofType" : null
+      }, {
+        "kind" : "INTERFACE",
+        "name" : "Variable",
+        "ofType" : null
+      } ],
       "enumValues" : null,
       "possibleTypes" : null
     }, {
@@ -11797,17 +12014,6 @@
       "description" : "The date and time when this study was last modified",
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "lastUpdateDbId",
-        "description" : "The ID which uniquely identifies a LastUpdate within the given database server",
-        "args" : [ ],
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "timestamp",
         "description" : "The timestamp of the update.",
         "args" : [ ],
@@ -11852,17 +12058,6 @@
       "isOneOf" : false,
       "fields" : null,
       "inputFields" : [ {
-        "name" : "lastUpdateDbId",
-        "description" : "The ID which uniquely identifies a LastUpdate within the given database server",
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "timestamp",
         "description" : "The timestamp of the update.",
         "type" : {
@@ -12446,6 +12641,56 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       } ],
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
+      "name" : "ListValue",
+      "description" : "**Deprecated in v2.1** Please use `genotypeValue` or `genotypeMetadata`. Github issue number #491             \n<br>`ListValue` is a wrapper around a repeated field of values.\n<br>The JSON representation for `ListValue` is JSON array.",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "values",
+        "description" : "**Deprecated in v2.1** Please use `genotypeValue` or `genotypeMetadata`. Github issue number #491             \n<br>Repeated field of dynamically typed values.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "UNION",
+            "name" : "Value",
+            "ofType" : null
+          }
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "INPUT_OBJECT",
+      "name" : "ListValueInput",
+      "description" : "**Deprecated in v2.1** Please use `genotypeValue` or `genotypeMetadata`. Github issue number #491             \n<br>`ListValue` is a wrapper around a repeated field of values.\n<br>The JSON representation for `ListValue` is JSON array.",
+      "isOneOf" : false,
+      "fields" : null,
+      "inputFields" : [ {
+        "name" : "values",
+        "description" : "**Deprecated in v2.1** Please use `genotypeValue` or `genotypeMetadata`. Github issue number #491             \n<br>Repeated field of dynamically typed values.",
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "ValueInput",
+            "ofType" : null
+          }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "interfaces" : null,
+      "enumValues" : null,
       "possibleTypes" : null
     }, {
       "kind" : "INPUT_OBJECT",
@@ -15654,6 +15899,27 @@
       "possibleTypes" : null
     }, {
       "kind" : "OBJECT",
+      "name" : "NumberValue",
+      "description" : "A value type wrapper for number",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "value",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "Float",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
       "name" : "Observation",
       "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit.",
       "isOneOf" : null,
@@ -16205,13 +16471,9 @@
         "description" : "All positional and layout information related to this Observation Unit \n\nMIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative) \nor level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value. \nLevels of observation must be consistent with those listed in the Study section.",
         "args" : [ ],
         "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "OBJECT",
-            "name" : "ObservationUnitPosition",
-            "ofType" : null
-          }
+          "kind" : "OBJECT",
+          "name" : "ObservationUnitPosition",
+          "ofType" : null
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -16310,7 +16572,11 @@
       "inputFields" : null,
       "interfaces" : [ ],
       "enumValues" : null,
-      "possibleTypes" : [ ]
+      "possibleTypes" : [ {
+        "kind" : "OBJECT",
+        "name" : "ObservationUnitLevelRelationship",
+        "ofType" : null
+      } ]
     }, {
       "kind" : "INPUT_OBJECT",
       "name" : "ObservationUnitHierarchyLevelInput",
@@ -16445,13 +16711,9 @@
         "name" : "observationUnitPosition",
         "description" : "All positional and layout information related to this Observation Unit \n\nMIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative) \nor level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value. \nLevels of observation must be consistent with those listed in the Study section.",
         "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "INPUT_OBJECT",
-            "name" : "ObservationUnitPositionInput",
-            "ofType" : null
-          }
+          "kind" : "INPUT_OBJECT",
+          "name" : "ObservationUnitPositionInput",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -16625,7 +16887,11 @@
         "ofType" : null
       } ],
       "enumValues" : null,
-      "possibleTypes" : [ ]
+      "possibleTypes" : [ {
+        "kind" : "OBJECT",
+        "name" : "ObservationUnitLevelRelationship",
+        "ofType" : null
+      } ]
     }, {
       "kind" : "INPUT_OBJECT",
       "name" : "ObservationUnitLevelInput",
@@ -16670,7 +16936,7 @@
       "enumValues" : null,
       "possibleTypes" : null
     }, {
-      "kind" : "INTERFACE",
+      "kind" : "OBJECT",
       "name" : "ObservationUnitLevelRelationship",
       "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). `levelCode` is an ID code for this level tag. Identify \nthis observation unit by each level of the hierarchy where it exists. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** ",
       "isOneOf" : null,
@@ -16720,9 +16986,17 @@
         "deprecationReason" : null
       } ],
       "inputFields" : null,
-      "interfaces" : [ ],
+      "interfaces" : [ {
+        "kind" : "INTERFACE",
+        "name" : "ObservationUnitLevel",
+        "ofType" : null
+      }, {
+        "kind" : "INTERFACE",
+        "name" : "ObservationUnitHierarchyLevel",
+        "ofType" : null
+      } ],
       "enumValues" : null,
-      "possibleTypes" : [ ]
+      "possibleTypes" : null
     }, {
       "kind" : "INPUT_OBJECT",
       "name" : "ObservationUnitLevelRelationshipInput",
@@ -16863,7 +17137,7 @@
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
-            "kind" : "INTERFACE",
+            "kind" : "OBJECT",
             "name" : "ObservationUnitLevelRelationship",
             "ofType" : null
           }
@@ -19716,11 +19990,6 @@
         "deprecationReason" : null
       }, {
         "name" : "POPULATION",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "CLONAL",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -25845,15 +26114,15 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "sourceGermplasmDbId",
+        "name" : "sourceGermplasm",
         "description" : "All known corresponding Germplasm",
         "args" : [ ],
         "type" : {
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "ID",
+            "kind" : "OBJECT",
+            "name" : "SourceGermplasm",
             "ofType" : null
           }
         },
@@ -26141,7 +26410,7 @@
           "name" : null,
           "ofType" : {
             "kind" : "INPUT_OBJECT",
-            "name" : "GermplasmInput",
+            "name" : "SourceGermplasmInput",
             "ofType" : null
           }
         },
@@ -27334,7 +27603,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "sampleGroupId",
+        "name" : "sampleGroupDbId",
         "description" : "The ID which uniquely identifies a group of `Samples`",
         "args" : [ ],
         "type" : {
@@ -27595,7 +27864,7 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "sampleGroupId",
+        "name" : "sampleGroupDbId",
         "description" : "The ID which uniquely identifies a group of `Samples`",
         "type" : {
           "kind" : "SCALAR",
@@ -28604,13 +28873,13 @@
         "deprecationReason" : null
       }, {
         "name" : "years",
-        "description" : "The 4 digit year of a season. Example \"2017\"",
+        "description" : "The 4 digit year of a season. Example 2017",
         "type" : {
           "kind" : "LIST",
           "name" : null,
           "ofType" : {
             "kind" : "SCALAR",
-            "name" : "String",
+            "name" : "Int",
             "ofType" : null
           }
         },
@@ -28825,23 +29094,8 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "fromSeedLotTransactions",
-        "description" : "fromSeedLotTransactions",
-        "args" : [ ],
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "OBJECT",
-            "name" : "SeedLotTransaction",
-            "ofType" : null
-          }
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "toSeedLotTransactions",
-        "description" : "toSeedLotTransactions",
+        "name" : "transactions",
+        "description" : "The complete history of transactions for this seed lot. This includes seed increases, seed usage (planting), and trading with other breeding programs.",
         "args" : [ ],
         "type" : {
           "kind" : "LIST",
@@ -29028,23 +29282,8 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "fromSeedLotTransactions",
-        "description" : "fromSeedLotTransactions",
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "INPUT_OBJECT",
-            "name" : "SeedLotTransactionInput",
-            "ofType" : null
-          }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "toSeedLotTransactions",
-        "description" : "toSeedLotTransactions",
+        "name" : "transactions",
+        "description" : "The complete history of transactions for this seed lot. This includes seed increases, seed usage (planting), and trading with other breeding programs.",
         "type" : {
           "kind" : "LIST",
           "name" : null,
@@ -29513,12 +29752,12 @@
       "inputFields" : null,
       "interfaces" : null,
       "enumValues" : [ {
-        "name" : "trialDbId",
+        "name" : "studyDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "trialName",
+        "name" : "trialDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -29528,22 +29767,42 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "programName",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "locationDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "startDate",
+        "name" : "seasonDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "endDate",
+        "name" : "studyType",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "studyName",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "studyLocation",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "programName",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "germplasmDbId",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "observationVariableDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -29558,17 +29817,7 @@
       "inputFields" : null,
       "interfaces" : null,
       "enumValues" : [ {
-        "name" : "asc",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "ASC",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "desc",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -29578,6 +29827,92 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       } ],
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
+      "name" : "SourceGermplasm",
+      "description" : "A reference to a Germplasm",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "germplasmDbId",
+        "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "germplasmName",
+        "description" : "Name of the germplasm. It can be the preferred name and does not have to be unique.\n\nMCPD (v2.1) (ACCENAME) 11. Either a registered or other designation given to the material received, other than the donors accession number (23) or collecting number (3). First letter uppercase. Multiple names are separated by a semicolon without space.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "referenceDbIds",
+        "description" : "The Reference associated with this Source Germplasm",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "ID",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "INPUT_OBJECT",
+      "name" : "SourceGermplasmInput",
+      "description" : "A reference to a Germplasm",
+      "isOneOf" : false,
+      "fields" : null,
+      "inputFields" : [ {
+        "name" : "germplasmDbId",
+        "description" : "The ID which uniquely identifies a germplasm within the given database server \n<br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "germplasmName",
+        "description" : "Name of the germplasm. It can be the preferred name and does not have to be unique.\n\nMCPD (v2.1) (ACCENAME) 11. Either a registered or other designation given to the material received, other than the donors accession number (23) or collecting number (3). First letter uppercase. Multiple names are separated by a semicolon without space.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "reference",
+        "description" : "The Reference associated with this Source Germplasm",
+        "type" : {
+          "kind" : "INPUT_OBJECT",
+          "name" : "ReferenceInput",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "interfaces" : null,
+      "enumValues" : null,
       "possibleTypes" : null
     }, {
       "kind" : "OBJECT",
@@ -29728,6 +30063,27 @@
       "fields" : null,
       "inputFields" : null,
       "interfaces" : null,
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
+      "kind" : "OBJECT",
+      "name" : "StringValue",
+      "description" : "A value type wrapper for string",
+      "isOneOf" : null,
+      "fields" : [ {
+        "name" : "value",
+        "description" : null,
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "inputFields" : null,
+      "interfaces" : [ ],
       "enumValues" : null,
       "possibleTypes" : null
     }, {
@@ -32202,51 +32558,6 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "observationVariableDbIds",
-        "description" : "The DbIds of Variables to search for",
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "observationVariableNames",
-        "description" : "The names of Variables to search for",
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "observationVariablePUIs",
-        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "programDbIds",
         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
         "type" : {
@@ -32395,28 +32706,6 @@
             "name" : "String",
             "ofType" : null
           }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "sortBy",
-        "description" : "Name of the field to sort by.",
-        "type" : {
-          "kind" : "ENUM",
-          "name" : "SortBy",
-          "ofType" : null
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "sortOrder",
-        "description" : "Sort order direction. Ascending/Descending.",
-        "type" : {
-          "kind" : "ENUM",
-          "name" : "SortOrder",
-          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -32664,6 +32953,71 @@
       "enumValues" : null,
       "possibleTypes" : null
     }, {
+      "kind" : "UNION",
+      "name" : "Value",
+      "description" : null,
+      "isOneOf" : null,
+      "fields" : null,
+      "inputFields" : null,
+      "interfaces" : null,
+      "enumValues" : null,
+      "possibleTypes" : [ {
+        "kind" : "OBJECT",
+        "name" : "BooleanValue",
+        "ofType" : null
+      }, {
+        "kind" : "OBJECT",
+        "name" : "NumberValue",
+        "ofType" : null
+      }, {
+        "kind" : "OBJECT",
+        "name" : "StringValue",
+        "ofType" : null
+      } ]
+    }, {
+      "kind" : "INPUT_OBJECT",
+      "name" : "ValueInput",
+      "description" : null,
+      "isOneOf" : false,
+      "fields" : null,
+      "inputFields" : [ {
+        "name" : "boolean",
+        "description" : "Field for possible type 'Boolean'",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "Boolean",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "float",
+        "description" : "Field for possible type 'Float'",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "Float",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "string",
+        "description" : "Field for possible type 'String'",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "interfaces" : null,
+      "enumValues" : null,
+      "possibleTypes" : null
+    }, {
       "kind" : "INTERFACE",
       "name" : "Variable",
       "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation.",
@@ -32873,6 +33227,10 @@
       "enumValues" : null,
       "possibleTypes" : [ {
         "kind" : "OBJECT",
+        "name" : "GermplasmAttribute",
+        "ofType" : null
+      }, {
+        "kind" : "OBJECT",
         "name" : "ObservationVariable",
         "ofType" : null
       } ]
@@ -32882,6 +33240,36 @@
       "description" : "A `Variant` represents a change in DNA sequence relative to some reference. For example, a variant could represent a classic marker, a SNP, or an insertion. This is equivalent to a row in VCF.",
       "isOneOf" : null,
       "fields" : [ {
+        "name" : "alternate_bases",
+        "description" : "**Deprecated in v2.1** Please use `alternateBases`. Github issue number #549\n<br>The bases that appear instead of the reference bases. Multiple alternate alleles are possible.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          }
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "alternateBases",
+        "description" : "The bases that appear instead of the reference bases. Multiple alternate alleles are possible.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          }
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "args" : [ ],
@@ -32970,21 +33358,6 @@
           "kind" : "OBJECT",
           "name" : "CallListResponse",
           "ofType" : null
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "analysis",
-        "description" : "Set of Analysis descriptors for this VariantSet",
-        "args" : [ ],
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "String",
-            "ofType" : null
-          }
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -33185,12 +33558,34 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "variantSetDbIds",
+        "name" : "variantSets",
         "description" : "An array of `VariantSet` IDs this variant belongs to. This also defines the `ReferenceSet` against which the `Variant` is to be interpreted.",
-        "args" : [ ],
+        "args" : [ {
+          "name" : "variantSetsInput",
+          "description" : null,
+          "type" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "VariantSetsInput",
+            "ofType" : null
+          },
+          "defaultValue" : null,
+          "isDeprecated" : false,
+          "deprecationReason" : null
+        }, {
+          "name" : "paging",
+          "description" : null,
+          "type" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "PageInput",
+            "ofType" : null
+          },
+          "defaultValue" : null,
+          "isDeprecated" : false,
+          "deprecationReason" : null
+        } ],
         "type" : {
-          "kind" : "SCALAR",
-          "name" : "ID",
+          "kind" : "OBJECT",
+          "name" : "VariantSetListResponse",
           "ofType" : null
         },
         "isDeprecated" : false,
@@ -33218,6 +33613,36 @@
       "isOneOf" : false,
       "fields" : null,
       "inputFields" : [ {
+        "name" : "alternate_bases",
+        "description" : "**Deprecated in v2.1** Please use `alternateBases`. Github issue number #549\n<br>The bases that appear instead of the reference bases. Multiple alternate alleles are possible.",
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "alternateBases",
+        "description" : "The bases that appear instead of the reference bases. Multiple alternate alleles are possible.",
+        "type" : {
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "SCALAR",
+            "name" : "String",
+            "ofType" : null
+          }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
         "name" : "additionalInfo",
         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
         "type" : {
@@ -33267,21 +33692,6 @@
           "ofType" : {
             "kind" : "INPUT_OBJECT",
             "name" : "CallInput",
-            "ofType" : null
-          }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "analysis",
-        "description" : "Set of Analysis descriptors for this VariantSet",
-        "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "SCALAR",
-            "name" : "String",
             "ofType" : null
           }
         },
@@ -33485,12 +33895,16 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "variantSet",
+        "name" : "variantSets",
         "description" : "An array of `VariantSet` IDs this variant belongs to. This also defines the `ReferenceSet` against which the `Variant` is to be interpreted.",
         "type" : {
-          "kind" : "INPUT_OBJECT",
-          "name" : "VariantSetInput",
-          "ofType" : null
+          "kind" : "LIST",
+          "name" : null,
+          "ofType" : {
+            "kind" : "INPUT_OBJECT",
+            "name" : "VariantSetInput",
+            "ofType" : null
+          }
         },
         "defaultValue" : null,
         "isDeprecated" : false,

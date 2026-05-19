@@ -5,7 +5,7 @@ A Study represents an experiment that has taken place at a single location. The 
 CREATE TABLE brapi_Studies (
   -- Primary properties
   studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyName STRING NOT NULL COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   -- Link properties
   locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
@@ -49,7 +49,6 @@ CREATE TABLE brapi_Studies (
     ARRAY<
       STRUCT<
         description STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
-        environmentParametersDbId STRING COMMENT 'Human-readable value of the environment parameter (defined above) constant within the experiment',
         parameterName STRING COMMENT 'Name of the environment parameter constant within the experiment  MIAPPE V1.1 (DM-58) Environment parameter - Name of the environment parameter constant within the experiment. ',
         parameterPUI STRING COMMENT 'URI pointing to an ontology class for the parameter',
         unit STRING COMMENT 'Unit of the value for this parameter',
@@ -62,10 +61,11 @@ CREATE TABLE brapi_Studies (
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-23) Type of experimental design - Type of experimental  design of the study, in the form of an accession number from the Crop Ontology.',
       description STRING COMMENT 'MIAPPE V1.1 (DM-22) Description of the experimental design - Short description of the experimental design, possibly including statistical design. In specific cases, e.g. legacy datasets or data computed from several studies, the experimental design can be "unknown"/"NA", "aggregated/reduced data", or simply ''none''.'
-    > NOT NULL COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
+    > COMMENT 'The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology',
   externalReferences
     ARRAY<
       STRUCT<
+        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
@@ -74,14 +74,12 @@ CREATE TABLE brapi_Studies (
     STRUCT<
       PUI STRING COMMENT 'MIAPPE V1.1 (DM-27) Type of growth facility - Type of growth facility in which the study was carried out, in the form of an accession number from the Crop Ontology.',
       description STRING COMMENT 'MIAPPE V1.1 (DM-26) Description of growth facility - Short description of the facility in which the study was carried out.'
-    > NOT NULL COMMENT 'Short description of the facility in which the study was carried out.',
+    > COMMENT 'Short description of the facility in which the study was carried out.',
   lastUpdate 
     STRUCT<
-      -- Primary properties
-      lastUpdateDbId STRING COMMENT 'The ID which uniquely identifies a LastUpdate within the given database server',
       timestamp STRING COMMENT 'The timestamp of the update.',
       version STRING COMMENT 'The version of the update.'
-    > NOT NULL COMMENT 'The date and time when this study was last modified',
+    > COMMENT 'The date and time when this study was last modified',
   license STRING COMMENT 'The usage license associated with the study data',
   observationLevels
     ARRAY<
@@ -95,7 +93,7 @@ CREATE TABLE brapi_Studies (
   -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
-  studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
+  studyDescription STRING NOT NULL COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
 ) 
 COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
 

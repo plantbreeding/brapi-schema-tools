@@ -41,9 +41,6 @@ Trials <- R6Class(
     #' @param commonCropNames The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched.
     #' @param locationDbIds The location ids to search for
     #' @param locationNames A human readable names to search for
-    #' @param observationVariableDbIds The DbIds of Variables to search for
-    #' @param observationVariableNames The names of Variables to search for
-    #' @param observationVariablePUIs The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
     #' @param programDbIds A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies.
     #' @param programNames Use this parameter to only return results associated with the given program names.
     #' @param studyDbIds List of study identifiers to search for
@@ -55,8 +52,6 @@ Trials <- R6Class(
     #' @param searchDateRangeStart The start of the overlapping search date range.
     #' @param searchDateRangeEnd The end of the overlapping search date range.
     #' @param trialPUIs A permanent identifier for a trial.
-    #' @param sortBy Name of the field to sort by.
-    #' @param sortOrder Sort order direction.
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of Trial objects.
@@ -65,9 +60,6 @@ Trials <- R6Class(
         commonCropNames = NULL,
         locationDbIds = NULL,
         locationNames = NULL,
-        observationVariableDbIds = NULL,
-        observationVariableNames = NULL,
-        observationVariablePUIs = NULL,
         programDbIds = NULL,
         programNames = NULL,
         studyDbIds = NULL,
@@ -79,8 +71,6 @@ Trials <- R6Class(
         searchDateRangeStart = NULL,
         searchDateRangeEnd = NULL,
         trialPUIs = NULL,
-        sortBy = NULL,
-        sortOrder = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -93,15 +83,6 @@ Trials <- R6Class(
       }
       if (!is.null(locationNames)) {
         queryParams$locationName <- locationNames
-      }
-      if (!is.null(observationVariableDbIds)) {
-        queryParams$observationVariableDbId <- observationVariableDbIds
-      }
-      if (!is.null(observationVariableNames)) {
-        queryParams$observationVariableName <- observationVariableNames
-      }
-      if (!is.null(observationVariablePUIs)) {
-        queryParams$observationVariablePUI <- observationVariablePUIs
       }
       if (!is.null(programDbIds)) {
         queryParams$programDbId <- programDbIds
@@ -136,12 +117,6 @@ Trials <- R6Class(
       if (!is.null(trialPUIs)) {
         queryParams$trialPUI <- trialPUIs
       }
-      if (!is.null(sortBy)) {
-        queryParams$sortBy <- sortBy
-      }
-      if (!is.null(sortOrder)) {
-        queryParams$sortOrder <- sortOrder
-      }
       private$.client$perform_get_request("/trials", queryParams, page, pageSize)
     },
     #' @description
@@ -150,9 +125,6 @@ Trials <- R6Class(
     #' @param commonCropNames The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched.
     #' @param locationDbIds The location ids to search for
     #' @param locationNames A human readable names to search for
-    #' @param observationVariableDbIds The DbIds of Variables to search for
-    #' @param observationVariableNames The names of Variables to search for
-    #' @param observationVariablePUIs The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI
     #' @param programDbIds A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies.
     #' @param programNames Use this parameter to only return results associated with the given program names.
     #' @param studyDbIds List of study identifiers to search for
@@ -164,8 +136,6 @@ Trials <- R6Class(
     #' @param searchDateRangeStart The start of the overlapping search date range.
     #' @param searchDateRangeEnd The end of the overlapping search date range.
     #' @param trialPUIs A permanent identifier for a trial.
-    #' @param sortBy Name of the field to sort by.
-    #' @param sortOrder Sort order direction.
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -175,9 +145,6 @@ Trials <- R6Class(
         commonCropNames = NULL,
         locationDbIds = NULL,
         locationNames = NULL,
-        observationVariableDbIds = NULL,
-        observationVariableNames = NULL,
-        observationVariablePUIs = NULL,
         programDbIds = NULL,
         programNames = NULL,
         studyDbIds = NULL,
@@ -189,8 +156,6 @@ Trials <- R6Class(
         searchDateRangeStart = NULL,
         searchDateRangeEnd = NULL,
         trialPUIs = NULL,
-        sortBy = NULL,
-        sortOrder = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -203,15 +168,6 @@ Trials <- R6Class(
       }
       if (!is.null(locationNames)) {
         queryParams$locationNames <- to_list(locationNames)
-      }
-      if (!is.null(observationVariableDbIds)) {
-        queryParams$observationVariableDbIds <- to_list(observationVariableDbIds)
-      }
-      if (!is.null(observationVariableNames)) {
-        queryParams$observationVariableNames <- to_list(observationVariableNames)
-      }
-      if (!is.null(observationVariablePUIs)) {
-        queryParams$observationVariablePUIs <- to_list(observationVariablePUIs)
       }
       if (!is.null(programDbIds)) {
         queryParams$programDbIds <- to_list(programDbIds)
@@ -245,12 +201,6 @@ Trials <- R6Class(
       }
       if (!is.null(trialPUIs)) {
         queryParams$trialPUIs <- to_list(trialPUIs)
-      }
-      if (!is.null(sortBy)) {
-        queryParams$sortBy <- to_list(sortBy)
-      }
-      if (!is.null(sortOrder)) {
-        queryParams$sortOrder <- to_list(sortOrder)
       }
       private$.client$perform_post_request("/search/trials", queryParams, page, pageSize)
     },

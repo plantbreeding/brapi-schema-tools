@@ -419,6 +419,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -535,6 +541,9 @@
                     "breedingMethodName" : {
                         "type" : "string"
                     },
+                    "breedingMethodPUI" : {
+                        "type" : "string"
+                    },
                     "collection" : {
                         "type" : "string",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
@@ -617,14 +626,6 @@
                         "description" : "The cross name and optional selection history.\n\nMCPD (v2.1) (ANCEST) 20. Information about either pedigree or other description of ancestral information (e.g. parent variety in case of mutant or selection). For example a pedigree 'Hanna/7*Atlas//Turk/8*Atlas' or a description 'mutation found in Hanna', 'selection from Irene' or 'cross involving amongst others Hanna and Irene'.",
                         "nullable" : true
                     },
-                    "sampleDbIds" : {
-                        "type" : "array",
-                        "description" : "samples",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "seedSource" : {
                         "type" : "string",
                         "description" : "An identifier for the source of the biological material\n<br/>MIAPPE V1.1 (DM-50) Material source ID (Holding institute/stock centre, accession) - An identifier for the source of the biological material, in the form of a key-value pair comprising the name/identifier of the repository from which the material was sourced plus the accession number of the repository for that material. Where an accession number has not been assigned, but the material has been derived from the crossing of known accessions, the material can be defined as follows: \"mother_accession X father_accession\", or, if father is unknown, as \"mother_accession X UNKNOWN\". For in situ material, the region of provenance may be used when an accession is not available.",
@@ -685,37 +686,26 @@
             "GermplasmSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbIds" : {
-                        "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "binomialNames" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "synonyms" : {
+                    "collections" : {
                         "type" : "array",
-                        "description" : "List of alternative names or IDs used to reference this germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -727,16 +717,56 @@
                             "type" : "string"
                         }
                     },
-                    "programDbIds" : {
+                    "externalReferenceIDs" : {
                         "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "trialDbIds" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "familyCodes" : {
+                        "type" : "array",
+                        "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "genus" : {
+                        "type" : "array",
+                        "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -744,13 +774,65 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
+                    "instituteCodes" : {
+                        "type" : "array",
+                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
                     "parentDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these parents",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "progenyDbIds" : {
+                        "type" : "array",
+                        "description" : "Search for Germplasm with these children",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "species" : {
+                        "type" : "array",
+                        "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -762,20 +844,6 @@
                             "type" : "string"
                         }
                     },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "familyCodes" : {
-                        "type" : "array",
-                        "description" : "A familyCode representing the family this germplasm belongs to.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyNames" : {
                         "type" : "array",
                         "description" : "List of study names to filter search results",
@@ -783,44 +851,24 @@
                             "type" : "string"
                         }
                     },
-                    "collections" : {
+                    "synonyms" : {
                         "type" : "array",
-                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "genus" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "List of Genus names to identify germplasm",
+                        "description" : "The ID which uniquely identifies a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "species" : {
+                    "trialNames" : {
                         "type" : "array",
-                        "description" : "List of Species names to identify germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "binomialNames" : {
-                        "type" : "array",
-                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "instituteCodes" : {
-                        "type" : "array",
-                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "progenyDbIds" : {
-                        "type" : "array",
-                        "description" : "Search for Germplasm with these children",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -1235,6 +1283,68 @@
                                             "items" : {
                                                 "$ref" : "#/components/schemas/Study"
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "CallListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "CallListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "description" : "The `data` array is part of the BrAPI standard List Response JSON container. `data` will always contain the primary list of objects being returned by a BrAPI endpoint. `data` is also the only array impacted by the `metadata.pagination` details. When the pagination parameters change, the `data` array will reflect those changes in the JSON response.",
+                                            "items" : {
+                                                "$ref" : "#/components/schemas/Call"
+                                            }
+                                        },
+                                        "expandHomozygotes" : {
+                                            "type" : "boolean",
+                                            "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                                            "nullable" : true,
+                                            "example" : true
+                                        },
+                                        "sepPhased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for phased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "|"
+                                        },
+                                        "sepUnphased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for unphased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "/"
+                                        },
+                                        "unknownString" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a representation for missing data.",
+                                            "nullable" : true,
+                                            "example" : "."
                                         }
                                     }
                                 }

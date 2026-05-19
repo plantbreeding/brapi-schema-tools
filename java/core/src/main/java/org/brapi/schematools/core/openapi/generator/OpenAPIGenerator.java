@@ -190,6 +190,12 @@ public class OpenAPIGenerator {
 
             // maintain a list of schemas that have been referenced elsewhere, but not yet generated
             this.referencedSchemas = new TreeSet<>();
+
+            brAPIClassCache.getBrAPIClasses()
+                .stream()
+                .filter(BrAPITypeUtils::isResponse)
+                .forEach(brAPIClass -> this.responses.put(brAPIClass.getName(), createApiResponse(brAPIClass)
+                    .getResultOrThrow()));
         }
 
         public Response<List<OpenAPI>> generate() {
@@ -275,7 +281,7 @@ public class OpenAPIGenerator {
             // TODO merge in openAPIMetadata
 
             // get a list of non-primary classes (those with 'primaryModel=false' in their BrAPI metadata or has no metadata)
-            List<BrAPIClass> nonPrimaryClasses = new ArrayList<>(classes.stream().filter(BrAPITypeUtils::isNonPrimaryModel).toList());
+            List<BrAPIClass> nonPrimaryClasses = new ArrayList<>(classes.stream().filter(BrAPITypeUtils::isNonPrimaryModel).filter(BrAPITypeUtils::isNotResponse).toList());
 
             // get a list of primary classes (those with 'primaryModel=true' in their BrAPI metadata) sorted by name
             List<BrAPIObjectType> primaryClasses = classes.stream()
@@ -361,10 +367,12 @@ public class OpenAPIGenerator {
             PathItem pathItem = new PathItem();
 
             return Response.empty()
-                .mergeOnCondition(options.getListGet().isGeneratingFor(type), () -> generateListGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
-                .mergeOnCondition(options.getPost().isGeneratingFor(type), () -> generatePostOperation(type).onSuccessDoWithResult(pathItem::setPost))
-                .mergeOnCondition(options.getPut().isGeneratingEndpointFor(type), () -> generateMultiplePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
-                .merge(() -> generateListResponse(type))
+                .mergeOnCondition(options.getGet().isGeneratingFor(type),
+                    () -> generateGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
+                .mergeOnCondition(options.getPost().isGeneratingFor(type),
+                    () -> generatePostOperation(type).onSuccessDoWithResult(pathItem::setPost))
+                .mergeOnCondition(options.getPut().isGeneratingEndpointFor(type),
+                    () -> generateMultiplePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
                 .map(() -> success(pathItem));
         }
 
@@ -412,9 +420,12 @@ public class OpenAPIGenerator {
             PathItem pathItem = new PathItem();
 
             return Response.empty()
-                .mergeOnCondition(options.getSingleGet().isGeneratingFor(type), () -> generateSingleGetOperation(type).onSuccessDoWithResult(pathItem::setGet))
-                .mergeOnCondition(options.getPut().isGeneratingEndpointNameWithIdFor(type), () -> generateSinglePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
-                .mergeOnCondition(options.getDelete().isGeneratingFor(type), () -> generateDeleteOperation(type).onSuccessDoWithResult(pathItem::setDelete))
+                .mergeOnCondition(options.getGetWithId().isGeneratingFor(type),
+                    () -> generateGetWithIdOperation(type).onSuccessDoWithResult(pathItem::setGet))
+                .mergeOnCondition(options.getPut().isGeneratingEndpointNameWithIdFor(type),
+                    () -> generateSinglePutOperation(type).onSuccessDoWithResult(pathItem::setPut))
+                .mergeOnCondition(options.getDelete().isGeneratingFor(type),
+                    () -> generateDeleteOperation(type).onSuccessDoWithResult(pathItem::setDelete))
                 .merge(() -> generateSingleResponse(type))
                 .map(() -> success(pathItem));
         }
@@ -427,7 +438,7 @@ public class OpenAPIGenerator {
             if (type instanceof BrAPIObjectType || type instanceof BrAPIPrimitiveType) {
                 return Response.empty()
                     .mergeOnCondition(isGeneratingGetSubPathOperationFor(parentType, property),
-                        () -> generateSubPathSingleGetOperation(parentType, type)
+                        () -> generateSubPathGetWithIdOperation(parentType, type)
                             .onSuccessDoWithResult(pathItem::setGet)
                             .map(() -> generateSingleResponse(type))
                     )
@@ -590,6 +601,11 @@ public class OpenAPIGenerator {
             }
         }
 
+        private Response<ApiResponse> createApiResponse(BrAPIClass brAPIClass) {
+            return createSchemaForType(brAPIClass)
+                .mapResult(schema -> createApiResponse(brAPIClass.getName(), schema));
+        }
+
         private ApiResponse createApiResponse(String title, Schema schema) {
             return new ApiResponse().description("OK").content(
                 new Content().addMediaType("application/json",
@@ -641,18 +657,21 @@ public class OpenAPIGenerator {
             return success(apiResponse);
         }
 
-        private Response<Operation> generateListGetOperation(BrAPIObjectType type) {
+        private Response<Operation> generateGetOperation(BrAPIObjectType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getListGet().getSummaryOrDefault(type.getName(), options.getListGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getListGet().getDescriptionOrDefault(type.getName(), options.getListGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGet().getSummaryOrDefault(type.getName(), options.getGet().getSummaryFor(type)));
+            operation.setDescription(metadata.getGet().getDescriptionOrDefault(type.getName(), options.getGet().getDescriptionFor(type)));
 
             operation.addTagsItem(options.getTagFor(type));
 
+            boolean isReturningList = options.getGet().isReturningListFor(type) ;
+
             return createListGetParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
-                .map(() -> createListApiResponses(type))
+                .mapOnConditionOr(isReturningList, () -> createListApiResponses(type), () -> createSingleApiResponses(type))
                 .onSuccessDoWithResult(operation::responses)
+                .onSuccessDoOnConditionOr(isReturningList, () -> generateListResponse(type), () -> generateSingleResponse(type))
                 .map(() -> success(operation));
         }
 
@@ -677,18 +696,18 @@ public class OpenAPIGenerator {
                 parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
             }
 
-            if (options.getListGet().hasPageTokenFor(type)) {
+            if (options.getGet().hasPageTokenFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
-            if (options.getListGet().isPagedFor(type)) {
+            if (options.getGet().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
             }
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            if (options.getListGet().hasInputFor(type)) {
+            if (options.getGet().hasInputFor(type)) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
 
                 if (requestClass == null) {
@@ -697,7 +716,7 @@ public class OpenAPIGenerator {
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
                     return brAPIObjectType.getProperties().stream()
-                        .filter(property -> options.getListGet().isUsingPropertyFromRequestFor(type, property))
+                        .filter(property -> options.getGet().isUsingPropertyFromRequestFor(type, property))
                         .map(this::createListGetParameter)
                         .collect(Response.toList())
                         .onSuccessDoWithResult(result -> parameters.addAll(0, result))
@@ -714,18 +733,18 @@ public class OpenAPIGenerator {
 
             List<Parameter> parameters = new ArrayList<>();
 
-            if (options.getListGet().isPagedFor(type)) {
+            if (options.getGet().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
             }
 
-            if (options.getListGet().hasPageTokenFor(type)) {
+            if (options.getGet().hasPageTokenFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            if (options.getListGet().hasInputFor(type)) {
+            if (options.getGet().hasInputFor(type)) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type) ;
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
@@ -746,11 +765,15 @@ public class OpenAPIGenerator {
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
             return createSchemaForType(property.getType()).mapResult(
                 schema -> new Parameter()
-                    .name(property.getType().getName().equals("boolean") ? property.getName() : options.getSingularForProperty(property.getName()))
+                    .name(isConvertingToProperty(property) ?  options.getSingularForProperty(property.getName()) : property.getName())
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())
-                    .schema(upwrapSchema(schema)));
+                    .schema(isConvertingToProperty(property) ? upwrapSchema(schema) : schema));
+        }
+
+        private boolean isConvertingToProperty(BrAPIObjectProperty property) {
+            return property.getType() instanceof BrAPIArrayType ;
         }
 
         private Schema upwrapSchema(Schema schema) {
@@ -769,7 +792,8 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type));
+            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type))
+                .onSuccessDo(() -> generateListResponse(type));
         }
 
         private Response<Operation> getOperation(BrAPIObjectType type, Operation operation, boolean usesAdditionalProperties) {
@@ -784,7 +808,7 @@ public class OpenAPIGenerator {
                         , findMediaTypeForObject(type)
                     )
                 );
-            }else {
+            } else {
                 operation.requestBody(createRequestBody(new ArraySchema().items(new Schema().$ref(String.format("#/components/schemas/%s", requestBodyName))), findMediaTypeForObject(type)));
             }
 
@@ -849,11 +873,11 @@ public class OpenAPIGenerator {
             return String.format("%08x", hash).substring(0, 8);
         }
 
-        private Response<Operation> generateSingleGetOperation(BrAPIObjectType type) {
+        private Response<Operation> generateGetWithIdOperation(BrAPIObjectType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGetWithId().getSummaryOrDefault(type.getName(), options.getGetWithId().getSummaryFor(type)));
+            operation.setDescription(metadata.getGetWithId().getDescriptionOrDefault(type.getName(), options.getGetWithId().getDescriptionFor(type)));
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
@@ -895,7 +919,8 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type));
+            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type))
+                .onSuccessDo(() -> generateListResponse(type));
         }
 
         private Response<Operation> generateDeleteOperation(BrAPIObjectType type) {
@@ -915,15 +940,15 @@ public class OpenAPIGenerator {
                 .map(() -> success(operation));
         }
 
-        private Response<Operation> generateSubPathSingleGetOperation(BrAPIObjectType parentType, BrAPIType type) {
+        private Response<Operation> generateSubPathGetWithIdOperation(BrAPIObjectType parentType, BrAPIType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getSingleGet().getSummaryOrDefault(type.getName(), options.getSingleGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getSingleGet().getDescriptionOrDefault(type.getName(), options.getSingleGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGetWithId().getSummaryOrDefault(type.getName(), options.getGetWithId().getSummaryFor(type)));
+            operation.setDescription(metadata.getGetWithId().getDescriptionOrDefault(type.getName(), options.getGetWithId().getDescriptionFor(type)));
 
             List<Parameter> parameters = new ArrayList<>();
 
-            if (options.getListGet().hasInputFor(type) && type instanceof BrAPIObjectType brAPIObjectType) {
+            if (options.getGet().hasInputFor(type) && type instanceof BrAPIObjectType brAPIObjectType) {
                 BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(brAPIObjectType) ;
 
                 if (requestClass instanceof BrAPIObjectType requestObjectType) {
@@ -993,8 +1018,8 @@ public class OpenAPIGenerator {
         private Response<Operation> generateSubPathListGetOperation(BrAPIObjectType parentType, BrAPIType type) {
             Operation operation = new Operation();
 
-            operation.setSummary(metadata.getListGet().getSummaryOrDefault(type.getName(), options.getListGet().getSummaryFor(type)));
-            operation.setDescription(metadata.getListGet().getDescriptionOrDefault(type.getName(), options.getListGet().getDescriptionFor(type)));
+            operation.setSummary(metadata.getGet().getSummaryOrDefault(type.getName(), options.getGet().getSummaryFor(type)));
+            operation.setDescription(metadata.getGet().getDescriptionOrDefault(type.getName(), options.getGet().getDescriptionFor(type)));
 
             operation.addTagsItem(options.getTagFor(parentType));
 
@@ -1051,7 +1076,7 @@ public class OpenAPIGenerator {
         private Response<ApiResponses> createSingleApiResponses(BrAPIType type) {
             if (type instanceof BrAPIObjectType) {
                 return success(addStandardApiResponses(new ApiResponses()
-                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sSingleResponse", type.getName()))))
+                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getSingleResponseNameFor(type), type.getName()))))
                     .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound")));
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Can not create a List API Response for '%s' which is a '%s'", type.getName(), type.getClass().getSimpleName()));
@@ -1075,10 +1100,14 @@ public class OpenAPIGenerator {
         }
 
         private Response<ApiResponses> createSubPathListApiResponses(BrAPIType type) {
+            String responseRef = options.getGet().isReturningListFor(type) ?
+                "#/components/responses/" + options.getListResponseNameFor(type) :
+                "#/components/responses/" + options.getSingleResponseNameFor(type);
+
             return success(addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(type)))))
+                .addApiResponse("200", new ApiResponse().$ref(responseRef))
                 .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"))
-            );
+            ));
         }
 
         private ApiResponses addStandardApiResponses(ApiResponses apiResponses) {
@@ -1106,6 +1135,8 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
+            boolean isReturningList = options.getSearch().isReturningListFor(type) ;
+
             operation.requestBody(createRequestBody(new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchRequestNameFor(type))), findMediaTypeForObject(type)));
 
             operation.responses(createSearchPostResponseRefs(type));
@@ -1117,8 +1148,13 @@ public class OpenAPIGenerator {
         }
 
         private ApiResponses createSearchPostResponseRefs(BrAPIObjectType type) {
+
+            String responseRef = options.getSearch().isReturningListFor(type) ?
+                "#/components/responses/" + options.getListResponseNameFor(type) :
+                "#/components/responses/" + options.getSingleResponseNameFor(type);
+
             return addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sListResponse", type.getName())))
+                .addApiResponse("200", new ApiResponse().$ref(responseRef))
                 .addApiResponse("202", new ApiResponse().$ref("#/components/responses/202AcceptedSearchResponse")));
         }
 
@@ -1157,8 +1193,15 @@ public class OpenAPIGenerator {
         }
 
         private ApiResponses createSearchGetResponseRefs(BrAPIObjectType type) {
+
+            String responseRef = options.getSearch().isReturningListFor(type) ?
+                "#/components/responses/" + options.getListResponseNameFor(type) :
+                "#/components/responses/" + options.getSingleResponseNameFor(type);
+
             return addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/%sListResponse", type.getName()))));
+                .addApiResponse("200", new ApiResponse().$ref(responseRef))
+                .addApiResponse("202", new ApiResponse().$ref("#/components/responses/202AcceptedSearchResponse"))
+                .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound")));
         }
 
         private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes, Components supplementalComponents) {
@@ -1307,10 +1350,24 @@ public class OpenAPIGenerator {
 
                 List<BrAPIObjectProperty> properties = brAPIObjectType.getProperties();
 
-                return properties != null && !properties.isEmpty() ? createProperties(objectSchema, type, properties.stream().toList())
+                Map<String, Schema> schemaProperties = new TreeMap<>();
+
+                if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
+                    this.brAPIClassCache.findBrAPIClass("ExternalReferencesParameters")
+                        .mapResultToResponse(this::createProperties)
+                        .onSuccessDoWithResult(schemaProperties::putAll) ;
+                }
+
+                if (options.getSearch().isPagedFor(type)) {
+                    this.brAPIClassCache.findBrAPIClass("PagingParameters")
+                        .mapResultToResponse(this::createProperties)
+                        .onSuccessDoWithResult(schemaProperties::putAll) ;
+                }
+
+                return createProperties(objectSchema, type, properties.stream().toList())
                     .mapResult(p -> p.entrySet().stream().filter(entry -> options.getSearch().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-                    .mapResult(p -> objectSchema.properties(p)) :
-                    success(objectSchema);
+                    .onSuccessDoWithResult(schemaProperties::putAll)
+                    .mapResult(p -> objectSchema.properties(schemaProperties)) ;
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));
             }
@@ -1354,15 +1411,25 @@ public class OpenAPIGenerator {
         private Response<Schema> createObjectSchema(BrAPIObjectType type, List<BrAPIObjectProperty> properties) {
             Schema objectSchema = new ObjectSchema()
                 .name(type.getName())
-                .description(type.getDescription());
+                .description(type.getDescription())
+                .nullable(type.getNullable()) ;
 
             updateExamples(objectSchema, type) ;
             updateAdditionalProperties(objectSchema, type.getAdditionalProperties()) ;
 
             return properties != null && !properties.isEmpty() ?
                 createProperties(objectSchema, type, properties)
-                    .mapResult(schema -> objectSchema.properties(schema)) :
+                    .mapResult(p -> objectSchema.properties(p)) :
                 success(objectSchema);
+        }
+
+        private Response<Map<String, Schema>> createProperties(BrAPIClass brAPIClass) {
+
+            if (brAPIClass instanceof BrAPIObjectType brAPIObjectType) {
+                return createProperties(new Schema(), brAPIObjectType, brAPIObjectType.getProperties()) ;
+            } else {
+                return Response.empty() ;
+            }
         }
 
         private Response<Map<String, Schema>> createProperties(Schema objectSchema, BrAPIObjectType parentType, List<BrAPIObjectProperty> properties) {
@@ -1378,10 +1445,10 @@ public class OpenAPIGenerator {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
 
             return options.getProperties().getLinkTypeFor(parentType, property, dereferencedType)
-                .mapResultToResponse(linkType -> createProperty(objectSchema, property, property.getType(), linkType)) ;
+                .mapResultToResponse(linkType -> createProperty(objectSchema, parentType, property, property.getType(), linkType)) ;
         }
 
-        private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
+        private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIType type, LinkType linkType) {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(type);
 
             if (LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
@@ -1395,7 +1462,7 @@ public class OpenAPIGenerator {
 
                 return switch (relationshipType) {
                     case ONE_TO_ONE, MANY_TO_ONE -> LinkType.ID.equals(linkType) ?
-                        createLinkedProperty(objectSchema, property, brAPIObjectType) :
+                        createLinkedProperty(objectSchema, parentType, property, brAPIObjectType) :
                         createEmbeddedProperty(objectSchema, property, brAPIObjectType);
                     case ONE_TO_MANY, MANY_TO_MANY ->
                         fail(Response.ErrorType.VALIDATION, String.format("Property '%s' has relationshipType '%s', referenced type '%s' is an object",
@@ -1426,13 +1493,17 @@ public class OpenAPIGenerator {
                 return createReferenceSchema(property.getName())
                     .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                     .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
-                    .onSuccessDoWithResultOnCondition(property.isNullable(), this::makeNullable)
+                    .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                    .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
+                    .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                     .mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
             }
             return createSchemaForProperty(property, type)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                 .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
-                .onSuccessDoWithResultOnCondition(property.isNullable(), this::makeNullable)
+                .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
+                .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
                 .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(property.getName()));
         }
@@ -1473,7 +1544,7 @@ public class OpenAPIGenerator {
                 objectSchema.type(additionalProperties.getType()) ;
 
                 if (additionalProperties.isNullable()) {
-                    makeNullable(objectSchema) ;
+                    makeNullable(objectSchema, null, null) ;
                 }
 
                 objectSchema.additionalProperties(new Schema<>()
@@ -1481,7 +1552,7 @@ public class OpenAPIGenerator {
             }
         }
 
-        private Schema makeNullable(Schema schema) {
+        private Schema makeNullable(Schema schema, BrAPIObjectProperty property, BrAPIType type) {
             if (versionIs3_1_OrLater) {
                 if (schema.getType() != null) {
                     Set<String> types = new LinkedHashSet<>();
@@ -1503,15 +1574,38 @@ public class OpenAPIGenerator {
 
                 schema.setType(null);
             } else {
-                schema.setNullable(true);
+                if (type instanceof BrAPIClass brAPIClass && brAPIClass.isNullable()) {
+                    return schema ;
+                }
+
+                if (property != null && property.getType() instanceof BrAPIReferenceType) {
+                    return new Schema<>().anyOf(List.of(
+                        schema, new Schema<>().type("null")
+                    )) ;
+                } else {
+                    schema.setNullable(true);
+                }
             }
 
             return schema ;
         }
 
-        private Response<Map<String, Schema>> createLinkedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
 
-            List<BrAPIObjectProperty> linkProperties = options.getProperties().getLinkPropertiesFor(brAPIObjectType);
+        private Schema makeDeprecated(Schema schema) {
+            if (!versionIs3_1_OrLater && schema.get$ref() != null) {
+                // In OpenAPI 3.0, $ref schemas cannot have sibling properties — the serializer
+                // drops them. Wrap in allOf so deprecated: true is preserved alongside the ref.
+                return new Schema<>().deprecated(true).addAllOfItem(schema);
+            }
+
+            schema.setDeprecated(true);
+
+            return schema ;
+        }
+
+        private Response<Map<String, Schema>> createLinkedProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
+
+            List<BrAPIObjectProperty> linkProperties = options.getProperties().getLinkPropertiesFor(parentType, property, brAPIObjectType);
 
             if (property.isRequired()) {
                 for (BrAPIObjectProperty linkProperty : linkProperties) {
@@ -1533,7 +1627,8 @@ public class OpenAPIGenerator {
                 .mapResult(BrAPIObjectProperty::getType)
                 .mapResultToResponse(this::createArraySchemaForType)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, itemType))
-                .onSuccessDoWithResultOnCondition(property.isNullable(), this::makeNullable)
+                .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, null), schema -> schema)
+                .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(arraySchema -> Collections.singletonMap(options.getProperties().getIdsPropertyNameFor(property), arraySchema))
                 .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(property)))
                 .or(() -> success(Collections.emptyMap()));
@@ -1542,9 +1637,11 @@ public class OpenAPIGenerator {
         private Response<Map<String, Schema>> createArrayProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType) {
             return createArraySchema(brAPIArrayType)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, brAPIArrayType))
-                .onSuccessDoWithResultOnCondition(property.isNullable(), this::makeNullable)
+                .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, null), schema -> schema)
+                .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
-                .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(property)))
+                .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(property.getName()))
                 .or(() -> success(Collections.emptyMap()));
         }
 
@@ -1552,7 +1649,7 @@ public class OpenAPIGenerator {
             Map<String, Schema> schemas = new HashMap<>();
 
             return linkProperties.stream().map(linkProperty -> createSchemaForType(linkProperty.getType())
-                    .onSuccessDoWithResultOnCondition(nullable, this::makeNullable)
+                    .mapResultOnConditionOr(nullable, schema -> makeNullable(schema, linkProperty, null), schema -> schema)
                     .onSuccessDoWithResult(schema -> schemas.put(linkProperty.getName(), schema)))
                 .collect(Response.toList())
                 .merge(() -> success(schemas));
@@ -1568,7 +1665,7 @@ public class OpenAPIGenerator {
 
         private Response<Schema> createOneOfType(BrAPIOneOfType type) {
             return type.getPossibleTypes().stream().map(this::createSchemaForType).collect(Response.toList()).mapResult(
-                schema -> updateExamples(new Schema().oneOf(schema).name(type.getName()).description(type.getDescription()), type));
+                schema -> updateExamples(new Schema().oneOf(schema).name(type.getName()).description(type.getDescription()), type).nullable(type.getNullable())) ;
         }
 
         private Response<Schema> createArraySchema(BrAPIArrayType type) {
@@ -1684,6 +1781,7 @@ public class OpenAPIGenerator {
         private Schema updateSchema(BrAPIEnumType type, Schema schema) {
             schema.name(type.getName());
             schema.description(type.getDescription());
+            schema.setNullable(type.getNullable());
 
             return schema ;
         }

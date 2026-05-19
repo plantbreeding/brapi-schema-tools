@@ -154,7 +154,7 @@
                                 "additionalProperties" : {
                                     "$ref" : "#/components/schemas/CrossNewRequest"
                                 },
-                                "example" : "{<crossDbId>_1={additionalInfo={}, crossAttributes=[{}], crossDbId=15187888, crossName=15a57676, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationEvents=[{}], observationUnits=[{}]}, <crossDbId>_2={additionalInfo={}, crossAttributes=[{}], crossDbId=15187889, crossName=15a57677, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationEvents=[{}], observationUnits=[{}]}}"
+                                "example" : "{<crossDbId>_1={additionalInfo={}, crossAttributes=[{}], crossDbId=15187888, crossName=15a57676, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationTimeStamp=2020-08-12T18:10:40.413Z, pollinationEvents=[{}], observationUnits=[{}]}, <crossDbId>_2={additionalInfo={}, crossAttributes=[{}], crossDbId=15187889, crossName=15a57677, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCross={}, pollinationTimeStamp=2020-08-12T18:10:40.413Z, pollinationEvents=[{}], observationUnits=[{}]}}"
                             }
                         }
                     }
@@ -1305,7 +1305,7 @@
                             "schema" : {
                                 "type" : "object",
                                 "additionalProperties" : {
-                                    "$ref" : "#/components/schemas/PlannedCross"
+                                    "$ref" : "#/components/schemas/PlannedCrossNewRequest"
                                 },
                                 "example" : "{<plannedCrossDbId>_1={additionalInfo={}, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCrossDbId=47edd16c, plannedCrossName=487acf5a, status={}, crosses=[{}]}, <plannedCrossDbId>_2={additionalInfo={}, crossType={}, crossingProject={}, externalReferences=[{}], parent1={}, parent2={}, plannedCrossDbId=47edd16d, plannedCrossName=487acf5b, status={}, crosses=[{}]}}"
                             }
@@ -1344,7 +1344,7 @@
                             "schema" : {
                                 "type" : "array",
                                 "items" : {
-                                    "$ref" : "#/components/schemas/PlannedCross"
+                                    "$ref" : "#/components/schemas/PlannedCrossNewRequest"
                                 }
                             }
                         }
@@ -2059,7 +2059,7 @@
                 }
             }
         },
-        "/seedlots/{seedLotDbId}/fromseedlottransactions" : {
+        "/seedlots/{seedLotDbId}/transactions" : {
             "get" : {
                 "tags" : [
                     "SeedLots"
@@ -2090,51 +2090,8 @@
                     "200" : {
                         "$ref" : "#/components/responses/SeedLotTransactionListResponse"
                     },
-                    "400" : {
-                        "$ref" : "#/components/responses/400BadRequest"
-                    },
-                    "401" : {
-                        "$ref" : "#/components/responses/401Unauthorized"
-                    },
-                    "403" : {
-                        "$ref" : "#/components/responses/403Forbidden"
-                    },
                     "404" : {
                         "$ref" : "#/components/responses/404NotFound"
-                    }
-                }
-            }
-        },
-        "/seedlots/{seedLotDbId}/toseedlottransactions" : {
-            "get" : {
-                "tags" : [
-                    "SeedLots"
-                ],
-                "summary" : "Get a filtered list of SeedLotTransaction",
-                "description" : "Get a list of SeedLotTransaction",
-                "parameters" : [
-                    {
-                        "name" : "seedLotDbId",
-                        "in" : "path",
-                        "description" : "Unique DbId for the Seed Lot",
-                        "required" : true,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    },
-                    {
-                        "$ref" : "#/components/parameters/page"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/pageSize"
-                    },
-                    {
-                        "$ref" : "#/components/parameters/authorizationHeader"
-                    }
-                ],
-                "responses" : {
-                    "200" : {
-                        "$ref" : "#/components/responses/SeedLotTransactionListResponse"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -2144,9 +2101,6 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
-                    },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -2342,6 +2296,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -2384,6 +2344,12 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmAttributeListResponse"
+                    },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -2428,6 +2394,12 @@
                     "200" : {
                         "$ref" : "#/components/responses/GermplasmAttributeValueListResponse"
                     },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -2470,6 +2442,12 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/PedigreeNodeListResponse"
+                    },
+                    "202" : {
+                        "$ref" : "#/components/responses/202AcceptedSearchResponse"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -2559,27 +2537,51 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixAbbreviations` is a comma seperated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "type" : "string",
+                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "nullable" : true,
+                        "example" : "GT,RD"
                     },
                     "dataMatrixNames" : {
-                        "type" : "array",
-                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
-                        "items" : {
-                            "type" : "string"
-                        }
+                        "type" : "string",
+                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "nullable" : true,
+                        "example" : "Genotype,Read Depth"
+                    },
+                    "dimensionCallSetPage" : {
+                        "type" : "integer",
+                        "description" : "The requested page number for the CallSet dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionCallSetPageSize" : {
+                        "type" : "integer",
+                        "description" : "The requested page size for the CallSet dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionVariantPage" : {
+                        "type" : "integer",
+                        "description" : "The requested page number for the Variant dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
+                    },
+                    "dimensionVariantPageSize" : {
+                        "type" : "integer",
+                        "description" : "The requested page size for the Variant dimension of the matrix",
+                        "format" : "int32",
+                        "nullable" : true
                     },
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "nullable" : true,
                         "example" : true
                     },
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Germplasm` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2587,6 +2589,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "A list of human readable `Germplasm` names",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2594,6 +2597,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "A list of permanent unique identifiers associated with `Germplasm`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2601,6 +2605,7 @@
                     "pagination" : {
                         "type" : "array",
                         "description" : "Pagination for the matrix",
+                        "nullable" : true,
                         "items" : {
                             "type" : "object",
                             "properties" : {
@@ -2631,6 +2636,7 @@
                     "positionRanges" : {
                         "type" : "array",
                         "description" : "The postion range to search\n<br/>\nUses the format \"<chrom>:<start>-<end>\" where <chrom> is the chromosome name, <start> is \nthe starting position of the range, and <end> is the ending position of the range",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2638,11 +2644,13 @@
                     "preview" : {
                         "type" : "boolean",
                         "description" : "Default Value = false\n<br/>\nIf 'preview' is set to true, then the server should only return the lists of 'callSetDbIds', \n'variantDbIds', and 'variantSetDbIds'. The server should not return any matrix data. This\nis intended to be a preview and give the client a sense of how large the matrix returned will be\n<br/>\nIf 'preview' is set to false or not set (default), then the server should return all the matrix\ndata as requested.",
-                        "example" : true
+                        "example" : true,
+                        "default" : false
                     },
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2650,21 +2658,25 @@
                     "sepPhased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for phased allele calls.",
+                        "nullable" : true,
                         "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for unphased allele calls.",
+                        "nullable" : true,
                         "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
                         "description" : "The string used as a representation for missing data.",
+                        "nullable" : true,
                         "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2672,6 +2684,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2681,11 +2694,9 @@
             "Attribute" : {
                 "required" : [
                     "attributeName",
-                    "methodDbId",
-                    "methodName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "method",
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -2763,26 +2774,14 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -2808,14 +2807,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 }
             },
@@ -2848,10 +2841,7 @@
             },
             "BreedingMethod" : {
                 "required" : [
-                    "abbreviation",
-                    "breedingMethodDbId",
-                    "breedingMethodName",
-                    "description"
+                    "breedingMethodDbId"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -2883,6 +2873,7 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2890,26 +2881,35 @@
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                        "nullable" : true,
                         "example" : true
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
                     },
                     "sepPhased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for phased allele calls.",
+                        "nullable" : true,
                         "example" : "|"
                     },
                     "sepUnphased" : {
                         "type" : "string",
                         "description" : "The string used as a separator for unphased allele calls.",
+                        "nullable" : true,
                         "example" : "/"
                     },
                     "unknownString" : {
                         "type" : "string",
                         "description" : "The string used as a representation for missing data.",
+                        "nullable" : true,
                         "example" : "."
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2917,6 +2917,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2929,6 +2930,7 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2936,6 +2938,7 @@
                     "callSetNames" : {
                         "type" : "array",
                         "description" : "A list of human readable names associated with `CallSets`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2950,6 +2953,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2957,6 +2961,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2978,6 +2983,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -2985,6 +2991,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "A list of human readable names associated with `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3020,6 +3027,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -3195,31 +3203,26 @@
                 "type" : "object",
                 "properties" : {
                     "crossDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "mixturePercentage" : {
                         "type" : "integer",
                         "description" : "The percentage of the given germplasm in the seed lot mixture.",
                         "format" : "int32",
                         "nullable" : true
-                    },
-                    "seedLotDbId" : {
-                        "type" : "string"
-                    },
-                    "seedLotName" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "The mixture of germplasm present in the seed lot. \n<br/>If this seed lot only contains a single germplasm, the response should contain the name and DbId of that germplasm with a mixturePercentage value of 100 \n<br/>If the seed lot contains a mixture of different germplasm, the response should contain the name and DbId every germplasm present. The mixturePercentage field should contain the ratio of each germplasm in the total mixture. All of the mixturePercentage values in this array should sum to equal 100."
@@ -3277,12 +3280,6 @@
                         "type" : "string",
                         "description" : "the value of a cross attribute",
                         "nullable" : true
-                    },
-                    "crossDbId" : {
-                        "type" : "string"
-                    },
-                    "crossName" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "A custom attribute associated with a cross. For example, if the crossing event occurred on a humid day, a user might record 'crossAttributeName':'Relative Humidity', 'crossAttributeValue':'80%'"
@@ -3310,15 +3307,16 @@
                         "$ref" : "#/components/schemas/CrossType"
                     },
                     "crossingProjectDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossingProjectName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
-                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
@@ -3330,10 +3328,12 @@
                         "$ref" : "#/components/schemas/CrossParent"
                     },
                     "plannedCrossDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "plannedCrossName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "pollinationEvents" : {
                         "type" : "array",
@@ -3342,6 +3342,13 @@
                         "items" : {
                             "$ref" : "#/components/schemas/PollinationEvent"
                         }
+                    },
+                    "pollinationTimeStamp" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `pollinationEvents`. Github issue number #265\n<br>The timestamp when the pollination took place",
+                        "format" : "date-time",
+                        "nullable" : true,
+                        "deprecated" : true
                     }
                 },
                 "description" : "The identifiers and metadata represent that specific organisms have mated to produce offspring with particular traits or genes. The offspring of a Cross might be developed into a Germplasm if the desired traits are present."
@@ -3357,10 +3364,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "germplasmPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "observationUnitDbId" : {
                         "type" : "string",
                         "nullable" : true
@@ -3369,15 +3372,12 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "observationUnitPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
                     }
                 },
-                "description" : "The identifying information gor the parent material of a cross."
+                "description" : "The identifying information gor the parent material of a cross.",
+                "nullable" : true
             },
             "CrossRequest" : {
                 "type" : "object",
@@ -3444,6 +3444,7 @@
             "CrossType" : {
                 "type" : "string",
                 "description" : "The type of cross make. Accepted values for this field are 'BIPARENTAL', 'SELF', 'OPEN_POLLINATED', 'BULK',  'BULK_SELFED',  'BULK_OPEN_POLLINATED' and 'DOUBLE_HAPLOID'.",
+                "nullable" : true,
                 "enum" : [
                     "BIPARENTAL",
                     "SELF",
@@ -3514,10 +3515,12 @@
                         }
                     },
                     "programDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "programName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     }
                 },
                 "description" : "A project structure where a list of PlannedCrosses is generated, the crossing events occur in the field, and the resulting actual Crosses can documented."
@@ -3586,15 +3589,6 @@
                         "type" : "string",
                         "description" : "The institute code for the donor institute\n<br/>MCPD (v2.1) (DONORCODE) 22. FAO WIEWS code of the donor institute. Follows INSTCODE standard.",
                         "nullable" : true
-                    },
-                    "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Identifier assigned to an accession by the material donor."
@@ -3673,15 +3667,46 @@
             "ExternalReference" : {
                 "type" : "object",
                 "properties" : {
+                    "referenceID" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.",
+                        "nullable" : true,
+                        "deprecated" : true
+                    },
                     "referenceId" : {
                         "type" : "string",
-                        "description" : "The external reference ID. Could be a simple string or a URI.",
-                        "nullable" : true
+                        "description" : "The external reference ID. Could be a simple string or a URI."
                     },
                     "referenceSource" : {
                         "type" : "string",
-                        "description" : "An identifier for the source system or database of this reference",
-                        "nullable" : true
+                        "description" : "An identifier for the source system or database of this reference"
+                    }
+                }
+            },
+            "ExternalReferencesParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceIds" : {
+                        "type" : "array",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
                     }
                 }
             },
@@ -3776,16 +3801,19 @@
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
-                        "example" : "Feature"
+                        "example" : "Feature",
+                        "default" : "Feature"
                     }
                 },
-                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
+                "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
+                "nullable" : true
             },
             "GeoJSONGeometry" : {
+                "nullable" : true,
                 "oneOf" : [
                     {
                         "required" : [
-                            "coordinateDbIds",
+                            "coordinates",
                             "type"
                         ],
                         "type" : "object",
@@ -3799,14 +3827,15 @@
                             },
                             "type" : {
                                 "type" : "string",
-                                "description" : "The literal string \"Point\""
+                                "description" : "The literal string \"Point\"",
+                                "default" : "Point"
                             }
                         },
                         "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
                     },
                     {
                         "required" : [
-                            "coordinateDbIds",
+                            "coordinates",
                             "type"
                         ],
                         "type" : "object",
@@ -3826,7 +3855,8 @@
                             },
                             "type" : {
                                 "type" : "string",
-                                "description" : "The literal string \"Polygon\""
+                                "description" : "The literal string \"Polygon\"",
+                                "default" : "Polygon"
                             }
                         },
                         "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -3835,7 +3865,7 @@
             },
             "GeoJSONPoint" : {
                 "required" : [
-                    "coordinateDbIds",
+                    "coordinates",
                     "type"
                 ],
                 "type" : "object",
@@ -3849,14 +3879,15 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Point\""
+                        "description" : "The literal string \"Point\"",
+                        "default" : "Point"
                     }
                 },
                 "description" : "Copied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
             },
             "GeoJSONPolygon" : {
                 "required" : [
-                    "coordinateDbIds",
+                    "coordinates",
                     "type"
                 ],
                 "type" : "object",
@@ -3876,7 +3907,8 @@
                     },
                     "type" : {
                         "type" : "string",
-                        "description" : "The literal string \"Polygon\""
+                        "description" : "The literal string \"Polygon\"",
+                        "default" : "Polygon"
                     }
                 },
                 "description" : "An array of Linear Rings. Each Linear Ring is an array of Points. \n\nA Point is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element."
@@ -3896,7 +3928,16 @@
                     "imageName" : {
                         "type" : "string"
                     },
+                    "imagePUI" : {
+                        "type" : "string"
+                    },
                     "observationDbId" : {
+                        "type" : "string"
+                    },
+                    "observationName" : {
+                        "type" : "string"
+                    },
+                    "observationPUI" : {
                         "type" : "string"
                     },
                     "observationUnit" : {
@@ -3905,7 +3946,8 @@
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
-                        "example" : "Feature"
+                        "example" : "Feature",
+                        "default" : "Feature"
                     }
                 }
             },
@@ -3949,11 +3991,9 @@
             "GermplasmAttributeNewRequest" : {
                 "required" : [
                     "attributeName",
-                    "methodDbId",
-                    "methodName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "method",
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -3979,14 +4019,6 @@
                         "type" : "string",
                         "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
                         "example" : "http://my-traits.com/trait/CO_123:0008012"
-                    },
-                    "attributeValueDbIds" : {
-                        "type" : "array",
-                        "description" : "attributeValues",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -4035,26 +4067,14 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -4080,14 +4100,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 },
                 "description" : "The Trait-Method-Scale definition for a variable, specifically variables related to Germplasm. Similar to an ObservationVariable, but related to a Germplasm instead of an ObservationUnit"
@@ -4098,6 +4112,7 @@
                     "attributeCategories" : {
                         "type" : "array",
                         "description" : "General category for the attribute. very similar to Trait class.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4105,6 +4120,7 @@
                     "attributeDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4112,6 +4128,7 @@
                     "attributeNames" : {
                         "type" : "array",
                         "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4119,6 +4136,7 @@
                     "attributePUIs" : {
                         "type" : "array",
                         "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4140,6 +4158,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4147,6 +4166,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4217,6 +4237,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4310,23 +4331,10 @@
             "GermplasmAttributeSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmNames" : {
+                    "attributeCategories" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "methodDbIds" : {
-                        "type" : "array",
-                        "description" : "List of methods to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4334,111 +4342,23 @@
                     "attributeDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
-                        }
-                    },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "studyDbId" : {
-                        "type" : "array",
-                        "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "dataTypes" : {
-                        "type" : "array",
-                        "description" : "List of scale data types to filter search results",
-                        "items" : {
-                            "$ref" : "#/components/schemas/TraitDataType"
                         }
                     },
                     "attributeNames" : {
                         "type" : "array",
                         "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "methodPUIs" : {
+                    "attributePUIs" : {
                         "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "scalePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitAttributes" : {
-                        "type" : "array",
-                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "scaleDbIds" : {
-                        "type" : "array",
-                        "description" : "The unique identifier for a Scale",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitEntityPUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "germplasmDbIds" : {
-                        "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "methodNames" : {
-                        "type" : "array",
-                        "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "scaleNames" : {
-                        "type" : "array",
-                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitPUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitClasses" : {
-                        "type" : "array",
-                        "description" : "List of trait classes to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "attributeCategories" : {
-                        "type" : "array",
-                        "description" : "General category for the attribute. very similar to Trait class.",
+                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4450,16 +4370,68 @@
                             "type" : "string"
                         }
                     },
-                    "programDbIds" : {
+                    "dataTypes" : {
                         "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "List of scale data types to filter search results",
+                        "items" : {
+                            "$ref" : "#/components/schemas/TraitDataType"
+                        }
+                    },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "trialDbIds" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "methodDbIds" : {
+                        "type" : "array",
+                        "description" : "List of methods to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "methodNames" : {
+                        "type" : "array",
+                        "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "methodPUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
                         "items" : {
                             "type" : "string"
                         }
@@ -4467,6 +4439,61 @@
                     "ontologyDbIds" : {
                         "type" : "array",
                         "description" : "List of ontology IDs to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scaleDbIds" : {
+                        "type" : "array",
+                        "description" : "The unique identifier for a Scale",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scaleNames" : {
+                        "type" : "array",
+                        "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "scalePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyDbId" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4485,6 +4512,27 @@
                             "type" : "string"
                         }
                     },
+                    "traitAttributePUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitAttributes" : {
+                        "type" : "array",
+                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitClasses" : {
+                        "type" : "array",
+                        "description" : "List of trait classes to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
                     "traitDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a Trait",
@@ -4492,9 +4540,16 @@
                             "type" : "string"
                         }
                     },
-                    "attributePUIs" : {
+                    "traitEntities" : {
                         "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Attribute, usually in the form of a URI",
+                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitEntityPUIs" : {
+                        "type" : "array",
+                        "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
                         "items" : {
                             "type" : "string"
                         }
@@ -4506,16 +4561,23 @@
                             "type" : "string"
                         }
                     },
-                    "traitAttributePUIs" : {
+                    "traitPUIs" : {
                         "type" : "array",
-                        "description" : "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                        "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "traitEntities" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -4550,13 +4612,12 @@
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
                     "attributeDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "attributeName" : {
-                        "type" : "string"
-                    },
-                    "attributePUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "determinedDate" : {
                         "type" : "string",
@@ -4573,13 +4634,12 @@
                         }
                     },
                     "germplasmDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "value" : {
                         "type" : "string",
@@ -4595,6 +4655,7 @@
                     "attributeDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4602,6 +4663,7 @@
                     "attributeNames" : {
                         "type" : "array",
                         "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4609,6 +4671,7 @@
                     "attributeValueDbIds" : {
                         "type" : "array",
                         "description" : "List of Germplasm Attribute Value IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4623,6 +4686,7 @@
                     "dataTypes" : {
                         "type" : "array",
                         "description" : "List of scale data types to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/TraitDataType"
                         }
@@ -4630,6 +4694,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4637,6 +4702,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4644,6 +4710,7 @@
                     "methodDbIds" : {
                         "type" : "array",
                         "description" : "List of methods to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4651,6 +4718,7 @@
                     "ontologyDbIds" : {
                         "type" : "array",
                         "description" : "List of ontology IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4672,6 +4740,7 @@
                     "scaleDbIds" : {
                         "type" : "array",
                         "description" : "List of scales to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4679,6 +4748,7 @@
                     "traitClasses" : {
                         "type" : "array",
                         "description" : "List of trait classes to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4686,6 +4756,7 @@
                     "traitDbIds" : {
                         "type" : "array",
                         "description" : "List of trait unique ID to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4695,37 +4766,26 @@
             "GermplasmAttributeValueSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbIds" : {
+                    "attributeDbIds" : {
                         "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "description" : "List of Germplasm Attribute IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "attributeNames" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "List of human readable Germplasm Attribute names to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "methodDbIds" : {
+                    "attributeValueDbIds" : {
                         "type" : "array",
-                        "description" : "List of methods to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "traitClasses" : {
-                        "type" : "array",
-                        "description" : "List of trait classes to filter search results",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "List of Germplasm Attribute Value IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4737,23 +4797,56 @@
                             "type" : "string"
                         }
                     },
-                    "programDbIds" : {
+                    "dataTypes" : {
                         "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "List of scale data types to filter search results",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/TraitDataType"
+                        }
+                    },
+                    "externalReferenceIDs" : {
+                        "type" : "array",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "attributeValueDbIds" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "List of Germplasm Attribute Value IDs to search for",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "attributeDbIds" : {
+                    "externalReferenceSources" : {
                         "type" : "array",
-                        "description" : "List of Germplasm Attribute IDs to search for",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "methodDbIds" : {
+                        "type" : "array",
+                        "description" : "List of methods to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4761,27 +4854,33 @@
                     "ontologyDbIds" : {
                         "type" : "array",
                         "description" : "List of ontology IDs to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "dataTypes" : {
-                        "type" : "array",
-                        "description" : "List of scale data types to filter search results",
-                        "items" : {
-                            "$ref" : "#/components/schemas/TraitDataType"
-                        }
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
                     },
-                    "attributeNames" : {
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "programDbIds" : {
                         "type" : "array",
-                        "description" : "List of human readable Germplasm Attribute names to search for",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "traitDbIds" : {
+                    "programNames" : {
                         "type" : "array",
-                        "description" : "List of trait unique ID to filter search results",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
                         "items" : {
                             "type" : "string"
                         }
@@ -4789,6 +4888,23 @@
                     "scaleDbIds" : {
                         "type" : "array",
                         "description" : "List of scales to filter search results",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitClasses" : {
+                        "type" : "array",
+                        "description" : "List of trait classes to filter search results",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "traitDbIds" : {
+                        "type" : "array",
+                        "description" : "List of trait unique ID to filter search results",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -4798,26 +4914,28 @@
             },
             "GermplasmChild" : {
                 "required" : [
-                    "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI",
+                    "childGermplasmDbId",
+                    "childGermplasmName",
                     "parentType"
                 ],
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbId" : {
+                    "childGermplasmDbId" : {
                         "type" : "string"
                     },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
+                    "childGermplasmName" : {
                         "type" : "string"
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
                     },
                     "pedigreeNodeDbId" : {
+                        "type" : "string"
+                    },
+                    "pedigreeNodeName" : {
+                        "type" : "string"
+                    },
+                    "pedigreeNodePUI" : {
                         "type" : "string"
                     }
                 },
@@ -4827,8 +4945,7 @@
                 "required" : [
                     "commonCropName",
                     "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI"
+                    "germplasmName"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -5071,9 +5188,6 @@
                     "germplasmName" : {
                         "type" : "string"
                     },
-                    "germplasmPUI" : {
-                        "type" : "string"
-                    },
                     "instituteCode" : {
                         "type" : "string",
                         "description" : "MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
@@ -5212,6 +5326,9 @@
                     "breedingMethodName" : {
                         "type" : "string"
                     },
+                    "breedingMethodPUI" : {
+                        "type" : "string"
+                    },
                     "collection" : {
                         "type" : "string",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
@@ -5294,14 +5411,6 @@
                         "description" : "The cross name and optional selection history.\n\nMCPD (v2.1) (ANCEST) 20. Information about either pedigree or other description of ancestral information (e.g. parent variety in case of mutant or selection). For example a pedigree 'Hanna/7*Atlas//Turk/8*Atlas' or a description 'mutation found in Hanna', 'selection from Irene' or 'cross involving amongst others Hanna and Irene'.",
                         "nullable" : true
                     },
-                    "sampleDbIds" : {
-                        "type" : "array",
-                        "description" : "samples",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "seedSource" : {
                         "type" : "string",
                         "description" : "An identifier for the source of the biological material\n<br/>MIAPPE V1.1 (DM-50) Material source ID (Holding institute/stock centre, accession) - An identifier for the source of the biological material, in the form of a key-value pair comprising the name/identifier of the repository from which the material was sourced plus the accession number of the repository for that material. Where an accession number has not been assigned, but the material has been derived from the crossing of known accessions, the material can be defined as follows: \"mother_accession X father_accession\", or, if father is unknown, as \"mother_accession X UNKNOWN\". For in situ material, the region of provenance may be used when an accession is not available.",
@@ -5374,15 +5483,6 @@
                         "items" : {
                             "$ref" : "#/components/schemas/GeoJSON"
                         }
-                    },
-                    "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm."
@@ -5393,6 +5493,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5400,6 +5501,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5408,27 +5510,20 @@
             },
             "GermplasmParent" : {
                 "required" : [
-                    "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI",
+                    "parentGermplasmDbId",
+                    "parentGermplasmName",
                     "parentType"
                 ],
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbId" : {
+                    "parentGermplasmDbId" : {
                         "type" : "string"
                     },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
+                    "parentGermplasmName" : {
                         "type" : "string"
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
-                    },
-                    "pedigreeNodeDbId" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes."
@@ -5439,6 +5534,7 @@
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5446,6 +5542,7 @@
                     "binomialNames" : {
                         "type" : "array",
                         "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5453,6 +5550,7 @@
                     "collections" : {
                         "type" : "array",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5467,6 +5565,7 @@
                     "familyCodes" : {
                         "type" : "array",
                         "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5474,6 +5573,7 @@
                     "genus" : {
                         "type" : "array",
                         "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5481,6 +5581,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5488,6 +5589,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5495,6 +5597,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5502,6 +5605,7 @@
                     "instituteCodes" : {
                         "type" : "array",
                         "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5509,6 +5613,7 @@
                     "parentDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these parents",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5516,6 +5621,7 @@
                     "progenyDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these children",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5537,6 +5643,7 @@
                     "species" : {
                         "type" : "array",
                         "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5558,6 +5665,7 @@
                     "synonyms" : {
                         "type" : "array",
                         "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5581,37 +5689,26 @@
             "GermplasmSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbIds" : {
-                        "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "binomialNames" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "synonyms" : {
+                    "collections" : {
                         "type" : "array",
-                        "description" : "List of alternative names or IDs used to reference this germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5623,16 +5720,56 @@
                             "type" : "string"
                         }
                     },
-                    "programDbIds" : {
+                    "externalReferenceIDs" : {
                         "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "trialDbIds" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "familyCodes" : {
+                        "type" : "array",
+                        "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "genus" : {
+                        "type" : "array",
+                        "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5640,13 +5777,65 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
+                    "instituteCodes" : {
+                        "type" : "array",
+                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
                     "parentDbIds" : {
                         "type" : "array",
                         "description" : "Search for Germplasm with these parents",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "progenyDbIds" : {
+                        "type" : "array",
+                        "description" : "Search for Germplasm with these children",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "species" : {
+                        "type" : "array",
+                        "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5658,20 +5847,6 @@
                             "type" : "string"
                         }
                     },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "familyCodes" : {
-                        "type" : "array",
-                        "description" : "A familyCode representing the family this germplasm belongs to.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "studyNames" : {
                         "type" : "array",
                         "description" : "List of study names to filter search results",
@@ -5679,44 +5854,24 @@
                             "type" : "string"
                         }
                     },
-                    "collections" : {
+                    "synonyms" : {
                         "type" : "array",
-                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "genus" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "List of Genus names to identify germplasm",
+                        "description" : "The ID which uniquely identifies a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "species" : {
+                    "trialNames" : {
                         "type" : "array",
-                        "description" : "List of Species names to identify germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "binomialNames" : {
-                        "type" : "array",
-                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "instituteCodes" : {
-                        "type" : "array",
-                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "progenyDbIds" : {
-                        "type" : "array",
-                        "description" : "Search for Germplasm with these children",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -5885,26 +6040,31 @@
                     "dateCreatedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are created within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateCreatedRangeStart" : {
                         "type" : "string",
                         "description" : "Define the beginning for an interval of time and only include Lists that are created within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateModifiedRangeEnd" : {
                         "type" : "string",
                         "description" : "Define the end for an interval of time and only include Lists that are modified within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "dateModifiedRangeStart" : {
                         "type" : "string",
                         "description" : "Define the beginning for an interval of time and only include Lists that are modified within this interval.",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "listDbIds" : {
                         "type" : "array",
                         "description" : "An array of primary database identifiers to identify a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5912,6 +6072,7 @@
                     "listNames" : {
                         "type" : "array",
                         "description" : "An array of human readable names to identify a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5919,6 +6080,7 @@
                     "listOwnerNames" : {
                         "type" : "array",
                         "description" : "An array of names for the people or entities who are responsible for a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5926,6 +6088,7 @@
                     "listOwnerPersonDbIds" : {
                         "type" : "array",
                         "description" : "An array of primary database identifiers to identify people or entities who are responsible for a set of Lists",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5933,6 +6096,7 @@
                     "listSources" : {
                         "type" : "array",
                         "description" : "An array of terms identifying lists from different sources (ie 'USER', 'SYSTEM', etc)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5981,6 +6145,7 @@
                     "abbreviations" : {
                         "type" : "array",
                         "description" : "A list of shortened human readable names for a set of Locations",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -5988,11 +6153,13 @@
                     "altitudeMax" : {
                         "type" : "number",
                         "description" : "The maximum altitude to search for",
+                        "nullable" : true,
                         "example" : 200
                     },
                     "altitudeMin" : {
                         "type" : "number",
                         "description" : "The minimum altitude to search for",
+                        "nullable" : true,
                         "example" : 20
                     },
                     "commonCropNames" : {
@@ -6008,6 +6175,7 @@
                     "countryCodes" : {
                         "type" : "array",
                         "description" : "[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6015,6 +6183,7 @@
                     "countryNames" : {
                         "type" : "array",
                         "description" : "The full name of the country to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6022,6 +6191,7 @@
                     "instituteAddresses" : {
                         "type" : "array",
                         "description" : "The street address of the institute to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6029,6 +6199,7 @@
                     "instituteNames" : {
                         "type" : "array",
                         "description" : "The name of the institute to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6050,6 +6221,7 @@
                     "locationTypes" : {
                         "type" : "array",
                         "description" : "The type of location this represents (ex. Breeding Location, Storage Location, etc)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6057,6 +6229,7 @@
                     "parentLocationDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a Location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6064,6 +6237,7 @@
                     "parentLocationNames" : {
                         "type" : "array",
                         "description" : "A human readable name for a location\n<br/> The Parent Location defines the encompassing location that this location belongs to. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6090,6 +6264,7 @@
                     "linkageGroupNames" : {
                         "type" : "array",
                         "description" : "A list of Uniquely Identifiable linkage group names",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6097,6 +6272,7 @@
                     "mapDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `GenomeMaps` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6105,17 +6281,20 @@
                         "type" : "integer",
                         "description" : "The maximum position of markers in a given map",
                         "format" : "int32",
+                        "nullable" : true,
                         "example" : 4000
                     },
                     "minPosition" : {
                         "type" : "integer",
                         "description" : "The minimum position of markers in a given map",
                         "format" : "int32",
+                        "nullable" : true,
                         "example" : 250
                     },
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6192,6 +6371,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6199,6 +6379,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6220,6 +6401,7 @@
                     "observationDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an Observation",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6227,6 +6409,7 @@
                     "observationLevelRelationships" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
                         }
@@ -6234,6 +6417,7 @@
                     "observationLevels" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevel"
                         }
@@ -6241,16 +6425,19 @@
                     "observationTimeStampRangeEnd" : {
                         "type" : "string",
                         "description" : "Timestamp range end",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "observationTimeStampRangeStart" : {
                         "type" : "string",
                         "description" : "Timestamp range start",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an Observation Unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6342,6 +6529,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6406,6 +6594,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6413,6 +6602,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6420,6 +6610,7 @@
                     "includeObservations" : {
                         "type" : "boolean",
                         "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
+                        "nullable" : true,
                         "example" : false
                     },
                     "locationDbIds" : {
@@ -6439,6 +6630,7 @@
                     "observationLevelRelationships" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevelRelationships",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevelRelationship"
                         }
@@ -6446,6 +6638,7 @@
                     "observationLevels" : {
                         "type" : "array",
                         "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitLevel"
                         }
@@ -6453,6 +6646,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The unique id of an observation unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6509,6 +6703,7 @@
                     "observationUnitNames" : {
                         "type" : "array",
                         "description" : "The human readable identifier for an Observation Unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6551,6 +6746,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6715,6 +6911,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6852,6 +7049,23 @@
                 },
                 "description" : "A pointer to an ontology used by a genomic reference"
             },
+            "PagingParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    }
+                }
+            },
             "ParentType" : {
                 "type" : "string",
                 "description" : "The type of parent used during crossing. Accepted values for this field are 'MALE', 'FEMALE', 'SELF', 'POPULATION', and 'CLONAL'. \\n\\nIn a pedigree record, the 'parentType' describes each parent of a particular germplasm. \\n\\nIn a progeny record, the 'parentType' is used to describe how this germplasm was crossed to generate a particular progeny. \\nFor example, given a record for germplasm A, having a progeny B and C. The 'parentType' field for progeny B item refers \\nto the 'parentType' of A toward B. The 'parentType' field for progeny C item refers to the 'parentType' of A toward C.\\nIn this way, A could be a male parent to B, but a female parent to C. ",
@@ -6859,15 +7073,13 @@
                     "MALE",
                     "FEMALE",
                     "SELF",
-                    "POPULATION",
-                    "CLONAL"
+                    "POPULATION"
                 ]
             },
             "PedigreeNode" : {
                 "required" : [
                     "germplasmDbId",
                     "germplasmName",
-                    "germplasmPUI",
                     "pedigreeNodeDbId"
                 ],
                 "type" : "object",
@@ -6884,9 +7096,6 @@
                     "crossingProjectDbId" : {
                         "type" : "string"
                     },
-                    "crossingProjectName" : {
-                        "type" : "string"
-                    },
                     "crossingYear" : {
                         "type" : "integer",
                         "description" : "The year the parents were originally crossed",
@@ -6901,7 +7110,6 @@
                     "externalReferences" : {
                         "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
-                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
@@ -6915,9 +7123,6 @@
                         "type" : "string"
                     },
                     "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
                         "type" : "string"
                     },
                     "parents" : {
@@ -6946,12 +7151,12 @@
                             "$ref" : "#/components/schemas/GermplasmChild"
                         }
                     },
-                    "siblingDbIds" : {
+                    "siblings" : {
                         "type" : "array",
                         "description" : "A list of sibling germplasm references in the pedigree tree for this germplasm. These represent edges in the tree, connecting to other nodes.\n<br/> Siblings share at least one parent with the given germplasm. \n<br/> If the parameter 'includeSiblings' is set to false, then this array should be empty, null, or not present in the response.",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "$ref" : "#/components/schemas/Germplasm"
                         }
                     }
                 },
@@ -6963,6 +7168,7 @@
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6970,6 +7176,7 @@
                     "binomialNames" : {
                         "type" : "array",
                         "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6977,6 +7184,7 @@
                     "collections" : {
                         "type" : "array",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6991,6 +7199,7 @@
                     "familyCodes" : {
                         "type" : "array",
                         "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -6998,6 +7207,7 @@
                     "genus" : {
                         "type" : "array",
                         "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7005,6 +7215,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7012,6 +7223,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7019,6 +7231,7 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7026,26 +7239,31 @@
                     "includeFullTree" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, recursively include ALL of the nodes available in this pedigree tree",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeParents" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of parents in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeProgeny" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of progeny in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "includeSiblings" : {
                         "type" : "boolean",
                         "description" : "If this parameter is true, include the array of siblings in the response",
+                        "nullable" : true,
                         "example" : true
                     },
                     "instituteCodes" : {
                         "type" : "array",
                         "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7079,6 +7297,7 @@
                     "species" : {
                         "type" : "array",
                         "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7100,6 +7319,7 @@
                     "synonyms" : {
                         "type" : "array",
                         "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7123,42 +7343,26 @@
             "PedigreeNodeSearchRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbIds" : {
-                        "type" : "array",
-                        "description" : "List of IDs which uniquely identify germplasm to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "accessionNumbers" : {
                         "type" : "array",
                         "description" : "A collection of unique identifiers for materials or germplasm within a genebank\n\nMCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. \"PI 113869\").",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "germplasmNames" : {
+                    "binomialNames" : {
                         "type" : "array",
-                        "description" : "List of human readable names to identify germplasm to search for",
+                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "includeParents" : {
-                        "type" : "boolean",
-                        "description" : "If this parameter is true, include the array of parents in the response",
-                        "example" : true
-                    },
-                    "synonyms" : {
+                    "collections" : {
                         "type" : "array",
-                        "description" : "List of alternative names or IDs used to reference this germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "programNames" : {
-                        "type" : "array",
-                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7170,16 +7374,56 @@
                             "type" : "string"
                         }
                     },
-                    "programDbIds" : {
+                    "externalReferenceIDs" : {
                         "type" : "array",
-                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "trialDbIds" : {
+                    "externalReferenceIds" : {
                         "type" : "array",
-                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "description" : "List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "externalReferenceSources" : {
+                        "type" : "array",
+                        "description" : "List of identifiers for the source system or database of an external reference (use with `externalReferenceIDs` parameter)",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "familyCodes" : {
+                        "type" : "array",
+                        "description" : "A familyCode representing the family this germplasm belongs to.",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "genus" : {
+                        "type" : "array",
+                        "description" : "List of Genus names to identify germplasm",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7187,6 +7431,85 @@
                     "germplasmPUIs" : {
                         "type" : "array",
                         "description" : "List of Permanent Unique Identifiers to identify germplasm",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "includeFullTree" : {
+                        "type" : "boolean",
+                        "description" : "If this parameter is true, recursively include ALL of the nodes available in this pedigree tree",
+                        "nullable" : true,
+                        "example" : true
+                    },
+                    "includeParents" : {
+                        "type" : "boolean",
+                        "description" : "If this parameter is true, include the array of parents in the response",
+                        "nullable" : true,
+                        "example" : true
+                    },
+                    "includeProgeny" : {
+                        "type" : "boolean",
+                        "description" : "If this parameter is true, include the array of progeny in the response",
+                        "nullable" : true,
+                        "example" : true
+                    },
+                    "includeSiblings" : {
+                        "type" : "boolean",
+                        "description" : "If this parameter is true, include the array of siblings in the response",
+                        "nullable" : true,
+                        "example" : true
+                    },
+                    "instituteCodes" : {
+                        "type" : "array",
+                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "pedigreeDepth" : {
+                        "type" : "integer",
+                        "description" : "Recursively include this number of levels up the tree in the response (parents, grand-parents, great-grand-parents, etc)",
+                        "format" : "int32",
+                        "example" : 3
+                    },
+                    "progenyDepth" : {
+                        "type" : "integer",
+                        "description" : "Recursively include this number of levels down the tree in the response (children, grand-children, great-grand-children, etc)",
+                        "format" : "int32",
+                        "example" : 3
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "species" : {
+                        "type" : "array",
+                        "description" : "List of Species names to identify germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7198,31 +7521,6 @@
                             "type" : "string"
                         }
                     },
-                    "trialNames" : {
-                        "type" : "array",
-                        "description" : "The human readable name of a trial to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "progenyDepth" : {
-                        "type" : "integer",
-                        "description" : "Recursively include this number of levels down the tree in the response (children, grand-children, great-grand-children, etc)",
-                        "format" : "int32",
-                        "example" : 3
-                    },
-                    "familyCodes" : {
-                        "type" : "array",
-                        "description" : "A familyCode representing the family this germplasm belongs to.",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "includeProgeny" : {
-                        "type" : "boolean",
-                        "description" : "If this parameter is true, include the array of progeny in the response",
-                        "example" : true
-                    },
                     "studyNames" : {
                         "type" : "array",
                         "description" : "List of study names to filter search results",
@@ -7230,53 +7528,24 @@
                             "type" : "string"
                         }
                     },
-                    "collections" : {
+                    "synonyms" : {
                         "type" : "array",
-                        "description" : "A specific panel/collection/population name this germplasm belongs to.",
+                        "description" : "List of alternative names or IDs used to reference this germplasm",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "genus" : {
+                    "trialDbIds" : {
                         "type" : "array",
-                        "description" : "List of Genus names to identify germplasm",
+                        "description" : "The ID which uniquely identifies a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
                     },
-                    "includeSiblings" : {
-                        "type" : "boolean",
-                        "description" : "If this parameter is true, include the array of siblings in the response",
-                        "example" : true
-                    },
-                    "species" : {
+                    "trialNames" : {
                         "type" : "array",
-                        "description" : "List of Species names to identify germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "pedigreeDepth" : {
-                        "type" : "integer",
-                        "description" : "Recursively include this number of levels up the tree in the response (parents, grand-parents, great-grand-parents, etc)",
-                        "format" : "int32",
-                        "example" : 3
-                    },
-                    "binomialNames" : {
-                        "type" : "array",
-                        "description" : "List of the full binomial name (scientific name) to identify a germplasm",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "includeFullTree" : {
-                        "type" : "boolean",
-                        "description" : "If this parameter is true, recursively include ALL of the nodes available in this pedigree tree",
-                        "example" : true
-                    },
-                    "instituteCodes" : {
-                        "type" : "array",
-                        "description" : "The code for the institute that maintains the material. \n<br/> MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
+                        "description" : "The human readable name of a trial to search for",
                         "items" : {
                             "type" : "string"
                         }
@@ -7297,6 +7566,7 @@
                     "emailAddresses" : {
                         "type" : "array",
                         "description" : "email address for this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7304,6 +7574,7 @@
                     "firstNames" : {
                         "type" : "array",
                         "description" : "Persons first name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7311,6 +7582,7 @@
                     "lastNames" : {
                         "type" : "array",
                         "description" : "Persons last name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7318,6 +7590,7 @@
                     "mailingAddresses" : {
                         "type" : "array",
                         "description" : "physical address of this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7325,6 +7598,7 @@
                     "middleNames" : {
                         "type" : "array",
                         "description" : "Persons middle name",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7332,6 +7606,7 @@
                     "personDbIds" : {
                         "type" : "array",
                         "description" : "Unique ID for this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7339,6 +7614,7 @@
                     "phoneNumbers" : {
                         "type" : "array",
                         "description" : "phone number of this person",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7360,6 +7636,7 @@
                     "userIDs" : {
                         "type" : "array",
                         "description" : "A systems user ID associated with this person. Different from personDbId because you could have a person who is not a user of the system.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7367,9 +7644,26 @@
                 }
             },
             "PlannedCross" : {
-                "required" : [
-                    "plannedCrossDbId"
-                ],
+                "allOf" : [
+                    {
+                        "$ref" : "#/components/schemas/PlannedCrossNewRequest"
+                    },
+                    {
+                        "required" : [
+                            "plannedCrossDbId"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "plannedCrossDbId" : {
+                                "type" : "string",
+                                "description" : "the unique identifier for a planned cross"
+                            }
+                        },
+                        "description" : "Information regarding the intention to mate specific organisms together to produce offspring with desired traits. A PlannedCross becomes an actual Cross when the desired mating event actually occurs in the field."
+                    }
+                ]
+            },
+            "PlannedCrossNewRequest" : {
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
@@ -7379,10 +7673,12 @@
                         "$ref" : "#/components/schemas/CrossType"
                     },
                     "crossingProjectDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossingProjectName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -7397,10 +7693,6 @@
                     },
                     "parent2" : {
                         "$ref" : "#/components/schemas/CrossParent"
-                    },
-                    "plannedCrossDbId" : {
-                        "type" : "string",
-                        "description" : "the unique identifier for a planned cross"
                     },
                     "plannedCrossName" : {
                         "type" : "string",
@@ -7508,6 +7800,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7515,6 +7808,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7522,6 +7816,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies an observation unit",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7529,6 +7824,7 @@
                     "plateBarcodes" : {
                         "type" : "array",
                         "description" : "A unique identifier physically attached to the plate",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7536,6 +7832,7 @@
                     "plateDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a plate of samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7543,6 +7840,7 @@
                     "plateNames" : {
                         "type" : "array",
                         "description" : "The human readable name of a plate of samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7564,6 +7862,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a sample",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7571,6 +7870,7 @@
                     "sampleGroupDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a group of related Samples",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7578,6 +7878,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "The human readable name of the sample",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7615,12 +7916,6 @@
             "PollinationEvent" : {
                 "type" : "object",
                 "properties" : {
-                    "crossDbId" : {
-                        "type" : "string"
-                    },
-                    "crossName" : {
-                        "type" : "string"
-                    },
                     "pollinationNumber" : {
                         "type" : "string",
                         "description" : "The unique identifier for this pollination event",
@@ -7665,6 +7960,7 @@
                     "abbreviations" : {
                         "type" : "array",
                         "description" : "A list of shortened human readable names for a set of Programs",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7679,6 +7975,7 @@
                     "leadPersonDbIds" : {
                         "type" : "array",
                         "description" : "The person DbIds of the program leader to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7686,6 +7983,7 @@
                     "leadPersonNames" : {
                         "type" : "array",
                         "description" : "The names of the program leader to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7693,6 +7991,7 @@
                     "objectives" : {
                         "type" : "array",
                         "description" : "A program objective to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7714,6 +8013,7 @@
                     "programTypes" : {
                         "type" : "array",
                         "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding ",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string",
                             "description" : "The type of program entity this object represents\n<br/> 'STANDARD' represents a standard, permanent breeding program\n<br/> 'PROJECT' represents a short term project, usually with a set time limit based on funding.",
@@ -7758,6 +8058,7 @@
                     "accessions" : {
                         "type" : "array",
                         "description" : "If specified, return the references for which the `accession` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7772,6 +8073,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7779,6 +8081,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7786,7 +8089,8 @@
                     "isDerived" : {
                         "type" : "boolean",
                         "description" : "A sequence X is said to be derived from source sequence Y, if X and Y are of the same length and the per-base sequence divergence at A/C/G/T bases is sufficiently small. Two sequences derived from the same official sequence share the same coordinates and annotations, and can be replaced with the official sequence for certain use cases.",
-                        "format" : "boolean"
+                        "format" : "boolean",
+                        "nullable" : true
                     },
                     "maxLength" : {
                         "type" : "integer",
@@ -7797,6 +8101,7 @@
                     "md5checksums" : {
                         "type" : "array",
                         "description" : "If specified, return the references for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7824,6 +8129,7 @@
                     "referenceDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `References` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7831,6 +8137,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `ReferenceSets` within the given database server",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7871,6 +8178,7 @@
                     "accessions" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7878,6 +8186,7 @@
                     "assemblyPUIs" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7892,6 +8201,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7899,6 +8209,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7906,6 +8217,7 @@
                     "md5checksums" : {
                         "type" : "array",
                         "description" : "If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7927,6 +8239,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "The `ReferenceSets` to search.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7974,6 +8287,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7981,6 +8295,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7988,6 +8303,7 @@
                     "observationUnitDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies an `ObservationUnit`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -7995,6 +8311,7 @@
                     "plateDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a `Plate` of `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8002,6 +8319,7 @@
                     "plateNames" : {
                         "type" : "array",
                         "description" : "The human readable name of a `Plate` of `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8023,6 +8341,7 @@
                     "sampleDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a `Sample`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8030,6 +8349,7 @@
                     "sampleGroupDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier for a group of related `Samples`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8037,6 +8357,7 @@
                     "sampleNames" : {
                         "type" : "array",
                         "description" : "The human readable name of the `Sample`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8144,9 +8465,10 @@
                     },
                     "years" : {
                         "type" : "array",
-                        "description" : "The 4 digit year of a season. Example \"2017\"",
+                        "description" : "The 4 digit year of a season. Example 2017",
                         "items" : {
-                            "type" : "string"
+                            "type" : "integer",
+                            "format" : "int32"
                         }
                     }
                 }
@@ -8214,16 +8536,20 @@
                         "nullable" : true
                     },
                     "locationDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "locationName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "programDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "programName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "seedLotDescription" : {
                         "type" : "string",
@@ -8279,6 +8605,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8286,6 +8613,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8335,11 +8663,21 @@
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
                     },
-                    "seedLotDbId" : {
-                        "type" : "string"
+                    "fromSeedLotDbId" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
-                    "seedLotName" : {
-                        "type" : "string"
+                    "fromSeedLotPUI" : {
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "toSeedLotDbId" : {
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "toSeedLotPUI" : {
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "transactionDbId" : {
                         "type" : "string",
@@ -8368,22 +8706,24 @@
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
+                    "studyDbId",
                     "trialDbId",
-                    "trialName",
                     "programDbId",
-                    "programName",
                     "locationDbId",
-                    "startDate",
-                    "endDate"
+                    "seasonDbId",
+                    "studyType",
+                    "studyName",
+                    "studyLocation",
+                    "programName",
+                    "germplasmDbId",
+                    "observationVariableDbId"
                 ]
             },
             "SortOrder" : {
                 "type" : "string",
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
-                    "asc",
                     "ASC",
-                    "desc",
                     "DESC"
                 ]
             },
@@ -8410,15 +8750,6 @@
                         "type" : "string",
                         "description" : "A supplemental text description of the storage type",
                         "nullable" : true
-                    },
-                    "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "The type of storage this germplasm is kept in at a genebank."
@@ -8463,6 +8794,7 @@
                     "active" : {
                         "type" : "boolean",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "nullable" : true,
                         "example" : true
                     },
                     "commonCropNames" : {
@@ -8475,6 +8807,7 @@
                     "germplasmDbIds" : {
                         "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8482,6 +8815,7 @@
                     "germplasmNames" : {
                         "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8538,6 +8872,7 @@
                     "seasonDbIds" : {
                         "type" : "array",
                         "description" : "The ID which uniquely identifies a season",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8545,6 +8880,7 @@
                     "sortBy" : {
                         "type" : "string",
                         "description" : "Name of the field to sort by.",
+                        "nullable" : true,
                         "enum" : [
                             "studyDbId",
                             "trialDbId",
@@ -8554,22 +8890,24 @@
                             "studyType",
                             "studyName",
                             "studyLocation",
-                            "programName"
+                            "programName",
+                            "germplasmDbId",
+                            "observationVariableDbId"
                         ]
                     },
                     "sortOrder" : {
                         "type" : "string",
                         "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
                         "enum" : [
-                            "asc",
                             "ASC",
-                            "desc",
                             "DESC"
                         ]
                     },
                     "studyCodes" : {
                         "type" : "array",
                         "description" : "A short human readable code for a study",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8591,6 +8929,7 @@
                     "studyPUIs" : {
                         "type" : "array",
                         "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8598,6 +8937,7 @@
                     "studyTypes" : {
                         "type" : "array",
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -8621,15 +8961,6 @@
             "Synonym" : {
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
-                    },
                     "synonym" : {
                         "type" : "string",
                         "description" : "Alternative name or ID used to reference this germplasm",
@@ -8650,15 +8981,6 @@
                 ],
                 "type" : "object",
                 "properties" : {
-                    "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
-                        "type" : "string"
-                    },
-                    "germplasmPUI" : {
-                        "type" : "string"
-                    },
                     "sourceName" : {
                         "type" : "string",
                         "description" : "The human readable name of the taxonomy provider"
@@ -8669,6 +8991,29 @@
                     }
                 },
                 "description" : "The list of IDs for this SPECIES from different sources. If present, NCBI Taxon should be always listed as \"ncbiTaxon\" preferably with a purl. The rank of this ID should be species. \n\nMIAPPE V1.1 (DM-42) Organism - An identifier for the organism at the species level. Use of the NCBI taxon ID is recommended."
+            },
+            "TokenPagingParameters" : {
+                "type" : "object",
+                "properties" : {
+                    "page" : {
+                        "type" : "integer",
+                        "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
+                        "example" : 0
+                    },
+                    "pageSize" : {
+                        "type" : "integer",
+                        "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
+                        "example" : 1000
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>Used to request a specific page of data to be returned.\n<br>Tokenized pages are for large data sets which can not be efficiently broken into indexed pages. Use the nextPageToken and prevPageToken from a prior response to construct a query and move to the next or previous page respectively. ",
+                        "example" : "33c27874",
+                        "deprecated" : true
+                    }
+                }
             },
             "TraitDataType" : {
                 "type" : "string",
@@ -8785,27 +9130,6 @@
                             "type" : "string"
                         }
                     },
-                    "observationVariableDbIds" : {
-                        "type" : "array",
-                        "description" : "The DbIds of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariableNames" : {
-                        "type" : "array",
-                        "description" : "The names of Variables to search for",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "observationVariablePUIs" : {
-                        "type" : "array",
-                        "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "programDbIds" : {
                         "type" : "array",
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
@@ -8829,29 +9153,6 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
-                    },
-                    "sortBy" : {
-                        "type" : "string",
-                        "description" : "Name of the field to sort by.",
-                        "enum" : [
-                            "trialDbId",
-                            "trialName",
-                            "programDbId",
-                            "programName",
-                            "locationDbId",
-                            "startDate",
-                            "endDate"
-                        ]
-                    },
-                    "sortOrder" : {
-                        "type" : "string",
-                        "description" : "Sort order direction. Ascending/Descending.",
-                        "enum" : [
-                            "asc",
-                            "ASC",
-                            "desc",
-                            "DESC"
-                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -8892,11 +9193,9 @@
             },
             "Variable" : {
                 "required" : [
-                    "methodDbId",
-                    "methodName",
-                    "scaleDbId",
-                    "scaleName",
-                    "traitName"
+                    "method",
+                    "scale",
+                    "trait"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -8950,26 +9249,14 @@
                         "description" : "2 letter ISO 639-1 code for the language of submission of the variable.",
                         "nullable" : true
                     },
-                    "methodDbId" : {
-                        "type" : "string"
-                    },
-                    "methodName" : {
-                        "type" : "string"
-                    },
-                    "methodPUI" : {
-                        "type" : "string"
+                    "method" : {
+                        "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
                         "$ref" : "#/components/schemas/OntologyReference"
                     },
-                    "scaleDbId" : {
-                        "type" : "string"
-                    },
-                    "scaleName" : {
-                        "type" : "string"
-                    },
-                    "scalePUI" : {
-                        "type" : "string"
+                    "scale" : {
+                        "$ref" : "#/components/schemas/Scale"
                     },
                     "scientist" : {
                         "type" : "string",
@@ -8995,14 +9282,8 @@
                             "type" : "string"
                         }
                     },
-                    "traitDbId" : {
-                        "type" : "string"
-                    },
-                    "traitName" : {
-                        "type" : "string"
-                    },
-                    "traitPUI" : {
-                        "type" : "string"
+                    "trait" : {
+                        "$ref" : "#/components/schemas/Trait"
                     }
                 },
                 "description" : "A unique combination of Trait, Method, and Scale to define a clear context for an Observation."
@@ -9090,6 +9371,7 @@
                     "studyDbId" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9186,6 +9468,8 @@
                     "callSetDbIds" : {
                         "type" : "array",
                         "description" : "**Deprecated in v2.1** Parameter unnecessary. Github issue number #474 \n<br/>Only return variant calls which belong to call sets with these IDs. If unspecified, return all variants and no variant call objects.",
+                        "nullable" : true,
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9220,11 +9504,14 @@
                     "referenceDbId" : {
                         "type" : "string",
                         "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
-                        "example" : "120a2d5c"
+                        "nullable" : true,
+                        "example" : "120a2d5c",
+                        "deprecated" : true
                     },
                     "referenceDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier representing a genotype `Reference`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9232,6 +9519,7 @@
                     "referenceSetDbIds" : {
                         "type" : "array",
                         "description" : "The unique identifier representing a genotype `ReferenceSet`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9273,6 +9561,7 @@
                     "variantDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `Variants`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -9280,6 +9569,7 @@
                     "variantSetDbIds" : {
                         "type" : "array",
                         "description" : "A list of IDs which uniquely identify `VariantSets`",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -10272,6 +10562,32 @@
                     }
                 }
             },
+            "AlleleMatrixSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "AlleleMatrixSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/AlleleMatrix"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "PersonListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -10968,9 +11284,34 @@
                                     "properties" : {
                                         "data" : {
                                             "type" : "array",
+                                            "description" : "The `data` array is part of the BrAPI standard List Response JSON container. `data` will always contain the primary list of objects being returned by a BrAPI endpoint. `data` is also the only array impacted by the `metadata.pagination` details. When the pagination parameters change, the `data` array will reflect those changes in the JSON response.",
                                             "items" : {
                                                 "$ref" : "#/components/schemas/Call"
                                             }
+                                        },
+                                        "expandHomozygotes" : {
+                                            "type" : "boolean",
+                                            "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                                            "nullable" : true,
+                                            "example" : true
+                                        },
+                                        "sepPhased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for phased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "|"
+                                        },
+                                        "sepUnphased" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a separator for unphased allele calls.",
+                                            "nullable" : true,
+                                            "example" : "/"
+                                        },
+                                        "unknownString" : {
+                                            "type" : "string",
+                                            "description" : "The string used as a representation for missing data.",
+                                            "nullable" : true,
+                                            "example" : "."
                                         }
                                     }
                                 }

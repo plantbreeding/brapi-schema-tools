@@ -17,7 +17,7 @@ pluralFor:
 pathItemNameFor:
     PedigreeNode: ~
 
-singleGet:
+getWithId:
     # Remove AlleleMatrix from generateFor.
     # Default override was false; after removal it falls back to generate: true.
     generateFor:
@@ -29,7 +29,7 @@ search:
     paged:
         AlleleMatrix: ~
 
-listGet:
+get:
     # Remove the BreedingMethod entry from inputFor.
     # Default was false; after removal hasInputFor falls back to hardcoded default: true.
     inputFor:

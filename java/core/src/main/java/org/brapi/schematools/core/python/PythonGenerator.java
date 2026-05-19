@@ -100,7 +100,7 @@ public class PythonGenerator {
         private final PythonGeneratorMetadata metadata;
 
         public Generator(List<BrAPIClass> brAPIClasses, PythonGeneratorMetadata metadata) {
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(this::isGenerating, brAPIClasses);
+            this.brAPIClassCache = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isGenerating, brAPIClasses);
             this.metadata = metadata;
         }
 
@@ -443,7 +443,7 @@ __all__ = ["StrEnum"]
 
                     Endpoints.EndpointsBuilder endpoints = Endpoints.builder();
 
-                    if (options.getSingleGet().isGeneratingFor(brAPIObjectType) ||
+                    if (options.getGetWithId().isGeneratingFor(brAPIObjectType) ||
                         options.getPost().isGeneratingFor(brAPIObjectType) ||
                         options.getPut().isGeneratingFor(brAPIObjectType) ||
                         options.getPost().isGeneratingFor(brAPIObjectType)) {
@@ -453,7 +453,7 @@ __all__ = ["StrEnum"]
                         builder.idArgumentName(StringUtils.toSnakeCase(options.getProperties().getIdPropertyFor(brAPIClass).getResultOrThrow().getName()));
                     }
 
-                    if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
+                    if (options.getGet().isGeneratingFor(brAPIObjectType)) {
                         endpoints.crud(stripLeadingSlash(options.getPathItemNameFor(brAPIClass)));
                     }
 
@@ -469,8 +469,8 @@ __all__ = ["StrEnum"]
                         endpoints.searchTable(stripLeadingSlash(options.getSearchPathItemNameFor(brAPIClass)) + "/table");
                     }
 
-                    endpoints.get(options.getSingleGet().isGeneratingFor(brAPIObjectType));
-                    endpoints.list(options.getListGet().isGeneratingFor(brAPIObjectType));
+                    endpoints.get(options.getGetWithId().isGeneratingFor(brAPIObjectType));
+                    endpoints.list(options.getGet().isGeneratingFor(brAPIObjectType));
                     endpoints.create(options.getPost().isGeneratingFor(brAPIObjectType));
                     endpoints.createMany(options.getPost().isGeneratingFor(brAPIObjectType));
                     endpoints.update(options.getPut().isGeneratingFor(brAPIObjectType));
@@ -529,7 +529,7 @@ __all__ = ["StrEnum"]
 
                             requestObject.getProperties().forEach(property -> filters.add(createFilterMethod(property, relationshipFilterSingularNames)));
 
-                            if (options.getListGet().isGeneratingFor(brAPIObjectType)) {
+                            if (options.getGet().isGeneratingFor(brAPIObjectType)) {
                                 requestObject.getProperties()
                                     .forEach(property -> {
                                         PropertyMapping propertyMapping = PropertyMapping.builder()
@@ -537,7 +537,7 @@ __all__ = ["StrEnum"]
                                             .singularName(options.getSingularForProperty(property.getName()))
                                             .build();
 
-                                        if (options.getListGet().isUsingPropertyFromRequestFor(brAPIObjectType, property)) {
+                                        if (options.getGet().isUsingPropertyFromRequestFor(brAPIObjectType, property)) {
                                             if (propertyMapping.isUnchanged()) {
                                                 unchangedGetParams.add(propertyMapping);
                                             } else {

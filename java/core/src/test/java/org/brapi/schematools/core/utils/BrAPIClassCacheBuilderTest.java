@@ -36,7 +36,7 @@ class BrAPIClassCacheBuilderTest {
     void createCache() {
         BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.createCache(brAPIClasses);
 
-        assertEquals(158, cache.size());
+        assertEquals(165, cache.size());
         commonTests(cache) ;
 
         assertTrue(cache.containsBrAPIClass("GermplasmRequest")) ;
@@ -58,31 +58,31 @@ class BrAPIClassCacheBuilderTest {
         List<BrAPIClass> usedByGermplasm = cache.usedBy("Germplasm");
         assertNotNull(usedByGermplasm) ;
         int usedByGermplasmCount = usedByGermplasm.size();
-        assertEquals(18, usedByGermplasmCount);
+        assertEquals(17, usedByGermplasmCount);
 
         assertTrue(brAPIClasses.containsAll(usedByGermplasm));
 
         List<BrAPIClass> allDependencies = cache.getAllNonPrimaryDependencies();
         assertNotNull(allDependencies) ;
-        assertEquals(21, allDependencies.size());
+        assertEquals(22, allDependencies.size());
 
         assertNotNull(cache.getBrAPIClassNames()) ;
-        assertEquals(158, cache.getBrAPIClassNames().size()) ;
+        assertEquals(165, cache.getBrAPIClassNames().size()) ;
 
         assertNotNull(cache.getBrAPIClasses()) ;
-        assertEquals(158, cache.getBrAPIClasses().size()) ;
+        assertEquals(165, cache.getBrAPIClasses().size()) ;
 
         assertNotNull(cache.getBrAPIClassesAsSet()) ;
-        assertEquals(158, cache.getBrAPIClassesAsSet().size()) ;
+        assertEquals(165, cache.getBrAPIClassesAsSet().size()) ;
 
         assertNotNull(cache.getBrAPIClassesAsMap()) ;
-        assertEquals(158, cache.getBrAPIClassesAsMap().size()) ;
+        assertEquals(165, cache.getBrAPIClassesAsMap().size()) ;
 
-        assertEquals(135, brAPIClasses.size()) ;
+        assertEquals(141, brAPIClasses.size()) ;
 
         List<BrAPIClass> primaryClasses = cache.getPrimaryClasses();
         assertNotNull(primaryClasses) ;
-        assertEquals(135, primaryClasses.size()) ;
+        assertEquals(141, primaryClasses.size()) ;
 
         Set<BrAPIClass> commonDependenciesGermplasm = cache.getCommonDependencies("Germplasm");
         assertNotNull(commonDependenciesGermplasm) ;
@@ -104,9 +104,9 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createCacheWithPredicate() {
-        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.createCache(this::isCaching, brAPIClasses);
+        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isCaching, brAPIClasses);
 
-        assertEquals(158, cache.size());
+        assertEquals(165, cache.size());
         commonTests(cache) ;
 
         assertTrue(cache.containsBrAPIClass("GermplasmRequest")) ;
@@ -128,27 +128,27 @@ class BrAPIClassCacheBuilderTest {
         List<BrAPIClass> usedByGermplasm = cache.usedBy("Germplasm");
         assertNotNull(usedByGermplasm) ;
         int usedByGermplasmCount = usedByGermplasm.size();
-        assertEquals(18, usedByGermplasmCount);
+        assertEquals(17, usedByGermplasmCount);
 
         assertTrue(brAPIClasses.containsAll(usedByGermplasm));
 
         List<BrAPIClass> allDependencies = cache.getAllNonPrimaryDependencies();
         assertNotNull(allDependencies) ;
-        assertEquals(73, allDependencies.size());
+        assertEquals(76, allDependencies.size());
 
         assertNotNull(cache.getBrAPIClassNames()) ;
-        assertEquals(158, cache.getBrAPIClassNames().size()) ;
+        assertEquals(165, cache.getBrAPIClassNames().size()) ;
 
         assertNotNull(cache.getBrAPIClasses()) ;
-        assertEquals(158, cache.getBrAPIClasses().size()) ;
+        assertEquals(165, cache.getBrAPIClasses().size()) ;
 
         assertNotNull(cache.getBrAPIClassesAsSet()) ;
-        assertEquals(158, cache.getBrAPIClassesAsSet().size()) ;
+        assertEquals(165, cache.getBrAPIClassesAsSet().size()) ;
 
         assertNotNull(cache.getBrAPIClassesAsMap()) ;
-        assertEquals(158, cache.getBrAPIClassesAsMap().size()) ;
+        assertEquals(165, cache.getBrAPIClassesAsMap().size()) ;
 
-        assertEquals(135, brAPIClasses.size()) ;
+        assertEquals(141, brAPIClasses.size()) ;
 
         List<BrAPIClass> primaryClasses = cache.getPrimaryClasses();
         assertNotNull(primaryClasses) ;
@@ -176,7 +176,7 @@ class BrAPIClassCacheBuilderTest {
     void createMap() {
         Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createCache(brAPIClasses).getBrAPIClassesAsMap();
 
-        assertEquals(158, map.size());
+        assertEquals(165, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("Attribute")) ;
@@ -187,9 +187,9 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createMapWithPredicate() {
-        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createCache(this::isCaching, brAPIClasses).getBrAPIClassesAsMap();
+        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isCaching, brAPIClasses).getBrAPIClassesAsMap();
 
-        assertEquals(158, map.size());
+        assertEquals(165, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("GermplasmAttribute")) ;
