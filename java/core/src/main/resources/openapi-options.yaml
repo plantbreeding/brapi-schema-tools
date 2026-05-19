@@ -82,7 +82,7 @@ get:
     propertyFromRequestFor:
         AlleleMatrix:
             pagination: false
-            sampleDbId : false
+            sampleDbIds : false
         AdditionalInfo:
             additionalProperties: false
         CallSet:
@@ -448,7 +448,9 @@ properties:
                 sample: false
                 study: false
             GermplasmMCPD:
-                germplasm: false
+                germplasm: true
+            List:
+                listOwnerPerson: false
             MarkerPosition:
                 variant: true
             ObservationUnitLevelRelationship:
@@ -457,6 +459,8 @@ properties:
                 program: false
                 study: false
                 trial: false
+            PedigreeNode:
+                crossingProject: false
             Sample:
                 observationUnit: false
                 germplasm: false
@@ -498,10 +502,17 @@ properties:
                 cross: false
             GermplasmAttributeValue:
                 attribute: false
+            List:
+                listOwnerPerson: false
             MarkerPosition:
                 variant: false
+            PedigreeNode:
+                breedingMethod: false
+                germplasm: true
             Plate:
                 program: false
+            Program:
+                leadPerson: false
             SeedLot:
                 location: false
                 program: false
@@ -510,17 +521,21 @@ properties:
                 program: false
             Study:
                 location: false
+            Trial:
+                program: false
     linkTypeFor:
         AlleleMatrix:
             callSets: id
             variants: id
             variantSets: id
         Analysis:
-            variantSet: id
+            variantSet: none
         Attribute:
             method: embedded
             scale: embedded
             trait: embedded
+        AvailableFormat:
+            variantSet: none
         BreedingMethod:
             germplasm: none
             pedigreeNodes: none
@@ -588,6 +603,8 @@ properties:
             germplasm: id
         GermplasmOrigin:
             germplasm: none
+        GermplasmParent:
+            pedigreeNode: none
         GrowthFacility:
             study: none
         Image:
@@ -600,6 +617,8 @@ properties:
             seedLots: none
             observationUnits: none
             studies: none
+        MetadataField:
+            variantSet: none
         OntologyTerm:
             reference: none
             referenceSet: none
@@ -622,6 +641,8 @@ properties:
             trait: embedded
         Pagination:
             alleleMatrix: none
+        PedigreeNode:
+            siblings: embedded
         Person:
             lists: none
             programs: none
@@ -673,6 +694,7 @@ properties:
             observationUnits: none
             plates: none
             samples: none
+            studies: none
         Variable:
             method: embedded
             scale: embedded

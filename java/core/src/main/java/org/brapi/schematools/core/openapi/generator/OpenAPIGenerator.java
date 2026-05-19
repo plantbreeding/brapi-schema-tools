@@ -765,11 +765,15 @@ public class OpenAPIGenerator {
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
             return createSchemaForType(property.getType()).mapResult(
                 schema -> new Parameter()
-                    .name(property.getType().getName().equals("boolean") ? property.getName() : options.getSingularForProperty(property.getName()))
+                    .name(isConvertingToProperty(property) ?  options.getSingularForProperty(property.getName()) : property.getName())
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())
-                    .schema(upwrapSchema(schema)));
+                    .schema(isConvertingToProperty(property) ? upwrapSchema(schema) : schema));
+        }
+
+        private boolean isConvertingToProperty(BrAPIObjectProperty property) {
+            return property.getType() instanceof BrAPIArrayType ;
         }
 
         private Schema upwrapSchema(Schema schema) {
@@ -1588,6 +1592,12 @@ public class OpenAPIGenerator {
 
 
         private Schema makeDeprecated(Schema schema) {
+            if (!versionIs3_1_OrLater && schema.get$ref() != null) {
+                // In OpenAPI 3.0, $ref schemas cannot have sibling properties — the serializer
+                // drops them. Wrap in allOf so deprecated: true is preserved alongside the ref.
+                return new Schema<>().deprecated(true).addAllOfItem(schema);
+            }
+
             schema.setDeprecated(true);
 
             return schema ;
