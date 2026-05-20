@@ -34,7 +34,7 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createCache() {
-        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.createCache(brAPIClasses);
+        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.builder(brAPIClasses).build();
 
         assertEquals(165, cache.size());
         commonTests(cache) ;
@@ -104,7 +104,7 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createCacheWithPredicate() {
-        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isCaching, brAPIClasses);
+        BrAPIClassCacheBuilder.BrAPIClassCache cache = BrAPIClassCacheBuilder.builder(brAPIClasses).cachePredicate(this::isCaching).build();
 
         assertEquals(165, cache.size());
         commonTests(cache) ;
@@ -174,7 +174,7 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createMap() {
-        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createCache(brAPIClasses).getBrAPIClassesAsMap();
+        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.builder(brAPIClasses).build().getBrAPIClassesAsMap();
 
         assertEquals(165, map.size());
 
@@ -187,7 +187,7 @@ class BrAPIClassCacheBuilderTest {
 
     @Test
     void createMapWithPredicate() {
-        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isCaching, brAPIClasses).getBrAPIClassesAsMap();
+        Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.builder(brAPIClasses).cachePredicate(this::isCaching).build().getBrAPIClassesAsMap();
 
         assertEquals(165, map.size());
 

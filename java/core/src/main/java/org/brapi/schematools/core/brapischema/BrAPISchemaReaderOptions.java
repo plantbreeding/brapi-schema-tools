@@ -15,7 +15,9 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 /**
  * Options for the {@link BrAPISchemaReaderOptions}.
@@ -32,6 +34,7 @@ public class BrAPISchemaReaderOptions implements Options {
     private Boolean warnAboutDuplicateProperties;
     private Boolean ignoreDepreciatedSchemas;
     private Boolean ignoreDepreciatedProperties;
+    private List<String> validClasses = new ArrayList<>();
 
     /**
      * Load the default options

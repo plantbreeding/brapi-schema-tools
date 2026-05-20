@@ -49,12 +49,8 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         linkTypeFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'linkTypeFor' on %s",
                     name,
                     this.getClass().getSimpleName()

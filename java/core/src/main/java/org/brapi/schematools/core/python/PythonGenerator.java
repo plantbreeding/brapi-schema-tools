@@ -100,7 +100,7 @@ public class PythonGenerator {
         private final PythonGeneratorMetadata metadata;
 
         public Generator(List<BrAPIClass> brAPIClasses, PythonGeneratorMetadata metadata) {
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCacheWithPredicate(this::isGenerating, brAPIClasses);
+            this.brAPIClassCache = BrAPIClassCacheBuilder.builder(brAPIClasses).cachePredicate(this::isGenerating).build();
             this.metadata = metadata;
         }
 

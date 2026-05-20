@@ -106,13 +106,9 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         generateFor.forEach((name, generateForInner) -> {
             if (generateForInner == null) return; // null = removal marker, skip validation
-            validation.assertTrue(brAPIClassCache.containsPrimaryModel(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'generateFor' on %s",
                     name,
                     this.getClass().getSimpleName()

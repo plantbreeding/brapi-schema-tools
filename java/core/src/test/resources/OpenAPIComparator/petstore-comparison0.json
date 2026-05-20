@@ -5,8 +5,8 @@
   "changedSchemas" : [ ],
   "changedElements" : [ null ],
   "deprecatedEndpoints" : [ ],
-  "unchanged" : true,
+  "compatible" : true,
   "incompatible" : false,
-  "different" : false,
-  "compatible" : true
+  "unchanged" : true,
+  "different" : false
 }

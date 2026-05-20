@@ -448,7 +448,7 @@ properties:
                 sample: false
                 study: false
             GermplasmMCPD:
-                germplasm: true
+                germplasm: false
             List:
                 listOwnerPerson: false
             MarkerPosition:
@@ -502,6 +502,8 @@ properties:
                 cross: false
             GermplasmAttributeValue:
                 attribute: false
+            GermplasmMCPD:
+                germplasm: true
             List:
                 listOwnerPerson: false
             MarkerPosition:

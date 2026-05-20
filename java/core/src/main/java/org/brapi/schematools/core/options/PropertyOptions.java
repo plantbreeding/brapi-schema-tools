@@ -98,12 +98,8 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = Validation.valid() ;
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         linkFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'clusteringFor' on %s",
                     name,
                     this.getClass().getSimpleName()
@@ -111,7 +107,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         }) ;
 
         propertyFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'propertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
@@ -119,7 +115,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         }) ;
 
         pluralPropertyFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'pluralPropertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
@@ -127,7 +123,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         }) ;
 
         linkPropertyFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'linkPropertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
