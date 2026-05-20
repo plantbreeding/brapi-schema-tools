@@ -91,7 +91,7 @@ public class RGenerator {
         private final BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache;
         private final RGeneratorMetadata metadata ;
         public Generator(List<BrAPIClass> brAPIClasses, RGeneratorMetadata metadata) {
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPIClasses) ;
+            this.brAPIClassCache = BrAPIClassCacheBuilder.builder(brAPIClasses).build() ;
             this.metadata = metadata ;
         }
 

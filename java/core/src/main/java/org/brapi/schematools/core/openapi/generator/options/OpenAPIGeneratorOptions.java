@@ -213,13 +213,9 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         generateNewRequestFor.forEach((name, value) -> {
             if (value != null) {
-                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                     String.format("Invalid BrAPI Class name '%s' set for 'generateNewRequestFor' on %s",
                             name,
                             this.getClass().getSimpleName()
@@ -229,7 +225,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         getPathItemNameFor().forEach((name, value) -> {
             if (value != null) {
-                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                     String.format("Invalid BrAPI Class name '%s' set for 'pathItemNameFor' on %s",
                         name,
                         this.getClass().getSimpleName()
@@ -239,7 +235,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         tagFor.forEach((name, value) -> {
             if (value != null) {
-                validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+                validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                     String.format("Invalid BrAPI Class name '%s' set for 'tagFor' on %s",
                         name,
                         this.getClass().getSimpleName()

@@ -34,7 +34,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     public ANSICreateTableDDLGenerator(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, List<BrAPIClass> brAPIClasses) {
         this.options = options;
         this.metadata = metadata;
-        this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPIClasses);
+        this.brAPIClassCache = BrAPIClassCacheBuilder.builder(brAPIClasses).build();
 
         this.tableUsing = options.getTableUsing() != null && !options.getTableUsing().isBlank() ? options.getTableUsing() : null;
         this.tableProperties = options.getTableProperties();

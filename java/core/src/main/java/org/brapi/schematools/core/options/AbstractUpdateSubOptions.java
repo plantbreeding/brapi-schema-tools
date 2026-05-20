@@ -57,12 +57,8 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         multipleFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'multipleFor' on %s",
                     name,
                     this.getClass().getSimpleName()
@@ -70,7 +66,7 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         }) ;
 
         useAdditionalProperties.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'useAdditionalProperties' on %s",
                     name,
                     this.getClass().getSimpleName()

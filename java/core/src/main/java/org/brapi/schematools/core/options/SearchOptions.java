@@ -78,10 +78,6 @@ public class SearchOptions extends AbstractListOptions {
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
         Validation validation = super.validateAgainstCache(brAPIClassCache);
 
-        if (!brAPIClassCache.isValidating()) {
-            return validation;
-        }
-
         listFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.containsBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'listFor' on %s",

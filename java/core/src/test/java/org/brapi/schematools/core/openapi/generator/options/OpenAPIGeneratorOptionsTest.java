@@ -85,7 +85,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
                 .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
                 .getResult();
 
-            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas));
+            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).build());
 
             validation.getErrors().forEach(error -> log.error(error.getMessage()));
 
@@ -105,11 +105,31 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
                 .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
                 .getResult();
 
-            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.createCache(schemas));
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).build());
 
             validation.getErrors().forEach(error -> log.error(error.getMessage()));
 
             assertFalse(validation.isValid());
+
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void validateAgainstCacheValid() {
+        try {
+            List<BrAPIClass> schemas = new BrAPISchemaReader()
+                .readDirectories(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()))
+                .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
+                .getResult();
+
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).validClass("test").build());
+
+            validation.getErrors().forEach(error -> log.error(error.getMessage()));
+
+            assertTrue(validation.isValid());
 
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -125,11 +145,11 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
                 .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
                 .getResult();
 
-            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.createCacheWithoutValidation(schemas));
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).notValidating().build());
 
             validation.getErrors().forEach(error -> log.error(error.getMessage()));
 
-            assertTrue(validation.isValid());
+            assertFalse(validation.isValid());
 
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);

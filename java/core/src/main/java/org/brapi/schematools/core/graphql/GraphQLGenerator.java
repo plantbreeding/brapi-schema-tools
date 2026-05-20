@@ -114,7 +114,7 @@ public class GraphQLGenerator {
             this.options = options;
             this.metadata = metadata;
 
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPISchemas);
+            this.brAPIClassCache = BrAPIClassCacheBuilder.builder(brAPISchemas).build();
             outputTypes = new TreeMap<>();
             interfaceTypes = new TreeMap<>();
             unionTypes = new TreeMap<>();

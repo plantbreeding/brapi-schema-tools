@@ -161,7 +161,7 @@ public class OpenAPIGenerator {
             this.options = options;
             this.metadata = metadata;
             // cache all the BrAPI classes
-            this.brAPIClassCache = BrAPIClassCacheBuilder.createCache(brAPIClasses) ;
+            this.brAPIClassCache = BrAPIClassCacheBuilder.builder(brAPIClasses).build();
 
             // Cache all the generic components (TODO generate these instead of reading from a directory)
             if (components.getParameters() != null) {

@@ -1,7 +1,11 @@
 package org.brapi.schematools.core.utils;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 
@@ -35,48 +39,40 @@ import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
  * passed the {@link BrAPIClassCache#cachePredicate}
  *
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Accessors(fluent = true)
 public class BrAPIClassCacheBuilder {
+    private final List<BrAPIClass> brAPIClasses ;
+    @Setter
+    private Predicate<BrAPIClass> cachePredicate ;
+    private boolean validate ;
+    @Setter
+    private List<String> validClasses ;
+
     /**
-     * Creates the cache
+     * Creates the default builder
      *
      * @param brAPIClasses the list of possible classes to be cached.
      * @return the cache of classes
      */
-    public static BrAPIClassCache createCache(List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(brAPIClass -> true, true, brAPIClasses);
+    public static BrAPIClassCacheBuilder builder(List<BrAPIClass> brAPIClasses) {
+        return new BrAPIClassCacheBuilder(brAPIClasses, brAPIClass -> true, true, new ArrayList<>());
     }
 
-    /**
-     * Creates the cache with a cache predicate that determines if a class is added to the cache as a primary class.
-     *
-     * @param cachePredicate the cache predicate that determines if a class is added to the cache as a primary class.
-     * @param brAPIClasses   the list of classes to be cached.
-     * @return the cache of classes
-     */
-    public static BrAPIClassCache createCacheWithPredicate(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(cachePredicate, true, brAPIClasses);
+    public BrAPIClassCache build() {
+        return new BrAPIClassCache(brAPIClasses, cachePredicate, validate, validClasses) ;
     }
 
-    /**
-     * Creates the cache, but switches off any validation
-     *
-     * @param brAPIClasses the list of possible classes to be cached.
-     * @return the cache of classes
-     */
-    public static BrAPIClassCache createCacheWithoutValidation(List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(brAPIClass -> true, false, brAPIClasses);
+    public BrAPIClassCacheBuilder notValidating() {
+        validate = false ;
+
+        return this;
     }
 
-    /**
-     * Creates the cache with a cache predicate that determines if a class is added to the cache as a primary class,
-     * and switches off any validation.
-     *
-     * @param cachePredicate the cache predicate that determines if a class is added to the cache as a primary class.
-     * @param brAPIClasses   the list of classes to be cached.
-     * @return the cache of classes
-     */
-    public static BrAPIClassCache createCacheWithPredicateAndNoValidation(Predicate<BrAPIClass> cachePredicate, List<BrAPIClass> brAPIClasses) {
-        return new BrAPIClassCache(cachePredicate, false, brAPIClasses);
+    public BrAPIClassCacheBuilder validClass(String className) {
+        validClasses.add(className);
+
+        return this;
     }
 
     public static class BrAPIClassCache {
@@ -92,17 +88,22 @@ public class BrAPIClassCacheBuilder {
         private final Map<String, Set<BrAPIClass>> exclusiveDependencies;
         private final Map<String, Set<BrAPIClass>> commonDependencies;
         private final Map<String, Set<BrAPIClass>> primaryDependencies;
-        @Getter
+        @Getter(AccessLevel.PUBLIC)
         private final List<BrAPIClass> primaryClasses;
         @Getter
         private final List<BrAPIClass> allNonPrimaryDependencies;
         private final boolean validate;
+        private final Set<String> validClasses ;
 
-        private BrAPIClassCache(Predicate<BrAPIClass> cachePredicate, boolean validate, List<BrAPIClass> brAPIClasses) {
+        private BrAPIClassCache(List<BrAPIClass> brAPIClasses, Predicate<BrAPIClass> cachePredicate, boolean validate, List<String> validClasses) {
             this.inputClassMap = brAPIClasses.stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity()));
 
             this.cachePredicate = cachePredicate;
             this.validate = validate;
+            this.validClasses = new TreeSet<>(validClasses) ;
+
+            this.validClasses.add("ServerInfo") ; // TODO remove temp fix
+
             brAPIClassMap = new TreeMap<>();
 
             usedBy = new TreeMap<>();
@@ -136,6 +137,14 @@ public class BrAPIClassCacheBuilder {
                     allNonPrimaryDependencies.add(dependentClass);
                 }
             });
+        }
+
+        public List<BrAPIClass> getPrimaryClasses() {
+            return primaryClasses;
+        }
+
+        public List<BrAPIClass> getAllNonPrimaryDependencies() {
+            return allNonPrimaryDependencies;
         }
 
         private boolean isPrimaryClass(BrAPIClass brAPIClass) {
@@ -290,6 +299,18 @@ public class BrAPIClassCacheBuilder {
         }
 
         /**
+         * Determines if the cache contains a valid BrAPIClass by name. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
+         *
+         * @param name the name of the BrAPIClass
+         * @return {@code true} if there is a BrAPIClass by this the provided name
+         * {@code false} otherwise
+         */
+        public boolean isValidBrAPIClass(String name) {
+            return brAPIClassMap.containsKey(name) || validClasses.contains(name) ;
+        }
+
+        /**
          * Determines if the cache contains a BrAPIClass by name. Includes all classes that were originally passed to the
          * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
          *
@@ -298,7 +319,7 @@ public class BrAPIClassCacheBuilder {
          * {@code false} otherwise
          */
         public boolean containsBrAPIClass(String name) {
-            return brAPIClassMap.containsKey(name) || "ServerInfo".equals(name) ; //TODO remove this workaround
+            return brAPIClassMap.containsKey(name) ;
         }
 
         /**
