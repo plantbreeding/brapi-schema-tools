@@ -107,6 +107,10 @@ public class BrAPISchemaReaderOptions implements Options {
             ignoreDepreciatedProperties = overrideOptions.ignoreDepreciatedProperties ;
         }
 
+        if (overrideOptions.validClasses != null) {
+            validClasses.addAll(overrideOptions.validClasses) ;
+        }
+
         return this ;
     }
 
