@@ -85,7 +85,7 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
                 .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
                 .getResult();
 
-            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).build());
+            Validation validation = OpenAPIGeneratorOptions.load().validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).validClass("ServerInfo").build());
 
             validation.getErrors().forEach(error -> log.error(error.getMessage()));
 
@@ -125,7 +125,11 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
                 .onFailDoWithResponse(response -> fail(response.getMessagesCombined(",")))
                 .getResult();
 
-            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(BrAPIClassCacheBuilder.builder(schemas).validClass("test").build());
+            Validation validation = OpenAPIGeneratorOptions.load().setPluralFor("test", "test").validateAgainstCache(
+                BrAPIClassCacheBuilder.builder(schemas)
+                    .validClass("ServerInfo")
+                    .validClass("test")
+                    .build());
 
             validation.getErrors().forEach(error -> log.error(error.getMessage()));
 

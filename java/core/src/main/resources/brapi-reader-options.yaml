@@ -3,3 +3,5 @@ ignoreDuplicateProperties: false
 warnAboutDuplicateProperties: true
 ignoreDepreciatedSchemas: true
 ignoreDepreciatedProperties: true
+validClasses:
+    - ServerInfo

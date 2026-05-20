@@ -4944,8 +4944,7 @@
             "GermplasmMCPD" : {
                 "required" : [
                     "commonCropName",
-                    "germplasmDbId",
-                    "germplasmName"
+                    "germplasmDbId"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -5183,9 +5182,6 @@
                         "example" : "Aspergillus"
                     },
                     "germplasmDbId" : {
-                        "type" : "string"
-                    },
-                    "germplasmName" : {
                         "type" : "string"
                     },
                     "instituteCode" : {

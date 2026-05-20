@@ -102,8 +102,6 @@ public class BrAPIClassCacheBuilder {
             this.validate = validate;
             this.validClasses = new TreeSet<>(validClasses) ;
 
-            this.validClasses.add("ServerInfo") ; // TODO remove temp fix
-
             brAPIClassMap = new TreeMap<>();
 
             usedBy = new TreeMap<>();
