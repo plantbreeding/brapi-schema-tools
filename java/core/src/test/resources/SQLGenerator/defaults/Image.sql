@@ -19,7 +19,6 @@ CREATE TABLE brapi_Images (
   externalReferences
     ARRAY<
       STRUCT<
-        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >

@@ -9,7 +9,7 @@ CREATE TABLE brapi_Calls (
   -- Link properties
   callSetDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a CallSet within the given database server',
   callSetName STRING COMMENT 'The human readable name which identifies a germplasm within the given database server',
-  variantDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a `Variant`',
+  variantDbId STRING COMMENT 'The ID which uniquely identifies a `Variant`',
   variantSetDbId STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
   variantSetName STRING COMMENT 'The human readable name for a VariantSet',
   -- Properties
@@ -22,9 +22,9 @@ CREATE TABLE brapi_Calls (
         fieldName STRING COMMENT 'The name of the field represented in this Genotype Field. Examples include: "Genotype Quality", "Read Depth", and "Haplotype Quality" <br> This maps to a FORMAT field in the VCF file standard.',
         fieldValue STRING COMMENT 'The additional metadata value associated with this genotype call'
       >
-    > COMMENT 'Genotype Metadata are additional layers of metadata associated with each genotype.',
-  genotypeValue STRING COMMENT 'The value of this genotype call',
-  phaseSet STRING COMMENT 'If this field is populated, this variant call''s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.'
+    > NOT NULL COMMENT 'Genotype Metadata are additional layers of metadata associated with each genotype.',
+  genotypeValue STRING NOT NULL COMMENT 'The value of this genotype call',
+  phaseSet STRING NOT NULL COMMENT 'If this field is populated, this variant call''s genotype ordering implies the phase of the bases and  is consistent with any other variant calls on the same contig which have the same phase set string.'
 ) 
 COMMENT 'A `Call` represents the determination of genotype with respect to a particular `Variant`.   It may include associated information such as quality and phasing. For example, a call might assign a probability of 0.32 to the occurrence of a SNP named RS_1234 in a call set with the name NA_12345.';
 
