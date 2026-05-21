@@ -1,5 +1,8 @@
 ALTER TABLE IF EXISTS brapi_CallSets ADD CONSTRAINT CallSets_Samples_fk FOREIGN KEY(sampleDbId, samplePUI, sampleName) REFERENCES brapi_Samples ;
 ALTER TABLE IF EXISTS brapi_CallSets ADD CONSTRAINT CallSets_Studies_fk FOREIGN KEY(studyDbId, studyPUI, studyName) REFERENCES brapi_Studies ;
+ALTER TABLE IF EXISTS brapi_Calls ADD CONSTRAINT Calls_CallSets_fk FOREIGN KEY(callSetDbId, callSetName) REFERENCES brapi_CallSets ;
+ALTER TABLE IF EXISTS brapi_Calls ADD CONSTRAINT Calls_VariantSets_fk FOREIGN KEY(variantSetDbId, variantSetName) REFERENCES brapi_VariantSets ;
+ALTER TABLE IF EXISTS brapi_Calls ADD CONSTRAINT Calls_Variants_fk FOREIGN KEY(variantDbId) REFERENCES brapi_Variants ;
 ALTER TABLE IF EXISTS brapi_Crosses ADD CONSTRAINT Crosses_CrossingProjects_fk FOREIGN KEY(crossingProjectDbId, crossingProjectName) REFERENCES brapi_CrossingProjects ;
 ALTER TABLE IF EXISTS brapi_Crosses ADD CONSTRAINT Crosses_PlannedCrosses_fk FOREIGN KEY(plannedCrossDbId, plannedCrossName) REFERENCES brapi_PlannedCrosses ;
 ALTER TABLE IF EXISTS brapi_CrossingProjects ADD CONSTRAINT CrossingProjects_Programs_fk FOREIGN KEY(programDbId, programName) REFERENCES brapi_Programs ;

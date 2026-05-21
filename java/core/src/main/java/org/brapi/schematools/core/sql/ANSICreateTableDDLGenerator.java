@@ -115,6 +115,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 && !brAPIObjectType.getMetadata().getControlledVocabularyProperties().isEmpty()) {
                 brAPIObjectType.getProperties()
                     .stream()
+                    .filter(this::isAddingDepreciatedProperty)
                     .filter(property -> brAPIObjectType.getMetadata().getControlledVocabularyProperties().contains(property.getName()))
                     .map(property -> new ControlledVocabularyTable(brAPIObjectType, property))
                     .forEach(controlledVocabularyTables::add) ;
@@ -404,8 +405,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             List<BrAPIObjectProperty> linkProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
-                .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) == ID)
-                .filter(p -> !primaryProps.contains(p))
+                .filter(this::isAddingDepreciatedProperty)
+                .filter(property -> getLinkTypeFor(brAPIObjectType, property).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) == ID)
+                .filter(property -> !primaryProps.contains(property))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
                 .forEach(linkProps::add);
 
@@ -418,6 +420,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             List<BrAPIObjectProperty> clusterProps = new ArrayList<>();
             options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
                 .stream()
+                .filter(this::isAddingDepreciatedProperty)
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
                 .filter(p -> !seen.contains(p))
                 .forEach(clusterProps::add);
@@ -427,6 +430,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             List<BrAPIObjectProperty> otherProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
+                .filter(this::isAddingDepreciatedProperty)
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
                 .filter(p -> !seen.contains(p))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
@@ -440,6 +444,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return buildGroupedColumnDefinitions(brAPIObjectType,
                 List.of(primaryProps,           linkProps,              clusterProps,                   otherProps),
                 List.of("-- Primary properties", "-- Link properties",   "-- Clustering properties",     otherComment));
+        }
+
+        private boolean isAddingDepreciatedProperty(BrAPIObjectProperty property) {
+            return !(options.getBrAPISchemaReader().isIgnoringDepreciatedProperties() && property.isDeprecated()) ;
         }
 
         /**

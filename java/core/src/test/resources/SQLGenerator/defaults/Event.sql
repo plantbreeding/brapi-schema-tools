@@ -13,7 +13,6 @@ CREATE TABLE brapi_Events (
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
-  date ARRAY<STRING> COMMENT '**Deprecated in v2.1** Please use `eventDateRange.discreteDates`. Github issue number #440 <br>A list of dates when the event occurred <br>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
   eventDateRange 
     STRUCT<
       -- Link properties
@@ -32,9 +31,7 @@ CREATE TABLE brapi_Events (
         -- Properties
         code STRING COMMENT 'The shortened code name of an event parameter <br>ICASA "Code_Display"',
         description STRING COMMENT 'A human readable description of this event parameter. This description is usually associated with the ''name'' and ''code'' of an event parameter.',
-        key STRING COMMENT '**Deprecated in v2.1** Please use `name`. Github issue number #440              <br>Specifies the relationship between the event and the given property. E.g. fertilizer, operator',
         name STRING COMMENT 'The full name of an event parameter <br>ICASA "Variable_Name"',
-        rdfValue STRING COMMENT '**Deprecated in v2.1** Please use `code`. Github issue number #440              <brThe type of the value given above, e.g. http://xmlns.com/foaf/0.1/Agent',
         units STRING COMMENT 'The units or data type of the ''value''.  <br>If the ''value'' comes from a standardized vocabulary or an encoded list of values, then ''unit'' should be ''code''.  <br>If the ''value'' IS NOT a number, then ''unit'' should specify a data type eg. ''text'', ''boolean'', ''date'', etc.  <br>If the value IS a number, then ''unit'' should specify the units used eg. ''ml'', ''cm'', etc <br>ICASA "Unit_or_type"',
         value STRING COMMENT 'The single value of this event parameter. This single value is accurate for all the dates in the date range. If ''value'' is populated then ''valuesByDate'' should NOT be populated.',
         valueDescription STRING COMMENT 'If the event parameter ''unit'' field is ''code'', then use ''valueDescription'' to add a human readable description to the value.',

@@ -14,7 +14,6 @@ CREATE TABLE brapi_Variants (
   -- Properties
   additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   alternateBases ARRAY<STRING> COMMENT 'The bases that appear instead of the reference bases. Multiple alternate alleles are possible.',
-  alternate_bases ARRAY<STRING> COMMENT '**Deprecated in v2.1** Please use `alternateBases`. Github issue number #549 <br>The bases that appear instead of the reference bases. Multiple alternate alleles are possible.',
   ciend ARRAY<INT> COMMENT 'Similar to "cipos", but for the variant''s end position (which is derived from start + svlen).',
   cipos ARRAY<INT> COMMENT 'In the case of structural variants, start and end of the variant may not be known with an exact base position. "cipos" provides an interval with high confidence for the start position. The interval is provided by 0 or 2 signed integers which are added to the start position. Based on the use in VCF v4.2',
   created STRING COMMENT 'The timestamp when this variant was created.',
@@ -22,7 +21,6 @@ CREATE TABLE brapi_Variants (
   externalReferences
     ARRAY<
       STRUCT<
-        referenceID STRING COMMENT '**Deprecated in v2.1** Please use `referenceId`. Github issue number #460 <br>The external reference ID. Could be a simple string or a URI.',
         referenceId STRING COMMENT 'The external reference ID. Could be a simple string or a URI.',
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
