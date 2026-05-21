@@ -321,6 +321,11 @@ search:
         Trait: false
     propertiesFromRequest: true
     propertyFromRequestFor:
+        AlleleMatrix:
+            dimensionCallSetPage: false
+            dimensionCallSetPageSize: false
+            dimensionVariantPage: false
+            dimensionVariantPageSize: false
         Observation:
             observationUnitLevelNames: false
             observationUnitLevelOrders: false
@@ -337,6 +342,9 @@ search:
             observationUnitLevelRelationshipOrders: false
             observationUnitLevelRelationshipCodes: false
             observationUnitLevelRelationshipDbIds: false
+        Trial:
+            sortBy: false
+            sortOrder: false
 table:
     generate: false
     summaryFormat: Get a table of `%s` records as a CSV file.
@@ -449,10 +457,15 @@ properties:
                 study: false
             GermplasmMCPD:
                 germplasm: false
+            Image:
+                observationUnit: false
             List:
                 listOwnerPerson: false
             MarkerPosition:
                 variant: true
+            Observation:
+                season: false
+                study: false
             ObservationUnitLevelRelationship:
                 observationUnit: false
             Plate:
@@ -470,6 +483,9 @@ properties:
             SeedLotTransaction:
                 fromSeedLot: false
                 toSeedLot: false
+            VariantSet:
+                referenceSet: false
+                study: false
     pui:
         nameFormat: "%sPUI"
         link: true
@@ -508,6 +524,18 @@ properties:
                 listOwnerPerson: false
             MarkerPosition:
                 variant: false
+            Observation:
+                observationVariable: false
+                season: false
+            ObservationUnit:
+                cross: false
+                location: false
+                program: false
+                seedLot: false
+                observationVariable: false
+                season: false
+            OntologyReference:
+                ontology: false
             PedigreeNode:
                 breedingMethod: false
                 germplasm: true
@@ -515,12 +543,15 @@ properties:
                 program: false
             Program:
                 leadPerson: false
-            SeedLot:
-                location: false
-                program: false
             Sample:
                 plate: false
                 program: false
+            SeedLot:
+                location: false
+                program: false
+            SeedLotTransaction:
+                fromSeedLot: false
+                toSeedLot: false
             Study:
                 location: false
             Trial:
@@ -581,6 +612,11 @@ properties:
             observation: none
             observationUnit: none
             germplasmOrigin: none
+        GeoJSONSearchArea:
+            image: none
+            observation: none
+            observationUnit: none
+            germplasmOrigin: none
         GenomeMap:
             linkageGroups: sub-query
         GenotypeMetadata:
@@ -599,6 +635,7 @@ properties:
         GermplasmAttribute:
             attributeValues: none
             method: embedded
+            ontologyReference: embedded
             scale: embedded
             trait: embedded
         GermplasmMCPD:
@@ -639,6 +676,7 @@ properties:
             studies: none
             observations: none
             method: embedded
+            ontologyReference: embedded
             scale: embedded
             trait: embedded
         Pagination:
@@ -705,9 +743,9 @@ properties:
             calls: sub-query
             variantSets: id
         VariantSet:
+            availableFormats: embedded
             calls: sub-query
             callSets: sub-query
-            study: none
             variants: sub-query
         ValidValuesCategory:
             validValues: none
