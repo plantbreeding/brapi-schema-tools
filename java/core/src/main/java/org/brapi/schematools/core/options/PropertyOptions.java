@@ -339,7 +339,8 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
 
 
     /**
-     * Gets whether a property can be used to link from a parent type to a child type
+     * Gets whether a property can be used to link from a parent type to a child type,
+     * if {code}true{code} it overrides the value from {@link #isLinkFor(BrAPIType)}
      * @param parentTypeName The BrAPI parent object type name
      * @param propertyName The BrAPI property name
      * @param childTypeName The BrAPI child type name
@@ -350,14 +351,15 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
 
         if (map != null) {
             Boolean value = map.get(propertyName);
-            return value != null ? value && isLinkFor(childTypeName) : isLinkFor(childTypeName);
+            return value != null ? value : isLinkFor(childTypeName);
         }
 
         return isLinkFor(childTypeName)  ;
     }
 
     /**
-     * Gets whether a property can be used to link from a parent type to a child type
+     * Gets whether a property can be used to link from a parent type to a child type,
+     * if {code}true{code} it overrides the value from {@link #isLinkFor(BrAPIType)}
      *
      * @param parentType The BrAPI parent object type
      * @param property The BrAPI property
@@ -369,7 +371,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
         if (map != null) {
             Boolean value = map.get(property.getName());
-            return value != null ? value && isLinkFor(childType.getName()) : isLinkFor(childType.getName());
+            return value != null ? value : isLinkFor(childType.getName());
         }
         return isLinkFor(childType.getName()) ;
     }
