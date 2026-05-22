@@ -3671,30 +3671,6 @@
                     "geometry" : {
                         "$ref" : "#/components/schemas/GeoJSONGeometry"
                     },
-                    "germplasmOrigin" : {
-                        "$ref" : "#/components/schemas/GermplasmOrigin"
-                    },
-                    "imageDbId" : {
-                        "type" : "string"
-                    },
-                    "imageName" : {
-                        "type" : "string"
-                    },
-                    "imagePUI" : {
-                        "type" : "string"
-                    },
-                    "observationDbId" : {
-                        "type" : "string"
-                    },
-                    "observationName" : {
-                        "type" : "string"
-                    },
-                    "observationPUI" : {
-                        "type" : "string"
-                    },
-                    "observationUnit" : {
-                        "$ref" : "#/components/schemas/ObservationUnitPosition"
-                    },
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
@@ -4322,10 +4298,6 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "observationUnitName" : {
                         "type" : "string",
                         "nullable" : true
                     }
@@ -5081,27 +5053,11 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "observationVariablePUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "seasonDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },
-                    "seasonName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seasonPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "studyDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "studyName" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -5633,10 +5589,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "crossPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "externalReferences" : {
                         "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
@@ -5661,10 +5613,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "locationPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "observationUnitName" : {
                         "type" : "string",
                         "description" : "A human readable name for an observation unit",
@@ -5686,19 +5634,11 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "programPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "seedLotDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },
                     "seedLotName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seedLotPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -6842,9 +6782,6 @@
                         "type" : "string"
                     },
                     "ontologyName" : {
-                        "type" : "string"
-                    },
-                    "ontologyPUI" : {
                         "type" : "string"
                     },
                     "ontologyReferenceDbId" : {

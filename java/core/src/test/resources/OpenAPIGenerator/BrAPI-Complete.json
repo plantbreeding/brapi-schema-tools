@@ -10729,30 +10729,6 @@
                         "nullable" : true,
                         "example" : "Genotype,Read Depth"
                     },
-                    "dimensionCallSetPage" : {
-                        "type" : "integer",
-                        "description" : "The requested page number for the CallSet dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionCallSetPageSize" : {
-                        "type" : "integer",
-                        "description" : "The requested page size for the CallSet dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionVariantPage" : {
-                        "type" : "integer",
-                        "description" : "The requested page number for the Variant dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionVariantPageSize" : {
-                        "type" : "integer",
-                        "description" : "The requested page size for the Variant dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
@@ -13080,30 +13056,6 @@
                     "geometry" : {
                         "$ref" : "#/components/schemas/GeoJSONGeometry"
                     },
-                    "germplasmOrigin" : {
-                        "$ref" : "#/components/schemas/GermplasmOrigin"
-                    },
-                    "imageDbId" : {
-                        "type" : "string"
-                    },
-                    "imageName" : {
-                        "type" : "string"
-                    },
-                    "imagePUI" : {
-                        "type" : "string"
-                    },
-                    "observationDbId" : {
-                        "type" : "string"
-                    },
-                    "observationName" : {
-                        "type" : "string"
-                    },
-                    "observationPUI" : {
-                        "type" : "string"
-                    },
-                    "observationUnit" : {
-                        "$ref" : "#/components/schemas/ObservationUnitPosition"
-                    },
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
@@ -14089,15 +14041,6 @@
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
-                    },
-                    "pedigreeNodeDbId" : {
-                        "type" : "string"
-                    },
-                    "pedigreeNodeName" : {
-                        "type" : "string"
-                    },
-                    "pedigreeNodePUI" : {
-                        "type" : "string"
                     }
                 },
                 "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes."
@@ -14105,7 +14048,8 @@
             "GermplasmMCPD" : {
                 "required" : [
                     "commonCropName",
-                    "germplasmDbId"
+                    "germplasmDbId",
+                    "germplasmPUI"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -14345,6 +14289,9 @@
                     "germplasmDbId" : {
                         "type" : "string"
                     },
+                    "germplasmPUI" : {
+                        "type" : "string"
+                    },
                     "instituteCode" : {
                         "type" : "string",
                         "description" : "MCPD (v2.1) (INSTCODE) 1. FAO WIEWS code of the institute where the accession is maintained. The codes consist of the 3-letter ISO 3166 country code of the country where the institute is located plus a number (e.g. PER001). The current set of institute codes is available from http://www.fao.org/wiews. For those institutes not yet having an FAO Code, or for those with \"obsolete\" codes, see \"Common formatting rules (v)\".",
@@ -14481,9 +14428,6 @@
                         "type" : "string"
                     },
                     "breedingMethodName" : {
-                        "type" : "string"
-                    },
-                    "breedingMethodPUI" : {
                         "type" : "string"
                     },
                     "collection" : {
@@ -15156,10 +15100,6 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "observationUnitName" : {
                         "type" : "string",
                         "nullable" : true
                     }
@@ -16670,27 +16610,11 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "observationVariablePUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "seasonDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },
-                    "seasonName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seasonPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "studyDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "studyName" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -17222,10 +17146,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "crossPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "externalReferences" : {
                         "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
@@ -17250,10 +17170,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "locationPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "observationUnitName" : {
                         "type" : "string",
                         "description" : "A human readable name for an observation unit",
@@ -17275,19 +17191,11 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "programPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "seedLotDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },
                     "seedLotName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seedLotPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -18433,9 +18341,6 @@
                     "ontologyName" : {
                         "type" : "string"
                     },
-                    "ontologyPUI" : {
-                        "type" : "string"
-                    },
                     "ontologyReferenceDbId" : {
                         "type" : "string",
                         "description" : "The ID which uniquely identifies a ontology reference",
@@ -18555,6 +18460,7 @@
                 "required" : [
                     "germplasmDbId",
                     "germplasmName",
+                    "germplasmPUI",
                     "pedigreeNodeDbId"
                 ],
                 "type" : "object",
@@ -18598,6 +18504,9 @@
                         "type" : "string"
                     },
                     "germplasmName" : {
+                        "type" : "string"
+                    },
+                    "germplasmPUI" : {
                         "type" : "string"
                     },
                     "parents" : {
@@ -21731,15 +21640,7 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "fromSeedLotPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "toSeedLotDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "toSeedLotPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -23765,6 +23666,14 @@
                             "$ref" : "#/components/schemas/Analysis"
                         }
                     },
+                    "availableFormats" : {
+                        "type" : "array",
+                        "description" : "When the data for a VariantSet is retrieved, it can be retrieved in a variety of data formats and file formats. \n<br/>'dataFormat' defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc)\n<br/>'fileFormat' defines the MIME type of the file (ie text/csv, application/excel, application/zip). This should also be reflected in the Accept and ContentType HTTP headers for every relevant request and response.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/AvailableFormat"
+                        }
+                    },
                     "callSetCount" : {
                         "type" : "integer",
                         "description" : "The number of CallSets included in this VariantSet",
@@ -23790,7 +23699,7 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "referenceSetName" : {
+                    "studyDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },

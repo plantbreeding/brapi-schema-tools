@@ -3430,30 +3430,6 @@
                         "nullable" : true,
                         "example" : "Genotype,Read Depth"
                     },
-                    "dimensionCallSetPage" : {
-                        "type" : "integer",
-                        "description" : "The requested page number for the CallSet dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionCallSetPageSize" : {
-                        "type" : "integer",
-                        "description" : "The requested page size for the CallSet dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionVariantPage" : {
-                        "type" : "integer",
-                        "description" : "The requested page number for the Variant dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
-                    "dimensionVariantPageSize" : {
-                        "type" : "integer",
-                        "description" : "The requested page size for the Variant dimension of the matrix",
-                        "format" : "int32",
-                        "nullable" : true
-                    },
                     "expandHomozygotes" : {
                         "type" : "boolean",
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
@@ -4916,30 +4892,6 @@
                 "properties" : {
                     "geometry" : {
                         "$ref" : "#/components/schemas/GeoJSONGeometry"
-                    },
-                    "germplasmOrigin" : {
-                        "$ref" : "#/components/schemas/GermplasmOrigin"
-                    },
-                    "imageDbId" : {
-                        "type" : "string"
-                    },
-                    "imageName" : {
-                        "type" : "string"
-                    },
-                    "imagePUI" : {
-                        "type" : "string"
-                    },
-                    "observationDbId" : {
-                        "type" : "string"
-                    },
-                    "observationName" : {
-                        "type" : "string"
-                    },
-                    "observationPUI" : {
-                        "type" : "string"
-                    },
-                    "observationUnit" : {
-                        "$ref" : "#/components/schemas/ObservationUnitPosition"
                     },
                     "type" : {
                         "type" : "string",
@@ -10087,6 +10039,14 @@
                             "$ref" : "#/components/schemas/Analysis"
                         }
                     },
+                    "availableFormats" : {
+                        "type" : "array",
+                        "description" : "When the data for a VariantSet is retrieved, it can be retrieved in a variety of data formats and file formats. \n<br/>'dataFormat' defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc)\n<br/>'fileFormat' defines the MIME type of the file (ie text/csv, application/excel, application/zip). This should also be reflected in the Accept and ContentType HTTP headers for every relevant request and response.",
+                        "nullable" : true,
+                        "items" : {
+                            "$ref" : "#/components/schemas/AvailableFormat"
+                        }
+                    },
                     "callSetCount" : {
                         "type" : "integer",
                         "description" : "The number of CallSets included in this VariantSet",
@@ -10112,7 +10072,7 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "referenceSetName" : {
+                    "studyDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },

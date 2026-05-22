@@ -541,9 +541,6 @@
                     "breedingMethodName" : {
                         "type" : "string"
                     },
-                    "breedingMethodPUI" : {
-                        "type" : "string"
-                    },
                     "collection" : {
                         "type" : "string",
                         "description" : "A specific panel/collection/population name this germplasm belongs to.",

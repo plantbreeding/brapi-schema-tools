@@ -3414,30 +3414,6 @@
                     "geometry" : {
                         "$ref" : "#/components/schemas/GeoJSONGeometry"
                     },
-                    "germplasmOrigin" : {
-                        "$ref" : "#/components/schemas/GermplasmOrigin"
-                    },
-                    "imageDbId" : {
-                        "type" : "string"
-                    },
-                    "imageName" : {
-                        "type" : "string"
-                    },
-                    "imagePUI" : {
-                        "type" : "string"
-                    },
-                    "observationDbId" : {
-                        "type" : "string"
-                    },
-                    "observationName" : {
-                        "type" : "string"
-                    },
-                    "observationPUI" : {
-                        "type" : "string"
-                    },
-                    "observationUnit" : {
-                        "$ref" : "#/components/schemas/ObservationUnitPosition"
-                    },
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
