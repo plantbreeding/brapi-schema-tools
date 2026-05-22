@@ -22,7 +22,7 @@ CREATE TABLE brapi_ObservationVariables (
   commonCropName STRING COMMENT 'Crop name (examples: "Maize", "Wheat")',
   status STRING COMMENT 'Variable status. (examples: "recommended", "obsolete", "legacy", etc.)',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   contextOfUse ARRAY<STRING> COMMENT 'Indication of how trait is routinely used. (examples: ["Trial evaluation", "Nursery evaluation"])',
   defaultValue STRING COMMENT 'Variable default value. (examples: "red", "2.3", etc.)',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',

@@ -9,7 +9,7 @@ CREATE TABLE brapi_Traits (
   traitDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a trait',
   traitName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a trait <br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation',
   traitPUI STRING PRIMARY KEY COMMENT 'The Permanent Unique Identifier of a Trait, usually in the form of a URI',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   alternativeAbbreviations ARRAY<STRING> COMMENT 'A list of shortened, human readable, names for a Trait. These abbreviations are acceptable alternatives to the mainAbbreviation and do not need to follow any formatting convention.',
   attribute STRING COMMENT 'A trait can be decomposed as "Trait" = "Entity" + "Attribute", the attribute is the observed feature (or characteristic) of the entity e.g., for "grain colour", attribute = "colour"',
   attributePUI STRING COMMENT 'The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI <br/>A trait can be decomposed as "Trait" = "Entity" + "Attribute", the attribute is the observed feature (or characteristic) of the entity e.g., for "grain colour", attribute = "colour"',

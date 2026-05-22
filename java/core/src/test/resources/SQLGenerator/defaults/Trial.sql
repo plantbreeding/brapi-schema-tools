@@ -16,7 +16,7 @@ CREATE TABLE brapi_Trials (
   commonCropName STRING COMMENT 'Common name for the crop associated with this trial',
   -- Properties
   active BOOLEAN COMMENT 'A flag to indicate if a Trial is currently active and ongoing',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   contacts
     ARRAY<
       STRUCT<

@@ -123,7 +123,7 @@ public class BrAPISchemaReader {
         private Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) {
 
             try (Stream<Path> schemas = find(schemaDirectory, 3, this::schemaPathMatcher)) {
-                return dereferenceAndValidate(schemas.map(this::createBrAPISchemas).collect(Response.mergeLists()));
+                return postProcessAndValidate(schemas.map(this::createBrAPISchemas).collect(Response.mergeLists()));
             } catch (NoSuchFileException noSuchFileException) {
                 return fail(Response.ErrorType.VALIDATION, String.format("The schema directory '%s' does not exist", schemaDirectory));
             } catch (RuntimeException | IOException e) {
@@ -156,23 +156,24 @@ public class BrAPISchemaReader {
             return true;
         }
 
-        private Response<List<BrAPIClass>> dereferenceAndValidate(Response<List<BrAPIClass>> types) {
+        private Response<List<BrAPIClass>> postProcessAndValidate(Response<List<BrAPIClass>> types) {
             return types
-                .mapResultToResponse(this::dereferenceAll)
+                .mapResultToResponse(this::replaceAllOfType)
+                .mapResultToResponse(this::updateNullable)
                 .mapResultToResponse(this::validate);
         }
 
-        private Response<List<BrAPIClass>> dereferenceAll(List<BrAPIClass> types) {
+        private Response<List<BrAPIClass>> replaceAllOfType(List<BrAPIClass> types) {
 
             Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
 
             return types.stream()
-                .map(type -> dereference(type, typeMap)
+                .map(type -> replaceAllOfType(type, typeMap)
                     .onSuccessDoWithResult(t -> typeMap.replace(t.getName(), t)))
                 .collect(Response.toList());
         }
 
-        private Response<BrAPIClass> dereference(BrAPIClass type, Map<String, BrAPIType> typeMap) {
+        private Response<BrAPIClass> replaceAllOfType(BrAPIClass type, Map<String, BrAPIType> typeMap) {
 
             if (type instanceof BrAPIAllOfType brAPIAllOfType) {
                 BrAPIObjectType.BrAPIObjectTypeBuilder builder = BrAPIObjectType.builder()
@@ -191,6 +192,58 @@ public class BrAPISchemaReader {
             } else {
                 return success(type);
             }
+        }
+
+        private Response<List<BrAPIClass>> updateNullable(List<BrAPIClass> types) {
+
+            Map<String, BrAPIType> typeMap = types.stream().collect(Collectors.toMap(BrAPIType::getName, Function.identity()));
+
+            return types.stream()
+                .map(type -> updateNullable(type, typeMap)
+                    .onSuccessDoWithResult(t -> typeMap.replace(t.getName(), t)))
+                .collect(Response.toList());
+        }
+
+        private Response<BrAPIClass> updateNullable(BrAPIClass type, Map<String, BrAPIType> typeMap) {
+
+            if (type instanceof BrAPIObjectType brAPIObjectType) {
+                BrAPIObjectType.BrAPIObjectTypeBuilder builder = brAPIObjectType.toBuilder() ;
+
+                return brAPIObjectType.getProperties().stream()
+                    .map(property  -> updateNullable(property, typeMap))
+                    .collect(Response.toList())
+                    .onSuccessDoWithResult(builder::properties)
+                    .map(() -> success(builder.build()));
+            } else {
+                return success(type);
+            }
+        }
+
+        private Response<BrAPIObjectProperty> updateNullable(BrAPIObjectProperty property, Map<String, BrAPIType> typeMap) {
+
+            if (property.getNullable() != null) {
+                return success(property);
+            }
+
+            BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = property.toBuilder() ;
+
+            BrAPIType type = property.getType();
+
+            if (type instanceof BrAPIReferenceType brAPIReferenceType) {
+                type = typeMap.get(brAPIReferenceType.getName());
+
+                if (type == null) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("The reference type '%s' does not exist", brAPIReferenceType.getName()));
+                }
+
+            }
+
+            // if no nullable is set then override this from the class nullable
+            if (type instanceof BrAPIClass brAPIClass && brAPIClass.getNullable() != null) {
+                builder.nullable(brAPIClass.getNullable());
+            }
+
+            return success(builder.build()) ;
         }
 
         private Response<List<BrAPIClass>> validate(List<BrAPIClass> brAPIClasses) {
@@ -319,7 +372,7 @@ public class BrAPISchemaReader {
 
                 if (allType instanceof BrAPIClass && isInterface((BrAPIClass) allType)) {
                     if (allType instanceof BrAPIAllOfType) {
-                        dereference((BrAPIAllOfType) allType, typeMap)
+                        replaceAllOfType((BrAPIAllOfType) allType, typeMap)
                             .onSuccessDoWithResult(t -> {
                                 if (t instanceof BrAPIObjectType) {
                                     interfaces.add((BrAPIObjectType) t);

@@ -13,7 +13,7 @@ CREATE TABLE brapi_SeedLots (
   programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
   programName STRING NOT NULL COMMENT 'Human readable name of the program',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   amount DOUBLE COMMENT 'The current balance of the amount of material in a SeedLot. Could be a count (seeds, bulbs, etc) or a weight (kg of seed).',
   contentMixture
     ARRAY<

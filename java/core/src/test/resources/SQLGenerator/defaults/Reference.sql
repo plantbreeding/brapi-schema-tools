@@ -14,7 +14,7 @@ CREATE TABLE brapi_References (
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   bases 
     STRUCT<
       nextPageToken STRING COMMENT 'The continuation token, which is used to page through large result sets. Provide this value in a subsequent request to return the next page of results. This field will be empty if there are not any additional results.',

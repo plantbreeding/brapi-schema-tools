@@ -9,7 +9,7 @@ CREATE TABLE brapi_Methods (
   methodDbId STRING PRIMARY KEY COMMENT 'Method unique identifier',
   methodName STRING NOT NULL PRIMARY KEY COMMENT 'Human readable name for the method <br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation',
   methodPUI STRING PRIMARY KEY COMMENT 'The Permanent Unique Identifier of a Method, usually in the form of a URI',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   bibliographicalReference STRING COMMENT 'Bibliographical reference describing the method. <br/>MIAPPE V1.1 (DM-91) Reference associated to the method - URI/DOI of reference describing the method.',
   description STRING COMMENT 'Method description <br/>MIAPPE V1.1 (DM-90) Method description - Textual description of the method, which may extend a method defined in an external reference with specific parameters, e.g. growth stage, inoculation precise organ (leaf number)',
   externalReferences

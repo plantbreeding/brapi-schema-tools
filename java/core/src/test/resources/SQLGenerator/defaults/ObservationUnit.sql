@@ -27,7 +27,7 @@ CREATE TABLE brapi_ObservationUnits (
   trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   externalReferences
     ARRAY<
       STRUCT<
@@ -82,7 +82,7 @@ CREATE TABLE brapi_ObservationUnits (
       positionCoordinateXType STRING COMMENT 'The type of positional coordinate used for the X coordinate of the position.',
       positionCoordinateY STRING COMMENT 'The Y position coordinate for an observation unit. Different systems may use different coordinate systems.',
       positionCoordinateYType STRING COMMENT 'The type of positional coordinate used for the Y coordinate of the position.'
-    > NOT NULL COMMENT 'All positional and layout information related to this Observation Unit   MIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative)  or level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value.  Levels of observation must be consistent with those listed in the Study section.',
+    > COMMENT 'All positional and layout information related to this Observation Unit   MIAPPE V1.1 (DM-73) Spatial distribution - Type and value of a spatial coordinate (georeference or relative)  or level of observation (plot 45, subblock 7, block 2) provided as a key-value pair of the form type:value.  Levels of observation must be consistent with those listed in the Study section.',
   treatments
     ARRAY<
       STRUCT<

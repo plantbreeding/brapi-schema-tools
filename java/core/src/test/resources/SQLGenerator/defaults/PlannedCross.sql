@@ -11,7 +11,7 @@ CREATE TABLE brapi_PlannedCrosses (
   crossingProjectDbId STRING NOT NULL COMMENT 'The unique identifier for a crossing project',
   crossingProjectName STRING NOT NULL COMMENT 'The human readable name for a crossing project',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   crossType STRING COMMENT 'the type of cross',
   externalReferences
     ARRAY<

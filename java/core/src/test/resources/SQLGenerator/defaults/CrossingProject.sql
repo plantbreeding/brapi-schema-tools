@@ -13,7 +13,7 @@ CREATE TABLE brapi_CrossingProjects (
   -- Clustering properties
   commonCropName STRING COMMENT 'the common name of a crop (for multi-crop systems)',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   crossingProjectDescription STRING COMMENT 'the description for a crossing project',
   externalReferences
     ARRAY<

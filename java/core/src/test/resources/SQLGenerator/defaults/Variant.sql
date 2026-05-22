@@ -12,7 +12,7 @@ CREATE TABLE brapi_Variants (
   referenceSetDbId STRING NOT NULL COMMENT 'The unique identifier for a ReferenceSet',
   referenceSetName STRING NOT NULL COMMENT 'The human readable name of a ReferenceSet',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   alternateBases ARRAY<STRING> COMMENT 'The bases that appear instead of the reference bases. Multiple alternate alleles are possible.',
   ciend ARRAY<INT> COMMENT 'Similar to "cipos", but for the variant''s end position (which is derived from start + svlen).',
   cipos ARRAY<INT> COMMENT 'In the case of structural variants, start and end of the variant may not be known with an exact base position. "cipos" provides an interval with high confidence for the start position. The interval is provided by 0 or 2 signed integers which are added to the start position. Based on the use in VCF v4.2',
