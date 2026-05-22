@@ -1,6 +1,9 @@
 package org.brapi.schematools.core.r6.options;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
 import org.brapi.schematools.core.r6.RGenerator;

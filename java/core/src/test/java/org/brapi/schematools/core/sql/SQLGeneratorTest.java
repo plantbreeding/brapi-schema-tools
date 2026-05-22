@@ -15,7 +15,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.brapi.schematools.core.test.TestUtils.assertMultilineEqual;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class SQLGeneratorTest {

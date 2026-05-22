@@ -16,7 +16,11 @@ import java.util.List;
 
 import static org.brapi.schematools.core.test.TestUtils.assertMultilineEqual;
 import static org.brapi.schematools.core.utils.StringUtils.isMultilineEqual;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 class PythonGeneratorTest {

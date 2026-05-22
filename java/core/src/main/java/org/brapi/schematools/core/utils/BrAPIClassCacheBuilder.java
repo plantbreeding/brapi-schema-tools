@@ -3,7 +3,6 @@ package org.brapi.schematools.core.utils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.*;

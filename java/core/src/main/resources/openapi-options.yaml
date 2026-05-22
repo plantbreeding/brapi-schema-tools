@@ -518,6 +518,8 @@ properties:
                 cross: false
             GermplasmAttributeValue:
                 attribute: false
+            Germplasm:
+                breedingMethod: false
             GermplasmMCPD:
                 germplasm: true
             List:
@@ -642,6 +644,8 @@ properties:
             germplasm: id
         GermplasmOrigin:
             germplasm: none
+        GermplasmChild:
+            pedigreeNode: none
         GermplasmParent:
             pedigreeNode: none
         GrowthFacility:

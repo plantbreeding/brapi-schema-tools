@@ -1,17 +1,7 @@
 package org.brapi.schematools.core.openapi.comparator;
 
 import io.swagger.v3.oas.models.media.Schema;
-import org.openapitools.openapidiff.core.model.ChangedApiResponse;
-import org.openapitools.openapidiff.core.model.ChangedContent;
-import org.openapitools.openapidiff.core.model.ChangedMediaType;
-import org.openapitools.openapidiff.core.model.ChangedOpenApi;
-import org.openapitools.openapidiff.core.model.ChangedOperation;
-import org.openapitools.openapidiff.core.model.ChangedParameter;
-import org.openapitools.openapidiff.core.model.ChangedParameters;
-import org.openapitools.openapidiff.core.model.ChangedRequestBody;
-import org.openapitools.openapidiff.core.model.ChangedResponse;
-import org.openapitools.openapidiff.core.model.ChangedSchema;
-import org.openapitools.openapidiff.core.model.Endpoint;
+import org.openapitools.openapidiff.core.model.*;
 import org.openapitools.openapidiff.core.output.Render;
 
 import java.io.IOException;

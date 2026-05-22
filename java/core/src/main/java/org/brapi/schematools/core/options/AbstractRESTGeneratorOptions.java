@@ -5,8 +5,8 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.model.BrAPIObjectTypeWithProperty;
+import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
 
