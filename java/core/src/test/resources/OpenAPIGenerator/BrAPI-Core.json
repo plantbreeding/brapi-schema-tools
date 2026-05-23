@@ -4501,14 +4501,6 @@
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
-                    "childLocationDbIds" : {
-                        "type" : "array",
-                        "description" : "The child locations that belong to this Location. \nFor example, an Institution might have multiple Field Stations inside it and each Field Station might have multiple Fields.",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
                     "coordinateDescription" : {
                         "type" : "string",
                         "description" : "Describes the precision and landmarks of the coordinate values used for a Location. (ex. the site, the nearest town, a 10 kilometers radius circle, +/- 20 meters, etc)",
@@ -4580,10 +4572,6 @@
                         "nullable" : true
                     },
                     "parentLocationName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "parentLocationPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },

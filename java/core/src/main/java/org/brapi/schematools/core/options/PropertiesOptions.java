@@ -257,37 +257,40 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
         List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
 
-        if (id.isLinkForTypeOrProperty(parentType, property, brAPIObjectType))  {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)) )
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(id.getNameFormat(), property.getName())).build())
-                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(id.getNameFormat(), property.getName()))));
-        }
+        addLinkProperty(parentType, property, brAPIObjectType, linkProperties, id);
 
-        if (pui.isLinkForTypeOrProperty(parentType, property, brAPIObjectType)) {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)) )
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(pui.getNameFormat(), property.getName())).build())
-                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(pui.getNameFormat(), property.getName()))));
-        }
+        addLinkProperty(parentType, property, brAPIObjectType, linkProperties, pui);
 
-        if (name.isLinkForTypeOrProperty(parentType, property, brAPIObjectType)) {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)) )
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(name.getNameFormat(), property.getName())).build())
-                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(name.getNameFormat(), property.getName()))));
-        }
+        addLinkProperty(parentType, property, brAPIObjectType, linkProperties, name);
 
         return linkProperties ;
     }
 
-    private BrAPIObjectProperty createStringProperty(String name) {
+    private void addLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, List<BrAPIObjectProperty> linkProperties, PropertyOptions options) {
+        if (options.isLinkForTypeOrProperty(parentType, property, brAPIObjectType))  {
+            brAPIObjectType.getProperties().stream()
+                .filter(childProperty -> childProperty.getName().equals(options.getPropertyNameFor(brAPIObjectType)) )
+                .findFirst()
+                .map(childProperty -> buildLinkProperty(parentType, property, childProperty, options))
+                .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(options.getNameFormat(), property.getName()), parentType, property, options)));
+        }
+    }
+
+    private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectProperty childProperty, PropertyOptions options) {
+        BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(String.format(options.getNameFormat(), property.getName())) ;
+
+        builder.nullable(options.getNullableForProperty(parentType, property)) ;
+        builder.required(options.getRequiredForProperty(parentType, property)) ;
+
+        return builder.build();
+    }
+
+    private BrAPIObjectProperty createStringProperty(String name, BrAPIObjectType parentType, BrAPIObjectProperty property, PropertyOptions options) {
         return BrAPIObjectProperty.builder()
             .name(name)
             .type(BrAPIPrimitiveType.stringType())
+            .nullable(options.getNullableForProperty(parentType, property))
+            .required(options.getRequiredForProperty(parentType, property))
             .build();
     }
 

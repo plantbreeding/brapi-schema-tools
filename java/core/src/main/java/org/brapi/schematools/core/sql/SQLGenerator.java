@@ -117,7 +117,6 @@ public class SQLGenerator {
         }
 
         private boolean isAddingDepreciatedClass(BrAPIClass brAPIClass) {
-
             return !brAPIClass.isDeprecated() || !options.getBrAPISchemaReader().isIgnoringDepreciatedSchemas() ;
         }
 

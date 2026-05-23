@@ -2730,6 +2730,9 @@
                         "$ref" : "#/components/parameters/pageSize"
                     },
                     {
+                        "$ref" : "#/components/parameters/pageToken"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
@@ -3071,6 +3074,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"

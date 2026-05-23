@@ -4918,7 +4918,8 @@
                         "type" : "string"
                     },
                     "germplasmName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "parentType" : {
                         "$ref" : "#/components/schemas/ParentType"
@@ -5485,7 +5486,6 @@
             "GermplasmParent" : {
                 "required" : [
                     "germplasmDbId",
-                    "germplasmName",
                     "parentType"
                 ],
                 "type" : "object",
@@ -7054,8 +7054,7 @@
             "PedigreeNode" : {
                 "required" : [
                     "germplasmDbId",
-                    "germplasmName",
-                    "germplasmPUI"
+                    "germplasmName"
                 ],
                 "type" : "object",
                 "properties" : {

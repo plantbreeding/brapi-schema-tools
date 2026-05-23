@@ -301,6 +301,10 @@ search:
     pagedDefault: true
     paged:
         AlleleMatrix: false
+    pagedTokenDefault: false
+    pagedToken:
+        Call: true
+        Variant: true
     list: true
     listFor:
         AlleleMatrix: false
@@ -440,6 +444,9 @@ properties:
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
             ObservationUnitHierarchyLevel: levelName
+        requiredPropertyFor:
+            GermplasmAttributeValue:
+                attribute: false
     name:
         nameFormat: "%sName"
         link: true
@@ -486,6 +493,24 @@ properties:
             VariantSet:
                 referenceSet: false
                 study: false
+        nullablePropertyFor:
+            GermplasmChild:
+                germplasm: true
+            MarkerPosition:
+                map: true
+                variant: true
+            ListRequest:
+                listType: true
+            Program:
+                leadPerson: true
+        requiredPropertyFor:
+            Call:
+                callSet: false
+                variantSet: false
+            GermplasmChild:
+                germplasm: false
+            GermplasmParent:
+                germplasm: false
     pui:
         nameFormat: "%sPUI"
         link: true
@@ -524,6 +549,8 @@ properties:
                 germplasm: true
             List:
                 listOwnerPerson: false
+            Location:
+                parentLocation: false
             MarkerPosition:
                 variant: false
             Observation:
@@ -558,6 +585,9 @@ properties:
                 location: false
             Trial:
                 program: false
+        requiredPropertyFor:
+            PedigreeNode:
+                germplasm: false
     linkTypeFor:
         AlleleMatrix:
             callSets: id
@@ -657,6 +687,7 @@ properties:
         LinkageGroup:
             genomeMap: none
         Location:
+            childLocations: none
             seedLots: none
             observationUnits: none
             studies: none
@@ -667,6 +698,7 @@ properties:
             referenceSet: none
         Observation:
             images: none
+            season: embedded
         ObservationUnit:
             samples: none
             events: none
@@ -696,6 +728,7 @@ properties:
             cross: none
         Program:
             crossingProjects: none
+            leadPerson: id
             observationUnits: none
             plates: none
             samples: none

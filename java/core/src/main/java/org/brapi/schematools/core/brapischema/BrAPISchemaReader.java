@@ -235,7 +235,6 @@ public class BrAPISchemaReader {
                 if (type == null) {
                     return fail(Response.ErrorType.VALIDATION, String.format("The reference type '%s' does not exist", brAPIReferenceType.getName()));
                 }
-
             }
 
             // if no nullable is set then override this from the class nullable
@@ -870,6 +869,10 @@ public class BrAPISchemaReader {
 
             findBooleanChildValue(path, jsonNode, "nullable", false, null)
                 .onSuccessDoWithResult(builder::nullable);
+
+            findStringChildValue(path, jsonNode, "type", false)
+                .mapResult("object"::equals)
+                .onSuccessDoWithResult(builder::object);
 
             findStringChildValue(path, jsonNode, "description", false)
                 .onSuccessDoWithResult(builder::description);

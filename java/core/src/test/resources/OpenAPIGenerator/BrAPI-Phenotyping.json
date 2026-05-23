@@ -5003,9 +5003,15 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "seasonDbId" : {
-                        "type" : "string",
-                        "nullable" : true
+                    "season" : {
+                        "anyOf" : [
+                            {
+                                "$ref" : "#/components/schemas/Season"
+                            },
+                            {
+                                "type" : "null"
+                            }
+                        ]
                     },
                     "studyDbId" : {
                         "type" : "string",

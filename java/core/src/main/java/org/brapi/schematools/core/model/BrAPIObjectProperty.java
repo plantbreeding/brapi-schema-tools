@@ -19,10 +19,14 @@ public class BrAPIObjectProperty {
     Object defaultValue ;
     BrAPIType type;
     boolean deprecated;
-    boolean required;
+    Boolean required;
     Boolean nullable;
     String referencedAttribute;
     BrAPIRelationshipType relationshipType;
+
+    public boolean isRequired() {
+        return required != null && required ;
+    }
 
     public boolean isNullable() {
         return nullable != null && nullable ;
