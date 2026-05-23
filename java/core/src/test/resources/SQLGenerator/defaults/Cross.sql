@@ -13,7 +13,7 @@ CREATE TABLE brapi_Crosses (
   plannedCrossDbId STRING NOT NULL COMMENT 'the unique identifier for a planned cross',
   plannedCrossName STRING COMMENT 'the human readable name for a planned cross',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   crossAttributes
     ARRAY<
       STRUCT<
@@ -26,7 +26,7 @@ CREATE TABLE brapi_Crosses (
         crossAttributeValue STRING COMMENT 'the value of a cross attribute'
       >
     > COMMENT 'Set of custom attributes associated with a cross',
-  crossType STRING NOT NULL COMMENT 'the type of cross',
+  crossType STRING COMMENT 'the type of cross',
   externalReferences
     ARRAY<
       STRUCT<
@@ -45,7 +45,7 @@ CREATE TABLE brapi_Crosses (
       observationUnitName STRING COMMENT 'A human readable name for an observation unit',
       -- Properties
       parentType STRING COMMENT 'The type of parent ex. ''MALE'', ''FEMALE'', ''SELF'', ''POPULATION'', etc.'
-    > NOT NULL COMMENT 'the first parent used in the cross',
+    > COMMENT 'the first parent used in the cross',
   parent2 
     STRUCT<
       -- Link properties
@@ -57,7 +57,7 @@ CREATE TABLE brapi_Crosses (
       observationUnitName STRING COMMENT 'A human readable name for an observation unit',
       -- Properties
       parentType STRING COMMENT 'The type of parent ex. ''MALE'', ''FEMALE'', ''SELF'', ''POPULATION'', etc.'
-    > NOT NULL COMMENT 'the second parent used in the cross',
+    > COMMENT 'the second parent used in the cross',
   pollinationEvents
     ARRAY<
       STRUCT<

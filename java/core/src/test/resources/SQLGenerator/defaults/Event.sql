@@ -12,7 +12,7 @@ CREATE TABLE brapi_Events (
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   eventDateRange 
     STRUCT<
       -- Link properties
@@ -21,7 +21,7 @@ CREATE TABLE brapi_Events (
       discreteDates ARRAY<STRING> COMMENT 'A list of dates when the event occurred <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
       endDate STRING COMMENT 'The end of a continuous or regularly repetitive event <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
       startDate STRING COMMENT 'The beginning of a continuous or regularly repetitive event <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.'
-    > NOT NULL COMMENT 'An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)',
+    > COMMENT 'An object describing when a particular Event has taken place. An Event can occur at one or more discrete time points (`discreteDates`) or an event can happen continuously over a longer period of time (`startDate`, `endDate`)',
   eventDescription STRING COMMENT 'A detailed, human-readable description of this event <br/>MIAPPE V1.1 (DM-67) Event description - Description of the event, including details such as amount applied and possibly duration of the event. ',
   eventParameters
     ARRAY<

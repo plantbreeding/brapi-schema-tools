@@ -16,7 +16,7 @@ CREATE TABLE brapi_Locations (
   locationType STRING COMMENT 'A short description of a type of Location (ex. Field Station, Breeding Location, Storage Location, etc)',
   -- Properties
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Location',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   coordinateDescription STRING COMMENT 'Describes the precision and landmarks of the coordinate values used for a Location. (ex. the site, the nearest town, a 10 kilometers radius circle, +/- 20 meters, etc)',
   coordinateUncertainty STRING COMMENT 'Uncertainty associated with the coordinates in meters. Leave the value empty if the uncertainty is unknown.',
   coordinates 
@@ -32,7 +32,7 @@ CREATE TABLE brapi_Locations (
           type STRING COMMENT 'The literal string "Polygon"'
         > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
       type STRING COMMENT 'The literal string "Feature"'
-    > NOT NULL COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
+    > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
   countryName STRING COMMENT 'The full name of the country where a Location is located <br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   exposure STRING COMMENT 'Describes the level of protection/exposure for things like sun light and wind at a particular Location',

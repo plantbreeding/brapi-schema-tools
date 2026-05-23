@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.BrAPIClass;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.sql.metadata.SQLGeneratorMetadata;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
+
 /**
  * Generates SQL files for type and their fields from a BrAPI JSON Schema.
  */
@@ -117,7 +117,6 @@ public class SQLGenerator {
         }
 
         private boolean isAddingDepreciatedClass(BrAPIClass brAPIClass) {
-
             return !brAPIClass.isDeprecated() || !options.getBrAPISchemaReader().isIgnoringDepreciatedSchemas() ;
         }
 

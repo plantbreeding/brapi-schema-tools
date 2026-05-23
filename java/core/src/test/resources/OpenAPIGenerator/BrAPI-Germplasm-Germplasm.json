@@ -536,13 +536,12 @@
                         "nullable" : true
                     },
                     "breedingMethodDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "breedingMethodName" : {
-                        "type" : "string"
-                    },
-                    "breedingMethodPUI" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "collection" : {
                         "type" : "string",

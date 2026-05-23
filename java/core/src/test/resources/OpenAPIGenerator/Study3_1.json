@@ -163,7 +163,9 @@
                             "description" : "Sort order direction. Ascending/Descending.",
                             "enum" : [
                                 "ASC",
-                                "DESC"
+                                "DESC",
+                                "asc",
+                                "desc"
                             ]
                         }
                     },
@@ -506,6 +508,7 @@
                         "description" : "A flag to indicate if a Study is currently active and ongoing"
                     },
                     "additionalInfo" : {
+                        "type" : "null",
                         "$ref" : "#/components/schemas/AdditionalInfo",
                         "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
                     },
@@ -858,7 +861,9 @@
                         "description" : "Sort order direction. Ascending/Descending.",
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {

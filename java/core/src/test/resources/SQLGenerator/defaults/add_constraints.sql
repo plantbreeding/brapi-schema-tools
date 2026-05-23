@@ -31,9 +31,6 @@ ALTER TABLE IF EXISTS brapi_Observations ADD CONSTRAINT Observations_Observation
 ALTER TABLE IF EXISTS brapi_Observations ADD CONSTRAINT Observations_ObservationVariables_fk FOREIGN KEY(observationVariableDbId, observationVariablePUI, observationVariableName) REFERENCES brapi_ObservationVariables ;
 ALTER TABLE IF EXISTS brapi_Observations ADD CONSTRAINT Observations_Seasons_fk FOREIGN KEY(seasonDbId, seasonName) REFERENCES brapi_Seasons ;
 ALTER TABLE IF EXISTS brapi_Observations ADD CONSTRAINT Observations_Studies_fk FOREIGN KEY(studyDbId, studyPUI, studyName) REFERENCES brapi_Studies ;
-ALTER TABLE IF EXISTS brapi_PedigreeNodes ADD CONSTRAINT PedigreeNodes_BreedingMethods_fk FOREIGN KEY(breedingMethodDbId, breedingMethodName) REFERENCES brapi_BreedingMethods ;
-ALTER TABLE IF EXISTS brapi_PedigreeNodes ADD CONSTRAINT PedigreeNodes_CrossingProjects_fk FOREIGN KEY(crossingProjectDbId, crossingProjectName) REFERENCES brapi_CrossingProjects ;
-ALTER TABLE IF EXISTS brapi_PedigreeNodes ADD CONSTRAINT PedigreeNodes_Germplasm_fk FOREIGN KEY(germplasmDbId, germplasmPUI, germplasmName) REFERENCES brapi_Germplasm ;
 ALTER TABLE IF EXISTS brapi_PlannedCrosses ADD CONSTRAINT PlannedCrosses_CrossingProjects_fk FOREIGN KEY(crossingProjectDbId, crossingProjectName) REFERENCES brapi_CrossingProjects ;
 ALTER TABLE IF EXISTS brapi_Plates ADD CONSTRAINT Plates_Programs_fk FOREIGN KEY(programDbId, programName) REFERENCES brapi_Programs ;
 ALTER TABLE IF EXISTS brapi_Plates ADD CONSTRAINT Plates_Studies_fk FOREIGN KEY(studyDbId, studyPUI, studyName) REFERENCES brapi_Studies ;

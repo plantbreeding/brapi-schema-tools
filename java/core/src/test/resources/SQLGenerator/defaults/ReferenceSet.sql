@@ -16,7 +16,7 @@ CREATE TABLE brapi_ReferenceSets (
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   assemblyPUI STRING COMMENT 'The remaining information is about the source of the sequences Public id of this reference set, such as `GRCH_37`.',
   description STRING COMMENT 'Optional free text description of this reference set.',
   externalReferences

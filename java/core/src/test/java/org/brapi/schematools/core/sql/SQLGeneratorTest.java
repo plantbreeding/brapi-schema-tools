@@ -15,7 +15,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.brapi.schematools.core.test.TestUtils.assertMultilineEqual;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class SQLGeneratorTest {
@@ -27,7 +30,7 @@ class SQLGeneratorTest {
 
     @Test
     void generateWithOverwrite() {
-        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults") ;
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 35, "build/test-output/SQLGenerator/defaults") ;
     }
 
     void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, int expectedSize, String classpath) {

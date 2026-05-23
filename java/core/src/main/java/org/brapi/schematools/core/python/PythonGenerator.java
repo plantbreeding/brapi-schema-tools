@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.brapischema.BrAPISchemaReader;
 import org.brapi.schematools.core.model.*;
+import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.python.metadata.PythonGeneratorMetadata;
 import org.brapi.schematools.core.python.options.PythonGeneratorOptions;
-import org.brapi.schematools.core.model.BrAPIPrimitiveType;
 import org.brapi.schematools.core.python.thymeleaf.*;
 import org.brapi.schematools.core.response.Response;
-import org.brapi.schematools.core.options.LinkType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
 import org.thymeleaf.TemplateEngine;
@@ -21,21 +20,14 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.brapi.schematools.core.python.PythonTypeUtils.findPyType;
 import static org.brapi.schematools.core.response.Response.fail;
 import static org.brapi.schematools.core.response.Response.success;
 import static org.brapi.schematools.core.utils.StringUtils.toSnakeCase;
-import static org.brapi.schematools.core.python.PythonTypeUtils.findPyType;
 
 /**
  * Generates Python Client from a BrAPI JSON Schema.

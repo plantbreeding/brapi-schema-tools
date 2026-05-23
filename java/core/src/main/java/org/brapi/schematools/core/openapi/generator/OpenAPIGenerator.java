@@ -765,14 +765,14 @@ public class OpenAPIGenerator {
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
             return createSchemaForType(property.getType()).mapResult(
                 schema -> new Parameter()
-                    .name(isConvertingToProperty(property) ?  options.getSingularForProperty(property.getName()) : property.getName())
+                    .name(isConvertingToSingularProperty(property) ?  options.getSingularForProperty(property.getName()) : property.getName())
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())
-                    .schema(isConvertingToProperty(property) ? upwrapSchema(schema) : schema));
+                    .schema(isConvertingToSingularProperty(property) ? upwrapSchema(schema) : schema));
         }
 
-        private boolean isConvertingToProperty(BrAPIObjectProperty property) {
+        private boolean isConvertingToSingularProperty(BrAPIObjectProperty property) {
             return property.getType() instanceof BrAPIArrayType ;
         }
 
@@ -1181,6 +1181,10 @@ public class OpenAPIGenerator {
             if (options.getSearch().isPagedFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/page"));
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+            }
+
+            if (options.getSearch().hasPageTokenFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
@@ -1607,11 +1611,9 @@ public class OpenAPIGenerator {
 
             List<BrAPIObjectProperty> linkProperties = options.getProperties().getLinkPropertiesFor(parentType, property, brAPIObjectType);
 
-            if (property.isRequired()) {
-                for (BrAPIObjectProperty linkProperty : linkProperties) {
-                    if (linkProperty.isRequired()) {
-                        objectSchema.addRequiredItem(linkProperty.getName());
-                    }
+            for (BrAPIObjectProperty linkProperty : linkProperties) {
+                if (linkProperty.isRequired()) {
+                    objectSchema.addRequiredItem(linkProperty.getName());
                 }
             }
 
@@ -1649,7 +1651,7 @@ public class OpenAPIGenerator {
             Map<String, Schema> schemas = new HashMap<>();
 
             return linkProperties.stream().map(linkProperty -> createSchemaForType(linkProperty.getType())
-                    .mapResultOnConditionOr(nullable, schema -> makeNullable(schema, linkProperty, null), schema -> schema)
+                    .mapResultOnConditionOr(linkProperty.isNullable(), schema -> makeNullable(schema, linkProperty, null), schema -> schema)
                     .onSuccessDoWithResult(schema -> schemas.put(linkProperty.getName(), schema)))
                 .collect(Response.toList())
                 .merge(() -> success(schemas));
@@ -1664,8 +1666,15 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createOneOfType(BrAPIOneOfType type) {
+
+            Schema schema = new Schema().name(type.getName()).description(type.getDescription()).nullable(type.getNullable()) ;
+
+            if (type.isObject()) {
+                schema.type("object") ;
+            }
+
             return type.getPossibleTypes().stream().map(this::createSchemaForType).collect(Response.toList()).mapResult(
-                schema -> updateExamples(new Schema().oneOf(schema).name(type.getName()).description(type.getDescription()), type).nullable(type.getNullable())) ;
+                schemas -> updateExamples(schema.oneOf(schemas), type)) ;
         }
 
         private Response<Schema> createArraySchema(BrAPIArrayType type) {

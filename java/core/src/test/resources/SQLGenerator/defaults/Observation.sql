@@ -24,7 +24,7 @@ CREATE TABLE brapi_Observations (
   -- Clustering properties
   observationTimeStamp STRING COMMENT 'The date and time when this observation was made',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   collector STRING COMMENT 'The name or identifier of the entity which collected the observation',
   externalReferences
     ARRAY<

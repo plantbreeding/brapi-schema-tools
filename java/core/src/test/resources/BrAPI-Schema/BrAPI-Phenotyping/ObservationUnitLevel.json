@@ -18,10 +18,7 @@
                         }
                     }
                 }
-            ],
-            "brapi-metadata": {
-                "interface": true
-            }
+            ]
         }
     },
     "$id": "https://brapi.org/Specification/BrAPI-Schema/BrAPI-Phenotyping/ObservationUnitLevel.json",

@@ -1,8 +1,9 @@
 package org.brapi.schematools.core.python.thymeleaf;
 
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.List;
 
 @Value
 @Builder

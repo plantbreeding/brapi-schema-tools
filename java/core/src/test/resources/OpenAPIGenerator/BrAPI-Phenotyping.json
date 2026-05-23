@@ -1603,56 +1603,6 @@
                 }
             }
         },
-        "/images/{imageDbId}/imagecontent" : {
-            "put" : {
-                "tags" : [
-                    "Images"
-                ],
-                "summary" : "Update the details for an existing string",
-                "description" : "Update the details for an existing string",
-                "parameters" : [
-                    {
-                        "$ref" : "#/components/parameters/authorizationHeader"
-                    },
-                    {
-                        "name" : "imageDbId",
-                        "in" : "path",
-                        "description" : "The unique identifier of an image",
-                        "required" : true,
-                        "schema" : {
-                            "type" : "string"
-                        }
-                    }
-                ],
-                "requestBody" : {
-                    "content" : {
-                        "image/*" : {
-                            "schema" : {
-                                "type" : "string",
-                                "format" : "binary"
-                            }
-                        }
-                    }
-                },
-                "responses" : {
-                    "200" : {
-                        "$ref" : "#/components/responses/ImageSingleResponse"
-                    },
-                    "400" : {
-                        "$ref" : "#/components/responses/400BadRequest"
-                    },
-                    "401" : {
-                        "$ref" : "#/components/responses/401Unauthorized"
-                    },
-                    "403" : {
-                        "$ref" : "#/components/responses/403Forbidden"
-                    },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    }
-                }
-            }
-        },
         "/methods/{methodDbId}" : {
             "get" : {
                 "tags" : [
@@ -2572,16 +2522,20 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "GT,RD"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dataMatrixNames" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "Genotype,Read Depth"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -2866,7 +2820,8 @@
                     },
                     "pageToken" : {
                         "type" : "string",
-                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
@@ -3671,30 +3626,6 @@
                     "geometry" : {
                         "$ref" : "#/components/schemas/GeoJSONGeometry"
                     },
-                    "germplasmOrigin" : {
-                        "$ref" : "#/components/schemas/GermplasmOrigin"
-                    },
-                    "imageDbId" : {
-                        "type" : "string"
-                    },
-                    "imageName" : {
-                        "type" : "string"
-                    },
-                    "imagePUI" : {
-                        "type" : "string"
-                    },
-                    "observationDbId" : {
-                        "type" : "string"
-                    },
-                    "observationName" : {
-                        "type" : "string"
-                    },
-                    "observationPUI" : {
-                        "type" : "string"
-                    },
-                    "observationUnit" : {
-                        "$ref" : "#/components/schemas/ObservationUnitPosition"
-                    },
                     "type" : {
                         "type" : "string",
                         "description" : "The literal string \"Feature\"",
@@ -4269,11 +4200,6 @@
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
                     },
-                    "imageContent" : {
-                        "type" : "string",
-                        "description" : "The content of the image",
-                        "format" : "binary"
-                    },
                     "imageFileName" : {
                         "type" : "string",
                         "description" : "The name of the image file. Might be the same as 'imageName', but could be different.",
@@ -4322,10 +4248,6 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "observationUnitName" : {
                         "type" : "string",
                         "nullable" : true
                     }
@@ -5081,27 +5003,17 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "observationVariablePUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seasonDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seasonName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seasonPUI" : {
-                        "type" : "string",
-                        "nullable" : true
+                    "season" : {
+                        "anyOf" : [
+                            {
+                                "$ref" : "#/components/schemas/Season"
+                            },
+                            {
+                                "type" : "null"
+                            }
+                        ]
                     },
                     "studyDbId" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "studyName" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -5614,7 +5526,8 @@
                         "nullable" : true
                     },
                     "observationUnitDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     }
                 },
                 "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). `levelCode` is an ID code for this level tag. Identify \nthis observation unit by each level of the hierarchy where it exists. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** "
@@ -5630,10 +5543,6 @@
                         "nullable" : true
                     },
                     "crossName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "crossPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -5661,10 +5570,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "locationPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "observationUnitName" : {
                         "type" : "string",
                         "description" : "A human readable name for an observation unit",
@@ -5686,19 +5591,11 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "programPUI" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
                     "seedLotDbId" : {
                         "type" : "string",
                         "nullable" : true
                     },
                     "seedLotName" : {
-                        "type" : "string",
-                        "nullable" : true
-                    },
-                    "seedLotPUI" : {
                         "type" : "string",
                         "nullable" : true
                     },
@@ -6842,9 +6739,6 @@
                         "type" : "string"
                     },
                     "ontologyName" : {
-                        "type" : "string"
-                    },
-                    "ontologyPUI" : {
                         "type" : "string"
                     },
                     "ontologyReferenceDbId" : {
@@ -8075,21 +7969,39 @@
                     }
                 }
             },
+            "SeedLotTransactionRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "transactionDbIs" : {
+                        "type" : "array",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "transactionDirection" : {
+                        "type" : "string",
+                        "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                        "nullable" : true,
+                        "enum" : [
+                            "TO",
+                            "FROM",
+                            "BOTH"
+                        ]
+                    }
+                }
+            },
             "SortBy" : {
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
-                    "studyDbId",
                     "trialDbId",
+                    "trialName",
                     "programDbId",
-                    "locationDbId",
-                    "seasonDbId",
-                    "studyType",
-                    "studyName",
-                    "studyLocation",
                     "programName",
-                    "germplasmDbId",
-                    "observationVariableDbId"
+                    "locationDbId",
+                    "startDate",
+                    "endDate"
                 ]
             },
             "SortOrder" : {
@@ -8097,7 +8009,9 @@
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
                     "ASC",
-                    "DESC"
+                    "DESC",
+                    "asc",
+                    "desc"
                 ]
             },
             "StudyParameters" : {
@@ -8232,7 +8146,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {
@@ -8478,6 +8394,15 @@
                     }
                 }
             },
+            "TransactionDirection" : {
+                "type" : "string",
+                "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                "enum" : [
+                    "TO",
+                    "FROM",
+                    "BOTH"
+                ]
+            },
             "TrialParameters" : {
                 "type" : "object",
                 "properties" : {
@@ -8556,6 +8481,31 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "nullable" : true,
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
+                        "enum" : [
+                            "ASC",
+                            "DESC",
+                            "asc",
+                            "desc"
+                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -8938,6 +8888,11 @@
                         "description" : "The end of the window (0-based, exclusive) for which overlapping variants should be returned.",
                         "format" : "int32",
                         "example" : 1500
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "programDbIds" : {
                         "type" : "array",

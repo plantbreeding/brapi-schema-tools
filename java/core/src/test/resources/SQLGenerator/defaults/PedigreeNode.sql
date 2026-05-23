@@ -19,7 +19,7 @@ CREATE TABLE brapi_PedigreeNodes (
   crossingYear INT COMMENT 'The year the parents were originally crossed',
   familyCode STRING COMMENT 'The code representing the family of this germplasm',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   defaultDisplayName STRING COMMENT 'Human readable name used for display purposes',
   externalReferences
     ARRAY<

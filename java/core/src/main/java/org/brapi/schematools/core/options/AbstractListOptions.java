@@ -25,6 +25,9 @@ public class AbstractListOptions extends AbstractSubOptions {
     private Map<String, Boolean> paged = new HashMap<>();
     private Boolean propertiesFromRequest;
     private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
+    private Boolean pagedTokenDefault;
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> pagedToken = new HashMap<>();
 
     @Override
     public Validation validate() {
@@ -32,7 +35,9 @@ public class AbstractListOptions extends AbstractSubOptions {
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertiesFromRequest, "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -71,6 +76,17 @@ public class AbstractListOptions extends AbstractSubOptions {
                 }
             });
         }
+
+        if (overrideOptions.pagedTokenDefault != null) {
+            setPagedTokenDefault(overrideOptions.pagedTokenDefault);
+        }
+
+        if (overrideOptions.pagedToken != null) {
+            overrideOptions.pagedToken.forEach((key, value) -> {
+                if (value == null) pagedToken.remove(key);
+                else pagedToken.put(key, value);
+            });
+        }
     }
 
     @Override
@@ -88,6 +104,14 @@ public class AbstractListOptions extends AbstractSubOptions {
         propertyFromRequestFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'propertyFromRequestFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        pagedToken.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'pagedToken' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -197,4 +221,47 @@ public class AbstractListOptions extends AbstractSubOptions {
         return this;
     }
 
+    /**
+     * Determines if the get endpoint has a page token for the named primary model.
+     * @param name the name of the primary model
+     * @return {@code true} if the get endpoint has a page token, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean hasPageTokenFor(@NonNull String name) {
+        Boolean value = pagedToken.get(name);
+        return value != null ? value : pagedTokenDefault;
+    }
+
+    /**
+     * Determines if the get endpoint has a page token for the given primary model.
+     * @param type the primary model
+     * @return {@code true} if the get endpoint has a page token, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean hasPageTokenFor(@NonNull BrAPIType type) {
+        return hasPageTokenFor(type.getName());
+    }
+
+    /**
+     * Sets the page token flag for the named primary model.
+     * @param name       the name of the primary model
+     * @param hasPageToken {@code true} if the get endpoint has a page token
+     * @return this
+     */
+    @JsonIgnore
+    public final AbstractListOptions setHasPageTokenFor(@NonNull String name, boolean hasPageToken) {
+        pagedToken.put(name, hasPageToken);
+        return this;
+    }
+
+    /**
+     * Sets the page token flag for the given primary model.
+     * @param type         the primary model
+     * @param hasPageToken {@code true} if the get endpoint has a page token
+     * @return this
+     */
+    @JsonIgnore
+    public final AbstractListOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
+        return setHasPageTokenFor(type.getName(), hasPageToken);
+    }
 }

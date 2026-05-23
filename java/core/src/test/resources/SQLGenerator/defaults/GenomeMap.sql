@@ -11,7 +11,7 @@ CREATE TABLE brapi_GenomeMaps (
   -- Clustering properties
   commonCropName STRING NOT NULL COMMENT 'The common name of the `Crop`',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   comments STRING COMMENT 'Additional comments about a `GenomeMap`',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   linkageGroupCount INT COMMENT 'The number of linkage groups present in a `GenomeMap`',

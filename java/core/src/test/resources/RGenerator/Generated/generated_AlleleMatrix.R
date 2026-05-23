@@ -31,8 +31,8 @@ AlleleMatrix <- R6Class(
     #' @param dimensionVariantPageSize The requested page size for the Variant dimension of the matrix
     #' @param dimensionCallSetPage The requested page number for the CallSet dimension of the matrix
     #' @param dimensionCallSetPageSize The requested page size for the CallSet dimension of the matrix
-    #' @param dataMatrixNames `dataMatrixNames` is a comma separated list of names (ie &#39;Genotype&#39;, &#39;Read Depth&#39; etc).
-    #' @param dataMatrixAbbreviations `dataMatrixAbbreviations` is a comma separated list of abbreviations (ie &#39;GT&#39;, &#39;RD&#39; etc).
+    #' @param dataMatrixNames `dataMatrixNames` is a list of names (ie &#39;Genotype&#39;, &#39;Read Depth&#39; etc).
+    #' @param dataMatrixAbbreviations `dataMatrixAbbreviations` is a list of abbreviations (ie &#39;GT&#39;, &#39;RD&#39; etc).
     #' @param positionRanges The postion range to search &lt;br/&gt; Uses the format &quot;&lt;chrom&gt;:&lt;start&gt;-&lt;end&gt;&quot; where &lt;chrom&gt; is the chromosome name, &lt;start&gt; is  the starting position of the range, and &lt;end&gt; is the ending position of the range
     #' @param germplasmNames A list of human readable `Germplasm` names
     #' @param germplasmPUIs A list of permanent unique identifiers associated with `Germplasm`

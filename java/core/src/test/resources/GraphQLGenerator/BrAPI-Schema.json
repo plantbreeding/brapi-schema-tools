@@ -9595,7 +9595,7 @@
       "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes.",
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "childGermplasmDbIds",
+        "name" : "germplasmDbIds",
         "description" : "The child germplasm",
         "args" : [ ],
         "type" : {
@@ -9639,7 +9639,7 @@
       "isOneOf" : false,
       "fields" : null,
       "inputFields" : [ {
-        "name" : "childGermplasm",
+        "name" : "germplasm",
         "description" : "The child germplasm",
         "type" : {
           "kind" : "INPUT_OBJECT",
@@ -10811,13 +10811,9 @@
         "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
         "args" : [ ],
         "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "OBJECT",
-            "name" : "GeoJSON",
-            "ofType" : null
-          }
+          "kind" : "OBJECT",
+          "name" : "GeoJSON",
+          "ofType" : null
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -10858,13 +10854,9 @@
         "name" : "coordinates",
         "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
         "type" : {
-          "kind" : "LIST",
-          "name" : null,
-          "ofType" : {
-            "kind" : "INPUT_OBJECT",
-            "name" : "GeoJSONInput",
-            "ofType" : null
-          }
+          "kind" : "INPUT_OBJECT",
+          "name" : "GeoJSONInput",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -10890,7 +10882,7 @@
       "description" : "A germplasm reference that is a direct parent of this germplasm. These represent edges in the tree, connecting to other nodes.",
       "isOneOf" : null,
       "fields" : [ {
-        "name" : "parentGermplasmDbIds",
+        "name" : "germplasmDbIds",
         "description" : "The parent germplasm",
         "args" : [ ],
         "type" : {
@@ -10934,7 +10926,7 @@
       "isOneOf" : false,
       "fields" : null,
       "inputFields" : [ {
-        "name" : "parentGermplasm",
+        "name" : "germplasm",
         "description" : "The parent germplasm",
         "type" : {
           "kind" : "INPUT_OBJECT",
@@ -11156,17 +11148,6 @@
             "name" : "ExternalReference",
             "ofType" : null
           }
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "imageContent",
-        "description" : "The content of the image",
-        "args" : [ ],
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -11394,17 +11375,6 @@
             "name" : "ExternalReferenceInput",
             "ofType" : null
           }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "imageContent",
-        "description" : "The content of the image",
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -16574,7 +16544,7 @@
       "enumValues" : null,
       "possibleTypes" : [ {
         "kind" : "OBJECT",
-        "name" : "ObservationUnitLevelRelationship",
+        "name" : "ObservationUnitLevel",
         "ofType" : null
       } ]
     }, {
@@ -16842,7 +16812,7 @@
       "enumValues" : null,
       "possibleTypes" : null
     }, {
-      "kind" : "INTERFACE",
+      "kind" : "OBJECT",
       "name" : "ObservationUnitLevel",
       "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
       "isOneOf" : null,
@@ -16887,11 +16857,7 @@
         "ofType" : null
       } ],
       "enumValues" : null,
-      "possibleTypes" : [ {
-        "kind" : "OBJECT",
-        "name" : "ObservationUnitLevelRelationship",
-        "ofType" : null
-      } ]
+      "possibleTypes" : null
     }, {
       "kind" : "INPUT_OBJECT",
       "name" : "ObservationUnitLevelInput",
@@ -16986,15 +16952,7 @@
         "deprecationReason" : null
       } ],
       "inputFields" : null,
-      "interfaces" : [ {
-        "kind" : "INTERFACE",
-        "name" : "ObservationUnitLevel",
-        "ofType" : null
-      }, {
-        "kind" : "INTERFACE",
-        "name" : "ObservationUnitHierarchyLevel",
-        "ofType" : null
-      } ],
+      "interfaces" : [ ],
       "enumValues" : null,
       "possibleTypes" : null
     }, {
@@ -17123,7 +17081,7 @@
         "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" ",
         "args" : [ ],
         "type" : {
-          "kind" : "INTERFACE",
+          "kind" : "OBJECT",
           "name" : "ObservationUnitLevel",
           "ofType" : null
         },
@@ -19993,6 +19951,11 @@
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
+      }, {
+        "name" : "CLONAL",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
       } ],
       "possibleTypes" : null
     }, {
@@ -20104,17 +20067,6 @@
             "name" : "GermplasmParent",
             "ofType" : null
           }
-        },
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "pedigreeNodeDbId",
-        "description" : "The ID which uniquely identifies a pedigree node",
-        "args" : [ ],
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
         },
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -20273,17 +20225,6 @@
             "name" : "GermplasmParentInput",
             "ofType" : null
           }
-        },
-        "defaultValue" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "pedigreeNodeDbId",
-        "description" : "The ID which uniquely identifies a pedigree node",
-        "type" : {
-          "kind" : "SCALAR",
-          "name" : "String",
-          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -29752,12 +29693,12 @@
       "inputFields" : null,
       "interfaces" : null,
       "enumValues" : [ {
-        "name" : "studyDbId",
+        "name" : "trialDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "trialDbId",
+        "name" : "trialName",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -29767,42 +29708,22 @@
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "locationDbId",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "seasonDbId",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "studyType",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "studyName",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
-        "name" : "studyLocation",
-        "description" : null,
-        "isDeprecated" : false,
-        "deprecationReason" : null
-      }, {
         "name" : "programName",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "germplasmDbId",
+        "name" : "locationDbId",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
       }, {
-        "name" : "observationVariableDbId",
+        "name" : "startDate",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "endDate",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -29823,6 +29744,16 @@
         "deprecationReason" : null
       }, {
         "name" : "DESC",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "asc",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "desc",
         "description" : null,
         "isDeprecated" : false,
         "deprecationReason" : null
@@ -32014,6 +31945,31 @@
       "enumValues" : null,
       "possibleTypes" : null
     }, {
+      "kind" : "ENUM",
+      "name" : "TransactionDirection",
+      "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+      "isOneOf" : null,
+      "fields" : null,
+      "inputFields" : null,
+      "interfaces" : null,
+      "enumValues" : [ {
+        "name" : "TO",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "FROM",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "BOTH",
+        "description" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      } ],
+      "possibleTypes" : null
+    }, {
       "kind" : "OBJECT",
       "name" : "Trial",
       "description" : "A Trial represents a collection of Study objects, and the metadata associated with that collection. A Trial could represent a multi-location experiment, and could contain information related to publications and data licensing.",
@@ -32706,6 +32662,28 @@
             "name" : "String",
             "ofType" : null
           }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "sortBy",
+        "description" : "Name of the field to sort by.",
+        "type" : {
+          "kind" : "ENUM",
+          "name" : "SortBy",
+          "ofType" : null
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "sortOrder",
+        "description" : "Sort order direction. Ascending/Descending.",
+        "type" : {
+          "kind" : "ENUM",
+          "name" : "SortOrder",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,
@@ -34923,6 +34901,17 @@
             "name" : "String",
             "ofType" : null
           }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "pageToken",
+        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "String",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,

@@ -1,7 +1,11 @@
 package org.brapi.schematools.core.python.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.options.AbstractRESTGeneratorOptions;
 import org.brapi.schematools.core.python.PythonGenerator;

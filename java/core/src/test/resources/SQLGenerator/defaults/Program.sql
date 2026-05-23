@@ -14,7 +14,7 @@ CREATE TABLE brapi_Programs (
   programType STRING NOT NULL COMMENT 'The type of program entity this object represents <br/> ''STANDARD'' represents a standard, permanent breeding program <br/> ''PROJECT'' represents a short term project, usually with a set time limit based on funding   ',
   -- Properties
   abbreviation STRING COMMENT 'A shortened version of the human readable name for a Program',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   documentationURL STRING COMMENT 'A URL to the human readable documentation of an object',
   externalReferences
     ARRAY<

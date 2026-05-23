@@ -10,7 +10,7 @@ CREATE TABLE brapi_Lists (
   -- Link properties
   listOwnerPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   data ARRAY<STRING> COMMENT 'The array of DbIds of the BrAPI objects contained in a List',
   dateCreated STRING COMMENT 'Timestamp when the entity was first created',
   dateModified STRING COMMENT 'Timestamp when the entity was last updated',

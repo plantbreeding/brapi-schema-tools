@@ -163,7 +163,9 @@
                             "description" : "Sort order direction. Ascending/Descending.",
                             "enum" : [
                                 "ASC",
-                                "DESC"
+                                "DESC",
+                                "asc",
+                                "desc"
                             ]
                         }
                     },
@@ -798,7 +800,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {

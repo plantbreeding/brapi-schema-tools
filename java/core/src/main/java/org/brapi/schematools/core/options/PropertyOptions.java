@@ -36,6 +36,10 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     private Map<String, String> pluralPropertyFor = new HashMap<>();
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, Boolean>> linkPropertyFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> requiredPropertyFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> nullablePropertyFor = new HashMap<>();
 
     public Validation validate() {
         return Validation.valid()
@@ -44,7 +48,9 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
             .assertNotNull(linkFor, "'linkFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(propertyFor, "'propertyFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pluralPropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(linkPropertyFor, "'linkPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(linkPropertyFor, "'linkPropertyFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(requiredPropertyFor, "'linkPropertyFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(nullablePropertyFor, "'pluralPropertyFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     /**
@@ -92,6 +98,34 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
                 }
             });
         }
+
+        if (overrideOptions.requiredPropertyFor != null) {
+            overrideOptions.requiredPropertyFor.forEach((key, value) -> {
+                if (value == null) {
+                    requiredPropertyFor.remove(key);
+                } else if (requiredPropertyFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) requiredPropertyFor.get(key).remove(innerKey);
+                        else requiredPropertyFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (requiredPropertyFor.get(key).isEmpty()) requiredPropertyFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
+
+        if (overrideOptions.nullablePropertyFor != null) {
+            overrideOptions.nullablePropertyFor.forEach((key, value) -> {
+                if (value == null) {
+                    nullablePropertyFor.remove(key);
+                } else if (nullablePropertyFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) nullablePropertyFor.get(key).remove(innerKey);
+                        else nullablePropertyFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (nullablePropertyFor.get(key).isEmpty()) nullablePropertyFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
     }
 
     @Override
@@ -125,6 +159,22 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         linkPropertyFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'linkPropertyFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        requiredPropertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'requiredPropertyFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        nullablePropertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'nullablePropertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -328,15 +378,8 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      */
     @JsonIgnore
     public boolean isLinkForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property) {
-        Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
-        if (map != null) {
-            Boolean value = map.get(property.getName());
-            return value != null && value ;
-        }
-
-        return false ;
+        return isLinkForProperty(parentType.getName(), property.getName()) ;
     }
-
 
     /**
      * Gets whether a property can be used to link from a parent type to a child type,
@@ -346,7 +389,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * @param childTypeName The BrAPI child type name
      * @return <code>true</code> a property can be used to link from a parent type to a child type
      */
-    public final boolean isLinkForTypeOrProperty(@NonNull String parentTypeName, String propertyName, String childTypeName) {
+    public final boolean isLinkForTypeOrProperty(@NonNull String parentTypeName, @NonNull String propertyName, @NonNull String childTypeName) {
         Map<String, Boolean> map = linkPropertyFor.get(parentTypeName) ;
 
         if (map != null) {
@@ -368,12 +411,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      */
     @JsonIgnore
     public boolean isLinkForTypeOrProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property, @NonNull BrAPIObjectType childType) {
-        Map<String, Boolean> map = linkPropertyFor.get(parentType.getName());
-        if (map != null) {
-            Boolean value = map.get(property.getName());
-            return value != null ? value : isLinkFor(childType.getName());
-        }
-        return isLinkFor(childType.getName()) ;
+        return isLinkForTypeOrProperty(parentType.getName(), property.getName(), childType.getName()) ;
     }
 
     /**
@@ -394,4 +432,106 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         return this;
     }
 
+
+    /**
+     * Gets whether a property is required
+     *
+     * @param parentTypeName The BrAPI parent object type name
+     * @param propertyName The BrAPI property name
+     * @param defaultValue The default value
+     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * {@code null} if the nullable status will not be set
+     */
+    @JsonIgnore
+    public Boolean getRequiredForProperty(@NonNull String parentTypeName, @NonNull String propertyName, Boolean defaultValue) {
+        Map<String, Boolean> map = requiredPropertyFor.get(parentTypeName);
+        if (map != null) {
+            Boolean value = map.get(propertyName);
+            return value != null && value ;
+        }
+
+        return defaultValue ;
+    }
+
+    /**
+     * Gets whether a property is required
+     *
+     * @param parentType The BrAPI parent object type
+     * @param property The BrAPI property
+     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * {@code null} if the nullable status will not be set
+     */
+    @JsonIgnore
+    public Boolean getRequiredForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property) {
+        return getRequiredForProperty(parentType.getName(), property.getName(), property.getRequired()) ;
+    }
+
+    /**
+     * Sets if this property is required
+     *
+     * @param type                  the primary model
+     * @param property              the request property
+     * @param required {@code true} if this property is required
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public PropertyOptions setRequireForProperty(@NonNull BrAPIObjectType type,
+                                                 @NonNull BrAPIObjectProperty property,
+                                                 boolean required) {
+        requiredPropertyFor
+            .computeIfAbsent(type.getName(), k -> new HashMap<>())
+            .put(property.getName(), required);
+        return this;
+    }
+
+    /**
+     * Gets whether a property is nullable
+     *
+     * @param parentTypeName The BrAPI parent object type name
+     * @param propertyName The BrAPI property name
+     * @param defaultValue The default value
+     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * {@code null} if the nullable status will not be set
+     */
+    @JsonIgnore
+    public Boolean getNullableForProperty(@NonNull String parentTypeName, @NonNull String propertyName, Boolean defaultValue) {
+        Map<String, Boolean> map = nullablePropertyFor.get(parentTypeName);
+        if (map != null) {
+            Boolean value = map.get(propertyName);
+            return value != null && value ;
+        }
+
+        return defaultValue ;
+    }
+
+    /**
+     * Gets whether a property is nullable
+     *
+     * @param parentType The BrAPI parent object type
+     * @param property The BrAPI property
+     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * {@code null} if the nullable status will not be set
+     */
+    @JsonIgnore
+    public Boolean getNullableForProperty(@NonNull BrAPIObjectType parentType, @NonNull BrAPIObjectProperty property) {
+        return getNullableForProperty(parentType.getName(), property.getName(), property.getNullable()) ;
+    }
+
+    /**
+     * Sets if this property is nullable
+     *
+     * @param type                  the primary model
+     * @param property              the request property
+     * @param nullable {@code true} if this property is required
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public PropertyOptions setNullableForProperty(@NonNull BrAPIObjectType type,
+                                          @NonNull BrAPIObjectProperty property,
+                                          boolean nullable) {
+        nullablePropertyFor
+            .computeIfAbsent(type.getName(), k -> new HashMap<>())
+            .put(property.getName(), nullable);
+        return this;
+    }
 }

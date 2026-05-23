@@ -16,7 +16,7 @@ CREATE TABLE brapi_GermplasmAttributeValues (
   -- Clustering properties
   determinedDate STRING COMMENT 'The date the value of this attribute was determined for a given germplasm',
   -- Properties
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   externalReferences
     ARRAY<
       STRUCT<

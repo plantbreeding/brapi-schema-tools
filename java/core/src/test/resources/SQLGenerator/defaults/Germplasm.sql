@@ -19,7 +19,7 @@ CREATE TABLE brapi_Germplasm (
   -- Properties
   accessionNumber STRING COMMENT 'The unique identifier for a material or germplasm within a genebank  MCPD (v2.1) (ACCENUMB) 2. This is the unique identifier for accessions within a genebank, and is assigned when a sample is entered into the genebank collection (e.g. "PI 113869").',
   acquisitionDate STRING COMMENT 'The date a material or germplasm was acquired by the genebank   MCPD (v2.1) (ACQDATE) 12. Date on which the accession entered the collection [YYYYMMDD] where YYYY is the year, MM is the month and DD is the day. Missing data (MM or DD) should be indicated with hyphens or "00" [double zero].',
-  additionalInfo MAP<STRING,STRING> NOT NULL COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
+  additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   biologicalStatusOfAccessionCode STRING COMMENT 'MCPD (v2.1) (SAMPSTAT) 19. The coding scheme proposed can be used at 3 different levels of detail: either by using the general codes such as 100, 200, 300, 400, or by using the more specific codes such as 110, 120, etc.   100) Wild  110) Natural  120) Semi-natural/wild  130) Semi-natural/sown  200) Weedy  300) Traditional cultivar/landrace  400) Breeding/research material  410) Breeders line  411) Synthetic population  412) Hybrid  413) Founder stock/base population  414) Inbred line (parent of hybrid cultivar)  415) Segregating population  416) Clonal selection  420) Genetic stock  421) Mutant (e.g. induced/insertion mutants, tilling populations)  422) Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids,  amphiploids)  423) Other genetic stocks (e.g. mapping populations)  500) Advanced or improved cultivar (conventional breeding methods)  600) GMO (by genetic engineering)  999) Other (Elaborate in REMARKS field)',
   biologicalStatusOfAccessionDescription STRING COMMENT 'Supplemental text description for ''biologicalStatusOfAccessionCode''',
   collection STRING COMMENT 'A specific panel/collection/population name this germplasm belongs to.',
@@ -44,21 +44,19 @@ CREATE TABLE brapi_Germplasm (
     ARRAY<
       STRUCT<
         coordinateUncertainty STRING COMMENT 'Uncertainty associated with the coordinates in meters. Leave the value empty if the uncertainty is unknown.',
-        coordinates
-          ARRAY<
-            STRUCT<
-              geometry1
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'A single position',
-                  type STRING COMMENT 'The literal string "Point"'
-                >,
-              geometry2
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
-                  type STRING COMMENT 'The literal string "Polygon"'
-                > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
-              type STRING COMMENT 'The literal string "Feature"'
-            >
+        coordinates 
+          STRUCT<
+            geometry1
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'A single position',
+                type STRING COMMENT 'The literal string "Point"'
+              >,
+            geometry2
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
+                type STRING COMMENT 'The literal string "Polygon"'
+              > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
+            type STRING COMMENT 'The literal string "Feature"'
           > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.'
       >
     > COMMENT 'Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm.',
