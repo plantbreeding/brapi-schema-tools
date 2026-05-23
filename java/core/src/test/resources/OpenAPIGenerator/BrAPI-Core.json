@@ -816,7 +816,9 @@
                             "description" : "Sort order direction. Ascending/Descending.",
                             "enum" : [
                                 "ASC",
-                                "DESC"
+                                "DESC",
+                                "asc",
+                                "desc"
                             ]
                         }
                     },
@@ -1000,6 +1002,41 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "sortBy",
+                        "in" : "query",
+                        "description" : "Name of the field to sort by.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Name of the field to sort by.",
+                            "enum" : [
+                                "trialDbId",
+                                "trialName",
+                                "programDbId",
+                                "programName",
+                                "locationDbId",
+                                "startDate",
+                                "endDate"
+                            ]
+                        }
+                    },
+                    {
+                        "name" : "sortOrder",
+                        "in" : "query",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Sort order direction. Ascending/Descending.",
+                            "enum" : [
+                                "ASC",
+                                "DESC",
+                                "asc",
+                                "desc"
+                            ]
                         }
                     },
                     {
@@ -2349,16 +2386,20 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "GT,RD"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dataMatrixNames" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "Genotype,Read Depth"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -2643,7 +2684,8 @@
                     },
                     "pageToken" : {
                         "type" : "string",
-                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
@@ -7148,21 +7190,39 @@
                     }
                 }
             },
+            "SeedLotTransactionRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "transactionDbIs" : {
+                        "type" : "array",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "transactionDirection" : {
+                        "type" : "string",
+                        "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                        "nullable" : true,
+                        "enum" : [
+                            "TO",
+                            "FROM",
+                            "BOTH"
+                        ]
+                    }
+                }
+            },
             "SortBy" : {
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
-                    "studyDbId",
                     "trialDbId",
+                    "trialName",
                     "programDbId",
-                    "locationDbId",
-                    "seasonDbId",
-                    "studyType",
-                    "studyName",
-                    "studyLocation",
                     "programName",
-                    "germplasmDbId",
-                    "observationVariableDbId"
+                    "locationDbId",
+                    "startDate",
+                    "endDate"
                 ]
             },
             "SortOrder" : {
@@ -7170,7 +7230,9 @@
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
                     "ASC",
-                    "DESC"
+                    "DESC",
+                    "asc",
+                    "desc"
                 ]
             },
             "Study" : {
@@ -7482,7 +7544,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {
@@ -7686,7 +7750,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {
@@ -7826,6 +7892,15 @@
                         }
                     }
                 }
+            },
+            "TransactionDirection" : {
+                "type" : "string",
+                "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                "enum" : [
+                    "TO",
+                    "FROM",
+                    "BOTH"
+                ]
             },
             "Trial" : {
                 "allOf" : [
@@ -8017,6 +8092,31 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "nullable" : true,
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
+                        "enum" : [
+                            "ASC",
+                            "DESC",
+                            "asc",
+                            "desc"
+                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -8482,6 +8582,11 @@
                         "description" : "The end of the window (0-based, exclusive) for which overlapping variants should be returned.",
                         "format" : "int32",
                         "example" : 1500
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "programDbIds" : {
                         "type" : "array",

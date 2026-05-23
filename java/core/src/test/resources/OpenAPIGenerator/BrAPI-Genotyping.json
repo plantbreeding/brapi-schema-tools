@@ -63,18 +63,18 @@
                         }
                     },
                     {
-                        "name" : "dataMatrixNames",
+                        "name" : "dataMatrixName",
                         "in" : "query",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
                         }
                     },
                     {
-                        "name" : "dataMatrixAbbreviations",
+                        "name" : "dataMatrixAbbreviation",
                         "in" : "query",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -1284,6 +1284,15 @@
                         "name" : "variantSetDbId",
                         "in" : "query",
                         "description" : "A list of IDs which uniquely identify `VariantSets`",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "pageToken",
+                        "in" : "query",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
                         "required" : false,
                         "schema" : {
                             "type" : "string"
@@ -3254,16 +3263,20 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "GT,RD"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dataMatrixNames" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "Genotype,Read Depth"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -3419,16 +3432,20 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "GT,RD"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dataMatrixNames" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "Genotype,Read Depth"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "expandHomozygotes" : {
                         "type" : "boolean",
@@ -3551,9 +3568,6 @@
                 "description" : "The AlleleMatrix object is used to describe a matrix of genotyping results. This 2d array of data reduces the overall size of the response for larger datasets, when compared to the Calls endpoints. This makes genotype data retrieval faster and easier."
             },
             "Analysis" : {
-                "required" : [
-                    "analysisDbId"
-                ],
                 "type" : "object",
                 "properties" : {
                     "analysisDbId" : {
@@ -3859,7 +3873,8 @@
                     },
                     "pageToken" : {
                         "type" : "string",
-                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
@@ -3928,7 +3943,8 @@
                     },
                     "pageToken" : {
                         "type" : "string",
-                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
@@ -5967,7 +5983,6 @@
                     "dataType" : {
                         "type" : "string",
                         "description" : "The type of field represented in this Genotype Field. This is intended to help parse the data out of JSON.",
-                        "nullable" : true,
                         "enum" : [
                             "string",
                             "integer",
@@ -5977,13 +5992,11 @@
                     },
                     "fieldAbbreviation" : {
                         "type" : "string",
-                        "description" : "The abbreviated code of the field represented in this Genotype Field. These codes should match the VCF standard when possible. Examples include: \"GQ\", \"RD\", and \"HQ\"",
-                        "nullable" : true
+                        "description" : "The abbreviated code of the field represented in this Genotype Field. These codes should match the VCF standard when possible. Examples include: \"GQ\", \"RD\", and \"HQ\""
                     },
                     "fieldName" : {
                         "type" : "string",
-                        "description" : "The name of the field represented in this Genotype Field. Examples include: \"Genotype Quality\", \"Read Depth\", and \"Haplotype Quality\"",
-                        "nullable" : true
+                        "description" : "The name of the field represented in this Genotype Field. Examples include: \"Genotype Quality\", \"Read Depth\", and \"Haplotype Quality\""
                     }
                 },
                 "description" : "Indicates which types of genotyping data and metadata are available in the VariantSet. \n<br> When possible, these field names and abbreviations should follow the VCF standard "
@@ -8897,21 +8910,39 @@
                     }
                 }
             },
+            "SeedLotTransactionRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "transactionDbIs" : {
+                        "type" : "array",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "transactionDirection" : {
+                        "type" : "string",
+                        "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                        "nullable" : true,
+                        "enum" : [
+                            "TO",
+                            "FROM",
+                            "BOTH"
+                        ]
+                    }
+                }
+            },
             "SortBy" : {
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
-                    "studyDbId",
                     "trialDbId",
+                    "trialName",
                     "programDbId",
-                    "locationDbId",
-                    "seasonDbId",
-                    "studyType",
-                    "studyName",
-                    "studyLocation",
                     "programName",
-                    "germplasmDbId",
-                    "observationVariableDbId"
+                    "locationDbId",
+                    "startDate",
+                    "endDate"
                 ]
             },
             "SortOrder" : {
@@ -8919,7 +8950,9 @@
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
                     "ASC",
-                    "DESC"
+                    "DESC",
+                    "asc",
+                    "desc"
                 ]
             },
             "SourceGermplasm" : {
@@ -9068,7 +9101,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {
@@ -9208,6 +9243,15 @@
                     }
                 }
             },
+            "TransactionDirection" : {
+                "type" : "string",
+                "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                "enum" : [
+                    "TO",
+                    "FROM",
+                    "BOTH"
+                ]
+            },
             "TrialParameters" : {
                 "type" : "object",
                 "properties" : {
@@ -9286,6 +9330,31 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "nullable" : true,
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
+                        "enum" : [
+                            "ASC",
+                            "DESC",
+                            "asc",
+                            "desc"
+                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -9784,6 +9853,11 @@
                         "format" : "int32",
                         "example" : 1500
                     },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
+                    },
                     "programDbIds" : {
                         "type" : "array",
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
@@ -9931,6 +10005,11 @@
                         "description" : "The size of the pages to be returned. Default is `1000`.",
                         "format" : "int32",
                         "example" : 1000
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "programDbIds" : {
                         "type" : "array",

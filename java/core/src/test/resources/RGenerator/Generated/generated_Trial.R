@@ -52,6 +52,8 @@ Trials <- R6Class(
     #' @param searchDateRangeStart The start of the overlapping search date range.
     #' @param searchDateRangeEnd The end of the overlapping search date range.
     #' @param trialPUIs A permanent identifier for a trial.
+    #' @param sortBy Name of the field to sort by.
+    #' @param sortOrder Sort order direction.
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of Trial objects.
@@ -71,6 +73,8 @@ Trials <- R6Class(
         searchDateRangeStart = NULL,
         searchDateRangeEnd = NULL,
         trialPUIs = NULL,
+        sortBy = NULL,
+        sortOrder = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -117,6 +121,12 @@ Trials <- R6Class(
       if (!is.null(trialPUIs)) {
         queryParams$trialPUI <- trialPUIs
       }
+      if (!is.null(sortBy)) {
+        queryParams$sortBy <- sortBy
+      }
+      if (!is.null(sortOrder)) {
+        queryParams$sortOrder <- sortOrder
+      }
       private$.client$perform_get_request("/trials", queryParams, page, pageSize)
     },
     #' @description
@@ -136,6 +146,8 @@ Trials <- R6Class(
     #' @param searchDateRangeStart The start of the overlapping search date range.
     #' @param searchDateRangeEnd The end of the overlapping search date range.
     #' @param trialPUIs A permanent identifier for a trial.
+    #' @param sortBy Name of the field to sort by.
+    #' @param sortOrder Sort order direction.
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -156,6 +168,8 @@ Trials <- R6Class(
         searchDateRangeStart = NULL,
         searchDateRangeEnd = NULL,
         trialPUIs = NULL,
+        sortBy = NULL,
+        sortOrder = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -201,6 +215,12 @@ Trials <- R6Class(
       }
       if (!is.null(trialPUIs)) {
         queryParams$trialPUIs <- to_list(trialPUIs)
+      }
+      if (!is.null(sortBy)) {
+        queryParams$sortBy <- to_list(sortBy)
+      }
+      if (!is.null(sortOrder)) {
+        queryParams$sortOrder <- to_list(sortOrder)
       }
       private$.client$perform_post_request("/search/trials", queryParams, page, pageSize)
     },

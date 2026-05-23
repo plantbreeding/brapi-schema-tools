@@ -2077,6 +2077,21 @@
                         }
                     },
                     {
+                        "name" : "transactionDirection",
+                        "in" : "query",
+                        "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                            "enum" : [
+                                "TO",
+                                "FROM",
+                                "BOTH"
+                            ]
+                        }
+                    },
+                    {
                         "$ref" : "#/components/parameters/page"
                     },
                     {
@@ -2537,16 +2552,20 @@
                         }
                     },
                     "dataMatrixAbbreviations" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixAbbreviations` is a comma separated list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "GT,RD"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dataMatrixNames" : {
-                        "type" : "string",
-                        "description" : "`dataMatrixNames` is a comma separated list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
+                        "type" : "array",
+                        "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "nullable" : true,
-                        "example" : "Genotype,Read Depth"
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "dimensionCallSetPage" : {
                         "type" : "integer",
@@ -2886,7 +2905,8 @@
                     },
                     "pageToken" : {
                         "type" : "string",
-                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response."
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "sepPhased" : {
                         "type" : "string",
@@ -4890,16 +4910,14 @@
             },
             "GermplasmChild" : {
                 "required" : [
-                    "childGermplasmDbId",
-                    "childGermplasmName",
                     "parentType"
                 ],
                 "type" : "object",
                 "properties" : {
-                    "childGermplasmDbId" : {
+                    "germplasmDbId" : {
                         "type" : "string"
                     },
-                    "childGermplasmName" : {
+                    "germplasmName" : {
                         "type" : "string"
                     },
                     "parentType" : {
@@ -4909,11 +4927,6 @@
                 "description" : "A germplasm reference that is a direct child of this germplasm. These represent edges in the tree, connecting to other nodes."
             },
             "GermplasmMCPD" : {
-                "required" : [
-                    "commonCropName",
-                    "germplasmDbId",
-                    "germplasmPUI"
-                ],
                 "type" : "object",
                 "properties" : {
                     "accessionNames" : {
@@ -5288,10 +5301,12 @@
                         "nullable" : true
                     },
                     "breedingMethodDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "breedingMethodName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "collection" : {
                         "type" : "string",
@@ -5441,12 +5456,7 @@
                         "nullable" : true
                     },
                     "coordinates" : {
-                        "type" : "array",
-                        "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/GeoJSON"
-                        }
+                        "$ref" : "#/components/schemas/GeoJSON"
                     }
                 },
                 "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm."
@@ -5474,16 +5484,16 @@
             },
             "GermplasmParent" : {
                 "required" : [
-                    "parentGermplasmDbId",
-                    "parentGermplasmName",
+                    "germplasmDbId",
+                    "germplasmName",
                     "parentType"
                 ],
                 "type" : "object",
                 "properties" : {
-                    "parentGermplasmDbId" : {
+                    "germplasmDbId" : {
                         "type" : "string"
                     },
-                    "parentGermplasmName" : {
+                    "germplasmName" : {
                         "type" : "string"
                     },
                     "parentType" : {
@@ -7037,15 +7047,15 @@
                     "MALE",
                     "FEMALE",
                     "SELF",
-                    "POPULATION"
+                    "POPULATION",
+                    "CLONAL"
                 ]
             },
             "PedigreeNode" : {
                 "required" : [
                     "germplasmDbId",
                     "germplasmName",
-                    "germplasmPUI",
-                    "pedigreeNodeDbId"
+                    "germplasmPUI"
                 ],
                 "type" : "object",
                 "properties" : {
@@ -7053,13 +7063,16 @@
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
                     "breedingMethodDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "breedingMethodName" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossingProjectDbId" : {
-                        "type" : "string"
+                        "type" : "string",
+                        "nullable" : true
                     },
                     "crossingYear" : {
                         "type" : "integer",
@@ -7100,11 +7113,6 @@
                         "items" : {
                             "$ref" : "#/components/schemas/GermplasmParent"
                         }
-                    },
-                    "pedigreeNodeDbId" : {
-                        "type" : "string",
-                        "description" : "The ID which uniquely identifies a pedigree node",
-                        "nullable" : true
                     },
                     "pedigreeString" : {
                         "type" : "string",
@@ -8662,21 +8670,39 @@
                 },
                 "description" : "The record of an event where material was moved in or out of a particular SeedLot"
             },
+            "SeedLotTransactionRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "transactionDbIs" : {
+                        "type" : "array",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "transactionDirection" : {
+                        "type" : "string",
+                        "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                        "nullable" : true,
+                        "enum" : [
+                            "TO",
+                            "FROM",
+                            "BOTH"
+                        ]
+                    }
+                }
+            },
             "SortBy" : {
                 "type" : "string",
                 "description" : "Name of the field to sort by.",
                 "enum" : [
-                    "studyDbId",
                     "trialDbId",
+                    "trialName",
                     "programDbId",
-                    "locationDbId",
-                    "seasonDbId",
-                    "studyType",
-                    "studyName",
-                    "studyLocation",
                     "programName",
-                    "germplasmDbId",
-                    "observationVariableDbId"
+                    "locationDbId",
+                    "startDate",
+                    "endDate"
                 ]
             },
             "SortOrder" : {
@@ -8684,7 +8710,9 @@
                 "description" : "Sort order direction. Ascending/Descending.",
                 "enum" : [
                     "ASC",
-                    "DESC"
+                    "DESC",
+                    "asc",
+                    "desc"
                 ]
             },
             "StorageType" : {
@@ -8861,7 +8889,9 @@
                         "nullable" : true,
                         "enum" : [
                             "ASC",
-                            "DESC"
+                            "DESC",
+                            "asc",
+                            "desc"
                         ]
                     },
                     "studyCodes" : {
@@ -9035,6 +9065,15 @@
                     }
                 }
             },
+            "TransactionDirection" : {
+                "type" : "string",
+                "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
+                "enum" : [
+                    "TO",
+                    "FROM",
+                    "BOTH"
+                ]
+            },
             "TrialParameters" : {
                 "type" : "object",
                 "properties" : {
@@ -9113,6 +9152,31 @@
                         "type" : "string",
                         "description" : "The start of the overlapping search date range. `searchDateRangeStart` must be before `searchDateRangeEnd`.\n\nReturn a Trial entity if any of the following cases are true\n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is null \n\n- `searchDateRangeStart` is before `trial.endDate` AND `searchDateRangeEnd` is after `trial.startDate`\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is null\n\n- `searchDateRangeEnd` is after `trial.startDate` AND `searchDateRangeStart` is before `trial.endDate`",
                         "format" : "date"
+                    },
+                    "sortBy" : {
+                        "type" : "string",
+                        "description" : "Name of the field to sort by.",
+                        "nullable" : true,
+                        "enum" : [
+                            "trialDbId",
+                            "trialName",
+                            "programDbId",
+                            "programName",
+                            "locationDbId",
+                            "startDate",
+                            "endDate"
+                        ]
+                    },
+                    "sortOrder" : {
+                        "type" : "string",
+                        "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
+                        "enum" : [
+                            "ASC",
+                            "DESC",
+                            "asc",
+                            "desc"
+                        ]
                     },
                     "studyDbIds" : {
                         "type" : "array",
@@ -9446,6 +9510,11 @@
                         "description" : "The end of the window (0-based, exclusive) for which overlapping variants should be returned.",
                         "format" : "int32",
                         "example" : 1500
+                    },
+                    "pageToken" : {
+                        "type" : "string",
+                        "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
+                        "deprecated" : true
                     },
                     "programDbIds" : {
                         "type" : "array",

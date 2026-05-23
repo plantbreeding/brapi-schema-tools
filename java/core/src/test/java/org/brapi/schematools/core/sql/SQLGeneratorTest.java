@@ -30,7 +30,7 @@ class SQLGeneratorTest {
 
     @Test
     void generateWithOverwrite() {
-        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults") ;
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 35, "build/test-output/SQLGenerator/defaults") ;
     }
 
     void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, int expectedSize, String classpath) {

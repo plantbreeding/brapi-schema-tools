@@ -23,7 +23,6 @@ CREATE TABLE brapi_Images (
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
     > NOT NULL COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
-  imageContent STRING NOT NULL COMMENT 'The content of the image',
   imageFileName STRING COMMENT 'The name of the image file. Might be the same as ''imageName'', but could be different.',
   imageFileSize INT COMMENT 'The size of the image in Bytes.',
   imageHeight INT COMMENT 'The height of the image in Pixels.',

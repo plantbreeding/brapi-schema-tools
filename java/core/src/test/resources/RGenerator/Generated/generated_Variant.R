@@ -53,6 +53,7 @@ Variants <- R6Class(
     #' @param start The beginning of the window (0-based, inclusive) for which overlapping variants should be returned.
     #' @param variantDbIds A list of IDs which uniquely identify `Variants`
     #' @param variantSetDbIds A list of IDs which uniquely identify `VariantSets`
+    #' @param pageToken The continuation token, which is used to page through large result sets.
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
     #' @return returns a paged and filtered list of Variant objects.
@@ -73,6 +74,7 @@ Variants <- R6Class(
         start = NULL,
         variantDbIds = NULL,
         variantSetDbIds = NULL,
+        pageToken = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -122,6 +124,9 @@ Variants <- R6Class(
       if (!is.null(variantSetDbIds)) {
         queryParams$variantSetDbId <- variantSetDbIds
       }
+      if (!is.null(pageToken)) {
+        queryParams$pageToken <- pageToken
+      }
       private$.client$perform_get_request("/variants", queryParams, page, pageSize)
     },
     #' @description
@@ -142,6 +147,7 @@ Variants <- R6Class(
     #' @param start The beginning of the window (0-based, inclusive) for which overlapping variants should be returned.
     #' @param variantDbIds A list of IDs which uniquely identify `Variants`
     #' @param variantSetDbIds A list of IDs which uniquely identify `VariantSets`
+    #' @param pageToken The continuation token, which is used to page through large result sets.
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -163,6 +169,7 @@ Variants <- R6Class(
         start = NULL,
         variantDbIds = NULL,
         variantSetDbIds = NULL,
+        pageToken = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -211,6 +218,9 @@ Variants <- R6Class(
       }
       if (!is.null(variantSetDbIds)) {
         queryParams$variantSetDbIds <- to_list(variantSetDbIds)
+      }
+      if (!is.null(pageToken)) {
+        queryParams$pageToken <- to_list(pageToken)
       }
       private$.client$perform_post_request("/search/variants", queryParams, page, pageSize)
     },

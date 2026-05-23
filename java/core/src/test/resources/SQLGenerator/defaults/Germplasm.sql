@@ -44,21 +44,19 @@ CREATE TABLE brapi_Germplasm (
     ARRAY<
       STRUCT<
         coordinateUncertainty STRING COMMENT 'Uncertainty associated with the coordinates in meters. Leave the value empty if the uncertainty is unknown.',
-        coordinates
-          ARRAY<
-            STRUCT<
-              geometry1
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'A single position',
-                  type STRING COMMENT 'The literal string "Point"'
-                >,
-              geometry2
-                STRUCT<
-                  coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
-                  type STRING COMMENT 'The literal string "Polygon"'
-                > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
-              type STRING COMMENT 'The literal string "Feature"'
-            >
+        coordinates 
+          STRUCT<
+            geometry1
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'A single position',
+                type STRING COMMENT 'The literal string "Point"'
+              >,
+            geometry2
+              STRUCT<
+                coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
+                type STRING COMMENT 'The literal string "Polygon"'
+              > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
+            type STRING COMMENT 'The literal string "Feature"'
           > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.'
       >
     > COMMENT 'Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm.',
