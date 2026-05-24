@@ -192,14 +192,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                         .stream()
                         .filter(property -> brAPIClassCache.dereferenceType(property.getType()) instanceof BrAPIObjectType)
                         .filter(property -> getLinkTypeFor(brAPIObjectType, property).getResultIfPresentOrElseResult(LinkType.NONE) == ID)
-                        .map(property -> BrAPIPropertyWithType.builder().property(property).type(unwrapAndDereferenceType(property.getType())).build())
+                        .map(property -> BrAPIPropertyWithType.builder().parentType(brAPIObjectType).property(property).type(unwrapAndDereferenceType(property.getType())).build())
                         .filter(propertyWithType -> propertyWithType.getType() instanceof BrAPIObjectType)
                         .toList();
 
                     if (options.isAddingForeignKeyConstraints()) {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
                             List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
-                                brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                                brAPIPropertyWithType.getParentType(), brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
                             if (sourceLinkProps.isEmpty()) {
                                 log.warn("Skipping inline FK constraint on table '{}': no source columns found for property '{}'",
                                     tableName, brAPIPropertyWithType.getProperty().getName());
@@ -222,7 +222,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                     } else {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
                             List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
-                                brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                                brAPIPropertyWithType.getParentType(), brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
                             if (sourceLinkProps.isEmpty()) {
                                 log.warn("Skipping FK constraint script on table '{}': no source columns found for property '{}'",
                                     tableName, brAPIPropertyWithType.getProperty().getName());
@@ -771,7 +771,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createLinkObjectDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
-            List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(property, brAPIObjectType);
+            List<BrAPIObjectProperty> linkPropertiesFor = options.getProperties().getLinkPropertiesFor(parentType, property, brAPIObjectType);
 
             if (linkPropertiesFor.isEmpty()) {
                 return fail(Response.ErrorType.VALIDATION,

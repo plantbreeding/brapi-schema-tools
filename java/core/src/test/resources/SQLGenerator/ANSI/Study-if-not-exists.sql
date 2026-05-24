@@ -8,10 +8,11 @@ CREATE TABLE IF NOT EXISTS brapi_Studies (
   studyName STRING PRIMARY KEY COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   -- Link properties
-  locationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
-  locationName STRING NOT NULL COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
+  locationDbId STRING COMMENT 'The unique identifier for a Location',
+  locationPUI STRING COMMENT 'locationPUI: Study',
+  locationName STRING COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
+  trialPUI STRING NOT NULL COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   trialName STRING NOT NULL COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',

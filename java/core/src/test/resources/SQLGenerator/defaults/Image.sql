@@ -8,7 +8,7 @@ CREATE TABLE brapi_Images (
   imageDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier of an image',
   imageName STRING PRIMARY KEY COMMENT 'The human readable name of an image. Might be the same as ''imageFileName'', but could be different.',
   -- Link properties
-  observationUnitDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
+  observationUnitDbId STRING COMMENT 'The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ',
   observationUnitPUI STRING COMMENT 'A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
   observationUnitName STRING COMMENT 'A human readable name for an observation unit',
   -- Properties

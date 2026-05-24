@@ -29,6 +29,7 @@ CREATE TABLE brapi_Traits (
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
       -- Link properties
       ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyPUI STRING COMMENT 'ontologyPUI: Trait',
       ontologyName STRING COMMENT 'Ontology name',
       -- Properties
       documentationLinks

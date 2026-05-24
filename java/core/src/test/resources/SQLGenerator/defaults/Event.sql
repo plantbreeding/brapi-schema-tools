@@ -8,7 +8,7 @@ CREATE TABLE brapi_Events (
   -- Primary properties
   eventDbId STRING NOT NULL PRIMARY KEY COMMENT 'Internal database identifier',
   -- Link properties
-  studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
@@ -17,6 +17,8 @@ CREATE TABLE brapi_Events (
     STRUCT<
       -- Link properties
       eventDbId STRING COMMENT 'Internal database identifier',
+      eventPUI STRING COMMENT 'eventPUI: Event',
+      eventName STRING COMMENT 'eventName: Event',
       -- Properties
       discreteDates ARRAY<STRING> COMMENT 'A list of dates when the event occurred <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
       endDate STRING COMMENT 'The end of a continuous or regularly repetitive event <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
@@ -28,6 +30,8 @@ CREATE TABLE brapi_Events (
       STRUCT<
         -- Link properties
         eventDbId STRING COMMENT 'Internal database identifier',
+        eventPUI STRING COMMENT 'eventPUI: Event',
+        eventName STRING COMMENT 'eventName: Event',
         -- Properties
         code STRING COMMENT 'The shortened code name of an event parameter <br>ICASA "Code_Display"',
         description STRING COMMENT 'A human readable description of this event parameter. This description is usually associated with the ''name'' and ''code'' of an event parameter.',

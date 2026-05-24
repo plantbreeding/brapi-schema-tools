@@ -9,6 +9,8 @@ CREATE TABLE brapi_Lists (
   listName STRING NOT NULL PRIMARY KEY COMMENT 'Human readable name of a List',
   -- Link properties
   listOwnerPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
+  listOwnerPersonPUI STRING NOT NULL COMMENT 'listOwnerPersonPUI: List',
+  listOwnerPersonName STRING NOT NULL COMMENT 'listOwnerPersonName: List',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   data ARRAY<STRING> COMMENT 'The array of DbIds of the BrAPI objects contained in a List',

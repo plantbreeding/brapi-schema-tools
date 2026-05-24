@@ -3,10 +3,7 @@ package org.brapi.schematools.core.options;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
-import org.brapi.schematools.core.model.BrAPIPrimitiveType;
-import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.model.*;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.utils.StringUtils;
@@ -116,15 +113,15 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     }
 
     /**
-     * Gets preferred link property that are used to generate links to the
+     * Finds the preferred link property that are used to generate links to the
      * provided object type.
      * <p>
      * This is usually the object dbId, but can be the name and/or PUI.
      *
      * @param brAPIObjectType the object type from which the properties will be obtained
-     * @return list of link properties that are used to generate links to the object
+     * @return the preferred link property that are used to generate links provided object type, if available
      */
-    public Response<BrAPIObjectProperty> getLinkPropertyFor(BrAPIObjectType brAPIObjectType) {
+    public Response<BrAPIObjectProperty> findLinkPropertyFor(BrAPIObjectType brAPIObjectType) {
 
         List<BrAPIObjectProperty> linkProperties = getLinkPropertiesFor(brAPIObjectType);
 
@@ -208,46 +205,6 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     /**
      * Gets the list of link properties that are used to generate links to the
      * provided object type for the specific property.
-     *
-     * This is usually the object dbId, but can also be the name and/or PUI.
-     * @param property the property for which the link properties will be obtained. This is used to determine the format of the converted ids link property name.
-     * @param brAPIObjectType the object type from which the properties will be obtained
-     * @return list of link properties that are used to generate links to the object
-     */
-    public List<BrAPIObjectProperty> getLinkPropertiesFor(BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType) {
-        List<BrAPIObjectProperty> linkProperties = new ArrayList<>() ;
-
-        if (id.isLinkFor(brAPIObjectType)) {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(id.getPropertyNameFor(brAPIObjectType)))
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(id.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
-        }
-
-        if (pui.isLinkFor(brAPIObjectType)) {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(pui.getPropertyNameFor(brAPIObjectType)))
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(pui.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
-        }
-
-        if (name.isLinkFor(brAPIObjectType)) {
-            brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(name.getPropertyNameFor(brAPIObjectType)))
-                .findFirst()
-                .map(childProperty -> childProperty.toBuilder().name(String.format(name.getNameFormat(), property.getName())).build())
-                .ifPresent(linkProperties::add);
-        }
-
-        return linkProperties ;
-    }
-
-    /**
-     * Gets the list of link properties that are used to generate links to the
-     * provided object type for the specific property.
-     *
      * This is usually the object dbId, but can also be the name and/or PUI.
      * @param parentType the type which has the property
      * @param property the property for which the link properties will be obtained. This is used to determine the format of the converted ids link property name.

@@ -8,8 +8,9 @@ CREATE TABLE brapi_Locations (
   locationDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a Location',
   locationName STRING NOT NULL PRIMARY KEY COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   -- Link properties
-  parentLocationDbId STRING NOT NULL COMMENT 'The unique identifier for a Location',
-  parentLocationName STRING NOT NULL COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
+  parentLocationDbId STRING COMMENT 'The unique identifier for a Location',
+  parentLocationPUI STRING COMMENT 'parentLocationPUI: Location',
+  parentLocationName STRING COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   -- Clustering properties
   countryCode STRING COMMENT '[ISO_3166-1_alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) spec <br/> MIAPPE V1.1 (DM-17) Geographic location (country) - The country where the experiment took place, either as a full name or preferably as a 2-letter code.''',
   environmentType STRING COMMENT 'Describes the general type of environment of a Location. (ex. forest, field, nursery, etc)',

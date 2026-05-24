@@ -8,8 +8,9 @@ CREATE TABLE brapi_PlannedCrosses (
   plannedCrossDbId STRING NOT NULL PRIMARY KEY COMMENT 'the unique identifier for a planned cross',
   plannedCrossName STRING PRIMARY KEY COMMENT 'the human readable name for a planned cross',
   -- Link properties
-  crossingProjectDbId STRING NOT NULL COMMENT 'The unique identifier for a crossing project',
-  crossingProjectName STRING NOT NULL COMMENT 'The human readable name for a crossing project',
+  crossingProjectDbId STRING COMMENT 'The unique identifier for a crossing project',
+  crossingProjectPUI STRING COMMENT 'crossingProjectPUI: PlannedCross',
+  crossingProjectName STRING COMMENT 'The human readable name for a crossing project',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   crossType STRING COMMENT 'the type of cross',

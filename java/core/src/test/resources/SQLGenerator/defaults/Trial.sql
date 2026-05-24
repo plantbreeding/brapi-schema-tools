@@ -9,8 +9,9 @@ CREATE TABLE brapi_Trials (
   trialName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   trialPUI STRING PRIMARY KEY COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   -- Link properties
-  programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
-  programName STRING NOT NULL COMMENT 'Human readable name of the program',
+  programDbId STRING COMMENT 'The ID which uniquely identifies the program',
+  programPUI STRING COMMENT 'programPUI: Trial',
+  programName STRING COMMENT 'Human readable name of the program',
   studyDbIds ARRAY<STRING> COMMENT '',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop associated with this trial',

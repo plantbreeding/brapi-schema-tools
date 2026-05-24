@@ -8,9 +8,10 @@ CREATE TABLE brapi_VariantSets (
   variantSetDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a VariantSet',
   variantSetName STRING PRIMARY KEY COMMENT 'The human readable name for a VariantSet',
   -- Link properties
-  referenceSetDbId STRING NOT NULL COMMENT 'The unique identifier for a ReferenceSet',
-  referenceSetName STRING NOT NULL COMMENT 'The human readable name of a ReferenceSet',
-  studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  referenceSetDbId STRING COMMENT 'The unique identifier for a ReferenceSet',
+  referenceSetPUI STRING COMMENT 'referenceSetPUI: VariantSet',
+  referenceSetName STRING COMMENT 'The human readable name of a ReferenceSet',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
@@ -23,6 +24,7 @@ CREATE TABLE brapi_VariantSets (
         analysisName STRING COMMENT 'A human readable name for this analysis',
         -- Link properties
         variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetPUI STRING COMMENT 'variantSetPUI: VariantSet',
         variantSetName STRING COMMENT 'The human readable name for a VariantSet',
         -- Properties
         created STRING COMMENT 'The time at which this record was created, in ISO 8601 format.',
@@ -37,6 +39,7 @@ CREATE TABLE brapi_VariantSets (
       STRUCT<
         -- Link properties
         variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetPUI STRING COMMENT 'variantSetPUI: VariantSet',
         variantSetName STRING COMMENT 'The human readable name for a VariantSet',
         -- Properties
         dataFormat STRING COMMENT 'dataFormat defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc)',
@@ -61,6 +64,7 @@ CREATE TABLE brapi_VariantSets (
       STRUCT<
         -- Link properties
         variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetPUI STRING COMMENT 'variantSetPUI: VariantSet',
         variantSetName STRING COMMENT 'The human readable name for a VariantSet',
         -- Properties
         dataType STRING COMMENT 'The type of field represented in this Genotype Field. This is intended to help parse the data out of JSON.',
