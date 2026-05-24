@@ -8,8 +8,9 @@ CREATE TABLE brapi_CrossingProjects (
   crossingProjectDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a crossing project',
   crossingProjectName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name for a crossing project',
   -- Link properties
-  programDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies the program',
-  programName STRING NOT NULL COMMENT 'Human readable name of the program',
+  programDbId STRING COMMENT 'The ID which uniquely identifies the program',
+  programPUI STRING COMMENT 'programPUI: CrossingProject',
+  programName STRING COMMENT 'Human readable name of the program',
   -- Clustering properties
   commonCropName STRING COMMENT 'the common name of a crop (for multi-crop systems)',
   -- Properties

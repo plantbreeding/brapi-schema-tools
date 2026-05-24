@@ -10,8 +10,8 @@ CREATE TABLE brapi_CallSets (
   -- Link properties
   sampleDbId STRING COMMENT 'The ID which uniquely identifies a `Sample` <br> MIAPPE V1.1 (DM-76) Sample ID - Unique identifier for the sample.',
   samplePUI STRING COMMENT 'A permanent unique identifier for the `Sample` (DOI, URL, UUID, etc) <br> MIAPPE V1.1 (DM-81) External ID - An identifier for the sample in a persistent repository, comprising the name of the repository and the accession number of the observation unit therein. Submission to the EBI Biosamples repository is recommended. URI are recommended when possible. ',
-  sampleName STRING NOT NULL COMMENT 'The human readable name of the `Sample`',
-  studyDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  sampleName STRING COMMENT 'The human readable name of the `Sample`',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties

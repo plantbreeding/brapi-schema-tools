@@ -10,14 +10,14 @@ CREATE TABLE brapi_GermplasmAttributes (
   attributePUI STRING NOT NULL PRIMARY KEY COMMENT 'The Permanent Unique Identifier of an Attribute, usually in the form of a URI',
   -- Link properties
   attributeValueDbIds ARRAY<STRING> COMMENT 'attributeValues',
-  methodDbId STRING COMMENT 'Method unique identifier',
-  methodPUI STRING COMMENT 'The Permanent Unique Identifier of a Method, usually in the form of a URI',
+  methodDbId STRING NOT NULL COMMENT 'Method unique identifier',
+  methodPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Method, usually in the form of a URI',
   methodName STRING NOT NULL COMMENT 'Human readable name for the method <br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation',
   scaleDbId STRING NOT NULL COMMENT 'Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID.',
-  scalePUI STRING COMMENT 'The Permanent Unique Identifier of a Scale, usually in the form of a URI',
+  scalePUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Scale, usually in the form of a URI',
   scaleName STRING NOT NULL COMMENT 'Name of the scale <br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable',
-  traitDbId STRING COMMENT 'The ID which uniquely identifies a trait',
-  traitPUI STRING COMMENT 'The Permanent Unique Identifier of a Trait, usually in the form of a URI',
+  traitDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trait',
+  traitPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Trait, usually in the form of a URI',
   traitName STRING NOT NULL COMMENT 'The human readable name of a trait <br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation',
   -- Clustering properties
   commonCropName STRING COMMENT 'Crop name (examples: "Maize", "Wheat")',
@@ -44,6 +44,7 @@ CREATE TABLE brapi_GermplasmAttributes (
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
       -- Link properties
       ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyPUI STRING COMMENT 'ontologyPUI: GermplasmAttribute',
       ontologyName STRING COMMENT 'Ontology name',
       -- Properties
       documentationLinks

@@ -8,8 +8,9 @@ CREATE TABLE brapi_References (
   referenceDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a `Reference`',
   referenceName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
   -- Link properties
-  referenceSetDbId STRING NOT NULL COMMENT 'The unique identifier for a ReferenceSet',
-  referenceSetName STRING NOT NULL COMMENT 'The human readable name of a ReferenceSet',
+  referenceSetDbId STRING COMMENT 'The unique identifier for a ReferenceSet',
+  referenceSetPUI STRING COMMENT 'referenceSetPUI: Reference',
+  referenceSetName STRING COMMENT 'The human readable name of a ReferenceSet',
   variantDbIds ARRAY<STRING> COMMENT 'variants',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop',
@@ -38,6 +39,7 @@ CREATE TABLE brapi_References (
       STRUCT<
         -- Link properties
         referenceDbId STRING COMMENT 'The unique identifier for a `Reference`',
+        referencePUI STRING COMMENT 'referencePUI: Reference',
         referenceName STRING COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
         -- Properties
         germplasmDbId STRING COMMENT 'The ID which uniquely identifies a germplasm within the given database server  <br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.',
