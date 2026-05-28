@@ -38,7 +38,7 @@ ALTER TABLE IF EXISTS brapi_PlannedCrosses ADD CONSTRAINT PlannedCrosses_Crossin
 ALTER TABLE IF EXISTS brapi_Plates ADD CONSTRAINT Plates_Programs_fk FOREIGN KEY(programDbId, programPUI, programName) REFERENCES brapi_Programs ;
 ALTER TABLE IF EXISTS brapi_Plates ADD CONSTRAINT Plates_Studies_fk FOREIGN KEY(studyDbId, studyPUI, studyName) REFERENCES brapi_Studies ;
 ALTER TABLE IF EXISTS brapi_Plates ADD CONSTRAINT Plates_Trials_fk FOREIGN KEY(trialDbId, trialPUI, trialName) REFERENCES brapi_Trials ;
-ALTER TABLE IF EXISTS brapi_Programs ADD CONSTRAINT Programs_People_fk FOREIGN KEY(leadPersonDbId, leadPersonPUI, leadPersonName) REFERENCES brapi_People ;
+ALTER TABLE IF EXISTS brapi_Programs ADD CONSTRAINT Programs_People_fk FOREIGN KEY(leadPersonDbId, leadPersonPUI) REFERENCES brapi_People ;
 ALTER TABLE IF EXISTS brapi_ReferenceSets ADD CONSTRAINT ReferenceSets_References_fk FOREIGN KEY(referencesDbId, referencesPUI, referencesName) REFERENCES brapi_References ;
 ALTER TABLE IF EXISTS brapi_References ADD CONSTRAINT References_ReferenceSets_fk FOREIGN KEY(referenceSetDbId, referenceSetPUI, referenceSetName) REFERENCES brapi_ReferenceSets ;
 ALTER TABLE IF EXISTS brapi_Samples ADD CONSTRAINT Samples_Germplasm_fk FOREIGN KEY(germplasmDbId, germplasmPUI, germplasmName) REFERENCES brapi_Germplasm ;

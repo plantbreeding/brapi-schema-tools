@@ -39,6 +39,9 @@ properties:
             GermplasmAttributeValue: attributeValueName
             GenomeMap: mapName
             ObservationUnitHierarchyLevel: levelName
+        linkPropertyFor:
+            Program:
+                leadPerson: false
     pui:
         nameFormat: "%sPUI"
         pluralNameFormat: "%sPUIs"

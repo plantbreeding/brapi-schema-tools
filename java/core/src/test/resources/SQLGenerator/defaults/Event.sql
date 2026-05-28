@@ -17,8 +17,8 @@ CREATE TABLE brapi_Events (
     STRUCT<
       -- Link properties
       eventDbId STRING COMMENT 'Internal database identifier',
-      eventPUI STRING COMMENT 'eventPUI: Event',
-      eventName STRING COMMENT 'eventName: Event',
+      eventPUI STRING COMMENT 'associated event',
+      eventName STRING COMMENT 'associated event',
       -- Properties
       discreteDates ARRAY<STRING> COMMENT 'A list of dates when the event occurred <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
       endDate STRING COMMENT 'The end of a continuous or regularly repetitive event <br/>MIAPPE V1.1 (DM-68) Event date - Date and time of the event.',
@@ -30,8 +30,8 @@ CREATE TABLE brapi_Events (
       STRUCT<
         -- Link properties
         eventDbId STRING COMMENT 'Internal database identifier',
-        eventPUI STRING COMMENT 'eventPUI: Event',
-        eventName STRING COMMENT 'eventName: Event',
+        eventPUI STRING COMMENT 'associated event',
+        eventName STRING COMMENT 'associated event',
         -- Properties
         code STRING COMMENT 'The shortened code name of an event parameter <br>ICASA "Code_Display"',
         description STRING COMMENT 'A human readable description of this event parameter. This description is usually associated with the ''name'' and ''code'' of an event parameter.',

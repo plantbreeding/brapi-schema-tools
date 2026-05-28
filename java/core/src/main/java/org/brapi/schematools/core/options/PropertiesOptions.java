@@ -225,16 +225,19 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
 
     private void addLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, List<BrAPIObjectProperty> linkProperties, PropertyOptions options) {
         if (options.isLinkForTypeOrProperty(parentType, property, brAPIObjectType))  {
+            String childPropertyName = options.getPropertyNameFor(brAPIObjectType);
             brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(options.getPropertyNameFor(brAPIObjectType)) )
+                .filter(childProperty -> childProperty.getName().equals(childPropertyName) )
                 .findFirst()
-                .map(childProperty -> buildLinkProperty(parentType, property, childProperty, options))
+                .map(childProperty -> buildLinkProperty(parentType, property, brAPIObjectType, childProperty, options))
                 .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(options.getNameFormat(), property.getName()), parentType, property, options)));
         }
     }
 
-    private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectProperty childProperty, PropertyOptions options) {
-        BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(String.format(options.getNameFormat(), property.getName())) ;
+    private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty childProperty, PropertyOptions options) {
+        String linkPropertyName = String.format(options.getNameFormat(), property.getName()) ;
+
+        BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(linkPropertyName) ;
 
         builder.nullable(options.getNullableForProperty(parentType, property)) ;
         builder.required(options.getRequiredForProperty(parentType, property)) ;
@@ -246,6 +249,7 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         return BrAPIObjectProperty.builder()
             .name(name)
             .type(BrAPIPrimitiveType.stringType())
+            .description(property.getDescription())
             .nullable(options.getNullableForProperty(parentType, property))
             .required(options.getRequiredForProperty(parentType, property))
             .build();

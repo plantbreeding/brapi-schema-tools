@@ -9,7 +9,7 @@ CREATE TABLE brapi_Plates (
   plateName STRING NOT NULL PRIMARY KEY COMMENT 'A human readable name for a `Plate`',
   -- Link properties
   programDbId STRING COMMENT 'The ID which uniquely identifies the program',
-  programPUI STRING COMMENT 'programPUI: Plate',
+  programPUI STRING COMMENT 'The ID which uniquely identifies a `Program` within the given database server',
   programName STRING COMMENT 'Human readable name of the program',
   studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',

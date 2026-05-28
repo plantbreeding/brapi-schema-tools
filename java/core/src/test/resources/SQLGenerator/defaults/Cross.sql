@@ -9,10 +9,10 @@ CREATE TABLE brapi_Crosses (
   crossName STRING PRIMARY KEY COMMENT 'the human readable name for a cross',
   -- Link properties
   crossingProjectDbId STRING COMMENT 'The unique identifier for a crossing project',
-  crossingProjectPUI STRING COMMENT 'crossingProjectPUI: Cross',
+  crossingProjectPUI STRING COMMENT 'the unique identifier for a crossing project',
   crossingProjectName STRING COMMENT 'The human readable name for a crossing project',
   plannedCrossDbId STRING COMMENT 'the unique identifier for a planned cross',
-  plannedCrossPUI STRING COMMENT 'plannedCrossPUI: Cross',
+  plannedCrossPUI STRING COMMENT 'The Cross that was used in the planning of this one.',
   plannedCrossName STRING COMMENT 'the human readable name for a planned cross',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -23,7 +23,7 @@ CREATE TABLE brapi_Crosses (
         crossAttributeName STRING COMMENT 'the human readable name of a cross attribute',
         -- Link properties
         crossDbId STRING COMMENT 'the unique identifier for a cross',
-        crossPUI STRING COMMENT 'crossPUI: Cross',
+        crossPUI STRING COMMENT 'a custom attributes associated with a cross',
         crossName STRING COMMENT 'the human readable name for a cross',
         -- Properties
         crossAttributeValue STRING COMMENT 'the value of a cross attribute'
@@ -66,7 +66,7 @@ CREATE TABLE brapi_Crosses (
       STRUCT<
         -- Link properties
         crossDbId STRING COMMENT 'the unique identifier for a cross',
-        crossPUI STRING COMMENT 'crossPUI: Cross',
+        crossPUI STRING COMMENT 'The Cross associated with this Pollination Event',
         crossName STRING COMMENT 'the human readable name for a cross',
         -- Properties
         pollinationNumber STRING COMMENT 'The unique identifier for this pollination event',

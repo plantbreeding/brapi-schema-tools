@@ -8,13 +8,13 @@ It may include associated information such as quality and phasing. For example, 
 CREATE TABLE brapi_Calls (
   -- Link properties
   callSetDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a CallSet within the given database server',
-  callSetPUI STRING NOT NULL COMMENT 'callSetPUI: Call',
+  callSetPUI STRING NOT NULL COMMENT 'The ID of the call set this variant call belongs to.  If this field is not present, the ordering of the call sets from a `SearchCallSetsRequest` over this `VariantSet` is guaranteed to match the ordering of the calls on this `Variant`. The number of results will also be the same.',
   callSetName STRING NOT NULL COMMENT 'The human readable name which identifies a germplasm within the given database server',
   variantDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a `Variant`',
-  variantPUI STRING NOT NULL COMMENT 'variantPUI: Call',
-  variantName STRING NOT NULL COMMENT 'variantName: Call',
+  variantPUI STRING NOT NULL COMMENT 'The ID of the variant this call belongs to.',
+  variantName STRING NOT NULL COMMENT 'The ID of the variant this call belongs to.',
   variantSetDbId STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
-  variantSetPUI STRING NOT NULL COMMENT 'variantSetPUI: Call',
+  variantSetPUI STRING NOT NULL COMMENT 'The unique identifier for a VariantSet',
   variantSetName STRING NOT NULL COMMENT 'The human readable name for a VariantSet',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
