@@ -74,30 +74,6 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         return success(builder.toString());
     }
 
-    private String createTableNameFullName(BrAPIObjectType brAPIObjectType) {
-        return metadata.getTablePrefix() != null ?
-            metadata.getTablePrefix() + createTableName(brAPIObjectType) : createTableName(brAPIObjectType);
-    }
-
-    private String createTableName(String fullTableName) {
-        return metadata.getTablePrefix() != null ?
-            fullTableName.substring(metadata.getTablePrefix().length()) : fullTableName;
-    }
-
-    private String createTableName(BrAPIObjectType brAPIObjectType) {
-        String name = brAPIObjectType.getName() ;
-
-        if (options.isUsingPluralTableNames()) {
-            name = toPlural(name) ;
-        }
-
-        if (options.isUsingSnakeCaseTableNames()) {
-            name = toSnakeCase(name) ;
-        }
-
-        return name ;
-    }
-
     private class Generator {
         private final BrAPIObjectType brAPIObjectType;
         private final List<LinkTable> linkTables = new ArrayList<>();
@@ -477,14 +453,14 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
                 List<Response<String>> groupCols = group.stream()
                     .map(p -> createColumnDefinition(brAPIObjectType, p))
-                    .collect(Collectors.toList());
+                    .toList();
 
                 if (!comment.isBlank()) {
                     // Prepend "-- comment\n<indent>" to the first column definition of
                     // this group so it appears on its own line between the groups
                     String commentPrefix = comment + newLine();
                     List<Response<String>> annotated = new ArrayList<>(groupCols);
-                    annotated.set(0, groupCols.get(0).mapResult(col -> commentPrefix + col));
+                    annotated.set(0, groupCols.getFirst().mapResult(col -> commentPrefix + col));
                     allCols.addAll(annotated);
                 } else {
                     allCols.addAll(groupCols);
