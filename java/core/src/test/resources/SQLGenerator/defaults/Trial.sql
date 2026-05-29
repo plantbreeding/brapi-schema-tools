@@ -9,10 +9,10 @@ CREATE TABLE brapi_Trials (
   trialName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   trialPUI STRING PRIMARY KEY COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   -- Link properties
-  programDbId STRING COMMENT 'The ID which uniquely identifies the program',
+  programDbId STRING COMMENT 'A program identifier to search for. The ID which uniquely identifies the program',
   programPUI STRING COMMENT 'A program identifier to search for',
-  programName STRING COMMENT 'Human readable name of the program',
-  studyDbIds ARRAY<STRING> COMMENT '',
+  programName STRING COMMENT 'A program identifier to search for. Human readable name of the program',
+  studyDbIds ARRAY<STRING> COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop associated with this trial',
   -- Properties
@@ -34,9 +34,9 @@ CREATE TABLE brapi_Trials (
     ARRAY<
       STRUCT<
         -- Link properties
-        trialDbId STRING COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-        trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
-        trialName STRING COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
+        trialDbId STRING COMMENT 'Dataset authorships associated with a trial. The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
+        trialPUI STRING COMMENT 'Dataset authorships associated with a trial. A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
+        trialName STRING COMMENT 'Dataset authorships associated with a trial. The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
         -- Properties
         datasetPUI STRING COMMENT 'The DOI or other permanent unique identifier for this published dataset',
         license STRING COMMENT 'MIAPPE V1.1 (DM-7) License - License for the reuse of the data associated with this investigation. The Creative Commons licenses cover most use cases and are recommended.',
@@ -59,9 +59,9 @@ CREATE TABLE brapi_Trials (
         -- Primary properties
         publicationPUI STRING COMMENT 'The permanent unique identifier of the publication.',
         -- Link properties
-        trialDbId STRING COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-        trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
-        trialName STRING COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
+        trialDbId STRING COMMENT 'Publications associated with a trial. The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
+        trialPUI STRING COMMENT 'Publications associated with a trial. A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
+        trialName STRING COMMENT 'Publications associated with a trial. The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
         -- Properties
         publicationReference STRING COMMENT 'The publication reference.'
       >

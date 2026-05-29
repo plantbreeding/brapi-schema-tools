@@ -8,15 +8,15 @@ CREATE TABLE brapi_Events (
   -- Primary properties
   eventDbId STRING NOT NULL PRIMARY KEY COMMENT 'Internal database identifier',
   -- Link properties
-  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  studyDbId STRING COMMENT 'The study in which the event occurred. The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyPUI STRING COMMENT 'The study in which the event occurred. A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  studyName STRING COMMENT 'The study in which the event occurred. The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   eventDateRange 
     STRUCT<
       -- Link properties
-      eventDbId STRING COMMENT 'Internal database identifier',
+      eventDbId STRING COMMENT 'associated event. Internal database identifier',
       eventPUI STRING COMMENT 'associated event',
       eventName STRING COMMENT 'associated event',
       -- Properties
@@ -29,7 +29,7 @@ CREATE TABLE brapi_Events (
     ARRAY<
       STRUCT<
         -- Link properties
-        eventDbId STRING COMMENT 'Internal database identifier',
+        eventDbId STRING COMMENT 'associated event. Internal database identifier',
         eventPUI STRING COMMENT 'associated event',
         eventName STRING COMMENT 'associated event',
         -- Properties

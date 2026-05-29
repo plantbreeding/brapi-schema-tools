@@ -26,9 +26,9 @@ CREATE TABLE brapi_Methods (
       -- Primary properties
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
       -- Link properties
-      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyDbId STRING COMMENT 'The Ontology for this reference. Ontology database unique identifier',
       ontologyPUI STRING COMMENT 'The Ontology for this reference',
-      ontologyName STRING COMMENT 'Ontology name',
+      ontologyName STRING COMMENT 'The Ontology for this reference. Ontology name',
       -- Properties
       documentationLinks
         ARRAY<
