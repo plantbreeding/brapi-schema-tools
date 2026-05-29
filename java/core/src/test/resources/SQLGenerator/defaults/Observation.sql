@@ -17,7 +17,7 @@ CREATE TABLE brapi_Observations (
   observationVariablePUI STRING COMMENT 'The Permanent Unique Identifier of a Observation Variable, usually in the form of a URI',
   observationVariableName STRING COMMENT 'Variable name (usually a short name)  MIAPPE V1.1 (DM-84) Variable name - Name of the variable.',
   seasonDbId STRING COMMENT 'The ID which uniquely identifies a season. For backward compatibility it can be a string like ''2012'', ''1957-2004''',
-  seasonPUI STRING COMMENT 'seasonPUI: Observation',
+  seasonPUI STRING COMMENT 'The season for this Observation',
   seasonName STRING COMMENT 'Name of the season. ex. ''Spring'', ''Q2'', ''Season A'', etc.',
   studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
   studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',

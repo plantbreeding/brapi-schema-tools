@@ -10,7 +10,7 @@ CREATE TABLE brapi_Studies (
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   -- Link properties
   locationDbId STRING COMMENT 'The unique identifier for a Location',
-  locationPUI STRING COMMENT 'locationPUI: Study',
+  locationPUI STRING COMMENT 'The unique identifier for a Location',
   locationName STRING COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   trialDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
   trialPUI STRING NOT NULL COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',

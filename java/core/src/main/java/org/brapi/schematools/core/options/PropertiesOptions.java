@@ -225,19 +225,27 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
 
     private void addLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, List<BrAPIObjectProperty> linkProperties, PropertyOptions options) {
         if (options.isLinkForTypeOrProperty(parentType, property, brAPIObjectType))  {
+            String childPropertyName = options.getPropertyNameFor(brAPIObjectType);
             brAPIObjectType.getProperties().stream()
-                .filter(childProperty -> childProperty.getName().equals(options.getPropertyNameFor(brAPIObjectType)) )
+                .filter(childProperty -> childProperty.getName().equals(childPropertyName) )
                 .findFirst()
-                .map(childProperty -> buildLinkProperty(parentType, property, childProperty, options))
+                .map(childProperty -> buildLinkProperty(parentType, property, brAPIObjectType, childProperty, options))
                 .ifPresentOrElse(linkProperties::add, () -> linkProperties.add(createStringProperty(String.format(options.getNameFormat(), property.getName()), parentType, property, options)));
         }
     }
 
-    private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectProperty childProperty, PropertyOptions options) {
-        BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(String.format(options.getNameFormat(), property.getName())) ;
+    private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty childProperty, PropertyOptions options) {
+        String linkPropertyName = String.format(options.getNameFormat(), property.getName()) ;
+
+        if (brAPIObjectType.getName().equalsIgnoreCase(property.getName())) {
+            linkPropertyName = childProperty.getName() ;
+        }
+
+        BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(linkPropertyName) ;
 
         builder.nullable(options.getNullableForProperty(parentType, property)) ;
         builder.required(options.getRequiredForProperty(parentType, property)) ;
+        builder.description(compositeDescription(property.getDescription(), childProperty.getDescription())) ;
 
         return builder.build();
     }
@@ -246,9 +254,48 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         return BrAPIObjectProperty.builder()
             .name(name)
             .type(BrAPIPrimitiveType.stringType())
+            .description(property.getDescription())
             .nullable(options.getNullableForProperty(parentType, property))
             .required(options.getRequiredForProperty(parentType, property))
             .build();
+    }
+
+    /**
+     * Returns a copy of an array link property with a composite description built from the
+     * array property's own description and the description of the linked item type's ID
+     * property. If the item type cannot be resolved or has no ID property the original
+     * property is returned unchanged.
+     *
+     * @param property        the array link property (e.g. {@code studies: ARRAY<Study>})
+     * @param itemObjectType  the dereferenced item type (e.g. {@code Study})
+     * @return property with composite description set, or the original if no ID property found
+     */
+    public BrAPIObjectProperty withArrayLinkDescription(BrAPIObjectProperty property, BrAPIObjectType itemObjectType) {
+        return getIdPropertyFor(itemObjectType)
+            .mapResult(idProp -> property.toBuilder()
+                .description(compositeDescription(property.getDescription(), idProp.getDescription()))
+                .build())
+            .orElseResult(property);
+    }
+
+    /**
+     * Builds a composite description from a parent property description (the relationship context)
+     * and a child/linked property description (the value semantics). If either is null or blank the
+     * other is used alone. When both are present they are joined with a single space, inserting a
+     * period after the parent description when it does not already end with one.
+     */
+    private String compositeDescription(String parentDescription, String childDescription) {
+        boolean hasParent = parentDescription != null && !parentDescription.isBlank();
+        boolean hasChild  = childDescription  != null && !childDescription.isBlank();
+
+        if (!hasParent && !hasChild) return null;
+        if (!hasParent) return childDescription;
+        if (!hasChild)  return parentDescription;
+
+        String parent = parentDescription.stripTrailing();
+        String child  = childDescription.strip();
+        String separator = parent.endsWith(".") || parent.endsWith("!") || parent.endsWith("?") ? " " : ". ";
+        return parent + separator + child;
     }
 
     private boolean isLink(PropertyOptions propertyOptions, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty childProperty) {

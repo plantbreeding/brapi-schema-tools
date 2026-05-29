@@ -239,8 +239,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
     }
 
     /**
-     * Sets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field)
-     * Use {@link #setLinkFor(BrAPIType, Boolean)} to override this value.
+     * Sets if this property is used as a foreign key link between entities for a specific primary model. For example the id property (or field).
      * @param type the primary model
      * @param isLink {@code true} if this property is used as a foreign key link between entities
      * @return the options for chaining
@@ -277,12 +276,12 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * Sets the property name for a specific primary model. For example the id property (or field)
      * name of Study, would be 'studyDbId' by default.
      * @param name the name of the primary model
-     * @param parameterName the property name for a specific primary model.
+     * @param propertyName the property name for a specific primary model.
      * @return the options for chaining
      */
     @JsonIgnore
-    public final PropertyOptions setPropertyNameFor(String name, String parameterName) {
-        propertyFor.put(name, parameterName) ;
+    public final PropertyOptions setPropertyNameFor(String name, String propertyName) {
+        propertyFor.put(name, propertyName) ;
 
         return this ;
     }

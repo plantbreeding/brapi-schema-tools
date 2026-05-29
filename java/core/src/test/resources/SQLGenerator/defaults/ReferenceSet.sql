@@ -9,7 +9,7 @@ CREATE TABLE brapi_ReferenceSets (
   referenceSetName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name of a ReferenceSet',
   -- Link properties
   referencesDbId STRING NOT NULL COMMENT 'The unique identifier for a `Reference`',
-  referencesPUI STRING NOT NULL COMMENT 'referencesPUI: ReferenceSet',
+  referencesPUI STRING NOT NULL COMMENT 'references',
   referencesName STRING NOT NULL COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
   sourceGermplasmDbIds ARRAY<STRING> COMMENT 'All known corresponding Germplasm',
   variantSetDbIds ARRAY<STRING> COMMENT 'variantSets',

@@ -9,10 +9,10 @@ CREATE TABLE brapi_SeedLots (
   seedLotName STRING NOT NULL PRIMARY KEY COMMENT 'A human readable name for this Seed Lot',
   -- Link properties
   locationDbId STRING COMMENT 'The unique identifier for a Location',
-  locationPUI STRING COMMENT 'locationPUI: SeedLot',
+  locationPUI STRING COMMENT 'The unique identifier for a Location',
   locationName STRING COMMENT 'A human readable name for a Location <br/> MIAPPE V1.1 (DM-18) Experimental site name - The name of the natural site, experimental field, greenhouse, phenotyping facility, etc. where the experiment took place.',
   programDbId STRING COMMENT 'The ID which uniquely identifies the program',
-  programPUI STRING COMMENT 'programPUI: SeedLot',
+  programPUI STRING COMMENT 'The unique DbId of the breeding program this Seed Lot belongs to',
   programName STRING COMMENT 'Human readable name of the program',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
@@ -22,13 +22,13 @@ CREATE TABLE brapi_SeedLots (
       STRUCT<
         -- Link properties
         crossDbId STRING COMMENT 'the unique identifier for a cross',
-        crossPUI STRING COMMENT 'crossPUI: SeedLot',
+        crossPUI STRING COMMENT 'The cross for the germplasm using in this content mixture',
         crossName STRING COMMENT 'the human readable name for a cross',
         germplasmDbId STRING COMMENT 'The ID which uniquely identifies a germplasm within the given database server  <br>MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc. This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.',
         germplasmPUI STRING COMMENT 'The Permanent Unique Identifier which represents a germplasm  MIAPPE V1.1 (DM-41) Biological material ID - Code used to identify the biological material in the data file. Should be unique within the Investigation. Can correspond to experimental plant ID, inventory lot ID, etc This material identification is different from a BiosampleID which corresponds to Observation Unit or Samples sections below.  MIAPPE V1.1 (DM-51) Material source DOI - Digital Object Identifier (DOI) of the material source  MCPD (v2.1) (PUID) 0. Any persistent, unique identifier assigned to the accession so it can be unambiguously referenced at the global level and the information associated with it harvested through automated means. Report one PUID for each accession. The Secretariat of the International Treaty on Plant Genetic Resources for Food and Agriculture (PGRFA) is facilitating the assignment of a persistent unique identifier (PUID), in the form of a DOI, to PGRFA at the accession level. Genebanks not applying a true PUID to their accessions should use, and request recipients to use, the concatenation of INSTCODE, ACCENUMB, and GENUS as a globally unique identifier similar in most respects to the PUID whenever they exchange information on accessions with third parties.',
         germplasmName STRING COMMENT 'Name of the germplasm. It can be the preferred name and does not have to be unique.  MCPD (v2.1) (ACCENAME) 11. Either a registered or other designation given to the material received, other than the donors accession number (23) or collecting number (3). First letter uppercase. Multiple names are separated by a semicolon without space.',
         seedLotDbId STRING COMMENT 'Unique DbId for the Seed Lot',
-        seedLotPUI STRING COMMENT 'seedLotPUI: SeedLot',
+        seedLotPUI STRING COMMENT 'associated seedLot',
         seedLotName STRING COMMENT 'A human readable name for this Seed Lot',
         -- Properties
         mixturePercentage INT COMMENT 'The percentage of the given germplasm in the seed lot mixture.'
@@ -51,10 +51,10 @@ CREATE TABLE brapi_SeedLots (
       STRUCT<
         -- Link properties
         fromSeedLotDbId STRING COMMENT 'Unique DbId for the Seed Lot',
-        fromSeedLotPUI STRING COMMENT 'fromSeedLotPUI: SeedLot',
+        fromSeedLotPUI STRING COMMENT 'The identifier for the Seed Lot being transferred out of',
         fromSeedLotName STRING COMMENT 'A human readable name for this Seed Lot',
         toSeedLotDbId STRING COMMENT 'Unique DbId for the Seed Lot',
-        toSeedLotPUI STRING COMMENT 'toSeedLotPUI: SeedLot',
+        toSeedLotPUI STRING COMMENT 'The identifier for the Seed Lot being transferred into',
         toSeedLotName STRING COMMENT 'A human readable name for this Seed Lot',
         -- Properties
         additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',

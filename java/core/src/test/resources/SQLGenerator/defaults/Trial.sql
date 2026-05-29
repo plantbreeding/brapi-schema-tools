@@ -10,7 +10,7 @@ CREATE TABLE brapi_Trials (
   trialPUI STRING PRIMARY KEY COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   -- Link properties
   programDbId STRING COMMENT 'The ID which uniquely identifies the program',
-  programPUI STRING COMMENT 'programPUI: Trial',
+  programPUI STRING COMMENT 'A program identifier to search for',
   programName STRING COMMENT 'Human readable name of the program',
   studyDbIds ARRAY<STRING> COMMENT '',
   -- Clustering properties

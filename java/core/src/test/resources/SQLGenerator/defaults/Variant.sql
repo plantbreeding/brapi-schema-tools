@@ -8,10 +8,10 @@ CREATE TABLE brapi_Variants (
   variantDbId STRING PRIMARY KEY COMMENT 'The ID which uniquely identifies a `Variant`',
   -- Link properties
   referenceDbId STRING COMMENT 'The unique identifier for a `Reference`',
-  referencePUI STRING COMMENT 'referencePUI: Variant',
+  referencePUI STRING COMMENT 'The unique identifier for a Reference',
   referenceName STRING COMMENT 'The human readable name of a `Reference` within a `ReferenceSet`.',
   referenceSetDbId STRING COMMENT 'The unique identifier for a ReferenceSet',
-  referenceSetPUI STRING COMMENT 'referenceSetPUI: Variant',
+  referenceSetPUI STRING COMMENT 'The unique identifier for a ReferenceSet',
   referenceSetName STRING COMMENT 'The human readable name of a ReferenceSet',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',

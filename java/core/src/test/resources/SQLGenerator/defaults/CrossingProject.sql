@@ -9,7 +9,7 @@ CREATE TABLE brapi_CrossingProjects (
   crossingProjectName STRING NOT NULL PRIMARY KEY COMMENT 'The human readable name for a crossing project',
   -- Link properties
   programDbId STRING COMMENT 'The ID which uniquely identifies the program',
-  programPUI STRING COMMENT 'programPUI: CrossingProject',
+  programPUI STRING COMMENT 'the unique identifier for a program',
   programName STRING COMMENT 'Human readable name of the program',
   -- Clustering properties
   commonCropName STRING COMMENT 'the common name of a crop (for multi-crop systems)',

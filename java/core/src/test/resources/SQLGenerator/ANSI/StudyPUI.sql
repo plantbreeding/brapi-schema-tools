@@ -9,7 +9,7 @@ CREATE TABLE brapi_Studies (
   studyPUI STRING PRIMARY KEY COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
   -- Link properties
   locationDbId STRING COMMENT 'The unique identifier for a Location',
-  locationPUI STRING COMMENT 'locationPUI: Study',
+  locationPUI STRING COMMENT 'The unique identifier for a Location',
   trialPUI STRING NOT NULL COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop associated with this study',
