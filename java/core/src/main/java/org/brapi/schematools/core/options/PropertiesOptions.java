@@ -237,6 +237,10 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     private BrAPIObjectProperty buildLinkProperty(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIObjectType brAPIObjectType, BrAPIObjectProperty childProperty, PropertyOptions options) {
         String linkPropertyName = String.format(options.getNameFormat(), property.getName()) ;
 
+        if (brAPIObjectType.getName().equalsIgnoreCase(property.getName())) {
+            linkPropertyName = childProperty.getName() ;
+        }
+
         BrAPIObjectProperty.BrAPIObjectPropertyBuilder builder = childProperty.toBuilder().name(linkPropertyName) ;
 
         builder.nullable(options.getNullableForProperty(parentType, property)) ;
