@@ -405,9 +405,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 if (linkProp.getType() instanceof BrAPIArrayType) {
                     // Array link properties (e.g. 'studies: ARRAY<Study>') are rendered
                     // directly so that createColumnDefinition dispatches them through
-                    // createArrayColumnDefinition and produces ARRAY<STRING>, not a scalar
+                    // createArrayColumnDefinition and produces ARRAY<STRING>, not a scalar.
+                    // Compose the description from the array property + the item type's ID
+                    // property so the comment carries the full FK semantics.
                     if (seenLinkColumnNames.add(linkProp.getName())) {
-                        expandedLinkProps.add(linkProp);
+                        BrAPIType itemType = unwrapAndDereferenceType(linkProp.getType());
+                        BrAPIObjectProperty propToAdd = itemType instanceof BrAPIObjectType itemObjectType
+                            ? options.getProperties().withArrayLinkDescription(linkProp, itemObjectType)
+                            : linkProp;
+                        expandedLinkProps.add(propToAdd);
                     }
                 } else {
                     BrAPIType dereferencedType = unwrapAndDereferenceType(linkProp.getType());

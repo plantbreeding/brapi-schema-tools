@@ -261,6 +261,24 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     }
 
     /**
+     * Returns a copy of an array link property with a composite description built from the
+     * array property's own description and the description of the linked item type's ID
+     * property. If the item type cannot be resolved or has no ID property the original
+     * property is returned unchanged.
+     *
+     * @param property        the array link property (e.g. {@code studies: ARRAY<Study>})
+     * @param itemObjectType  the dereferenced item type (e.g. {@code Study})
+     * @return property with composite description set, or the original if no ID property found
+     */
+    public BrAPIObjectProperty withArrayLinkDescription(BrAPIObjectProperty property, BrAPIObjectType itemObjectType) {
+        return getIdPropertyFor(itemObjectType)
+            .mapResult(idProp -> property.toBuilder()
+                .description(compositeDescription(property.getDescription(), idProp.getDescription()))
+                .build())
+            .orElseResult(property);
+    }
+
+    /**
      * Builds a composite description from a parent property description (the relationship context)
      * and a child/linked property description (the value semantics). If either is null or blank the
      * other is used alone. When both are present they are joined with a single space, inserting a
