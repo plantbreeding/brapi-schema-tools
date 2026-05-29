@@ -375,9 +375,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             // Group 1: Primary properties (dbId, name, PUI) — always come first
             List<BrAPIObjectProperty> primaryProps = new ArrayList<>(options.getProperties().getPrimaryPropertiesFor(brAPIObjectType));
 
-            // Group 2: Link (ID-type / foreign-key) properties, sorted alphabetically.
+            // Group 2: Object-link (ID-type) properties are first collected as raw
+            // object-link props (e.g. 'crop' → Crop), then each is expanded via
+            // getLinkPropertiesFor into the FK column properties it will actually
+            // generate (e.g. 'commonCropName').  Where an expanded column name matches
+            // a property that exists directly on this type, the direct property is
+            // preferred so its own description and nullability metadata are used, and
+            // so that object-identity deduplication against later groups works correctly.
             // Placed early so that clustering columns (Group 3) appear before complex
-            // nested types and remain within Databricks' default 32-column stats window
+            // nested types and remain within Databricks' default 32-column stats window.
             List<BrAPIObjectProperty> linkProps = new ArrayList<>();
             brAPIObjectType.getProperties()
                 .stream()
@@ -387,11 +393,47 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
                 .forEach(linkProps::add);
 
+            // Track column names already claimed by Group 1 and Group 2 expansions so
+            // that later groups can also exclude clashing names that belong to different
+            // BrAPIObjectProperty instances (i.e. where object-identity dedup is
+            // insufficient, e.g. a derived 'commonCropName' vs a direct 'commonCropName').
+            Set<String> seenLinkColumnNames = new HashSet<>();
+            primaryProps.stream().map(BrAPIObjectProperty::getName).forEach(seenLinkColumnNames::add);
+
+            List<BrAPIObjectProperty> expandedLinkProps = new ArrayList<>();
+            for (BrAPIObjectProperty linkProp : linkProps) {
+                if (linkProp.getType() instanceof BrAPIArrayType) {
+                    // Array link properties (e.g. 'studies: ARRAY<Study>') are rendered
+                    // directly so that createColumnDefinition dispatches them through
+                    // createArrayColumnDefinition and produces ARRAY<STRING>, not a scalar
+                    if (seenLinkColumnNames.add(linkProp.getName())) {
+                        expandedLinkProps.add(linkProp);
+                    }
+                } else {
+                    BrAPIType dereferencedType = unwrapAndDereferenceType(linkProp.getType());
+                    if (dereferencedType instanceof BrAPIObjectType linkObjectType) {
+                        for (BrAPIObjectProperty derivedProp : options.getProperties().getLinkPropertiesFor(brAPIObjectType, linkProp, linkObjectType)) {
+                            if (seenLinkColumnNames.add(derivedProp.getName())) {
+                                // Prefer the direct property on this type when the names
+                                // match so that its description / nullability are used and
+                                // object-identity dedup works for later groups
+                                brAPIObjectType.getProperties().stream()
+                                    .filter(p -> p.getName().equals(derivedProp.getName()))
+                                    .findFirst()
+                                    .ifPresentOrElse(expandedLinkProps::add,
+                                        () -> expandedLinkProps.add(derivedProp));
+                            }
+                        }
+                    }
+                }
+            }
+
             // Group 3: Clustering properties (not already included), in the configured
             // order.  Placing them here — before the remaining ARRAY/STRUCT columns —
             // ensures they receive Delta Lake stats and avoid DELTA_CLUSTERING_COLUMN_MISSING_STATS
             List<BrAPIObjectProperty> seen = new ArrayList<>(primaryProps);
-            seen.addAll(linkProps);
+            seen.addAll(linkProps);           // excludes original object-link props (e.g. 'crop') from later groups
+            seen.addAll(expandedLinkProps);   // excludes expanded column props (e.g. 'commonCropName') from later groups
 
             List<BrAPIObjectProperty> clusterProps = new ArrayList<>();
             options.getProperties().getClusteringPropertiesFor(brAPIObjectType)
@@ -399,6 +441,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .filter(this::isAddingDepreciatedProperty)
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
                 .filter(p -> !seen.contains(p))
+                .filter(p -> !seenLinkColumnNames.contains(p.getName()))
                 .forEach(clusterProps::add);
             seen.addAll(clusterProps);
 
@@ -409,16 +452,17 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 .filter(this::isAddingDepreciatedProperty)
                 .filter(p -> getLinkTypeFor(brAPIObjectType, p).onFailDoWithResponse(this::warn).orElseResult(LinkType.NONE) != LinkType.NONE)
                 .filter(p -> !seen.contains(p))
+                .filter(p -> !seenLinkColumnNames.contains(p.getName()))
                 .sorted(Comparator.comparing(BrAPIObjectProperty::getName))
                 .forEach(otherProps::add);
 
             // Only add the "-- Properties" separator when at least one earlier group
             // (link or clustering) contributed columns, so tables without those groups
             // don't get a redundant separator
-            String otherComment = (!linkProps.isEmpty() || !clusterProps.isEmpty()) ? "-- Properties" : "";
+            String otherComment = (!expandedLinkProps.isEmpty() || !clusterProps.isEmpty()) ? "-- Properties" : "";
 
             return buildGroupedColumnDefinitions(brAPIObjectType,
-                List.of(primaryProps,           linkProps,              clusterProps,                   otherProps),
+                List.of(primaryProps,           expandedLinkProps,      clusterProps,                   otherProps),
                 List.of("-- Primary properties", "-- Link properties",   "-- Clustering properties",     otherComment));
         }
 
