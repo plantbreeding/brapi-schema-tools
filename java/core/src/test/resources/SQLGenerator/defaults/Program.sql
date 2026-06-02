@@ -8,7 +8,7 @@ CREATE TABLE brapi_Programs (
   programDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies the program',
   programName STRING NOT NULL PRIMARY KEY COMMENT 'Human readable name of the program',
   -- Link properties
-  leadPersonDbId STRING COMMENT 'Unique ID for a person',
+  leadPersonDbId STRING COMMENT 'The unique identifier of the program leader. Unique ID for a person',
   leadPersonPUI STRING COMMENT 'The unique identifier of the program leader',
   -- Clustering properties
   commonCropName STRING COMMENT 'Common name for the crop which this program is for',

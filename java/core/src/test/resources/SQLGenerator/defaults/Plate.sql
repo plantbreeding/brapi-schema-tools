@@ -8,15 +8,15 @@ CREATE TABLE brapi_Plates (
   plateDbId STRING NOT NULL PRIMARY KEY COMMENT 'The ID which uniquely identifies a `Plate`',
   plateName STRING NOT NULL PRIMARY KEY COMMENT 'A human readable name for a `Plate`',
   -- Link properties
-  programDbId STRING COMMENT 'The ID which uniquely identifies the program',
+  programDbId STRING COMMENT 'The ID which uniquely identifies a `Program` within the given database server. The ID which uniquely identifies the program',
   programPUI STRING COMMENT 'The ID which uniquely identifies a `Program` within the given database server',
-  programName STRING COMMENT 'Human readable name of the program',
-  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
-  trialDbId STRING COMMENT 'The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
-  trialPUI STRING COMMENT 'A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
-  trialName STRING COMMENT 'The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
+  programName STRING COMMENT 'The ID which uniquely identifies a `Program` within the given database server. Human readable name of the program',
+  studyDbId STRING COMMENT 'The ID which uniquely identifies a `Study` within the given database server. The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyPUI STRING COMMENT 'The ID which uniquely identifies a `Study` within the given database server. A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  studyName STRING COMMENT 'The ID which uniquely identifies a `Study` within the given database server. The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  trialDbId STRING COMMENT 'The ID which uniquely identifies a `Trial` within the given database server. The ID which uniquely identifies a trial  MIAPPE V1.1 (DM-2) Investigation unique ID - Identifier comprising the unique name of the institution/database hosting the submission of the investigation data, and the accession number of the investigation in that institution.',
+  trialPUI STRING COMMENT 'The ID which uniquely identifies a `Trial` within the given database server. A permanent identifier for a trial. Could be DOI or other URI formatted identifier.',
+  trialName STRING COMMENT 'The ID which uniquely identifies a `Trial` within the given database server. The human readable name of a trial  MIAPPE V1.1 (DM-3) Investigation title - Human-readable string summarising the investigation.',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   externalReferences

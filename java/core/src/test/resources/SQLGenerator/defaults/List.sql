@@ -8,7 +8,7 @@ CREATE TABLE brapi_Lists (
   listDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a List',
   listName STRING NOT NULL PRIMARY KEY COMMENT 'Human readable name of a List',
   -- Link properties
-  listOwnerPersonDbId STRING NOT NULL COMMENT 'Unique ID for a person',
+  listOwnerPersonDbId STRING NOT NULL COMMENT 'The unique identifier for a List Owner. (usually a user or person). Unique ID for a person',
   listOwnerPersonPUI STRING NOT NULL COMMENT 'The unique identifier for a List Owner. (usually a user or person)',
   listOwnerPersonName STRING NOT NULL COMMENT 'The unique identifier for a List Owner. (usually a user or person)',
   -- Properties

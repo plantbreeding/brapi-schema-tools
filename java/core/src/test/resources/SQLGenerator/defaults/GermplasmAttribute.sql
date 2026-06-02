@@ -9,16 +9,16 @@ CREATE TABLE brapi_GermplasmAttributes (
   attributeName STRING NOT NULL PRIMARY KEY COMMENT 'A human readable name for this attribute',
   attributePUI STRING NOT NULL PRIMARY KEY COMMENT 'The Permanent Unique Identifier of an Attribute, usually in the form of a URI',
   -- Link properties
-  attributeValueDbIds ARRAY<STRING> COMMENT 'attributeValues',
-  methodDbId STRING NOT NULL COMMENT 'Method unique identifier',
-  methodPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Method, usually in the form of a URI',
-  methodName STRING NOT NULL COMMENT 'Human readable name for the method <br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation',
-  scaleDbId STRING NOT NULL COMMENT 'Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID.',
-  scalePUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Scale, usually in the form of a URI',
-  scaleName STRING NOT NULL COMMENT 'Name of the scale <br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable',
-  traitDbId STRING NOT NULL COMMENT 'The ID which uniquely identifies a trait',
-  traitPUI STRING NOT NULL COMMENT 'The Permanent Unique Identifier of a Trait, usually in the form of a URI',
-  traitName STRING NOT NULL COMMENT 'The human readable name of a trait <br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation',
+  attributeValueDbIds ARRAY<STRING> COMMENT 'attributeValues. The ID which uniquely identifies this attribute value within the given database server',
+  methodDbId STRING NOT NULL COMMENT 'A description of the way an Observation should be collected.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Method "estimation" or "drone image processing". Method unique identifier',
+  methodPUI STRING NOT NULL COMMENT 'A description of the way an Observation should be collected.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Method "estimation" or "drone image processing". The Permanent Unique Identifier of a Method, usually in the form of a URI',
+  methodName STRING NOT NULL COMMENT 'A description of the way an Observation should be collected.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Method "estimation" or "drone image processing". Human readable name for the method <br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation',
+  scaleDbId STRING NOT NULL COMMENT 'A Scale describes the units and acceptable values for an ObservationVariable.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Scale "inches" or "pixels". Unique identifier of the scale. If left blank, the upload system will automatically generate a scale ID.',
+  scalePUI STRING NOT NULL COMMENT 'A Scale describes the units and acceptable values for an ObservationVariable.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Scale "inches" or "pixels". The Permanent Unique Identifier of a Scale, usually in the form of a URI',
+  scaleName STRING NOT NULL COMMENT 'A Scale describes the units and acceptable values for an ObservationVariable.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Scale "inches" or "pixels". Name of the scale <br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable',
+  traitDbId STRING NOT NULL COMMENT 'A Trait describes what property is being observed.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Trait "Leaf length" or "Flower height". The ID which uniquely identifies a trait',
+  traitPUI STRING NOT NULL COMMENT 'A Trait describes what property is being observed.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Trait "Leaf length" or "Flower height". The Permanent Unique Identifier of a Trait, usually in the form of a URI',
+  traitName STRING NOT NULL COMMENT 'A Trait describes what property is being observed.  <br>For example, an ObservationVariable might be defined with a Trait of "plant height", a Scale of "meters", and a Method of "tape measure". This variable would be distinct from a variable with the Trait "Leaf length" or "Flower height". The human readable name of a trait <br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation',
   -- Clustering properties
   commonCropName STRING COMMENT 'Crop name (examples: "Maize", "Wheat")',
   -- Properties
@@ -43,9 +43,9 @@ CREATE TABLE brapi_GermplasmAttributes (
       -- Primary properties
       ontologyReferenceDbId STRING COMMENT 'The ID which uniquely identifies a ontology reference',
       -- Link properties
-      ontologyDbId STRING COMMENT 'Ontology database unique identifier',
+      ontologyDbId STRING COMMENT 'The Ontology for this reference. Ontology database unique identifier',
       ontologyPUI STRING COMMENT 'The Ontology for this reference',
-      ontologyName STRING COMMENT 'Ontology name',
+      ontologyName STRING COMMENT 'The Ontology for this reference. Ontology name',
       -- Properties
       documentationLinks
         ARRAY<

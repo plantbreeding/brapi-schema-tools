@@ -8,12 +8,12 @@ CREATE TABLE brapi_VariantSets (
   variantSetDbId STRING NOT NULL PRIMARY KEY COMMENT 'The unique identifier for a VariantSet',
   variantSetName STRING PRIMARY KEY COMMENT 'The human readable name for a VariantSet',
   -- Link properties
-  referenceSetDbId STRING COMMENT 'The unique identifier for a ReferenceSet',
+  referenceSetDbId STRING COMMENT 'The ID of the reference set that describes the sequences used by the variants in this set. The unique identifier for a ReferenceSet',
   referenceSetPUI STRING COMMENT 'The ID of the reference set that describes the sequences used by the variants in this set.',
-  referenceSetName STRING COMMENT 'The human readable name of a ReferenceSet',
-  studyDbId STRING COMMENT 'The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
-  studyPUI STRING COMMENT 'A permanent unique identifier associated with this study data. For example, a URI or DOI',
-  studyName STRING COMMENT 'The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
+  referenceSetName STRING COMMENT 'The ID of the reference set that describes the sequences used by the variants in this set. The human readable name of a ReferenceSet',
+  studyDbId STRING COMMENT 'The ID of the dataset this variant set belongs to. The ID which uniquely identifies a study within the given database server  MIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution.',
+  studyPUI STRING COMMENT 'The ID of the dataset this variant set belongs to. A permanent unique identifier associated with this study data. For example, a URI or DOI',
+  studyName STRING COMMENT 'The ID of the dataset this variant set belongs to. The human readable name for a study  MIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study',
   -- Properties
   additionalInfo MAP<STRING,STRING> COMMENT 'A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.',
   analysis
@@ -23,9 +23,9 @@ CREATE TABLE brapi_VariantSets (
         analysisDbId STRING COMMENT 'Unique identifier for this analysis description',
         analysisName STRING COMMENT 'A human readable name for this analysis',
         -- Link properties
-        variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetDbId STRING COMMENT 'Analysis associated with a variant set. The unique identifier for a VariantSet',
         variantSetPUI STRING COMMENT 'Analysis associated with a variant set',
-        variantSetName STRING COMMENT 'The human readable name for a VariantSet',
+        variantSetName STRING COMMENT 'Analysis associated with a variant set. The human readable name for a VariantSet',
         -- Properties
         created STRING COMMENT 'The time at which this record was created, in ISO 8601 format.',
         description STRING COMMENT 'A human readable description of the analysis',
@@ -38,9 +38,9 @@ CREATE TABLE brapi_VariantSets (
     ARRAY<
       STRUCT<
         -- Link properties
-        variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetDbId STRING COMMENT 'Formats associated with a variant set. The unique identifier for a VariantSet',
         variantSetPUI STRING COMMENT 'Formats associated with a variant set',
-        variantSetName STRING COMMENT 'The human readable name for a VariantSet',
+        variantSetName STRING COMMENT 'Formats associated with a variant set. The human readable name for a VariantSet',
         -- Properties
         dataFormat STRING COMMENT 'dataFormat defines the structure of the data within a file (ie DartSeq, VCF, Hapmap, tabular, etc)',
         expandHomozygotes BOOLEAN COMMENT 'Should homozygotes be expanded (true) or collapsed into a single occurrence (false)',
@@ -63,9 +63,9 @@ CREATE TABLE brapi_VariantSets (
     ARRAY<
       STRUCT<
         -- Link properties
-        variantSetDbId STRING COMMENT 'The unique identifier for a VariantSet',
+        variantSetDbId STRING COMMENT 'Formats associated with a variant set. The unique identifier for a VariantSet',
         variantSetPUI STRING COMMENT 'Formats associated with a variant set',
-        variantSetName STRING COMMENT 'The human readable name for a VariantSet',
+        variantSetName STRING COMMENT 'Formats associated with a variant set. The human readable name for a VariantSet',
         -- Properties
         dataType STRING COMMENT 'The type of field represented in this Genotype Field. This is intended to help parse the data out of JSON.',
         fieldAbbreviation STRING COMMENT 'The abbreviated code of the field represented in this Genotype Field. These codes should match the VCF standard when possible. Examples include: "GQ", "RD", and "HQ"',
