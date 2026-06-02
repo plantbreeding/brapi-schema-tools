@@ -39,6 +39,9 @@ pathItemNameForProperty:
     GermplasmAttribute:
         attributeCategory:
             /attributes/categories
+    Program:
+        commonCropName:
+            /commoncropnames
     Study:
         studyType:
             /studytypes
