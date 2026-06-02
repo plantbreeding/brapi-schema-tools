@@ -59,6 +59,8 @@ properties:
             calls: none
         Cross:
             observationUnits: none
+        CrossAttribute:
+            cross: none
         CrossingProject:
             crosses: none
             plannedCrosses: none
@@ -106,6 +108,8 @@ properties:
             referenceSet: none
         Observation:
             images: none
+        ObservationTreatment:
+            observationUnit: none
         ObservationUnit:
             samples: none
             events: none
@@ -126,6 +130,8 @@ properties:
             samples: none
             seedLots: none
             trials: none
+        PollinationEvent:
+            cross: none
         Plate:
             samples: none
         Reference:
