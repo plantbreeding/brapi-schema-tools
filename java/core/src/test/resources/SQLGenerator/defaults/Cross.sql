@@ -21,11 +21,6 @@ CREATE TABLE brapi_Crosses (
       STRUCT<
         -- Primary properties
         crossAttributeName STRING COMMENT 'the human readable name of a cross attribute',
-        -- Link properties
-        crossDbId STRING COMMENT 'a custom attributes associated with a cross. the unique identifier for a cross',
-        crossPUI STRING COMMENT 'a custom attributes associated with a cross',
-        crossName STRING COMMENT 'a custom attributes associated with a cross. the human readable name for a cross',
-        -- Properties
         crossAttributeValue STRING COMMENT 'the value of a cross attribute'
       >
     > COMMENT 'Set of custom attributes associated with a cross',
@@ -64,11 +59,6 @@ CREATE TABLE brapi_Crosses (
   pollinationEvents
     ARRAY<
       STRUCT<
-        -- Link properties
-        crossDbId STRING COMMENT 'The Cross associated with this Pollination Event. the unique identifier for a cross',
-        crossPUI STRING COMMENT 'The Cross associated with this Pollination Event',
-        crossName STRING COMMENT 'The Cross associated with this Pollination Event. the human readable name for a cross',
-        -- Properties
         pollinationNumber STRING COMMENT 'The unique identifier for this pollination event',
         pollinationSuccessful BOOLEAN COMMENT 'True if the pollination was successful',
         pollinationTimeStamp STRING COMMENT 'The timestamp when the pollination took place'

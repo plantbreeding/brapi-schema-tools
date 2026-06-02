@@ -90,11 +90,6 @@ CREATE TABLE brapi_ObservationUnits (
   treatments
     ARRAY<
       STRUCT<
-        -- Link properties
-        observationUnitDbId STRING COMMENT 'associated observation Unit. The ID which uniquely identifies an observation unit  MIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique.',
-        observationUnitPUI STRING COMMENT 'associated observation Unit. A Permanent Unique Identifier for an observation unit  MIAPPE V1.1 (DM-72) External ID - Identifier for the observation unit in a persistent repository, comprises the name of the repository and the identifier of the observation unit therein. The EBI Biosamples repository can be used. URI are recommended when possible.',
-        observationUnitName STRING COMMENT 'associated observation Unit. A human readable name for an observation unit',
-        -- Properties
         factor STRING COMMENT 'The type of treatment/factor. ex. ''fertilizer'', ''inoculation'', ''irrigation'', etc  MIAPPE V1.1 (DM-61) Experimental Factor type - Name/Acronym of the experimental factor.',
         modality STRING COMMENT 'The treatment/factor description. ex. ''low fertilizer'', ''yellow rust inoculation'', ''high water'', etc  MIAPPE V1.1 (DM-62) Experimental Factor description - Free text description of the experimental factor. This includes all relevant treatments planned and protocol planned for all the plants targeted by a given experimental factor. '
       >
