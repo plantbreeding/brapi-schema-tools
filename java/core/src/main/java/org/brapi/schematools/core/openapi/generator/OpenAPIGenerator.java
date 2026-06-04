@@ -669,7 +669,7 @@ public class OpenAPIGenerator {
 
             return createListGetParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
-                .mapOnConditionOr(isReturningList, () -> createListApiResponses(type), () -> createSingleApiResponses(type))
+                .mapOnConditionOr(isReturningList, () -> createListApiResponses(type, options.getGet().isAddingNotFoundResponseFor(type)), () -> createSingleApiResponses(type, options.getGet().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .onSuccessDoOnConditionOr(isReturningList, () -> generateListResponse(type), () -> generateSingleResponse(type))
                 .map(() -> success(operation));
@@ -792,11 +792,11 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type))
+            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type), options.getPost().isAddingNotFoundResponseFor(type))
                 .onSuccessDo(() -> generateListResponse(type));
         }
 
-        private Response<Operation> getOperation(BrAPIObjectType type, Operation operation, boolean usesAdditionalProperties) {
+        private Response<Operation> getOperation(BrAPIObjectType type, Operation operation, boolean usesAdditionalProperties, boolean addNotFound) {
             String requestBodyName = options.isGeneratingNewRequestFor(type) ? options.getNewRequestNameFor(type) : type.getName();
 
             if (usesAdditionalProperties) {
@@ -814,7 +814,7 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(type));
 
-            return createListApiResponses(type)
+            return createListApiResponses(type, addNotFound)
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -885,7 +885,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type))
+                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -906,7 +906,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type))
+                .map(() -> createSingleApiResponses(type, options.getPut().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -919,7 +919,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type))
+            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type), options.getPut().isAddingNotFoundResponseFor(type))
                 .onSuccessDo(() -> generateListResponse(type));
         }
 
@@ -935,7 +935,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type))
+                .map(() -> createSingleApiResponses(type, options.getDelete().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -971,7 +971,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type))
+                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -990,7 +990,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
-                .map(() -> createSingleApiResponses(parentType))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1009,7 +1009,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
-                .map(() -> createSingleApiResponses(parentType))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1030,7 +1030,7 @@ public class OpenAPIGenerator {
                     return createSubPathListGetParametersFor((BrAPIObjectType)type);
                 })
                 .onSuccessDoWithResult(result -> result.forEach(operation::addParametersItem))
-                .map(() -> createSubPathListApiResponses(type))
+                .map(() -> createSubPathListApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1049,7 +1049,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
-                .map(() -> createSingleApiResponses(parentType))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1068,16 +1068,19 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
-                .map(() -> createSingleApiResponses(parentType))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
 
-        private Response<ApiResponses> createSingleApiResponses(BrAPIType type) {
+        private Response<ApiResponses> createSingleApiResponses(BrAPIType type, boolean addNotFound) {
             if (type instanceof BrAPIObjectType) {
-                return success(addStandardApiResponses(new ApiResponses()
-                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getSingleResponseNameFor(type), type.getName()))))
-                    .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound")));
+                ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getSingleResponseNameFor(type), type.getName()))));
+                if (addNotFound) {
+                    apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+                }
+                return success(apiResponses);
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Can not create a List API Response for '%s' which is a '%s'", type.getName(), type.getClass().getSimpleName()));
             }
@@ -1090,8 +1093,16 @@ public class OpenAPIGenerator {
         }
 
         private Response<ApiResponses> createListApiResponses(BrAPIType type) {
-            return success(addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(type))))));
+            return createListApiResponses(type, false);
+        }
+
+        private Response<ApiResponses> createListApiResponses(BrAPIType type, boolean addNotFound) {
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(type)))));
+            if (addNotFound) {
+                apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+            }
+            return success(apiResponses);
         }
 
         private Response<ApiResponses> createListApiResponses(BrAPIObjectTypeWithProperty typeWithProperty) {
@@ -1099,15 +1110,17 @@ public class OpenAPIGenerator {
                 .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty), typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.getProperty().getName()))))));
         }
 
-        private Response<ApiResponses> createSubPathListApiResponses(BrAPIType type) {
+        private Response<ApiResponses> createSubPathListApiResponses(BrAPIType type, boolean addNotFound) {
             String responseRef = options.getGet().isReturningListFor(type) ?
                 "#/components/responses/" + options.getListResponseNameFor(type) :
                 "#/components/responses/" + options.getSingleResponseNameFor(type);
 
-            return success(addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(responseRef))
-                .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"))
-            ));
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref(responseRef)));
+            if (addNotFound) {
+                apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+            }
+            return success(apiResponses);
         }
 
         private ApiResponses addStandardApiResponses(ApiResponses apiResponses) {
@@ -1166,7 +1179,7 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getSearch().getSummaryOrDefault(type.getName(), options.getSearch().getSubmitDescriptionFormat(type)));
             operation.setDescription(metadata.getSearch().getDescriptionOrDefault(type.getName(), options.getSearch().getRetrieveDescriptionFormat(type)));
 
-            operation.responses(createSearchGetResponseRefs(type));
+            operation.responses(createSearchGetResponseRefs(type, options.getSearch().isAddingNotFoundResponseFor(type)));
             operation.addTagsItem(options.getTagFor(type));
 
             List<Parameter> parameters = new ArrayList<>();
@@ -1196,16 +1209,19 @@ public class OpenAPIGenerator {
             return generateListResponse(type).map(() -> success(pathItem));
         }
 
-        private ApiResponses createSearchGetResponseRefs(BrAPIObjectType type) {
+        private ApiResponses createSearchGetResponseRefs(BrAPIObjectType type, boolean addNotFound) {
 
             String responseRef = options.getSearch().isReturningListFor(type) ?
                 "#/components/responses/" + options.getListResponseNameFor(type) :
                 "#/components/responses/" + options.getSingleResponseNameFor(type);
 
-            return addStandardApiResponses(new ApiResponses()
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
                 .addApiResponse("200", new ApiResponse().$ref(responseRef))
-                .addApiResponse("202", new ApiResponse().$ref("#/components/responses/202AcceptedSearchResponse"))
-                .addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound")));
+                .addApiResponse("202", new ApiResponse().$ref("#/components/responses/202AcceptedSearchResponse")));
+            if (addNotFound) {
+                apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+            }
+            return apiResponses;
         }
 
         private Response<Components> generateComponents(Collection<BrAPIObjectType> primaryTypes, Collection<BrAPIClass> nonPrimaryTypes, Components supplementalComponents) {

@@ -195,9 +195,6 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
-                    },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -2385,6 +2382,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },
@@ -2423,6 +2423,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -3254,6 +3257,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },
@@ -3292,6 +3298,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -4367,6 +4376,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },
@@ -5792,9 +5804,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/CallListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -5803,6 +5812,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -5965,9 +5977,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/LinkageGroupListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -5976,6 +5985,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -7642,9 +7654,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/SeedLotTransactionListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -7653,6 +7662,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -8028,9 +8040,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/CallListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -8039,6 +8048,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -8153,9 +8165,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/CallListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -8164,6 +8173,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -8217,9 +8229,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/CallSetListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -8228,6 +8237,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -8275,9 +8287,6 @@
                     "200" : {
                         "$ref" : "#/components/responses/VariantListResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -8286,6 +8295,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9278,9 +9290,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9289,6 +9298,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9330,9 +9342,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9341,6 +9350,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9379,9 +9391,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9390,6 +9399,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9428,9 +9440,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9439,6 +9448,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9477,9 +9489,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9488,6 +9497,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9526,9 +9538,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9537,6 +9546,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9575,9 +9587,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9586,6 +9595,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9624,9 +9636,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9635,6 +9644,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9673,9 +9685,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9684,6 +9693,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9722,9 +9734,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9733,6 +9742,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9771,9 +9783,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9782,6 +9791,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9820,9 +9832,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9831,6 +9840,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9869,9 +9881,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9880,6 +9889,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9918,9 +9930,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9929,6 +9938,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -9967,9 +9979,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -9978,6 +9987,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10016,9 +10028,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10027,6 +10036,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10065,9 +10077,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10076,6 +10085,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10114,9 +10126,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10125,6 +10134,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10163,9 +10175,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10174,6 +10183,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10212,9 +10224,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10223,6 +10232,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10261,9 +10273,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10272,6 +10281,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10310,9 +10322,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10321,6 +10330,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10362,9 +10374,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10373,6 +10382,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -10411,9 +10423,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -10422,6 +10431,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }

@@ -26,6 +26,7 @@ getWithId:
     generate: true
     summaryFormat: Get the details of a specific %s
     descriptionFormat: Get details for a %s
+    addNotFoundResponse: false
     generateFor:
         AlleleMatrix: false
         Call: false
@@ -40,6 +41,7 @@ get:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
+    addNotFoundResponse: false
     generateFor:
         AlleleMatrix: false
         ServerInfo: false
@@ -69,6 +71,7 @@ search:
     generate: true
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`
+    addNotFoundResponse: false
     searchIdFieldName: searchResultsDbId
     submitDescriptionFormat: Submit a search request for `%s`
     retrieveDescriptionFormat: Get the results of a `%s` search request
@@ -101,6 +104,7 @@ post:
     generate: true
     summaryFormat: Create new %s
     descriptionFormat: Add new %s to database
+    addNotFoundResponse: false
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
@@ -119,6 +123,7 @@ put:
     generate: true
     summaryFormat: Update the details for an existing %s
     descriptionFormat: Update the details for an existing %s
+    addNotFoundResponse: false
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
@@ -149,6 +154,7 @@ delete:
     generate: false
     summaryFormat: Delete an existing %s
     descriptionFormat: Delete existing %s
+    addNotFoundResponse: false
     generateFor:
         AlleleMatrix: false
         Call: false

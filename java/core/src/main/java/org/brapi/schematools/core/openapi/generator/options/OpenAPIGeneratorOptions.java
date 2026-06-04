@@ -65,7 +65,6 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> mediaTypeForProperty = new LinkedHashMap<>();
-
     /**
      * Load the default options
      * @return The default options
@@ -206,7 +205,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(tagFor,  "'tagFor' option is null")
             .assertNotNull(defaultMediaType,  "'defaultMediaType' option is null")
             .assertNotNull(mediaTypeForType,  "'mediaTypeForType' option is null")
-            .assertNotNull(mediaTypeForProperty,  "'mediaTypeForProperty' option is null") ;
+            .assertNotNull(mediaTypeForProperty,  "'mediaTypeForProperty' option is null")
+            ;
     }
 
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
@@ -252,7 +252,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .merge(getSearch().validateAgainstCache(brAPIClassCache))
             .merge(getSearchTable().validateAgainstCache(brAPIClassCache))
             .merge(getProperties().validateAgainstCache(brAPIClassCache))
-            .merge(getControlledVocabulary().validateAgainstCache(brAPIClassCache)) ;
+            .merge(getControlledVocabulary().validateAgainstCache(brAPIClassCache))
+            ;
 
         return validation ;
     }
