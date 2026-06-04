@@ -15116,6 +15116,7 @@
                         "nullable" : true
                     },
                     "mimeType" : {
+                        "pattern" : "image/.*",
                         "type" : "string",
                         "description" : "The file type of the image. Examples 'image/jpeg', 'image/png', 'image/svg', etc",
                         "nullable" : true

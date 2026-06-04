@@ -770,6 +770,9 @@ public class BrAPISchemaReader {
                 .mapResultToResponse(childNode -> findNullable(path, childNode))
                 .ifPresentDoWithResult(builder::nullable);
 
+            findStringChildValue(path, jsonNode, "pattern", false)
+                .onSuccessDoWithResult(builder::pattern);
+
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module)
                 .onSuccessDoWithResult(builder::type)
                 .mapOnCondition(jsonNode.has("relationshipType"), () -> findStringChildValue(path, jsonNode, "relationshipType", true)
@@ -812,6 +815,8 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(builder::updatableProperties)
                 .merge(findStringFieldList(path, metadata, "writableProperties", false))
                 .onSuccessDoWithResult(builder::writableProperties)
+                .merge(findStringChildValue(path, metadata, "discriminatorPropertyName", false))
+                .onSuccessDoWithResult(builder::discriminatorPropertyName)
                 .map(() -> success(builder.build()));
         }
 

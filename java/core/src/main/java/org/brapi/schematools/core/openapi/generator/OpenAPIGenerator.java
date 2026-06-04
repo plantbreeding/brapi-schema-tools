@@ -769,11 +769,11 @@ public class OpenAPIGenerator {
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())
-                    .schema(isConvertingToSingularProperty(property) ? upwrapSchema(schema) : schema));
+                    .schema(property.getType() instanceof BrAPIArrayType ? upwrapSchema(schema) : schema));
         }
 
         private boolean isConvertingToSingularProperty(BrAPIObjectProperty property) {
-            return property.getType() instanceof BrAPIArrayType ;
+            return property.getType() instanceof BrAPIArrayType;
         }
 
         private Schema upwrapSchema(Schema schema) {
@@ -1514,6 +1514,7 @@ public class OpenAPIGenerator {
                     .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                     .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
                     .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                    .onSuccessDoWithResultOnCondition(property.getPattern() != null, schema -> schema.setPattern(property.getPattern()))
                     .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
                     .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                     .mapResult(schema -> Collections.singletonMap(property.getName(), schema)) ;
@@ -1522,6 +1523,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
                 .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
                 .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                .onSuccessDoWithResultOnCondition(property.getPattern() != null, schema -> schema.setPattern(property.getPattern()))
                 .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema, property, type), schema -> schema)
                 .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
@@ -1689,6 +1691,10 @@ public class OpenAPIGenerator {
 
             if (type.isObject()) {
                 schema.type("object") ;
+            }
+
+            if (type.getMetadata() != null && type.getMetadata().getDiscriminatorPropertyName() != null) {
+                schema.discriminator(new Discriminator().propertyName(type.getMetadata().getDiscriminatorPropertyName())) ;
             }
 
             return type.getPossibleTypes().stream().map(this::createSchemaForType).collect(Response.toList()).mapResult(
