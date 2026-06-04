@@ -715,9 +715,11 @@ public class OpenAPIGenerator {
                 }
 
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                    List<String> noSingularize = brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getNoSingularizeProperties() != null
+                        ? brAPIObjectType.getMetadata().getNoSingularizeProperties() : Collections.emptyList();
                     return brAPIObjectType.getProperties().stream()
                         .filter(property -> options.getGet().isUsingPropertyFromRequestFor(type, property))
-                        .map(this::createListGetParameter)
+                        .map(property -> createListGetParameter(property, noSingularize))
                         .collect(Response.toList())
                         .onSuccessDoWithResult(result -> parameters.addAll(0, result))
                         .map(() -> success(parameters));
@@ -763,9 +765,13 @@ public class OpenAPIGenerator {
         }
 
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property) {
+            return createListGetParameter(property, Collections.emptyList());
+        }
+
+        private Response<Parameter> createListGetParameter(BrAPIObjectProperty property, List<String> noSingularizeProperties) {
             return createSchemaForType(property.getType()).mapResult(
                 schema -> new Parameter()
-                    .name(isConvertingToSingularProperty(property) ?  options.getSingularForProperty(property.getName()) : property.getName())
+                    .name(isConvertingToSingularProperty(property) && !noSingularizeProperties.contains(property.getName()) ?  options.getSingularForProperty(property.getName()) : property.getName())
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())

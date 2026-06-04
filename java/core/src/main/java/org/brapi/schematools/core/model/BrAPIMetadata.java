@@ -22,5 +22,6 @@ public class BrAPIMetadata {
     List<String> subQueryProperties ;
     List<String> updatableProperties ;
     List<String> writableProperties ;
+    List<String> noSingularizeProperties ;
     String discriminatorPropertyName ;
 }
