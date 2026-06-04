@@ -5010,12 +5010,10 @@
                         "nullable" : true
                     },
                     "season" : {
-                        "anyOf" : [
+                        "nullable" : true,
+                        "allOf" : [
                             {
                                 "$ref" : "#/components/schemas/Season"
-                            },
-                            {
-                                "type" : "null"
                             }
                         ]
                     },
@@ -7819,12 +7817,10 @@
                         "nullable" : true
                     },
                     "validValues" : {
-                        "anyOf" : [
+                        "nullable" : true,
+                        "allOf" : [
                             {
                                 "$ref" : "#/components/schemas/ValidValues"
-                            },
-                            {
-                                "type" : "null"
                             }
                         ]
                     }

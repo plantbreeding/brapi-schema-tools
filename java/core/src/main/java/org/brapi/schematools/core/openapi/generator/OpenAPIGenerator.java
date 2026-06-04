@@ -1599,9 +1599,11 @@ public class OpenAPIGenerator {
                 }
 
                 if (property != null && property.getType() instanceof BrAPIReferenceType) {
-                    return new Schema<>().anyOf(List.of(
-                        schema, new Schema<>().type("null")
-                    )) ;
+                    if (type instanceof BrAPIClass requestClass && BrAPITypeUtils.isRequest(requestClass)) {
+                        return new Schema<>().anyOf(List.of(schema, new Schema<>().type("null"))) ;
+                    } else {
+                        return new Schema<>().nullable(true).addAllOfItem(schema) ;
+                    }
                 } else {
                     schema.setNullable(true);
                 }

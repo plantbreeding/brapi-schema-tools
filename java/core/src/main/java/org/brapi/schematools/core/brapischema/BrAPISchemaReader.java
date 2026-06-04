@@ -785,7 +785,7 @@ public class BrAPISchemaReader {
 
             if (jsonNode instanceof ArrayNode arrayNode) {
                 return success(StreamSupport.stream(arrayNode.spliterator(), false)
-                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null")).orElseGetResult(() -> false))) ;
+                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null") || Objects.equals(result, "string")).orElseGetResult(() -> false))) ;
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Invalid anyOf json node type, must an ArrayNode but was '%s'", jsonNode.getClass().getSimpleName()));
             }
