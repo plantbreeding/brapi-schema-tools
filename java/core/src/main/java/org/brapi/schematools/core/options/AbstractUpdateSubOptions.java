@@ -29,6 +29,9 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> singleAlsoFor = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> addNotFoundResponseForMultipleFor = new HashMap<>();
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
      *
@@ -61,6 +64,13 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
                 else singleAlsoFor.put(key, value);
             });
         }
+
+        if (overrideOptions.addNotFoundResponseForMultipleFor != null) {
+            overrideOptions.addNotFoundResponseForMultipleFor.forEach((key, value) -> {
+                if (value == null) addNotFoundResponseForMultipleFor.remove(key);
+                else addNotFoundResponseForMultipleFor.put(key, value);
+            });
+        }
     }
 
     @Override
@@ -86,6 +96,14 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         singleAlsoFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'singleAlsoFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        addNotFoundResponseForMultipleFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'addNotFoundResponseForMultipleFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -260,6 +278,31 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull BrAPIObjectType type) {
         return isGeneratingEndpointNameWithIdFor(type.getName());
+    }
+
+    /**
+     * Determines if a 404 Not Found response should be added for the multiple/bulk PUT/POST endpoint for a
+     * specific primary model. Falls back to {@link #isAddingNotFoundResponseFor(String)} if not explicitly set.
+     *
+     * @param name the name of the primary model
+     * @return {@code true} if 404 should be added on the multiple/bulk endpoint, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isAddingNotFoundResponseForMultipleFor(@NonNull String name) {
+        Boolean value = addNotFoundResponseForMultipleFor.get(name);
+        return value != null ? value : isAddingNotFoundResponseFor(name);
+    }
+
+    /**
+     * Determines if a 404 Not Found response should be added for the multiple/bulk PUT/POST endpoint for a
+     * specific primary model.
+     *
+     * @param type the primary model
+     * @return {@code true} if 404 should be added on the multiple/bulk endpoint, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isAddingNotFoundResponseForMultipleFor(@NonNull BrAPIType type) {
+        return isAddingNotFoundResponseForMultipleFor(type.getName());
     }
 
 }

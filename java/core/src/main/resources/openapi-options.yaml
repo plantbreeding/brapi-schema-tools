@@ -359,10 +359,10 @@ search:
             sortOrder: false
 table:
     generate: false
+    pathFormat: '%s/table'
     summaryFormat: Get a table of `%s` records as a CSV file.
     descriptionFormat: Get a table of `%s` records returned directly as CSV text.
-    generateFor:
-        ObservationUnit: true
+    addNotFoundResponse: false
 searchTable:
     generate: false
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.

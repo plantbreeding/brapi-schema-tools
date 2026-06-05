@@ -325,6 +325,15 @@ public class OpenAPIGenerator {
                                     openAPI.path(options.getDelete().getBulkPathFor(options.getPathItemNameFor(type)), pathItem);
                                 }))
                         .collect(Response.toList()))
+                .merge( // these are GET endpoints with the pattern /<entity-plural>/table e.g. /observations/table
+                    () -> primaryClasses.stream()
+                        .filter(type -> options.getTable().isGeneratingFor(type))
+                        .map(type -> createTablePathItem(type)
+                            .onSuccessDoWithResult(
+                                pathItem -> {
+                                    openAPI.path(options.getTable().getPathFor(options.getPathItemNameFor(type)), pathItem);
+                                }))
+                        .collect(Response.toList()))
                 .merge( // this is a POST endpoint with the pattern /search/<entity-plural> e.g. /search/locations
                     () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
@@ -726,6 +735,16 @@ public class OpenAPIGenerator {
                 if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
                     List<String> noSingularize = brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getNoSingularizeProperties() != null
                         ? brAPIObjectType.getMetadata().getNoSingularizeProperties() : Collections.emptyList();
+                    if (options.getGet().isUsingSubQueryPropertiesFor(type)) {
+                        List<String> subQueryProperties = brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getSubQueryProperties() != null
+                            ? brAPIObjectType.getMetadata().getSubQueryProperties() : new ArrayList<>();
+                        return brAPIObjectType.getProperties().stream()
+                            .filter(property -> subQueryProperties.contains(property.getName()))
+                            .map(property -> createListGetParameter(property, noSingularize))
+                            .collect(Response.toList())
+                            .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                            .map(() -> success(parameters));
+                    }
                     return brAPIObjectType.getProperties().stream()
                         .filter(property -> options.getGet().isUsingPropertyFromRequestFor(type, property))
                         .map(property -> createListGetParameter(property, noSingularize))
@@ -934,7 +953,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type), options.getPut().isAddingNotFoundResponseFor(type))
+            return getOperation(type, operation, options.getPut().isUsingAdditionalProperties(type), options.getPut().isAddingNotFoundResponseForMultipleFor(type))
                 .onSuccessDo(() -> generateListResponse(type));
         }
 
@@ -1004,6 +1023,34 @@ public class OpenAPIGenerator {
             responses.put(responseName, apiResponse);
 
             return success(apiResponse);
+        }
+
+        private Response<PathItem> createTablePathItem(BrAPIObjectType type) {
+            PathItem pathItem = new PathItem();
+
+            Operation operation = new Operation();
+
+            operation.setSummary(options.getTable().getSummaryFor(type));
+            operation.setDescription(options.getTable().getDescriptionFor(type));
+
+            operation.addTagsItem(options.getTagFor(type));
+
+            return createListGetParametersFor(type)
+                .onSuccessDoWithResult(operation::parameters)
+                .map(() -> {
+                    ApiResponse apiResponse = new ApiResponse()
+                        .description("OK")
+                        .content(new Content().addMediaType("text/csv",
+                            new MediaType().schema(new StringSchema())));
+                    ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                        .addApiResponse("200", apiResponse));
+                    if (options.getTable().isAddingNotFoundResponseFor(type)) {
+                        apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+                    }
+                    operation.responses(apiResponses);
+                    pathItem.setGet(operation);
+                    return success(pathItem);
+                });
         }
 
         private Response<Operation> generateSubPathGetWithIdOperation(BrAPIObjectType parentType, BrAPIType type) {
