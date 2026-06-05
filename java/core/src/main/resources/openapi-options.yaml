@@ -439,6 +439,12 @@ delete:
     generate: false
     summaryFormat: Delete an existing %s
     descriptionFormat: Delete existing %s
+    bulkPathFormat: "/delete%s"
+    bulkSummaryFormat: "Submit a delete request for `%s`"
+    bulkDescriptionFormat: "Submit a delete request for `%s`"
+    bulkResponseNameFormat: "%sDeleteResponse"
+    bulkResultFieldNameFormat: "%ss"
+    bulkResultFieldDescriptionFormat: "The unique ids of the %s records which have been successfully deleted"
     addNotFoundResponse: true
     generateFor:
         AlleleMatrix: false

@@ -306,6 +306,47 @@
                         "$ref" : "#/components/responses/403Forbidden"
                     }
                 }
+            },
+            "put" : {
+                "tags" : [
+                    "Calls"
+                ],
+                "summary" : "Update the details for an existing Call",
+                "description" : "Update the details for an existing Call",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "array",
+                                "items" : {
+                                    "$ref" : "#/components/schemas/Call"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/CallListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    }
+                }
             }
         },
         "/callsets" : {
@@ -721,6 +762,48 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            },
+            "put" : {
+                "tags" : [
+                    "Plates"
+                ],
+                "summary" : "Update the details for an existing Plate",
+                "description" : "Update the details for an existing Plate",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "object",
+                                "additionalProperties" : {
+                                    "$ref" : "#/components/schemas/PlateNewRequest"
+                                },
+                                "example" : "{<plateDbId>_1={additionalInfo={}, externalReferences=[{}], plateBarcode=4eacf0b7, plateDbId=71ea8b72, plateFormat={}, plateName=72778960, program={}, sampleType={}, study={}, trial={}, samples=[{}]}, <plateDbId>_2={additionalInfo={}, externalReferences=[{}], plateBarcode=4eacf0b8, plateDbId=71ea8b73, plateFormat={}, plateName=72778961, program={}, sampleType={}, study={}, trial={}, samples=[{}]}}"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/PlateListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             },

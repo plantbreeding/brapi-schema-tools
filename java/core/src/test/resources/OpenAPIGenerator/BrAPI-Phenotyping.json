@@ -1734,6 +1734,53 @@
                         "$ref" : "#/components/responses/404NotFound"
                     }
                 }
+            },
+            "put" : {
+                "tags" : [
+                    "Observations"
+                ],
+                "summary" : "Update the details for an existing Observation",
+                "description" : "Update the details for an existing Observation",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "observationDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies an observation",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/ObservationNewRequest"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ObservationSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    }
+                }
             }
         },
         "/observationunits/{observationUnitDbId}" : {
@@ -1772,6 +1819,50 @@
                     },
                     "404" : {
                         "$ref" : "#/components/responses/404NotFound"
+                    }
+                }
+            },
+            "put" : {
+                "tags" : [
+                    "ObservationUnits"
+                ],
+                "summary" : "Update the details for an existing ObservationUnit",
+                "description" : "Update the details for an existing ObservationUnit",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "path",
+                        "description" : "The ID which uniquely identifies an observation unit\n\nMIAPPE V1.1 (DM-70) Observation unit ID - Identifier used to identify the observation unit in data files containing the values observed or measured on that unit. Must be locally unique. ",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/ObservationUnitNewRequest"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ObservationUnitSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
                     }
                 }
             }

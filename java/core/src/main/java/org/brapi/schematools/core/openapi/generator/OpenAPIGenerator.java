@@ -316,6 +316,15 @@ public class OpenAPIGenerator {
                         .filter(options::isGeneratingEndpointNameWithIdFor)
                         .map(type -> createPathItemsWithId(openAPI, type))
                         .collect(Response.toList()))
+                .merge( // these are POST endpoints with the pattern /delete/<entity-plural> e.g. /delete/images
+                    () -> primaryClasses.stream()
+                        .filter(type -> options.getDelete().isBulkGeneratingFor(type))
+                        .map(type -> createBulkDeletePathItem(type)
+                            .onSuccessDoWithResult(
+                                pathItem -> {
+                                    openAPI.path(options.getDelete().getBulkPathFor(options.getPathItemNameFor(type)), pathItem);
+                                }))
+                        .collect(Response.toList()))
                 .merge( // this is a POST endpoint with the pattern /search/<entity-plural> e.g. /search/locations
                     () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
@@ -944,6 +953,57 @@ public class OpenAPIGenerator {
                 .map(() -> createSingleApiResponses(type, options.getDelete().isAddingNotFoundResponseFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
+        }
+
+        private Response<PathItem> createBulkDeletePathItem(BrAPIObjectType type) {
+            PathItem pathItem = new PathItem();
+
+            Operation operation = new Operation();
+
+            operation.setSummary(options.getDelete().getBulkSummaryFor(options.getTagFor(type)));
+            operation.setDescription(options.getDelete().getBulkDescriptionFor(options.getTagFor(type)));
+
+            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.requestBody(createRequestBody(
+                new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchRequestNameFor(type))),
+                findMediaTypeForObject(type)));
+
+            operation.addTagsItem(options.getTagFor(type));
+
+            String responseName = options.getDelete().getBulkResponseNameFor(type);
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref("#/components/responses/" + responseName)));
+            operation.responses(apiResponses);
+
+            pathItem.setPost(operation);
+
+            return generateBulkDeleteResponse(type).map(() -> success(pathItem));
+        }
+
+        private Response<ApiResponse> generateBulkDeleteResponse(BrAPIObjectType type) {
+            String responseName = options.getDelete().getBulkResponseNameFor(type);
+
+            if (responses.containsKey(responseName)) {
+                return success(responses.get(responseName));
+            }
+
+            String idPropertyName = options.getProperties().getIdPropertyNameFor(type);
+            String resultFieldName = options.getDelete().getBulkResultFieldNameFor(idPropertyName);
+            String resultFieldDescription = options.getDelete().getBulkResultFieldDescriptionFor(type);
+
+            Schema resultFieldSchema = new ArraySchema().items(new StringSchema());
+            resultFieldSchema.setDescription(resultFieldDescription);
+
+            ApiResponse apiResponse = createApiResponse(responseName, new ObjectSchema()
+                .addProperty(resultFieldName, resultFieldSchema)
+                .addRequiredItem(resultFieldName));
+
+            apiResponse.description("OK");
+
+            responses.put(responseName, apiResponse);
+
+            return success(apiResponse);
         }
 
         private Response<Operation> generateSubPathGetWithIdOperation(BrAPIObjectType parentType, BrAPIType type) {

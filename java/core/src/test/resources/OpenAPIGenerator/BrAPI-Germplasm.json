@@ -1142,6 +1142,48 @@
                     }
                 }
             },
+            "put" : {
+                "tags" : [
+                    "PedigreeNodes"
+                ],
+                "summary" : "Update the details for an existing PedigreeNode",
+                "description" : "Update the details for an existing PedigreeNode",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "object",
+                                "additionalProperties" : {
+                                    "$ref" : "#/components/schemas/PedigreeNode"
+                                },
+                                "example" : "{<id>_1={additionalInfo={}, breedingMethod={}, crossingProject={}, crossingYear=10, defaultDisplayName=5761c815, externalReferences=[{}], familyCode=42f142b0, germplasm={}, parents=[{}], pedigreeString=5e286b4b, progeny=[{}], siblings=[{}]}, <id>_2={additionalInfo={}, breedingMethod={}, crossingProject={}, crossingYear=20, defaultDisplayName=5761c816, externalReferences=[{}], familyCode=42f142b1, germplasm={}, parents=[{}], pedigreeString=5e286b4c, progeny=[{}], siblings=[{}]}}"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/PedigreeNodeListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    }
+                }
+            },
             "post" : {
                 "tags" : [
                     "PedigreeNodes"
