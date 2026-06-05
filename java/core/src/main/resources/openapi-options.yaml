@@ -16,7 +16,6 @@ generateNewRequestFor:
     Reference: false
     PedigreeNode: false
     Season: false
-    #ServerInfo: false
     Variant: false
     VariantSet: false
 newRequestNameFormat: "%sNewRequest"
@@ -25,7 +24,6 @@ listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
-    #ServerInfo: ServerInfo
 pathItemNameFor:
     AlleleMatrix: /allelematrix
     GenomeMap: /maps
@@ -34,7 +32,6 @@ pathItemNameFor:
     ObservationUnitHierarchyLevel: /observationlevels
     ObservationVariable: /variables
     PedigreeNode: /pedigree
-    #ServerInfo: /serverInfo
 pathItemNameForProperty:
     GermplasmAttribute:
         attributeCategory:
@@ -63,7 +60,6 @@ getWithId:
         ObservationUnitHierarchyLevel: false
         PedigreeNode: false
         PlannedCross: false
-        #ServerInfo: false
 get:
     generate: true
     summaryFormat: Get a filtered list of %s
@@ -71,8 +67,6 @@ get:
     addNotFoundResponse: false
     addNotFoundResponseForSingleFor:
         PedigreeNode: true
-    #generateFor:
-        #ServerInfo: false
     list: true
     listFor:
         AlleleMatrix: false
@@ -254,6 +248,9 @@ get:
             programNames: false
         SeedLot:
             programNames: false
+        SeedLotTransaction:
+            transactionDirection: false
+            programNames: false
         Study:
             germplasmNames: false
             locationNames: false
@@ -289,6 +286,7 @@ get:
             referenceDbIds: false
 search:
     generate: true
+    pathFormat: /search%s
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`t
     addNotFoundResponse: true
@@ -329,7 +327,6 @@ search:
         Scale: false
         Season: false
         SeedLot: false
-        #ServerInfo: false
         Trait: false
     propertiesFromRequest: true
     propertyFromRequestFor:
@@ -363,8 +360,37 @@ table:
     summaryFormat: Get a table of `%s` records as a CSV file.
     descriptionFormat: Get a table of `%s` records returned directly as CSV text.
     addNotFoundResponse: false
+    pagedDefault: false
+    pagedTokenDefault: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        Observation:
+            commonCropNames: false
+            germplasmNames: false
+            locationNames: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+            observationDbIds: false
+            observationLevelRelationships: false
+        ObservationUnit:
+            commonCropNames: false
+            germplasmNames: false
+            locationNames: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+            observationDbIds: false
+            observationUnitNames: false
+            observationLevelRelationships: false
+            includeObservations: false
 searchTable:
     generate: false
+    pathFormat: '/search%s/table'
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
     descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
 post:
@@ -386,7 +412,6 @@ post:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        #ServerInfo: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -411,7 +436,6 @@ put:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        #ServerInfo: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -458,7 +482,6 @@ delete:
         MarkerPosition: false
         ObservationUnitHierarchyLevel: false
         Reference: false
-        ServerInfo: false
         Variant: false
         VariantSet: false
 properties:

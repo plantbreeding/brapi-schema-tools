@@ -22,6 +22,8 @@ import static org.brapi.schematools.core.utils.StringUtils.toParameterCase;
 public class SearchOptions extends AbstractListOptions {
 
     @Getter(AccessLevel.PUBLIC)
+    private String pathFormat;
+    @Getter(AccessLevel.PUBLIC)
     private String searchIdFieldName;
     private String submitDescriptionFormat;
     private String retrieveDescriptionFormat;
@@ -32,6 +34,7 @@ public class SearchOptions extends AbstractListOptions {
     @Override
     public Validation validate() {
         return super.validate()
+            .assertNotNull(pathFormat, "'pathFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(searchIdFieldName,
                 "'searchIdFieldName' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(submitDescriptionFormat,
@@ -49,6 +52,10 @@ public class SearchOptions extends AbstractListOptions {
      */
     public void override(SearchOptions overrideOptions) {
         super.override(overrideOptions);
+
+        if (overrideOptions.pathFormat != null) {
+            setSummaryFormat(overrideOptions.pathFormat);
+        }
 
         if (overrideOptions.searchIdFieldName != null) {
             setSearchIdFieldName(overrideOptions.searchIdFieldName);

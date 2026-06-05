@@ -239,7 +239,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
      * @return the search path item name for a specific Primary Model
      */
     public final String getSearchPathItemNameFor(String name) {
-        return String.format("/search%s", getPathItemNameFor(name));
+        return String.format(search.getPathFormat(), getPathItemNameFor(name));
     }
 
     /**
@@ -249,7 +249,67 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
      * @return the search path item name for a specific Primary Model
      */
     public final String getSearchPathItemNameFor(BrAPIType type) {
-        return String.format("/search%s", getPathItemNameFor(type));
+        return String.format(search.getPathFormat(), getPathItemNameFor(type));
+    }
+
+    /**
+     * Gets the table path item name for a specific Primary Model.
+     *
+     * @param name the name of the Primary Model
+     * @return the table path item name for a specific Primary Model
+     */
+    public final String getTablePathItemNameFor(String name) {
+        return String.format(table.getPathFormat(), getPathItemNameFor(name));
+    }
+
+    /**
+     * Gets the search table path item name for a specific Primary Model.
+     *
+     * @param type the Primary Model
+     * @return the table path item name for a specific Primary Model
+     */
+    public final String getTablePathItemNameFor(BrAPIType type) {
+        return String.format(table.getPathFormat(), getPathItemNameFor(type));
+    }
+
+    /**
+     * Gets the search table path item name for a specific Primary Model.
+     *
+     * @param name the name of the Primary Model
+     * @return the search table path item name for a specific Primary Model
+     */
+    public final String getSearchTablePathItemNameFor(String name) {
+        return String.format(searchTable.getPathFormat(), getPathItemNameFor(name));
+    }
+
+    /**
+     * Gets the search table path item name for a specific Primary Model.
+     *
+     * @param type the Primary Model
+     * @return the search table path item name for a specific Primary Model
+     */
+    public final String getSearchTablePathItemNameFor(BrAPIType type) {
+        return String.format(searchTable.getPathFormat(), getPathItemNameFor(type), "table");
+    }
+
+    /**
+     * Gets the bulk delete path item name for a specific Primary Model.
+     *
+     * @param name the name of the Primary Model
+     * @return the bulk delete path item name for a specific Primary Model
+     */
+    public final String getBulkDeletePathItemNameFor(String name) {
+        return String.format(delete.getBulkPathFormat(), getPathItemNameFor(name));
+    }
+
+    /**
+     * Gets the bulk delete path item name for a specific Primary Model.
+     *
+     * @param type the Primary Model
+     * @return the bulk delete path item name for a specific Primary Model
+     */
+    public final String getBulkDeletePathItemNameFor(BrAPIType type) {
+        return String.format(delete.getBulkPathFormat(), getPathItemNameFor(type), "table");
     }
 
     /**

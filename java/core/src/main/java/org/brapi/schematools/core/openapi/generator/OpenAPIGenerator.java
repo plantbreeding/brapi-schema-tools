@@ -322,7 +322,7 @@ public class OpenAPIGenerator {
                         .map(type -> createBulkDeletePathItem(type)
                             .onSuccessDoWithResult(
                                 pathItem -> {
-                                    openAPI.path(options.getDelete().getBulkPathFor(options.getPathItemNameFor(type)), pathItem);
+                                    openAPI.path(options.getBulkDeletePathItemNameFor(type), pathItem);
                                 }))
                         .collect(Response.toList()))
                 .merge( // these are GET endpoints with the pattern /<entity-plural>/table e.g. /observations/table
@@ -331,7 +331,7 @@ public class OpenAPIGenerator {
                         .map(type -> createTablePathItem(type)
                             .onSuccessDoWithResult(
                                 pathItem -> {
-                                    openAPI.path(options.getTable().getPathFor(options.getPathItemNameFor(type)), pathItem);
+                                    openAPI.path(options.getTablePathItemNameFor(type), pathItem);
                                 }))
                         .collect(Response.toList()))
                 .merge( // this is a POST endpoint with the pattern /search/<entity-plural> e.g. /search/locations
@@ -759,6 +759,54 @@ public class OpenAPIGenerator {
             return success(parameters);
         }
 
+        private Response<List<Parameter>> createTableParametersFor(BrAPIObjectType type) {
+
+            List<Parameter> parameters = new ArrayList<>();
+
+            //TODO?
+            /*if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceId"));
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceID"));
+                parameters.add(new Parameter().$ref("#/components/parameters/externalReferenceSource"));
+            }*/
+
+            if (options.getTable().hasPageTokenFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
+            }
+
+            if (options.getTable().isPagedFor(type)) {
+                parameters.add(new Parameter().$ref("#/components/parameters/page"));
+                parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
+            }
+
+            parameters.add(new Parameter().$ref("#/components/parameters/acceptHeader"));
+            parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            if (options.getGet().hasInputFor(type)) {
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
+
+                if (requestClass == null) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", type.getName(), createPathItemName(type)));
+                }
+
+                if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                    List<String> noSingularize = brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getNoSingularizeProperties() != null
+                        ? brAPIObjectType.getMetadata().getNoSingularizeProperties() : Collections.emptyList();
+
+                    return brAPIObjectType.getProperties().stream()
+                        .filter(property -> options.getTable().isUsingPropertyFromRequestFor(type, property))
+                        .map(property -> createListGetParameter(property, noSingularize))
+                        .collect(Response.toList())
+                        .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                        .map(() -> success(parameters));
+                } else {
+                    return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));
+                }
+            }
+
+            return success(parameters);
+        }
+
         private Response<List<Parameter>> createSubPathListGetParametersFor(BrAPIObjectType type) {
 
             List<Parameter> parameters = new ArrayList<>();
@@ -1035,7 +1083,7 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(type));
 
-            return createListGetParametersFor(type)
+            return createTableParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
                 .map(() -> {
                     ApiResponse apiResponse = new ApiResponse()

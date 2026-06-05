@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
+import org.brapi.schematools.core.validiation.Validation;
 
 /**
  * Provides options for the generation of Table query methods
@@ -12,8 +14,15 @@ import lombok.Setter;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class TableOptions extends AbstractSubOptions {
+public class TableOptions extends AbstractListOptions {
+    @Getter(AccessLevel.PUBLIC)
     private String pathFormat;
+
+    @Override
+    public Validation validate() {
+        return super.validate()
+            .assertNotNull(pathFormat, "'pathFormat' option on %s is null", this.getClass().getSimpleName()) ;
+    }
 
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
@@ -24,18 +33,7 @@ public class TableOptions extends AbstractSubOptions {
         super.override(overrideOptions);
 
         if (overrideOptions.pathFormat != null) {
-            setPathFormat(overrideOptions.pathFormat);
+            setSummaryFormat(overrideOptions.pathFormat);
         }
-    }
-
-    /**
-     * Gets the table path for a specific path-item name.
-     *
-     * @param pathItemName the path-item name (e.g. {@code /observations})
-     * @return the table path (e.g. {@code /observations/table})
-     */
-    @JsonIgnore
-    public final String getPathFor(@NonNull String pathItemName) {
-        return String.format(pathFormat, pathItemName);
     }
 }

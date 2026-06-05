@@ -18,6 +18,7 @@ import java.util.Map;
 @Getter(AccessLevel.PRIVATE)
 @Setter
 public class DeleteOptions extends AbstractSubOptions {
+    @Getter(AccessLevel.PUBLIC)
     private String bulkPathFormat;
     private String bulkSummaryFormat;
     private String bulkDescriptionFormat;
@@ -109,17 +110,6 @@ public class DeleteOptions extends AbstractSubOptions {
     public final DeleteOptions setBulkGeneratingFor(@NonNull String name, boolean generate) {
         bulkGenerateFor.put(name, generate);
         return this;
-    }
-
-    /**
-     * Gets the bulk delete path for a specific path-item name.
-     *
-     * @param pathItemName the path-item name (e.g. {@code /images})
-     * @return the bulk delete path (e.g. {@code /delete/images})
-     */
-    @JsonIgnore
-    public final String getBulkPathFor(@NonNull String pathItemName) {
-        return String.format(bulkPathFormat, pathItemName);
     }
 
     /**
