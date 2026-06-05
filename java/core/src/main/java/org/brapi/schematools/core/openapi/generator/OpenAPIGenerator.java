@@ -247,18 +247,19 @@ public class OpenAPIGenerator {
 
         private Response<OpenAPI> generateSpecifications(String title, String supplementalSpecPath, Collection<BrAPIClass> classes) {
 
-            OpenAPI openAPI;
+            final MergableOpenAPI openAPI = new MergableOpenAPI();
+            final OpenAPI supplementalOpenAPI;
             if (supplementalSpecPath != null && !supplementalSpecPath.isEmpty()) {
                 try {
                     String supplementalSpecPathAbs = Path.of(supplementalSpecPath).toRealPath().toString();
-                    OpenAPI supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPathAbs, null, null).getOpenAPI();
-                    openAPI = Objects.requireNonNullElseGet(supplementalOpenAPI, OpenAPI::new);
+                    supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPathAbs, null, null).getOpenAPI();
                 } catch (IOException e) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Can not find supplemental specification file : %s", e.getMessage()));
                 }
-            } else {
-                openAPI = new OpenAPI();
+            }else{
+                supplementalOpenAPI = new MergableOpenAPI();
             }
+
             Info info = new Info();
 
             info.setTitle(title != null ? title : "BrAPI");
@@ -335,6 +336,7 @@ public class OpenAPIGenerator {
                                 }))
                         .collect(Response.toList()))
                 .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses, openAPI.getComponents()).onSuccessDoWithResult(openAPI::components))
+                .merge(() -> success(openAPI.merge(supplementalOpenAPI)))
                 .map(() -> success(openAPI));
         }
 
