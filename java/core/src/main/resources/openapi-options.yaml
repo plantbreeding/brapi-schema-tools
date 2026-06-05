@@ -69,7 +69,7 @@ get:
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
     addNotFoundResponse: false
-    addNotFoundResponseFor:
+    addNotFoundResponseForSingleFor:
         PedigreeNode: true
     #generateFor:
         #ServerInfo: false
@@ -372,7 +372,7 @@ post:
     summaryFormat: Create new %s
     descriptionFormat: Add new %s to database
     addNotFoundResponse: false
-    addNotFoundResponseFor:
+    addNotFoundResponseForSingleFor:
         Observation: true
         PedigreeNode: true
     generateFor:
@@ -397,7 +397,7 @@ put:
     summaryFormat: Update the details for an existing %s
     descriptionFormat: Update the details for an existing %s
     addNotFoundResponse: true
-    addNotFoundResponseFor:
+    addNotFoundResponseForSingleFor:
         Cross: false
         ObservationUnit: false
         PlannedCross: false
@@ -445,6 +445,9 @@ delete:
     bulkResponseNameFormat: "%sDeleteResponse"
     bulkResultFieldNameFormat: "%ss"
     bulkResultFieldDescriptionFormat: "The unique ids of the %s records which have been successfully deleted"
+    bulkGenerateFor:
+        Image: true
+        Observation: true
     addNotFoundResponse: true
     generateFor:
         AlleleMatrix: false

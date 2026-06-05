@@ -282,7 +282,7 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
 
     /**
      * Determines if a 404 Not Found response should be added for the multiple/bulk PUT/POST endpoint for a
-     * specific primary model. Falls back to {@link #isAddingNotFoundResponseFor(String)} if not explicitly set.
+     * specific primary model. Falls back to {@link #isAddingNotFoundResponseForSingleFor(String)} if not explicitly set.
      *
      * @param name the name of the primary model
      * @return {@code true} if 404 should be added on the multiple/bulk endpoint, {@code false} otherwise
@@ -290,7 +290,7 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @JsonIgnore
     public final boolean isAddingNotFoundResponseForMultipleFor(@NonNull String name) {
         Boolean value = addNotFoundResponseForMultipleFor.get(name);
-        return value != null ? value : isAddingNotFoundResponseFor(name);
+        return value != null ? value : isAddingNotFoundResponseForSingleFor(name);
     }
 
     /**

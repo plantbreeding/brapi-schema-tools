@@ -687,7 +687,7 @@ public class OpenAPIGenerator {
 
             return createListGetParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
-                .mapOnConditionOr(isReturningList, () -> createListApiResponses(type, options.getGet().isAddingNotFoundResponseFor(type)), () -> createSingleApiResponses(type, options.getGet().isAddingNotFoundResponseFor(type)))
+                .mapOnConditionOr(isReturningList, () -> createListApiResponses(type, options.getGet().isAddingNotFoundResponseForSingleFor(type)), () -> createSingleApiResponses(type, options.getGet().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .onSuccessDoOnConditionOr(isReturningList, () -> generateListResponse(type), () -> generateSingleResponse(type))
                 .map(() -> success(operation));
@@ -826,7 +826,7 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type), options.getPost().isAddingNotFoundResponseFor(type))
+            return getOperation(type, operation, options.getPost().isUsingAdditionalProperties(type), options.getPost().isAddingNotFoundResponseForSingleFor(type))
                 .onSuccessDo(() -> generateListResponse(type));
         }
 
@@ -919,7 +919,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(type)))
+                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -940,7 +940,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type, options.getPut().isAddingNotFoundResponseFor(type)))
+                .map(() -> createSingleApiResponses(type, options.getPut().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -969,7 +969,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type, options.getDelete().isAddingNotFoundResponseFor(type)))
+                .map(() -> createSingleApiResponses(type, options.getDelete().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1044,7 +1044,7 @@ public class OpenAPIGenerator {
                             new MediaType().schema(new StringSchema())));
                     ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
                         .addApiResponse("200", apiResponse));
-                    if (options.getTable().isAddingNotFoundResponseFor(type)) {
+                    if (options.getTable().isAddingNotFoundResponseForSingleFor(type)) {
                         apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
                     }
                     operation.responses(apiResponses);
@@ -1084,7 +1084,7 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(parentType)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(type)))
+                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1103,7 +1103,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
-                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseForSingleFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1122,7 +1122,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForProperty(parentType, property))))
-                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseForSingleFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1143,7 +1143,7 @@ public class OpenAPIGenerator {
                     return createSubPathListGetParametersFor((BrAPIObjectType)type);
                 })
                 .onSuccessDoWithResult(result -> result.forEach(operation::addParametersItem))
-                .map(() -> createSubPathListApiResponses(type, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
+                .map(() -> createSubPathListApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1162,7 +1162,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
-                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseForSingleFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1181,7 +1181,7 @@ public class OpenAPIGenerator {
                 .onSuccessDoWithResult(operation::addParametersItem)
                 .map(() -> createSchemaForType(type))
                 .onSuccessDoWithResult(schema -> operation.requestBody(createRequestBody(schema, findMediaTypeForObject(type))))
-                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseFor(parentType)))
+                .map(() -> createSingleApiResponses(parentType, options.getGetWithId().isAddingNotFoundResponseForSingleFor(parentType)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }
@@ -1292,7 +1292,7 @@ public class OpenAPIGenerator {
             operation.setSummary(metadata.getSearch().getSummaryOrDefault(type.getName(), options.getSearch().getSubmitDescriptionFormat(type)));
             operation.setDescription(metadata.getSearch().getDescriptionOrDefault(type.getName(), options.getSearch().getRetrieveDescriptionFormat(type)));
 
-            operation.responses(createSearchGetResponseRefs(type, options.getSearch().isAddingNotFoundResponseFor(type)));
+            operation.responses(createSearchGetResponseRefs(type, options.getSearch().isAddingNotFoundResponseForSingleFor(type)));
             operation.addTagsItem(options.getTagFor(type));
 
             List<Parameter> parameters = new ArrayList<>();
@@ -1730,7 +1730,7 @@ public class OpenAPIGenerator {
 
         private Schema makeDeprecated(Schema schema) {
             if (!versionIs3_1_OrLater && schema.get$ref() != null) {
-                // In OpenAPI 3.0, $ref schemas cannot have sibling properties — the serializer
+                // In OpenAPI 3.0, $ref schemas cannot have sibling properties â€” the serializer
                 // drops them. Wrap in allOf so deprecated: true is preserved alongside the ref.
                 return new Schema<>().deprecated(true).addAllOfItem(schema);
             }
