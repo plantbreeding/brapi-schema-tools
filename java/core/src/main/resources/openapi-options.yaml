@@ -404,7 +404,6 @@ put:
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
-        Call: false
         CallSet: false
         Event: false
         GenomeMap: false
@@ -412,8 +411,6 @@ put:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        PedigreeNode: false
-        Plate: false
         #ServerInfo: false
         Variant: false
         VariantSet: false
@@ -427,6 +424,9 @@ put:
         PedigreeNode: true
         Plate: true
         Sample: true
+    singleAlsoFor:
+        Observation: true
+        ObservationUnit: true
     useAdditionalProperties:
         Cross: true
         Observation: true

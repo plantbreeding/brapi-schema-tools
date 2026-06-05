@@ -26,6 +26,9 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> useAdditionalProperties = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> singleAlsoFor = new HashMap<>();
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
      *
@@ -51,6 +54,13 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
                 else useAdditionalProperties.put(key, value);
             });
         }
+
+        if (overrideOptions.singleAlsoFor != null) {
+            overrideOptions.singleAlsoFor.forEach((key, value) -> {
+                if (value == null) singleAlsoFor.remove(key);
+                else singleAlsoFor.put(key, value);
+            });
+        }
     }
 
     @Override
@@ -68,6 +78,14 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         useAdditionalProperties.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'useAdditionalProperties' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        singleAlsoFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'singleAlsoFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -184,6 +202,45 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     }
 
     /**
+     * Determines if the PUT/POST Endpoint/method also generates the single (by-ID) endpoint alongside the
+     * multiple/bulk endpoint for a specific model. Only has an effect when {@link #isMultipleFor(String)} is true.
+     *
+     * @param name the name of the primary model
+     * @return {@code true} if the single by-ID endpoint should also be generated, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isSingleAlsoFor(@NonNull String name) {
+        Boolean value = singleAlsoFor.get(name);
+        return value != null ? value : false;
+    }
+
+    /**
+     * Determines if the PUT/POST Endpoint/method also generates the single (by-ID) endpoint alongside the
+     * multiple/bulk endpoint for a specific model.
+     *
+     * @param type the primary model
+     * @return {@code true} if the single by-ID endpoint should also be generated, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isSingleAlsoFor(@NonNull BrAPIType type) {
+        return isSingleAlsoFor(type.getName());
+    }
+
+    /**
+     * Sets if the PUT/POST Endpoint/method also generates the single (by-ID) endpoint alongside the
+     * multiple/bulk endpoint for a specific model.
+     *
+     * @param name        the name of the primary model
+     * @param singleAlso  {@code true} if the single by-ID endpoint should also be generated, {@code false} otherwise
+     * @return the options for chaining
+     */
+    @JsonIgnore
+    public final AbstractUpdateSubOptions setSingleAlsoFor(@NonNull String name, boolean singleAlso) {
+        singleAlsoFor.put(name, singleAlso);
+        return this;
+    }
+
+    /**
      * Determines if generating a PUT/POST endpoint/method with an ID parameter (single update) for a specific model.
      *
      * @param name the name of the primary model
@@ -191,7 +248,7 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
      */
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull String name) {
-        return isGeneratingFor(name) && !isMultipleFor(name);
+        return isGeneratingFor(name) && (!isMultipleFor(name) || isSingleAlsoFor(name));
     }
 
     /**
