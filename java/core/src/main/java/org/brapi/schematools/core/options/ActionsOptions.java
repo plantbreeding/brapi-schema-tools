@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.brapi.schematools.core.model.BrAPIType;
+import org.brapi.schematools.core.utils.StringUtils;
 import org.brapi.schematools.core.validiation.Validation;
 
 /**
@@ -26,13 +27,15 @@ public class ActionsOptions extends AbstractSubOptions {
     private String pathFormat;
     private String actionSummaryFormat;
     private String actionDescriptionFormat;
+    private String actionRequestNameFormat;
 
     @Override
     public Validation validate() {
         return super.validate()
             .assertNotNull(pathFormat, "'pathFormat' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(actionSummaryFormat, "'actionSummaryFormat' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(actionDescriptionFormat, "'actionDescriptionFormat' option on %s is null", this.getClass().getSimpleName());
+            .assertNotNull(actionDescriptionFormat, "'actionDescriptionFormat' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(actionRequestNameFormat, "'actionRequestNameFormat' option on %s is null", this.getClass().getSimpleName());
     }
 
     /**
@@ -51,6 +54,9 @@ public class ActionsOptions extends AbstractSubOptions {
         }
         if (overrideOptions.actionDescriptionFormat != null) {
             actionDescriptionFormat = overrideOptions.actionDescriptionFormat;
+        }
+        if (overrideOptions.actionRequestNameFormat != null) {
+            actionRequestNameFormat = overrideOptions.actionRequestNameFormat;
         }
     }
 
@@ -101,5 +107,19 @@ public class ActionsOptions extends AbstractSubOptions {
     @JsonIgnore
     public boolean isGeneratingActionsFor(@NonNull BrAPIType type) {
         return isGeneratingFor(type);
+    }
+
+    /**
+     * Gets the request schema name for an action endpoint, e.g.
+     * {@code VariantSetsExtractRequest} for action {@code extract} on type plural
+     * {@code VariantSets}. Returns {@code null} if no format is configured.
+     *
+     * @param typePluralName the plural name of the owning primary model (e.g. {@code VariantSets})
+     * @param actionName     the action property name (e.g. {@code extract})
+     * @return the request schema name for the action
+     */
+    @JsonIgnore
+    public String getActionRequestNameFor(@NonNull String typePluralName, @NonNull String actionName) {
+        return String.format(actionRequestNameFormat, typePluralName, StringUtils.toSentenceCase(actionName));
     }
 }

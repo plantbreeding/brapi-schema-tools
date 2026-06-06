@@ -607,10 +607,11 @@ public class OpenAPIGenerator {
             BrAPIObjectType type = typeWithProperty.getType();
             BrAPIObjectProperty property = typeWithProperty.getProperty();
 
+            boolean isListResponse = property.getType() instanceof BrAPIArrayType;
             BrAPIType unwrappedPropertyType = unwrapType(property.getType());
             BrAPIType dereferencedPropertyType = brAPIClassCache.dereferenceType(unwrappedPropertyType);
 
-            if (!(dereferencedPropertyType instanceof BrAPIObjectType requestType)) {
+            if (!(dereferencedPropertyType instanceof BrAPIObjectType responseType)) {
                 return fail(Response.ErrorType.VALIDATION,
                     String.format("Action property '%s' on type '%s' must reference a BrAPIObjectType but was '%s'",
                         property.getName(), type.getName(),
@@ -623,18 +624,33 @@ public class OpenAPIGenerator {
 
             operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            operation.requestBody(createRequestBody(
-                new Schema().$ref(String.format("#/components/schemas/%s", requestType.getName())),
-                findMediaTypeForObject(type)));
+            String requestName = options.getActions().getActionRequestNameFor(options.getPluralFor(type), property.getName());
+            BrAPIClass requestClass = brAPIClassCache.findBrAPIClass(requestName).getResult();
+            if (requestClass != null) {
+                operation.requestBody(createRequestBody(
+                    new Schema().$ref(String.format("#/components/schemas/%s", requestName)),
+                    findMediaTypeForObject(type)));
+            }
 
-            operation.responses(addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref("#/components/responses/" + options.getSingleResponseNameFor(type)))));
+            String responseRef = isListResponse
+                ? "#/components/responses/" + options.getListResponseNameFor(responseType)
+                : "#/components/responses/" + options.getSingleResponseNameFor(responseType);
+
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref(responseRef)));
+
+            if (options.getActions().isAddingNotFoundResponseForSingleFor(type)) {
+                apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+            }
+
+            operation.responses(apiResponses);
 
             operation.addTagsItem(options.getTagFor(type));
 
             pathItem.setPost(operation);
 
-            return generateSingleResponse(type).map(() -> success(pathItem));
+            return (isListResponse ? generateListResponse(responseType) : generateSingleResponse(responseType))
+                .map(() -> success(pathItem));
         }
 
         private Response<ApiResponse> generateSingleResponse(BrAPIType type) {

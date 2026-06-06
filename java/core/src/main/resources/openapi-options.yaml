@@ -422,7 +422,8 @@ actions:
     descriptionFormat: 'Perform an action on `%s`.'
     actionSummaryFormat: 'Perform `%s` on `%s`'
     actionDescriptionFormat: 'Perform the `%s` action on `%s`.'
-    addNotFoundResponse: false
+    actionRequestNameFormat: '%s%sRequest'
+    addNotFoundResponse: true
 post:
     generate: true
     summaryFormat: Create new %s
