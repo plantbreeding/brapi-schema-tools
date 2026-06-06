@@ -465,6 +465,7 @@
                 ]
             },
             "Context" : {
+                "title" : "context",
                 "type" : "array",
                 "description" : "The JSON-LD Context is used to provide JSON-LD definitions to each field in a JSON object. By providing an array of context file urls, a BrAPI response object becomes JSON-LD compatible.  \n\nFor more information, see https://w3c.github.io/json-ld-syntax/#the-context",
                 "example" : [
@@ -473,8 +474,7 @@
                 "items" : {
                     "type" : "string",
                     "format" : "uri"
-                },
-                "title" : "context"
+                }
             },
             "Study" : {
                 "allOf" : [
@@ -482,155 +482,91 @@
                         "$ref" : "#/components/schemas/StudyNewRequest"
                     },
                     {
+                        "required" : [
+                            "studyDbId"
+                        ],
                         "type" : "object",
-                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
                         "properties" : {
                             "studyDbId" : {
                                 "type" : "string",
                                 "description" : "The ID which uniquely identifies a study within the given database server\n\nMIAPPE V1.1 (DM-11) Study unique ID - Unique identifier comprising the name or identifier for the institution/database hosting the submission of the study data, and the identifier of the study in that institution."
                             }
                         },
-                        "required" : [
-                            "studyDbId"
-                        ]
+                        "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
                     }
                 ]
             },
             "StudyNewRequest" : {
+                "required" : [
+                    "studyName"
+                ],
                 "type" : "object",
-                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
                 "properties" : {
                     "active" : {
-                        "type" : [
-                            "null",
-                            "boolean"
-                        ],
                         "description" : "A flag to indicate if a Study is currently active and ongoing"
                     },
                     "additionalInfo" : {
-                        "type" : "null",
-                        "$ref" : "#/components/schemas/AdditionalInfo",
-                        "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification."
+                        "$ref" : "#/components/schemas/AdditionalInfo"
                     },
                     "commonCropName" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "Common name for the crop associated with this study"
                     },
                     "contacts" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "List of contact entities associated with this study",
                         "items" : {
                             "$ref" : "#/components/schemas/Contact"
                         }
                     },
                     "culturalPractices" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study."
                     },
                     "dataLinks" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "List of links to extra data files associated with this study. Extra data could include notes, images, and reference data.",
                         "items" : {
                             "$ref" : "#/components/schemas/DataLink"
                         }
                     },
                     "documentationURL" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
-                        "format" : "uri",
-                        "description" : "A URL to the human readable documentation of an object"
+                        "description" : "A URL to the human readable documentation of an object",
+                        "format" : "uri"
                     },
                     "endDate" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
-                        "format" : "date-time",
-                        "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended"
+                        "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended",
+                        "format" : "date-time"
                     },
                     "environmentParameters" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units.\n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).",
                         "items" : {
                             "$ref" : "#/components/schemas/EnvironmentParameter"
                         }
                     },
                     "experimentalDesign" : {
-                        "type" : "null",
-                        "$ref" : "#/components/schemas/ExperimentalDesign",
-                        "description" : "The experimental and statistical design full description plus a category PUI taken from crop research ontology or agronomy ontology"
+                        "$ref" : "#/components/schemas/ExperimentalDesign"
                     },
                     "externalReferences" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
                         "items" : {
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
                     },
                     "growthFacility" : {
-                        "type" : "null",
-                        "$ref" : "#/components/schemas/GrowthFacility",
-                        "description" : "Short description of the facility in which the study was carried out."
+                        "$ref" : "#/components/schemas/GrowthFacility"
                     },
                     "lastUpdate" : {
-                        "type" : "null",
-                        "$ref" : "#/components/schemas/LastUpdate",
-                        "description" : "The date and time when this study was last modified"
+                        "$ref" : "#/components/schemas/LastUpdate"
                     },
                     "license" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "The usage license associated with the study data"
                     },
-                    "locationDbId" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ]
-                    },
-                    "locationName" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ]
-                    },
+                    "locationDbId" : { },
+                    "locationName" : { },
                     "observationLevels" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitHierarchyLevel"
                         }
                     },
                     "observationUnitsDescription" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study."
                     },
                     "observationVariableDbIds" : {
@@ -641,28 +577,16 @@
                         }
                     },
                     "seasons" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "List of seasons over which this study was performed.",
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "startDate" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
-                        "format" : "date-time",
-                        "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started"
+                        "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started",
+                        "format" : "date-time"
                     },
                     "studyCode" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "A short human readable code for a study"
                     },
                     "studyDescription" : {
@@ -670,24 +594,12 @@
                         "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study"
                     },
                     "studyName" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study"
                     },
                     "studyPUI" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "A permanent unique identifier associated with this study data. For example, a URI or DOI"
                     },
                     "studyType" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc"
                     },
                     "trialDbId" : {
@@ -697,19 +609,12 @@
                         "type" : "string"
                     }
                 },
-                "required" : [
-                    "studyName"
-                ]
+                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
             },
             "StudySearchRequest" : {
                 "type" : "object",
-                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.",
                 "properties" : {
                     "active" : {
-                        "type" : [
-                            "null",
-                            "boolean"
-                        ],
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
                         "example" : true
                     },
@@ -722,8 +627,8 @@
                     },
                     "externalReferenceIDs" : {
                         "type" : "array",
-                        "deprecated" : true,
                         "description" : "**Deprecated in v2.1** Please use `externalReferenceIds`. Github issue number #460 \n<br>List of external reference IDs. Could be a simple strings or a URIs. (use with `externalReferenceSources` parameter)",
+                        "deprecated" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -743,20 +648,12 @@
                         }
                     },
                     "germplasmDbIds" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "germplasmNames" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "List of human readable names to identify germplasm to search for",
                         "items" : {
                             "type" : "string"
@@ -799,14 +696,14 @@
                     },
                     "page" : {
                         "type" : "integer",
-                        "format" : "int32",
                         "description" : "Which result page is requested. The page indexing starts at 0 (the first page is 'page'= 0). Default is `0`.",
+                        "format" : "int32",
                         "example" : 0
                     },
                     "pageSize" : {
                         "type" : "integer",
-                        "format" : "int32",
                         "description" : "The size of the pages to be returned. Default is `1000`.",
+                        "format" : "int32",
                         "example" : 1000
                     },
                     "programDbIds" : {
@@ -824,20 +721,12 @@
                         }
                     },
                     "seasonDbIds" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "The ID which uniquely identifies a season",
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "sortBy" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "Name of the field to sort by.",
                         "enum" : [
                             "studyDbId",
@@ -854,10 +743,6 @@
                         ]
                     },
                     "sortOrder" : {
-                        "type" : [
-                            "null",
-                            "string"
-                        ],
                         "description" : "Sort order direction. Ascending/Descending.",
                         "enum" : [
                             "ASC",
@@ -867,10 +752,6 @@
                         ]
                     },
                     "studyCodes" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "A short human readable code for a study",
                         "items" : {
                             "type" : "string"
@@ -891,20 +772,12 @@
                         }
                     },
                     "studyPUIs" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "studyTypes" : {
-                        "type" : [
-                            "null",
-                            "array"
-                        ],
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
                         "items" : {
                             "type" : "string"
@@ -924,23 +797,27 @@
                             "type" : "string"
                         }
                     }
-                }
+                },
+                "description" : "A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies."
             },
             "basePagination" : {
+                "required" : [
+                    "currentPage",
+                    "pageSize"
+                ],
                 "type" : "object",
-                "description" : "The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br> Pages are zero indexed, so the first page will be page 0 (zero).",
                 "properties" : {
                     "currentPage" : {
                         "type" : "integer",
-                        "default" : 0,
                         "description" : "The index number for the returned page of data. This should always match the requested page number or the default page (0).",
-                        "example" : 0
+                        "example" : 0,
+                        "default" : 0
                     },
                     "pageSize" : {
                         "type" : "integer",
-                        "default" : 1000,
                         "description" : "The number of data elements returned, aka the size of the current page. If the requested page does not have enough elements to fill a page at the requested page size, this field should indicate the actual number of elements returned.",
-                        "example" : 1000
+                        "example" : 1000,
+                        "default" : 1000
                     },
                     "totalCount" : {
                         "type" : "integer",
@@ -953,19 +830,18 @@
                         "example" : 1
                     }
                 },
-                "required" : [
-                    "currentPage",
-                    "pageSize"
-                ]
+                "description" : "The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br> Pages are zero indexed, so the first page will be page 0 (zero)."
             },
             "dataFile" : {
+                "required" : [
+                    "fileURL"
+                ],
                 "type" : "object",
-                "description" : "A dataFile contains a URL and the relevant file metadata to represent a file",
                 "properties" : {
                     "fileURL" : {
                         "type" : "string",
-                        "format" : "uri",
                         "description" : "The absolute URL where the file is located",
+                        "format" : "uri",
                         "example" : "https://wiki.brapi.org/examples/datafile.xlsx"
                     },
                     "fileName" : {
@@ -994,9 +870,7 @@
                         "example" : "c2365e900c81a89cf74d83dab60df146"
                     }
                 },
-                "required" : [
-                    "fileURL"
-                ]
+                "description" : "A dataFile contains a URL and the relevant file metadata to represent a file"
             },
             "metadata" : {
                 "allOf" : [
@@ -1015,7 +889,6 @@
             },
             "metadataBase" : {
                 "type" : "object",
-                "description" : "An object in the BrAPI standard response model that describes some information about the service call being performed. This includes supplementary data, status log messages, and pagination information.",
                 "properties" : {
                     "datafiles" : {
                         "type" : "array",
@@ -1032,7 +905,8 @@
                             "$ref" : "#/components/schemas/status"
                         }
                     }
-                }
+                },
+                "description" : "An object in the BrAPI standard response model that describes some information about the service call being performed. This includes supplementary data, status log messages, and pagination information."
             },
             "metadataTokenPagination" : {
                 "allOf" : [
@@ -1050,8 +924,11 @@
                 ]
             },
             "status" : {
+                "required" : [
+                    "message",
+                    "messageType"
+                ],
                 "type" : "object",
-                "description" : "An array of status messages to convey technical logging information from the server to the client.",
                 "properties" : {
                     "message" : {
                         "type" : "string",
@@ -1061,19 +938,16 @@
                     "messageType" : {
                         "type" : "string",
                         "description" : "The logging level for the attached message",
+                        "example" : "INFO",
                         "enum" : [
                             "DEBUG",
                             "ERROR",
                             "WARNING",
                             "INFO"
-                        ],
-                        "example" : "INFO"
+                        ]
                     }
                 },
-                "required" : [
-                    "message",
-                    "messageType"
-                ]
+                "description" : "An array of status messages to convey technical logging information from the server to the client."
             },
             "tokenPagination" : {
                 "allOf" : [
@@ -1081,37 +955,37 @@
                         "$ref" : "#/components/schemas/basePagination"
                     },
                     {
+                        "required" : [
+                            "nextPageToken"
+                        ],
                         "type" : "object",
+                        "properties" : {
+                            "nextPageToken" : {
+                                "type" : "string",
+                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the next page of data.",
+                                "example" : "cb668f63",
+                                "deprecated" : true
+                            },
+                            "currentPageToken" : {
+                                "type" : "string",
+                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the current page of data.",
+                                "example" : "48bc6ac1",
+                                "deprecated" : true
+                            },
+                            "prevPageToken" : {
+                                "type" : "string",
+                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the previous page of data.",
+                                "example" : "9659857e",
+                                "deprecated" : true
+                            }
+                        },
                         "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The pagination object is applicable only when the payload contains a \"data\" key. It describes the pagination of the data contained in the \"data\" array, as a way to identify which subset of data is being returned. \n<br>Tokenized pages are for large data sets which can not be efficiently broken into indexed pages. Use the nextPageToken and prevPageToken to construct an additional query and move to the next or previous page respectively.  ",
                         "example" : {
                             "currentPage" : 0,
                             "pageSize" : 1000,
                             "totalCount" : 10,
                             "totalPages" : 1
-                        },
-                        "properties" : {
-                            "nextPageToken" : {
-                                "type" : "string",
-                                "deprecated" : true,
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the next page of data.",
-                                "example" : "cb668f63"
-                            },
-                            "currentPageToken" : {
-                                "type" : "string",
-                                "deprecated" : true,
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the current page of data.",
-                                "example" : "48bc6ac1"
-                            },
-                            "prevPageToken" : {
-                                "type" : "string",
-                                "deprecated" : true,
-                                "description" : "**Deprecated in v2.1** Please use `page`. Github issue number #451 \n<br>The string token used to query the previous page of data.",
-                                "example" : "9659857e"
-                            }
-                        },
-                        "required" : [
-                            "nextPageToken"
-                        ]
+                        }
                     }
                 ]
             }
@@ -1133,6 +1007,7 @@
                 "content" : {
                     "application/json" : {
                         "schema" : {
+                            "title" : "202AcceptedSearchResponse",
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
@@ -1150,8 +1025,7 @@
                                         }
                                     }
                                 }
-                            },
-                            "title" : "202AcceptedSearchResponse"
+                            }
                         }
                     }
                 }
@@ -1161,17 +1035,23 @@
                 "content" : {
                     "application/json" : {
                         "schema" : {
+                            "title" : "StudyStudyTypeListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/Context"
                                 },
                                 "metadata" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
                                     "type" : "object",
                                     "properties" : {
                                         "data" : {
@@ -1180,17 +1060,9 @@
                                                 "type" : "string"
                                             }
                                         }
-                                    },
-                                    "required" : [
-                                        "data"
-                                    ]
+                                    }
                                 }
-                            },
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "title" : "StudyStudyTypeListResponse"
+                            }
                         }
                     }
                 }
@@ -1200,26 +1072,23 @@
                 "content" : {
                     "application/json" : {
                         "schema" : {
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "type" : "object",
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "type" : "object",
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "type" : "object",
-                                    "$ref" : "#/components/schemas/Study"
-                                }
-                            },
+                            "title" : "StudySingleResponse",
                             "required" : [
                                 "metadata",
                                 "result"
                             ],
-                            "title" : "StudySingleResponse"
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Study"
+                                }
+                            }
                         }
                     }
                 }
@@ -1251,17 +1120,23 @@
                 "content" : {
                     "application/json" : {
                         "schema" : {
+                            "title" : "StudyListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/Context"
                                 },
                                 "metadata" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
                                     "type" : "object",
                                     "properties" : {
                                         "data" : {
@@ -1270,17 +1145,9 @@
                                                 "$ref" : "#/components/schemas/Study"
                                             }
                                         }
-                                    },
-                                    "required" : [
-                                        "data"
-                                    ]
+                                    }
                                 }
-                            },
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "title" : "StudyListResponse"
+                            }
                         }
                     }
                 }
@@ -1290,17 +1157,23 @@
                 "content" : {
                     "application/json" : {
                         "schema" : {
+                            "title" : "CallListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
                             "type" : "object",
                             "properties" : {
                                 "@context" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/Context"
                                 },
                                 "metadata" : {
-                                    "type" : "object",
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
                                     "type" : "object",
                                     "properties" : {
                                         "data" : {
@@ -1313,34 +1186,30 @@
                                         "expandHomozygotes" : {
                                             "type" : "boolean",
                                             "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
+                                            "nullable" : true,
                                             "example" : true
                                         },
                                         "sepPhased" : {
                                             "type" : "string",
                                             "description" : "The string used as a separator for phased allele calls.",
+                                            "nullable" : true,
                                             "example" : "|"
                                         },
                                         "sepUnphased" : {
                                             "type" : "string",
                                             "description" : "The string used as a separator for unphased allele calls.",
+                                            "nullable" : true,
                                             "example" : "/"
                                         },
                                         "unknownString" : {
                                             "type" : "string",
                                             "description" : "The string used as a representation for missing data.",
+                                            "nullable" : true,
                                             "example" : "."
                                         }
-                                    },
-                                    "required" : [
-                                        "data"
-                                    ]
+                                    }
                                 }
-                            },
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "title" : "CallListResponse"
+                            }
                         }
                     }
                 }
@@ -1435,8 +1304,8 @@
                 "style" : "simple",
                 "explode" : false,
                 "schema" : {
-                    "type" : "string",
-                    "pattern" : "^Bearer .*$"
+                    "pattern" : "^Bearer .*$",
+                    "type" : "string"
                 },
                 "example" : "Bearer XXXX"
             },

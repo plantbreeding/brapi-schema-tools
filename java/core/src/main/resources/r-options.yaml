@@ -70,6 +70,7 @@ get:
             traitEntityPUIs: false
 search:
     generate: true
+    pathFormat: /search%s
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`t
     addNotFoundResponse: false
@@ -127,12 +128,14 @@ search:
             observationUnitLevelRelationshipDbIds: false
 table:
     generate: false
+    pathFormat: '%s/table'
     summaryFormat: Get a table of `%s` records as a CSV file.
     descriptionFormat: Get a table of `%s` records returned directly as CSV text.
     generateFor:
         ObservationUnit: true
 searchTable:
     generate: false
+    pathFormat: '/search%s/table'
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
     descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
 post:
