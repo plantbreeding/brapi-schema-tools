@@ -338,6 +338,15 @@ public class OpenAPIGenerator {
                         .map(type -> createSearchPathItemWithId(type)
                             .onSuccessDoWithResult(pathItem -> openAPI.path(createSearchPathItemWithIdName(type), pathItem)))
                         .collect(Response.toList()))
+                .merge( // these are POST endpoints declared via brapi-metadata.actionProperties, e.g. /variantsets/extract
+                    () -> primaryClasses.stream()
+                        .filter(type -> options.getActions().isGeneratingActionsFor(type))
+                        .flatMap(this::findActionProperties)
+                        .map(typeWithProperty -> createActionPathItem(typeWithProperty)
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(
+                                options.getActions().getPathItemNameFor(options.getPathItemNameFor(typeWithProperty.getType()), typeWithProperty.getProperty().getName()),
+                                pathItem)))
+                        .collect(Response.toList()))
                 .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses, openAPI.getComponents()).onSuccessDoWithResult(openAPI::components))
                 .merge(() -> success(openAPI.merge(supplementalOpenAPI)))
                 .map(() -> success(openAPI));
@@ -396,6 +405,7 @@ public class OpenAPIGenerator {
             return createPathItemWithId(type)
                 .onSuccessDoWithResult(pathItem -> openAPI.path(pathItemName, pathItem))
                 .merge(type.getProperties().stream()
+                    .filter(property -> type.getMetadata() == null || !type.getMetadata().isActionProperty(property.getName()))
                     .filter(property -> isGeneratingSubPathFor(type, property))
                     .map(property -> createSubPathItemWithId(type, property)
                         .onSuccessDoWithResult(subPathItem -> openAPI.path(createSubPathItemName(pathItemName, property), subPathItem)))
@@ -573,6 +583,58 @@ public class OpenAPIGenerator {
             }
 
             return success(parameters);
+        }
+
+        private Stream<BrAPIObjectTypeWithProperty> findActionProperties(BrAPIObjectType type) {
+            if (type.getMetadata() != null && type.getMetadata().getActionProperties() != null
+                && !type.getMetadata().getActionProperties().isEmpty()
+                && type.getProperties() != null) {
+                return type.getProperties()
+                    .stream()
+                    .filter(property -> type.getMetadata().getActionProperties().contains(property.getName()))
+                    .map(property -> BrAPIObjectTypeWithProperty.builder()
+                        .type(type)
+                        .property(property)
+                        .build());
+            } else {
+                return Stream.empty();
+            }
+        }
+
+        private Response<PathItem> createActionPathItem(BrAPIObjectTypeWithProperty typeWithProperty) {
+            PathItem pathItem = new PathItem();
+
+            BrAPIObjectType type = typeWithProperty.getType();
+            BrAPIObjectProperty property = typeWithProperty.getProperty();
+
+            BrAPIType unwrappedPropertyType = unwrapType(property.getType());
+            BrAPIType dereferencedPropertyType = brAPIClassCache.dereferenceType(unwrappedPropertyType);
+
+            if (!(dereferencedPropertyType instanceof BrAPIObjectType requestType)) {
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("Action property '%s' on type '%s' must reference a BrAPIObjectType but was '%s'",
+                        property.getName(), type.getName(),
+                        dereferencedPropertyType != null ? dereferencedPropertyType.getClass().getSimpleName() : "null"));
+            }
+
+            Operation operation = new Operation();
+            operation.setSummary(options.getActions().getActionSummaryFor(property.getName(), type.getName()));
+            operation.setDescription(options.getActions().getActionDescriptionFor(property.getName(), type.getName()));
+
+            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.requestBody(createRequestBody(
+                new Schema().$ref(String.format("#/components/schemas/%s", requestType.getName())),
+                findMediaTypeForObject(type)));
+
+            operation.responses(addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref("#/components/responses/" + options.getSingleResponseNameFor(type)))));
+
+            operation.addTagsItem(options.getTagFor(type));
+
+            pathItem.setPost(operation);
+
+            return generateSingleResponse(type).map(() -> success(pathItem));
         }
 
         private Response<ApiResponse> generateSingleResponse(BrAPIType type) {
@@ -1658,7 +1720,17 @@ public class OpenAPIGenerator {
         }
 
         private Response<Schema> createObjectSchema(BrAPIObjectType type) {
-            return createObjectSchema(type, type.getProperties());
+            return createObjectSchema(type, filterOutActionProperties(type, type.getProperties()));
+        }
+
+        private List<BrAPIObjectProperty> filterOutActionProperties(BrAPIObjectType type, List<BrAPIObjectProperty> properties) {
+            if (properties == null || type.getMetadata() == null || type.getMetadata().getActionProperties() == null
+                || type.getMetadata().getActionProperties().isEmpty()) {
+                return properties;
+            }
+            return properties.stream()
+                .filter(p -> !type.getMetadata().isActionProperty(p.getName()))
+                .toList();
         }
 
         private Response<Schema> createObjectSchema(BrAPIObjectType type, List<BrAPIObjectProperty> properties) {

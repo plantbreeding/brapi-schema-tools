@@ -415,6 +415,14 @@ searchTable:
     pathFormat: '/search%s/table'
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
     descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
+actions:
+    generate: true
+    pathFormat: '%s/%s'
+    summaryFormat: 'Perform action on `%s`'
+    descriptionFormat: 'Perform an action on `%s`.'
+    actionSummaryFormat: 'Perform `%s` on `%s`'
+    actionDescriptionFormat: 'Perform the `%s` action on `%s`.'
+    addNotFoundResponse: false
 post:
     generate: true
     summaryFormat: Create new %s

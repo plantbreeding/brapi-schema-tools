@@ -59,6 +59,8 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
     private TableOptions table;
     @Setter(AccessLevel.PRIVATE)
     private SearchTableOptions searchTable;
+    @Setter(AccessLevel.PRIVATE)
+    private ActionsOptions actions;
 
     // -------------------------------------------------------------------------
     // validate
@@ -78,6 +80,7 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
             .assertNotNull(controlledVocabulary, "Controlled Vocabulary Options are null")
             .assertNotNull(table, "Table Options are null")
             .assertNotNull(searchTable, "Search Table Options are null")
+            .assertNotNull(actions, "Actions Options are null")
             .merge(getWithId)
             .merge(post)
             .merge(put)
@@ -160,6 +163,9 @@ public abstract class AbstractRESTGeneratorOptions extends AbstractMainGenerator
         }
         if (overrideOptions.searchTable != null) {
             searchTable.override(overrideOptions.searchTable);
+        }
+        if (overrideOptions.actions != null) {
+            actions.override(overrideOptions.actions);
         }
 
         return this;

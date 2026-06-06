@@ -817,6 +817,8 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(builder::writableProperties)
                 .merge(findStringFieldList(path, metadata, "noSingularizeProperties", false))
                 .onSuccessDoWithResult(builder::noSingularizeProperties)
+                .merge(findStringFieldList(path, metadata, "actionProperties", false))
+                .onSuccessDoWithResult(builder::actionProperties)
                 .merge(findStringChildValue(path, metadata, "discriminatorPropertyName", false))
                 .onSuccessDoWithResult(builder::discriminatorPropertyName)
                 .map(() -> success(builder.build()));
