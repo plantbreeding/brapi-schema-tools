@@ -54,6 +54,12 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     private String listResponseNameFormat;
     @Getter(AccessLevel.PRIVATE)
     private String searchRequestNameFormat;
+    @Getter(AccessLevel.PRIVATE)
+    private String tableNameFormat;
+    @Getter(AccessLevel.PRIVATE)
+    private String tableResponseNameFormat;
+    @Getter(AccessLevel.PRIVATE)
+    private String searchTableResponseNameFormat;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
@@ -153,6 +159,18 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             searchRequestNameFormat = overrideOptions.searchRequestNameFormat ;
         }
 
+        if (overrideOptions.tableNameFormat != null) {
+            tableNameFormat = overrideOptions.tableNameFormat ;
+        }
+
+        if (overrideOptions.tableResponseNameFormat != null) {
+            tableResponseNameFormat = overrideOptions.tableResponseNameFormat ;
+        }
+
+        if (overrideOptions.searchTableResponseNameFormat != null) {
+            searchTableResponseNameFormat = overrideOptions.searchTableResponseNameFormat ;
+        }
+
         if (overrideOptions.tagFor != null) {
             overrideOptions.tagFor.forEach((key, value) -> {
                 if (value == null) tagFor.remove(key);
@@ -202,6 +220,9 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
             .assertNotNull(listResponseNameFormat, "'listResponseNameFormat' option is null")
             .assertNotNull(searchRequestNameFormat,  "'searchRequestNameFormat' option is null")
+            .assertNotNull(tableNameFormat, "'tableNameFormat' option is null")
+            .assertNotNull(tableResponseNameFormat, "'tableResponseNameFormat' option is null")
+            .assertNotNull(searchTableResponseNameFormat,  "'searchTableResponseNameFormat' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null")
             .assertNotNull(defaultMediaType,  "'defaultMediaType' option is null")
             .assertNotNull(mediaTypeForType,  "'mediaTypeForType' option is null")
@@ -269,7 +290,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
     /**
      * Determines if the Generator should generate any Endpoints without an ID parameter. Returns {@code true} if
-     * {@link ListGetOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PostOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()}  is set to {@code true}
+     * {@link GetOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PostOptions#isGenerating()} or {@link org.brapi.schematools.core.options.PutOptions#isGenerating()}  is set to {@code true}
      * @return {@code true} if the Generator should generate any Endpoints without an ID parameter, {@code false} otherwise
      */
     @JsonIgnore
@@ -453,6 +474,66 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @JsonIgnore
     public final String getSearchRequestNameFor(@NonNull BrAPIType type) {
         return getSearchRequestNameFor(type.getName()) ;
+    }
+
+    /**
+     * Gets the name for the Table schema for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the Table schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTableNameFor(@NonNull String name) {
+        return String.format(tableNameFormat, name) ;
+    }
+
+    /**
+     * Gets the name for the Table schema for a specific Primary Model
+     * @param type the Primary Model
+     * @return the Table schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTableNameFor(@NonNull BrAPIType type) {
+        return getTableNameFor(type.getName()) ;
+    }
+
+    /**
+     * Gets the name for the Table Response schema for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the Table Response schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTableResponseNameFor(@NonNull String name) {
+        return String.format(tableResponseNameFormat, name) ;
+    }
+
+    /**
+     * Gets the name for the Table Response schema for a specific Primary Model
+     * @param type the Primary Model
+     * @return the Table Response schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getTableResponseNameFor(@NonNull BrAPIType type) {
+        return getTableResponseNameFor(type.getName()) ;
+    }
+
+    /**
+     * Gets the name for the Search Table Response schema for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the Search Table Response schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableResponseNameFor(@NonNull String name) {
+        return String.format(searchTableResponseNameFormat, name) ;
+    }
+
+    /**
+     * Gets the name for the Table Response schema for a specific Primary Model
+     * @param type the Primary Model
+     * @return the Search Table Response schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableResponseNameFor(@NonNull BrAPIType type) {
+        return getSearchTableResponseNameFor(type.getName()) ;
     }
 
     /**

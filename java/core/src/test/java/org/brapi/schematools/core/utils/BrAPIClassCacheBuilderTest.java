@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class BrAPIClassCacheBuilderTest {
 
-    private static final short EXPECTED_SIZE = 167 ;
-    private static final short EXPECTED_CLASSES_SIZE = 142 ;
+    private static final short EXPECTED_SIZE = 171 ;
+    private static final short EXPECTED_CLASSES_SIZE = 145 ;
     List<BrAPIClass> brAPIClasses ;
 
     @BeforeEach
@@ -66,7 +66,7 @@ class BrAPIClassCacheBuilderTest {
 
         List<BrAPIClass> allDependencies = cache.getAllNonPrimaryDependencies();
         assertNotNull(allDependencies) ;
-        assertEquals(23, allDependencies.size());
+        assertEquals(24, allDependencies.size());
 
         assertNotNull(cache.getBrAPIClassNames()) ;
         assertEquals(EXPECTED_SIZE, cache.getBrAPIClassNames().size()) ;
@@ -154,7 +154,7 @@ class BrAPIClassCacheBuilderTest {
 
         List<BrAPIClass> primaryClasses = cache.getPrimaryClasses();
         assertNotNull(primaryClasses) ;
-        assertEquals(36, primaryClasses.size()) ;
+        assertEquals(37, primaryClasses.size()) ;
 
         Set<BrAPIClass> commonDependenciesGermplasm = cache.getCommonDependencies("Germplasm");
         assertNotNull(commonDependenciesGermplasm) ;
@@ -191,7 +191,7 @@ class BrAPIClassCacheBuilderTest {
     void createMapWithPredicate() {
         Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.builder(brAPIClasses).cachePredicate(this::isCaching).build().getBrAPIClassesAsMap();
 
-        assertEquals(167, map.size());
+        assertEquals(171, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("GermplasmAttribute")) ;

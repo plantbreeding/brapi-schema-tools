@@ -198,7 +198,8 @@
                 }
             },
             "brapi-metadata": {
-                "request": true
+                "request": true,
+                "noSingularizeProperties": ["dataMatrixNames", "dataMatrixAbbreviations"]
             }
         }
     },

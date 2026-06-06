@@ -417,6 +417,19 @@ BrAPIClient <- R6Class(
 
       return(private$.seedLots)
     },
+    #' @field seedLotTransactions
+    #' Get the SeedLotTransactions R6 class object which can be used to call the BrAPI server for
+    #' SeedLotTransaction entities
+    seedLotTransactions = function() {
+      if (is.null(private$.seedLotTransactions)) {
+        if (private$.verbosity > 0) {
+          message("Creating SeedLotTransactions R6 class object ")
+        }
+        private$.seedLotTransactions <- (SeedLotTransactions$new(self))
+      }
+
+      return(private$.seedLotTransactions)
+    },
     #' @field studies
     #' Get the Studies R6 class object which can be used to call the BrAPI server for
     #' Study entities
@@ -516,6 +529,7 @@ BrAPIClient <- R6Class(
       .scales = NULL,
       .seasons = NULL,
       .seedLots = NULL,
+      .seedLotTransactions = NULL,
       .studies = NULL,
       .traits = NULL,
       .trials = NULL,

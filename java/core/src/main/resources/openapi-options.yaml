@@ -22,6 +22,9 @@ newRequestNameFormat: "%sNewRequest"
 singleResponseNameFormat: "%sSingleResponse"
 listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
+tableNameFormat: "%sTable"
+tableResponseNameFormat: "%sTableResponse"
+searchTableResponseNameFormat: "%sTableResponse"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:
@@ -32,6 +35,7 @@ pathItemNameFor:
     ObservationUnitHierarchyLevel: /observationlevels
     ObservationVariable: /variables
     PedigreeNode: /pedigree
+    SeedLotTransaction: /seedlots/transactions
 pathItemNameForProperty:
     GermplasmAttribute:
         attributeCategory:
@@ -39,13 +43,17 @@ pathItemNameForProperty:
     Program:
         commonCropName:
             /commoncropnames
+
     Study:
         studyType:
             /studytypes
+        observationLevels:
+            /observationlevels
 tagFor:
     BreedingMethod: Germplasm
     MarkerPosition: Genome Maps
     PlannedCross: Crosses
+    SeedLotTransaction: Seed Lots
 getWithId:
     generate: true
     summaryFormat: Get the details of a specific %s
@@ -60,6 +68,7 @@ getWithId:
         ObservationUnitHierarchyLevel: false
         PedigreeNode: false
         PlannedCross: false
+        SeedLotTransaction: false
 get:
     generate: true
     summaryFormat: Get a filtered list of %s
@@ -194,6 +203,10 @@ get:
             trialNames: false
         ObservationUnitLevelRelationship:
             observationUnit: false
+        ObservationUnitHierarchyLevel:
+            programNames: false
+            studyNames: false
+            trialNames: false
         ObservationVariable:
             dataTypes: false
             programNames: false
@@ -327,6 +340,7 @@ search:
         Scale: false
         Season: false
         SeedLot: false
+        SeedLotTransaction: false
         Trait: false
     propertiesFromRequest: true
     propertyFromRequestFor:
@@ -360,6 +374,9 @@ table:
     summaryFormat: Get a table of `%s` records as a CSV file.
     descriptionFormat: Get a table of `%s` records returned directly as CSV text.
     addNotFoundResponse: false
+    generateFor:
+        Observation: true
+        ObservationUnit: true
     pagedDefault: false
     pagedTokenDefault: false
     propertiesFromRequest: true
@@ -388,6 +405,11 @@ table:
             observationUnitNames: false
             observationLevelRelationships: false
             includeObservations: false
+    propertyTypeOverrideFor:
+        Observation:
+            observationLevels: string
+        ObservationUnit:
+            observationLevels: string
 searchTable:
     generate: false
     pathFormat: '/search%s/table'
@@ -423,9 +445,12 @@ put:
     descriptionFormat: Update the details for an existing %s
     addNotFoundResponse: true
     addNotFoundResponseForSingleFor:
+        Call: false
         Cross: false
-        ObservationUnit: false
+        ObservationUnit: true
         PlannedCross: false
+    addNotFoundResponseForMultipleFor:
+        ObservationUnit: false
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
@@ -436,6 +461,7 @@ put:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
+        SeedLotTransaction: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -482,6 +508,7 @@ delete:
         MarkerPosition: false
         ObservationUnitHierarchyLevel: false
         Reference: false
+        SeedLotTransaction: false
         Variant: false
         VariantSet: false
 properties:
@@ -494,6 +521,7 @@ properties:
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
             ObservationUnitHierarchyLevel: levelName
+            SeedLotTransaction: transactionDbId
         requiredPropertyFor:
             GermplasmAttributeValue:
                 attribute: false
@@ -731,7 +759,7 @@ properties:
         GrowthFacility:
             study: none
         Image:
-            imagecontent: sub-query
+            imageContent: none
         LastUpdate:
             study: none
         LinkageGroup:

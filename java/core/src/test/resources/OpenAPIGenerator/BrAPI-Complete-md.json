@@ -63,7 +63,7 @@
                         }
                     },
                     {
-                        "name" : "dataMatrixName",
+                        "name" : "dataMatrixNames",
                         "in" : "query",
                         "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
@@ -72,7 +72,7 @@
                         }
                     },
                     {
-                        "name" : "dataMatrixAbbreviation",
+                        "name" : "dataMatrixAbbreviations",
                         "in" : "query",
                         "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
@@ -376,9 +376,6 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
-                    },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -4925,6 +4922,159 @@
                 }
             }
         },
+        "/seedlots/transactions" : {
+            "get" : {
+                "tags" : [
+                    "Seed Lots"
+                ],
+                "summary" : "Get a filtered list of SeedLotTransaction",
+                "description" : "Get a list of SeedLotTransaction",
+                "parameters" : [
+                    {
+                        "name" : "commonCropName",
+                        "in" : "query",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "germplasmName",
+                        "in" : "query",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "seedLotDbId",
+                        "in" : "query",
+                        "description" : "Unique id for a seed lot on this server",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossDbId",
+                        "in" : "query",
+                        "description" : "Search for Cross with this unique id",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "crossName",
+                        "in" : "query",
+                        "description" : "Search for Cross with this human readable name",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "transactionDbId",
+                        "in" : "query",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceId"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceID"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/externalReferenceSource"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/SeedLotTransactionListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            },
+            "post" : {
+                "tags" : [
+                    "Seed Lots"
+                ],
+                "summary" : "Create new SeedLotTransaction",
+                "description" : "Add new SeedLotTransaction to database",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "array",
+                                "items" : {
+                                    "$ref" : "#/components/schemas/SeedLotTransactionNewRequest"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/SeedLotTransactionListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/studies" : {
             "get" : {
                 "tags" : [
@@ -5745,6 +5895,101 @@
                 }
             }
         },
+        "/commoncropnames" : {
+            "get" : {
+                "tags" : [
+                    "Programs"
+                ],
+                "summary" : "Get the commonCropNames of Program",
+                "description" : "List all available Program commonCropNames",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ProgramCommonCropNameListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/observationlevels" : {
+            "get" : {
+                "tags" : [
+                    "Studies"
+                ],
+                "summary" : "Get the observationLevelses of Study",
+                "description" : "List all available Study observationLevelses",
+                "parameters" : [
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/page"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/StudyObservationLevelsListResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
         "/studytypes" : {
             "get" : {
                 "tags" : [
@@ -6505,6 +6750,56 @@
                 }
             }
         },
+        "/images/{imageDbId}/imagecontent" : {
+            "put" : {
+                "tags" : [
+                    "Images"
+                ],
+                "summary" : "Update the details for an existing string",
+                "description" : "Update the details for an existing string",
+                "parameters" : [
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    },
+                    {
+                        "name" : "imageDbId",
+                        "in" : "path",
+                        "description" : "The unique identifier of an image",
+                        "required" : true,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "image/*" : {
+                            "schema" : {
+                                "type" : "string",
+                                "format" : "binary"
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ImageSingleResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
+                    }
+                }
+            }
+        },
         "/lists/{listDbId}" : {
             "get" : {
                 "tags" : [
@@ -6982,6 +7277,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -7842,6 +8140,15 @@
                         }
                     },
                     {
+                        "name" : "transactionDbId",
+                        "in" : "query",
+                        "description" : "Unique id for a Transaction that has occurred",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
                         "name" : "transactionDirection",
                         "in" : "query",
                         "description" : "Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH). The default value for this parameter is BOTH",
@@ -8579,6 +8886,376 @@
                 "responses" : {
                     "200" : {
                         "$ref" : "#/components/responses/ObservationDeleteResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/observations/table" : {
+            "get" : {
+                "tags" : [
+                    "Observations"
+                ],
+                "summary" : "Get a table of `Observation` records as a CSV file.",
+                "description" : "Get a table of `Observation` records returned directly as CSV text.",
+                "parameters" : [
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The unique id of an Observation Unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationLevel",
+                        "in" : "query",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationTimeStampRangeEnd",
+                        "in" : "query",
+                        "description" : "Timestamp range end",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
+                        "name" : "observationTimeStampRangeStart",
+                        "in" : "query",
+                        "description" : "Timestamp range start",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string",
+                            "format" : "date-time"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/acceptHeader"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ObservationTableResponse"
+                    },
+                    "400" : {
+                        "$ref" : "#/components/responses/400BadRequest"
+                    },
+                    "401" : {
+                        "$ref" : "#/components/responses/401Unauthorized"
+                    },
+                    "403" : {
+                        "$ref" : "#/components/responses/403Forbidden"
+                    }
+                }
+            }
+        },
+        "/observationunits/table" : {
+            "get" : {
+                "tags" : [
+                    "ObservationUnits"
+                ],
+                "summary" : "Get a table of `ObservationUnit` records as a CSV file.",
+                "description" : "Get a table of `ObservationUnit` records returned directly as CSV text.",
+                "parameters" : [
+                    {
+                        "name" : "germplasmDbId",
+                        "in" : "query",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "locationDbId",
+                        "in" : "query",
+                        "description" : "The location ids to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "studyDbId",
+                        "in" : "query",
+                        "description" : "List of study identifiers to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationVariableDbId",
+                        "in" : "query",
+                        "description" : "The DbIds of Variables to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "programDbId",
+                        "in" : "query",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "trialDbId",
+                        "in" : "query",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitDbId",
+                        "in" : "query",
+                        "description" : "The unique id of an observation unit",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationLevel",
+                        "in" : "query",
+                        "description" : "Searches for values in ObservationUnit->observationUnitPosition->observationLevel",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipName",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipOrder",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipCode",
+                        "in" : "query",
+                        "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "observationUnitLevelRelationshipDbId",
+                        "in" : "query",
+                        "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "name" : "seasonDbId",
+                        "in" : "query",
+                        "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
+                        "required" : false,
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    {
+                        "$ref" : "#/components/parameters/acceptHeader"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/authorizationHeader"
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "$ref" : "#/components/responses/ObservationUnitTableResponse"
                     },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
@@ -11309,7 +11986,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -13272,7 +13954,10 @@
                 "nullable" : true
             },
             "GeoJSONGeometry" : {
-                "nullable" : true,
+                "type" : "object",
+                "discriminator" : {
+                    "propertyName" : "type"
+                },
                 "oneOf" : [
                     {
                         "required" : [
@@ -13510,7 +14195,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -14353,6 +15043,7 @@
             },
             "GermplasmChild" : {
                 "required" : [
+                    "germplasmDbId",
                     "parentType"
                 ],
                 "type" : "object",
@@ -15312,6 +16003,29 @@
                 "description" : "Short description of the facility in which the study was carried out.",
                 "nullable" : true
             },
+            "HeaderRow" : {
+                "type" : "string",
+                "description" : "valid header fields",
+                "enum" : [
+                    "observationUnitDbId",
+                    "observationUnitName",
+                    "studyDbId",
+                    "studyName",
+                    "germplasmDbId",
+                    "germplasmName",
+                    "positionCoordinateX",
+                    "positionCoordinateY",
+                    "year",
+                    "field",
+                    "plot",
+                    "sub-plot",
+                    "plant",
+                    "pot",
+                    "block",
+                    "entry",
+                    "rep"
+                ]
+            },
             "Image" : {
                 "allOf" : [
                     {
@@ -15410,6 +16124,14 @@
                         "type" : "string",
                         "description" : "The file type of the image. Examples 'image/jpeg', 'image/png', 'image/svg', etc",
                         "nullable" : true
+                    },
+                    "observationDbIds" : {
+                        "type" : "array",
+                        "description" : "A list of observation Ids this image is associated with, if applicable.",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
                     },
                     "observationUnitDbId" : {
                         "type" : "string",
@@ -15939,7 +16661,12 @@
                         }
                     },
                     "listType" : {
-                        "$ref" : "#/components/schemas/ListType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ListType"
+                            }
+                        ]
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -16054,7 +16781,12 @@
                         }
                     },
                     "listType" : {
-                        "$ref" : "#/components/schemas/ListType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ListType"
+                            }
+                        ]
                     },
                     "page" : {
                         "type" : "integer",
@@ -16088,7 +16820,6 @@
             "ListType" : {
                 "type" : "string",
                 "description" : "The type of objects that are referenced in a List",
-                "nullable" : true,
                 "enum" : [
                     "germplasm",
                     "markers",
@@ -16304,7 +17035,14 @@
                         }
                     },
                     "coordinates" : {
-                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                        "anyOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                            },
+                            {
+                                "type" : "null"
+                            }
+                        ]
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -16423,7 +17161,14 @@
                         }
                     },
                     "coordinates" : {
-                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                        "anyOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                            },
+                            {
+                                "type" : "null"
+                            }
+                        ]
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -17330,6 +18075,68 @@
                 },
                 "description" : "A value assigned for a specific ObservationVariable when observing a specific ObservationUnit."
             },
+            "ObservationTable" : {
+                "type" : "object",
+                "properties" : {
+                    "data" : {
+                        "type" : "array",
+                        "description" : "The 2D matrix of observation data. ObservationVariables and other metadata are the columns, ObservationUnits are the rows.",
+                        "items" : {
+                            "type" : "array",
+                            "items" : {
+                                "type" : "string"
+                            }
+                        }
+                    },
+                    "headerRow" : {
+                        "type" : "array",
+                        "description" : "<p>The table is REQUIRED to have the following columns</p>\n<ul>\n  <li>observationUnitDbId - Each row is related to one Observation Unit</li>\n  <li>observationTimeStamp - Each row is has a time stamp for when the observation was taken</li>\n  <li>At least one column with an observationVariableDbId</li>\n</ul>\n<p>The table may have any or all of the following OPTIONAL columns. Included columns are decided by the server developer</p>\n<ul>\n  <li>observationUnitName</li>\n  <li>studyDbId</li>\n  <li>studyName</li>\n  <li>germplasmDbId</li>\n  <li>germplasmName</li>\n  <li>positionCoordinateX</li>\n  <li>positionCoordinateY</li>\n  <li>year</li>\n</ul>\n<p>The table also may have any number of Observation Unit Hierarchy Level columns. For example:</p>\n<ul>\n  <li>field</li>\n  <li>plot</li>\n  <li>sub-plot</li>\n  <li>plant</li>\n  <li>pot</li>\n  <li>block</li>\n  <li>entry</li>\n  <li>rep</li>\n</ul>\n<p>The JSON representation provides a pair of extra arrays for defining the headers of the table. \nThe first array \"headerRow\" will always contain \"observationUnitDbId\" and any or all of the OPTIONAL column header names. \nThe second array \"observationVariables\" contains the names and DbIds for the Observation Variables represented in the table. \nBy appending the two arrays, you can construct the complete header row of the table. </p>",
+                        "items" : {
+                            "type" : "string",
+                            "description" : "valid header fields",
+                            "enum" : [
+                                "observationTimeStamp",
+                                "observationUnitDbId",
+                                "observationUnitName",
+                                "studyDbId",
+                                "studyName",
+                                "germplasmDbId",
+                                "germplasmName",
+                                "positionCoordinateX",
+                                "positionCoordinateY",
+                                "year",
+                                "field",
+                                "plot",
+                                "sub-plot",
+                                "plant",
+                                "pot",
+                                "block",
+                                "entry",
+                                "rep"
+                            ]
+                        }
+                    },
+                    "observationVariables" : {
+                        "type" : "array",
+                        "description" : "The list of observation variables which have values recorded for them in the data matrix. Append to the 'headerRow' for complete header row of the table.",
+                        "items" : {
+                            "type" : "object",
+                            "properties" : {
+                                "observationVariableDbId" : {
+                                    "type" : "string",
+                                    "description" : "Variable unique identifier",
+                                    "example" : "367aa1a9"
+                                },
+                                "observationVariableName" : {
+                                    "type" : "string",
+                                    "description" : "Variable name (usually a short name)",
+                                    "example" : "Plant height"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ObservationTreatment" : {
                 "type" : "object",
                 "properties" : {
@@ -17385,6 +18192,53 @@
                     }
                 },
                 "description" : "The exact level and level code of an observation unit. \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. \n\nMIAPPE V1.1 DM-71 Observation unit type \"Type of observation unit in textual form, usually one of the following: study, block, sub-block, plot, sub-plot, pot, plant. Use of other observation unit types is possible but not recommended. \nThe observation unit type can not be used to indicate sub-plant levels. However, observations can still be made on the sub-plant level, as long as the details are indicated in the associated observed variable (see observed variables). \nAlternatively, it is possible to use samples for more detailed tracing of sub-plant units, attaching the observations to them instead.\" "
+            },
+            "ObservationUnitHierarchyLevelRequest" : {
+                "type" : "object",
+                "properties" : {
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyDbIds" : {
+                        "type" : "array",
+                        "description" : "List of study identifiers to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "studyNames" : {
+                        "type" : "array",
+                        "description" : "List of study names to filter search results",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialDbIds" : {
+                        "type" : "array",
+                        "description" : "The ID which uniquely identifies a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "trialNames" : {
+                        "type" : "array",
+                        "description" : "The human readable name of a trial to search for",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    }
+                }
             },
             "ObservationUnitLevel" : {
                 "type" : "object",
@@ -17543,12 +18397,7 @@
                         ]
                     },
                     "geoCoordinates" : {
-                        "type" : "array",
-                        "description" : "One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.\n\nCopied from RFC 7946 Section 3.1.1\n\nA position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or\neasting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.",
-                        "nullable" : true,
-                        "items" : {
-                            "$ref" : "#/components/schemas/GeoJSON"
-                        }
+                        "$ref" : "#/components/schemas/GeoJSON"
                     },
                     "observationLevel" : {
                         "$ref" : "#/components/schemas/ObservationUnitLevel"
@@ -17567,7 +18416,12 @@
                         "nullable" : true
                     },
                     "positionCoordinateXType" : {
-                        "$ref" : "#/components/schemas/PositionCoordinateType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/PositionCoordinateType"
+                            }
+                        ]
                     },
                     "positionCoordinateY" : {
                         "type" : "string",
@@ -17575,7 +18429,12 @@
                         "nullable" : true
                     },
                     "positionCoordinateYType" : {
-                        "$ref" : "#/components/schemas/PositionCoordinateType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/PositionCoordinateType"
+                            }
+                        ]
                     }
                 },
                 "description" : "All positional and layout information related to this Observation Unit",
@@ -17967,6 +18826,67 @@
                 },
                 "description" : "A representation of the physical entity being observed during a phenotype data collection process. Typically, this is a Plot or a Plant, but it could include things like Fields, Blocks, or Samples."
             },
+            "ObservationUnitTable" : {
+                "type" : "object",
+                "properties" : {
+                    "data" : {
+                        "type" : "array",
+                        "description" : "The 2D matrix of observation data. ObservationVariables and other metadata are the columns, ObservationUnits are the rows.",
+                        "items" : {
+                            "type" : "array",
+                            "items" : {
+                                "type" : "string"
+                            }
+                        }
+                    },
+                    "headerRow" : {
+                        "type" : "array",
+                        "description" : "<p>The table is REQUIRED to have the following columns</p>\n<ul>\n  <li>observationUnitDbId - Each row is related to one Observation Unit</li>\n  <li>At least one column with an observationVariableDbId</li>\n</ul>\n<p>The table may have any or all of the following OPTIONAL columns. Included columns are decided by the server developer</p>\n<ul>\n  <li>observationUnitName</li>\n  <li>studyDbId</li>\n  <li>studyName</li>\n  <li>germplasmDbId</li>\n  <li>germplasmName</li>\n  <li>positionCoordinateX</li>\n  <li>positionCoordinateY</li>\n  <li>year</li>\n</ul>\n<p>The table also may have any number of Observation Unit Hierarchy Level columns. For example:</p>\n<ul>\n  <li>field</li>\n  <li>plot</li>\n  <li>sub-plot</li>\n  <li>plant</li>\n  <li>pot</li>\n  <li>block</li>\n  <li>entry</li>\n  <li>rep</li>\n</ul>\n<p>The JSON representation provides a pair of extra arrays for defining the headers of the table. \nThe first array \"headerRow\" will always contain \"observationUnitDbId\" and any or all of the OPTIONAL column header names. \nThe second array \"observationVariables\" contains the names and DbIds for the Observation Variables represented in the table. \nBy appending the two arrays, you can construct the complete header row of the table. </p>",
+                        "items" : {
+                            "type" : "string",
+                            "description" : "valid header fields",
+                            "enum" : [
+                                "observationUnitDbId",
+                                "observationUnitName",
+                                "studyDbId",
+                                "studyName",
+                                "germplasmDbId",
+                                "germplasmName",
+                                "positionCoordinateX",
+                                "positionCoordinateY",
+                                "year",
+                                "field",
+                                "plot",
+                                "sub-plot",
+                                "plant",
+                                "pot",
+                                "block",
+                                "entry",
+                                "rep"
+                            ]
+                        }
+                    },
+                    "observationVariables" : {
+                        "type" : "array",
+                        "description" : "The list of observation variables which have values recorded for them in the data matrix. Append to the 'headerRow' for complete header row of the table.",
+                        "items" : {
+                            "type" : "object",
+                            "properties" : {
+                                "observationVariableDbId" : {
+                                    "type" : "string",
+                                    "description" : "Variable unique identifier",
+                                    "example" : "367aa1a9"
+                                },
+                                "observationVariableName" : {
+                                    "type" : "string",
+                                    "description" : "Variable name (usually a short name)",
+                                    "example" : "Plant height"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ObservationVariable" : {
                 "allOf" : [
                     {
@@ -18058,7 +18978,12 @@
                         "nullable" : true
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -21912,9 +22837,26 @@
                 }
             },
             "SeedLotTransaction" : {
-                "required" : [
-                    "transactionDbId"
-                ],
+                "allOf" : [
+                    {
+                        "$ref" : "#/components/schemas/SeedLotTransactionNewRequest"
+                    },
+                    {
+                        "required" : [
+                            "transactionDbId"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "transactionDbId" : {
+                                "type" : "string",
+                                "description" : "Unique DbId for the Seed Lot Transaction"
+                            }
+                        },
+                        "description" : "The record of an event where material was moved in or out of a particular SeedLot"
+                    }
+                ]
+            },
+            "SeedLotTransactionNewRequest" : {
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
@@ -21941,10 +22883,6 @@
                         "type" : "string",
                         "nullable" : true
                     },
-                    "transactionDbId" : {
-                        "type" : "string",
-                        "description" : "Unique DbId for the Seed Lot Transaction"
-                    },
                     "transactionDescription" : {
                         "type" : "string",
                         "description" : "A general description of this Seed Lot Transaction",
@@ -21967,7 +22905,65 @@
             "SeedLotTransactionRequest" : {
                 "type" : "object",
                 "properties" : {
-                    "transactionDbIs" : {
+                    "commonCropNames" : {
+                        "type" : "array",
+                        "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "crossDbIds" : {
+                        "type" : "array",
+                        "description" : "Search for Cross with this unique id",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "crossNames" : {
+                        "type" : "array",
+                        "description" : "Search for Cross with this human readable name",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmDbIds" : {
+                        "type" : "array",
+                        "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "germplasmNames" : {
+                        "type" : "array",
+                        "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programDbIds" : {
+                        "type" : "array",
+                        "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "programNames" : {
+                        "type" : "array",
+                        "description" : "Use this parameter to only return results associated with the given program names. Program names are not required to be unique.\n\nUse `GET /programs` to find the list of available programs on a server.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "seedLotDbIds" : {
+                        "type" : "array",
+                        "description" : "Unique id for a seed lot on this server",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    "transactionDbIds" : {
                         "type" : "array",
                         "description" : "Unique id for a Transaction that has occurred",
                         "items" : {
@@ -23383,7 +24379,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -26119,6 +27120,46 @@
                     }
                 }
             },
+            "StudyObservationLevelsListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "StudyObservationLevelsListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "array",
+                                                "items" : {
+                                                    "$ref" : "#/components/schemas/ObservationUnitHierarchyLevel"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ReferenceSetListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -26586,6 +27627,43 @@
                     }
                 }
             },
+            "ProgramCommonCropNameListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "ProgramCommonCropNameListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "ImageListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -26723,6 +27801,42 @@
                     }
                 }
             },
+            "ObservationTableResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "ObservationTableResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/Observation"
+                                }
+                            }
+                        }
+                    },
+                    "text/csv" : {
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    "text/tsv" : {
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    }
+                }
+            },
             "BreedingMethodListResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -26819,6 +27933,42 @@
                                     "$ref" : "#/components/schemas/GermplasmAttributeValue"
                                 }
                             }
+                        }
+                    }
+                }
+            },
+            "ObservationUnitTableResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "ObservationUnitTableResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/ObservationUnit"
+                                }
+                            }
+                        }
+                    },
+                    "text/csv" : {
+                        "schema" : {
+                            "type" : "string"
+                        }
+                    },
+                    "text/tsv" : {
+                        "schema" : {
+                            "type" : "string"
                         }
                     }
                 }

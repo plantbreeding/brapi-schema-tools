@@ -307,10 +307,7 @@ public class OpenAPIGenerator {
                         .flatMap(this::findControlledVocabularyProperties)
                         .filter(options.getControlledVocabulary()::isGeneratingFor)
                         .map(typeWithProperty -> createControlledVocabularyPathItem(typeWithProperty)
-                            .onSuccessDoWithResult(
-                                pathItem -> {
-                                    openAPI.path(options.getPathItemNameForProperty(typeWithProperty), pathItem);
-                                }))
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(options.getPathItemNameForProperty(typeWithProperty), pathItem)))
                         .collect(Response.toList()))
                 .merge(  // these are GET, PUT and DELETE endpoints with the pattern /<entity-plural>/{<entity-id>} e.g. /locations/{locationDbId}
                     () -> primaryClasses.stream()
@@ -321,37 +318,25 @@ public class OpenAPIGenerator {
                     () -> primaryClasses.stream()
                         .filter(type -> options.getDelete().isBulkGeneratingFor(type))
                         .map(type -> createBulkDeletePathItem(type)
-                            .onSuccessDoWithResult(
-                                pathItem -> {
-                                    openAPI.path(options.getBulkDeletePathItemNameFor(type), pathItem);
-                                }))
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(options.getBulkDeletePathItemNameFor(type), pathItem)))
                         .collect(Response.toList()))
                 .merge( // these are GET endpoints with the pattern /<entity-plural>/table e.g. /observations/table
                     () -> primaryClasses.stream()
                         .filter(type -> options.getTable().isGeneratingFor(type))
                         .map(type -> createTablePathItem(type)
-                            .onSuccessDoWithResult(
-                                pathItem -> {
-                                    openAPI.path(options.getTablePathItemNameFor(type), pathItem);
-                                }))
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(options.getTablePathItemNameFor(type), pathItem)))
                         .collect(Response.toList()))
                 .merge( // this is a POST endpoint with the pattern /search/<entity-plural> e.g. /search/locations
                     () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
                         .map(type -> createSearchPathItem(type)
-                            .onSuccessDoWithResult(
-                                pathItem -> {
-                                    openAPI.path(createSearchPathItemName(type), pathItem);
-                                }))
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(createSearchPathItemName(type), pathItem)))
                         .collect(Response.toList()))
                 .merge( // this is a GET endpoint with the pattern /search/<entity-plural>/{searchResultsDbId} e.g. /search/locations/{searchResultsDbId}
                     () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
                         .map(type -> createSearchPathItemWithId(type)
-                            .onSuccessDoWithResult(
-                                pathItem -> {
-                                    openAPI.path(createSearchPathItemWithIdName(type), pathItem);
-                                }))
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(createSearchPathItemWithIdName(type), pathItem)))
                         .collect(Response.toList()))
                 .merge(() -> generateComponents(primaryClasses, nonPrimaryClasses, openAPI.getComponents()).onSuccessDoWithResult(openAPI::components))
                 .merge(() -> success(openAPI.merge(supplementalOpenAPI)))
@@ -541,6 +526,18 @@ public class OpenAPIGenerator {
 
             operation.addTagsItem(options.getTagFor(typeWithProperty.getType()));
 
+            pathItem.setGet(operation);
+
+            return createControlledVocabularyParametersFor(typeWithProperty)
+                .onSuccessDoWithResult(operation::parameters)
+                .map(() -> createListApiResponses(typeWithProperty)
+                    .onSuccessDoWithResult(operation::responses)
+                    .merge(() -> generateListResponse(typeWithProperty))
+                    .map(() -> success(pathItem))) ;
+        }
+
+        private Response<List<Parameter>> createControlledVocabularyParametersFor(BrAPIObjectTypeWithProperty typeWithProperty) {
+
             List<Parameter> parameters = new ArrayList<>();
 
             if (options.getControlledVocabulary().isPagedFor(typeWithProperty.getType(), typeWithProperty.getProperty())) {
@@ -550,14 +547,32 @@ public class OpenAPIGenerator {
 
             parameters.add(new Parameter().$ref("#/components/parameters/authorizationHeader"));
 
-            operation.parameters(parameters);
+            BrAPIType unwrappedPropertyType = unwrapType(typeWithProperty.getProperty().getType());
+            BrAPIType dereferencedPropertyType = brAPIClassCache.dereferenceType(unwrappedPropertyType);
 
-            pathItem.setGet(operation);
+            if (dereferencedPropertyType instanceof BrAPIObjectType propertyObjectType && options.getGet().hasInputFor(typeWithProperty.getProperty().getType())) {
+                BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(propertyObjectType);
 
-            return createListApiResponses(typeWithProperty)
-                .onSuccessDoWithResult(operation::responses)
-                .merge(() -> generateListResponse(typeWithProperty))
-                .map(() -> success(pathItem));
+                if (requestClass == null) {
+                    return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' to create properties for list get endpoint for '%s'", propertyObjectType.getName(), createPathItemName(propertyObjectType)));
+                }
+
+                if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                    List<String> noSingularize = brAPIObjectType.getMetadata() != null && brAPIObjectType.getMetadata().getNoSingularizeProperties() != null
+                        ? brAPIObjectType.getMetadata().getNoSingularizeProperties() : Collections.emptyList();
+
+                    brAPIObjectType.getProperties().stream()
+                        .filter(property -> options.getGet().isUsingPropertyFromRequestFor(propertyObjectType, property))
+                        .map(property -> createListGetParameter(property, noSingularize))
+                        .collect(Response.toList())
+                        .onSuccessDoWithResult(result -> parameters.addAll(0, result))
+                        .map(() -> success(parameters));
+                } else {
+                    return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", requestClass.getName(), requestClass.getClass().getSimpleName()));
+                }
+            }
+
+            return success(parameters);
         }
 
         private Response<ApiResponse> generateSingleResponse(BrAPIType type) {
@@ -617,9 +632,44 @@ public class OpenAPIGenerator {
 
                 return success(createApiResponse(name, schemaResponse.getResult())) ;
             } else {
-                return fail(Response.ErrorType.VALIDATION, "Can not create a List response for type '" + type.getName() + "'");
+                return fail(Response.ErrorType.VALIDATION, "Can not find a List response for type '" + type.getName() + "'");
             }
         }
+
+        private Response<ApiResponse> generateTableResponse(BrAPIType type) {
+            String responseName = options.getTableResponseNameFor(type);
+
+            if (responses.containsKey(responseName)) {
+                return success(responses.get(responseName));
+            }
+
+            String tableName = options.getTableNameFor(type);
+
+            if (!brAPIClassCache.containsBrAPIClass(tableName)) {
+                return fail(Response.ErrorType.VALIDATION, String.format("Can not create a Table class for type '%s'", type.getName()));
+            }
+
+            ApiResponse apiResponse = new ApiResponse().description("OK").content(
+                new Content()
+                    .addMediaType("application/json",
+                        new MediaType().schema(
+                            new ObjectSchema().title(responseName)
+                                .addProperty("@context", new ObjectSchema().$ref(createSchemaRef("Context")))
+                                .addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata")))
+                                .addProperty("result", new Schema().$ref(createSchemaRef(type.getName())))
+                                .addRequiredItem("metadata")
+                                .addRequiredItem("result")
+                        ))
+                    .addMediaType("text/csv",
+                        new MediaType().schema(new StringSchema())) // TODO example
+                    .addMediaType("text/tsv",
+                        new MediaType().schema(new StringSchema()))); // TODO example
+
+            responses.put(responseName, apiResponse);
+
+            return success(apiResponse);
+        }
+
 
         private Response<ApiResponse> createApiResponse(BrAPIClass brAPIClass) {
             return createSchemaForType(brAPIClass)
@@ -797,7 +847,7 @@ public class OpenAPIGenerator {
 
                     return brAPIObjectType.getProperties().stream()
                         .filter(property -> options.getTable().isUsingPropertyFromRequestFor(type, property))
-                        .map(property -> createListGetParameter(property, noSingularize))
+                        .map(property -> createTableListGetParameter(type, property, noSingularize))
                         .collect(Response.toList())
                         .onSuccessDoWithResult(result -> parameters.addAll(0, result))
                         .map(() -> success(parameters));
@@ -807,6 +857,29 @@ public class OpenAPIGenerator {
             }
 
             return success(parameters);
+        }
+
+        private Response<Parameter> createTableListGetParameter(BrAPIObjectType type, BrAPIObjectProperty property, List<String> noSingularizeProperties) {
+            String typeOverride = options.getTable().getPropertyTypeOverrideFor(type, property);
+            if (typeOverride != null) {
+                Schema overrideSchema = switch (typeOverride) {
+                    case BrAPIPrimitiveType.STRING -> new StringSchema();
+                    case BrAPIPrimitiveType.INTEGER -> new IntegerSchema();
+                    case BrAPIPrimitiveType.NUMBER -> new NumberSchema();
+                    case BrAPIPrimitiveType.BOOLEAN -> new BooleanSchema();
+                    default -> null;
+                };
+                if (overrideSchema != null) {
+                    return success(new Parameter()
+                        .name(isConvertingToSingularProperty(property) && !noSingularizeProperties.contains(property.getName()) ? options.getSingularForProperty(property.getName()) : property.getName())
+                        .in("query")
+                        .description(property.getDescription())
+                        .required(property.isRequired())
+                        .schema(overrideSchema));
+                }
+                return fail(Response.ErrorType.VALIDATION, String.format("Unknown primitive type '%s' for 'propertyTypeOverrideFor.%s.%s' on TableOptions", typeOverride, type.getName(), property.getName()));
+            }
+            return createListGetParameter(property, noSingularizeProperties);
         }
 
         private Response<List<Parameter>> createSubPathListGetParametersFor(BrAPIObjectType type) {
@@ -1088,19 +1161,16 @@ public class OpenAPIGenerator {
             return createTableParametersFor(type)
                 .onSuccessDoWithResult(operation::parameters)
                 .map(() -> {
-                    ApiResponse apiResponse = new ApiResponse()
-                        .description("OK")
-                        .content(new Content().addMediaType("text/csv",
-                            new MediaType().schema(new StringSchema())));
                     ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
-                        .addApiResponse("200", apiResponse));
+                        .addApiResponse("200", new ApiResponse().$ref(options.getTableResponseNameFor(type))));
                     if (options.getTable().isAddingNotFoundResponseForSingleFor(type)) {
                         apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
                     }
                     operation.responses(apiResponses);
                     pathItem.setGet(operation);
-                    return success(pathItem);
-                });
+
+                    return generateTableResponse(type).map(() -> success(pathItem));
+                }) ;
         }
 
         private Response<Operation> generateSubPathGetWithIdOperation(BrAPIObjectType parentType, BrAPIType type) {
@@ -1239,7 +1309,7 @@ public class OpenAPIGenerator {
         private Response<ApiResponses> createSingleApiResponses(BrAPIType type, boolean addNotFound) {
             if (type instanceof BrAPIObjectType) {
                 ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
-                    .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getSingleResponseNameFor(type), type.getName()))));
+                    .addApiResponse("200", new ApiResponse().$ref(options.getSingleResponseNameFor(type))));
                 if (addNotFound) {
                     apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
                 }
@@ -1261,7 +1331,7 @@ public class OpenAPIGenerator {
 
         private Response<ApiResponses> createListApiResponses(BrAPIType type, boolean addNotFound) {
             ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(type)))));
+                .addApiResponse("200", new ApiResponse().$ref(options.getListResponseNameFor(type))));
             if (addNotFound) {
                 apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
             }
@@ -1270,7 +1340,7 @@ public class OpenAPIGenerator {
 
         private Response<ApiResponses> createListApiResponses(BrAPIObjectTypeWithProperty typeWithProperty) {
             return success(addStandardApiResponses(new ApiResponses()
-                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty), typeWithProperty.getType().getName(), toSentenceCase(typeWithProperty.getProperty().getName()))))));
+                .addApiResponse("200", new ApiResponse().$ref(String.format("#/components/responses/"+ options.getListResponseNameFor(typeWithProperty))))));
         }
 
         private Response<ApiResponses> createSubPathListApiResponses(BrAPIType type, boolean addNotFound) {

@@ -47,21 +47,19 @@ CREATE TABLE brapi_ObservationUnits (
       observationUnitName STRING COMMENT 'associated observation Unit. A human readable name for an observation unit',
       -- Properties
       entryType STRING COMMENT 'The type of entry for this observation unit. ex. "CHECK", "TEST", "FILLER"',
-      geoCoordinates
-        ARRAY<
-          STRUCT<
-            geometry1
-              STRUCT<
-                coordinates ARRAY<DOUBLE> COMMENT 'A single position',
-                type STRING COMMENT 'The literal string "Point"'
-              >,
-            geometry2
-              STRUCT<
-                coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
-                type STRING COMMENT 'The literal string "Polygon"'
-              > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
-            type STRING COMMENT 'The literal string "Feature"'
-          >
+      geoCoordinates 
+        STRUCT<
+          geometry1
+            STRUCT<
+              coordinates ARRAY<DOUBLE> COMMENT 'A single position',
+              type STRING COMMENT 'The literal string "Point"'
+            >,
+          geometry2
+            STRUCT<
+              coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
+              type STRING COMMENT 'The literal string "Polygon"'
+            > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
+          type STRING COMMENT 'The literal string "Feature"'
         > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
       observationLevel 
         STRUCT<

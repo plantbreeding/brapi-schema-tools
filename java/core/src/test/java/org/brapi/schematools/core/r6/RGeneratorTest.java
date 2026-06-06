@@ -47,10 +47,17 @@ class RGeneratorTest {
 
                 String rFile = path.getFileName().toString();
 
-                String expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("RGenerator/Generated/"+ rFile).toURI())).getResultOrThrow();
+                String expected = null ;
+
+                try {
+                    expected = StringUtils.readStringFromPath(Path.of(ClassLoader.getSystemResource("RGenerator/Generated/"+ rFile).toURI())).getResultOrThrow();
+                } catch (Exception ignored) {
+
+                }
+
                 String actual = StringUtils.readStringFromPath(path).getResultOrThrow();
 
-                if (!isMultilineEqual(expected, actual)) {
+                if (expected == null || !isMultilineEqual(expected, actual)) {
                     Path build = Paths.get("build/test-output/R/Fails", rFile);
                     Files.createDirectories(build.getParent());
                     Files.writeString(build, actual);

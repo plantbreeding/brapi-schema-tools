@@ -117,6 +117,7 @@ properties:
         fieldFor:
             GermplasmAttribute: attributeDbId
             GermplasmAttributeValue: attributeValueDbId
+            SeedLotTransaction: transactionDbId
     linkTypeFor:
         BreedingMethod:
             germplasm: none

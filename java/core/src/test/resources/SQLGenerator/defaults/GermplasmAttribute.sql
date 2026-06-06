@@ -55,7 +55,7 @@ CREATE TABLE brapi_GermplasmAttributes (
           >
         > COMMENT 'links to various ontology documentation',
       version STRING COMMENT 'Ontology version (no specific format)'
-    > NOT NULL COMMENT 'MIAPPE V1.1  (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology  (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).',
+    > COMMENT 'MIAPPE V1.1  (DM-85) Variable accession number - Accession number of the variable in the Crop Ontology  (DM-87) Trait accession number - Accession number of the trait in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-89) Method accession number - Accession number of the method in a suitable controlled vocabulary (Crop Ontology, Trait Ontology).  (DM-93) Scale accession number - Accession number of the scale in a suitable controlled vocabulary (Crop Ontology).',
   scientist STRING COMMENT 'Name of scientist submitting the variable.',
   status STRING COMMENT 'Variable status. (examples: "recommended", "obsolete", "legacy", etc.)',
   submissionTimestamp STRING COMMENT 'Timestamp when the Variable was added (ISO 8601)',
