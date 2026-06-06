@@ -560,7 +560,6 @@ __all__ = ["StrEnum"]
                     }
 
                     return success(builder.build()) ;
-
                 } catch (RuntimeException e) {
                     return fail(Response.ErrorType.VALIDATION, String.format("Error processing class '%s': %s", brAPIClass.getName(), e.getMessage()));
                 }

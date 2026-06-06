@@ -21,6 +21,7 @@ public class BrAPIObjectProperty {
     boolean deprecated;
     Boolean required;
     Boolean nullable;
+    String pattern;
     String referencedAttribute;
     BrAPIRelationshipType relationshipType;
 

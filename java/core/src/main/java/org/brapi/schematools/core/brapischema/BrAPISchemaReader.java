@@ -770,6 +770,9 @@ public class BrAPISchemaReader {
                 .mapResultToResponse(childNode -> findNullable(path, childNode))
                 .ifPresentDoWithResult(builder::nullable);
 
+            findStringChildValue(path, jsonNode, "pattern", false)
+                .onSuccessDoWithResult(builder::pattern);
+
             return createType(path, jsonNode, StringUtils.toSentenceCase(name), module)
                 .onSuccessDoWithResult(builder::type)
                 .mapOnCondition(jsonNode.has("relationshipType"), () -> findStringChildValue(path, jsonNode, "relationshipType", true)
@@ -785,7 +788,7 @@ public class BrAPISchemaReader {
 
             if (jsonNode instanceof ArrayNode arrayNode) {
                 return success(StreamSupport.stream(arrayNode.spliterator(), false)
-                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null")).orElseGetResult(() -> false))) ;
+                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null") || Objects.equals(result, "string")).orElseGetResult(() -> false))) ;
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Invalid anyOf json node type, must an ArrayNode but was '%s'", jsonNode.getClass().getSimpleName()));
             }
@@ -812,6 +815,12 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(builder::updatableProperties)
                 .merge(findStringFieldList(path, metadata, "writableProperties", false))
                 .onSuccessDoWithResult(builder::writableProperties)
+                .merge(findStringFieldList(path, metadata, "noSingularizeProperties", false))
+                .onSuccessDoWithResult(builder::noSingularizeProperties)
+                .merge(findStringFieldList(path, metadata, "actionProperties", false))
+                .onSuccessDoWithResult(builder::actionProperties)
+                .merge(findStringChildValue(path, metadata, "discriminatorPropertyName", false))
+                .onSuccessDoWithResult(builder::discriminatorPropertyName)
                 .map(() -> success(builder.build()));
         }
 

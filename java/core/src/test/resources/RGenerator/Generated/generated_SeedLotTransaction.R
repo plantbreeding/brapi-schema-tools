@@ -1,18 +1,18 @@
-# ReferenceSet
-## R6 Class: ReferenceSets
-#' The ReferenceSets class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
-#' the ReferenceSet entity
-#' @title ReferenceSets Class
+# SeedLotTransaction
+## R6 Class: SeedLotTransactions
+#' The SeedLotTransactions class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
+#' the SeedLotTransaction entity
+#' @title SeedLotTransactions Class
 #' @docType class
-#' @description The ReferenceSets class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
-#' the ReferenceSet entity
+#' @description The SeedLotTransactions class handles calling the BraAPI server and is a wrapper class around httr2 functionality for
+#' the SeedLotTransaction entity
 #' @family generated
 #' @keywords generated
 #' @import R6
 #' @importFrom glue glue
 #' @export
-ReferenceSets <- R6Class(
-  "ReferenceSets",
+SeedLotTransactions <- R6Class(
+  "SeedLotTransactions",
   public = list(
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
@@ -23,19 +23,19 @@ ReferenceSets <- R6Class(
           private$.client <- client
     },
     #' @description
-    #' Gets a ReferenceSet object by DbId from the BrAPI server
-    #' @param id The DbIid of the ReferenceSet to be returned
-    #' @return returns a ReferenceSet object by ID.
+    #' Gets a SeedLotTransaction object by DbId from the BrAPI server
+    #' @param id The DbIid of the SeedLotTransaction to be returned
+    #' @return returns a SeedLotTransaction object by ID.
     #'
     get = function(id) {
       if (is.null(id)) {
        stop("id argument must be provided")
       }
 
-      private$.client$perform_get_request(paste("/referencesets", id, sep = '/'))
+      private$.client$perform_get_request(paste("/seedlottransactions", id, sep = '/'))
     },
     #' @description
-    #' Gets a list ReferenceSet objects from the BrAPI server
+    #' Gets a list SeedLotTransaction objects from the BrAPI server
     #' Note the filtering arguments are all optional and can be combined to filter the results
     #' The value of the filters an be a single value or a vector of values
     #' @param commonCropNames The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched.
@@ -43,17 +43,14 @@ ReferenceSets <- R6Class(
     #' @param germplasmNames List of human readable names to identify germplasm to search for
     #' @param programDbIds A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies.
     #' @param programNames Use this parameter to only return results associated with the given program names.
-    #' @param studyDbIds List of study identifiers to search for
-    #' @param studyNames List of study names to filter search results
-    #' @param trialDbIds The ID which uniquely identifies a trial to search for
-    #' @param trialNames The human readable name of a trial to search for
-    #' @param accessions If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).
-    #' @param assemblyPUIs If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).
-    #' @param md5checksums If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).
-    #' @param referenceSetDbIds The `ReferenceSets` to search.
+    #' @param seedLotDbIds Unique id for a seed lot on this server
+    #' @param crossDbIds Search for Cross with this unique id
+    #' @param crossNames Search for Cross with this human readable name
+    #' @param transactionDbIds Unique id for a Transaction that has occurred
+    #' @param transactionDirection Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH).
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
-    #' @return returns a paged and filtered list of ReferenceSet objects.
+    #' @return returns a paged and filtered list of SeedLotTransaction objects.
     #'
     getAll = function(
         commonCropNames = NULL,
@@ -61,14 +58,11 @@ ReferenceSets <- R6Class(
         germplasmNames = NULL,
         programDbIds = NULL,
         programNames = NULL,
-        studyDbIds = NULL,
-        studyNames = NULL,
-        trialDbIds = NULL,
-        trialNames = NULL,
-        accessions = NULL,
-        assemblyPUIs = NULL,
-        md5checksums = NULL,
-        referenceSetDbIds = NULL,
+        seedLotDbIds = NULL,
+        crossDbIds = NULL,
+        crossNames = NULL,
+        transactionDbIds = NULL,
+        transactionDirection = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -88,48 +82,36 @@ ReferenceSets <- R6Class(
       if (!is.null(programNames)) {
         queryParams$programName <- programNames
       }
-      if (!is.null(studyDbIds)) {
-        queryParams$studyDbId <- studyDbIds
+      if (!is.null(seedLotDbIds)) {
+        queryParams$seedLotDbId <- seedLotDbIds
       }
-      if (!is.null(studyNames)) {
-        queryParams$studyName <- studyNames
+      if (!is.null(crossDbIds)) {
+        queryParams$crossDbId <- crossDbIds
       }
-      if (!is.null(trialDbIds)) {
-        queryParams$trialDbId <- trialDbIds
+      if (!is.null(crossNames)) {
+        queryParams$crossName <- crossNames
       }
-      if (!is.null(trialNames)) {
-        queryParams$trialName <- trialNames
+      if (!is.null(transactionDbIds)) {
+        queryParams$transactionDbId <- transactionDbIds
       }
-      if (!is.null(accessions)) {
-        queryParams$accession <- accessions
+      if (!is.null(transactionDirection)) {
+        queryParams$transactionDirection <- transactionDirection
       }
-      if (!is.null(assemblyPUIs)) {
-        queryParams$assemblyPUI <- assemblyPUIs
-      }
-      if (!is.null(md5checksums)) {
-        queryParams$md5checksum <- md5checksums
-      }
-      if (!is.null(referenceSetDbIds)) {
-        queryParams$referenceSetDbId <- referenceSetDbIds
-      }
-      private$.client$perform_get_request("/referencesets", queryParams, page, pageSize)
+      private$.client$perform_get_request("/seedlottransactions", queryParams, page, pageSize)
     },
     #' @description
-    #' Searches for ReferenceSet objects on the BrAPI server. The server
+    #' Searches for SeedLotTransaction objects on the BrAPI server. The server
     #' may return the paged results or a search result ID for later retrieval
     #' @param commonCropNames The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched.
     #' @param germplasmDbIds List of IDs which uniquely identify germplasm to search for
     #' @param germplasmNames List of human readable names to identify germplasm to search for
     #' @param programDbIds A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies.
     #' @param programNames Use this parameter to only return results associated with the given program names.
-    #' @param studyDbIds List of study identifiers to search for
-    #' @param studyNames List of study names to filter search results
-    #' @param trialDbIds The ID which uniquely identifies a trial to search for
-    #' @param trialNames The human readable name of a trial to search for
-    #' @param accessions If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).
-    #' @param assemblyPUIs If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).
-    #' @param md5checksums If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).
-    #' @param referenceSetDbIds The `ReferenceSets` to search.
+    #' @param seedLotDbIds Unique id for a seed lot on this server
+    #' @param crossDbIds Search for Cross with this unique id
+    #' @param crossNames Search for Cross with this human readable name
+    #' @param transactionDbIds Unique id for a Transaction that has occurred
+    #' @param transactionDirection Filter results to only include transactions directed to the specific Seed Lot (TO), away from the specific Seed Lot (FROM), or both (BOTH).
     #' using the searchResult function
     #' @param page The page number of results to return, starting from 0
     #' @param pageSize The maximum number of results to return per page
@@ -141,14 +123,11 @@ ReferenceSets <- R6Class(
         germplasmNames = NULL,
         programDbIds = NULL,
         programNames = NULL,
-        studyDbIds = NULL,
-        studyNames = NULL,
-        trialDbIds = NULL,
-        trialNames = NULL,
-        accessions = NULL,
-        assemblyPUIs = NULL,
-        md5checksums = NULL,
-        referenceSetDbIds = NULL,
+        seedLotDbIds = NULL,
+        crossDbIds = NULL,
+        crossNames = NULL,
+        transactionDbIds = NULL,
+        transactionDirection = NULL,
         page = 0,
         pageSize = 1000) {
       queryParams <- list()
@@ -168,33 +147,24 @@ ReferenceSets <- R6Class(
       if (!is.null(programNames)) {
         queryParams$programNames <- to_list(programNames)
       }
-      if (!is.null(studyDbIds)) {
-        queryParams$studyDbIds <- to_list(studyDbIds)
+      if (!is.null(seedLotDbIds)) {
+        queryParams$seedLotDbIds <- to_list(seedLotDbIds)
       }
-      if (!is.null(studyNames)) {
-        queryParams$studyNames <- to_list(studyNames)
+      if (!is.null(crossDbIds)) {
+        queryParams$crossDbIds <- to_list(crossDbIds)
       }
-      if (!is.null(trialDbIds)) {
-        queryParams$trialDbIds <- to_list(trialDbIds)
+      if (!is.null(crossNames)) {
+        queryParams$crossNames <- to_list(crossNames)
       }
-      if (!is.null(trialNames)) {
-        queryParams$trialNames <- to_list(trialNames)
+      if (!is.null(transactionDbIds)) {
+        queryParams$transactionDbIds <- to_list(transactionDbIds)
       }
-      if (!is.null(accessions)) {
-        queryParams$accessions <- to_list(accessions)
+      if (!is.null(transactionDirection)) {
+        queryParams$transactionDirection <- to_list(transactionDirection)
       }
-      if (!is.null(assemblyPUIs)) {
-        queryParams$assemblyPUIs <- to_list(assemblyPUIs)
-      }
-      if (!is.null(md5checksums)) {
-        queryParams$md5checksums <- to_list(md5checksums)
-      }
-      if (!is.null(referenceSetDbIds)) {
-        queryParams$referenceSetDbIds <- to_list(referenceSetDbIds)
-      }
-      private$.client$perform_post_request("/search/referencesets", queryParams, page, pageSize)
+      private$.client$perform_post_request("/search/seedlottransactions", queryParams, page, pageSize)
     },
-    #' Get the result of a search for ReferenceSet objects on the BrAPI server. If the server
+    #' Get the result of a search for SeedLotTransaction objects on the BrAPI server. If the server
     #' returned search result ID for later retrieval, use this function to get the results.
     #' @param searchResultId The search result ID returned from a previous search call
     #' @param page The page number of results to return, starting from 0
@@ -206,7 +176,21 @@ ReferenceSets <- R6Class(
        stop("searchResultId argument must be provided")
       }
 
-      private$.client$perform_get_request(paste("/search/referencesets", id, sep = '/'))
+      private$.client$perform_get_request(paste("/search/seedlottransactions", id, sep = '/'))
+    },
+    #' @description
+    #' Creates a SeedLotTransaction object on the BrAPI server.
+    #' @param newValue The new SeedLotTransaction object to be created
+    #'
+    create = function(newValue) {
+        stop("Create not yet implemented")
+    },
+    #' @description
+    #' Creates a SeedLotTransaction object on the BrAPI server.
+    #' @param value The updated SeedLotTransaction object to be sent to the server
+    #'
+    update = function(value) {
+        stop("Update not yet implemented")
     }
   ),
   private = list(

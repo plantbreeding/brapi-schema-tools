@@ -422,9 +422,6 @@
                     "202" : {
                         "$ref" : "#/components/responses/202AcceptedSearchResponse"
                     },
-                    "404" : {
-                        "$ref" : "#/components/responses/404NotFound"
-                    },
                     "400" : {
                         "$ref" : "#/components/responses/400BadRequest"
                     },
@@ -433,6 +430,9 @@
                     },
                     "403" : {
                         "$ref" : "#/components/responses/403Forbidden"
+                    },
+                    "404" : {
+                        "$ref" : "#/components/responses/404NotFound"
                     }
                 }
             }
@@ -1205,6 +1205,83 @@
                     }
                 }
             },
+            "403Forbidden" : {
+                "description" : "Forbidden",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "type" : "string"
+                        },
+                        "example" : "ERROR - 2018-10-08T18:15:11Z - User does not have permission to perform this action"
+                    }
+                }
+            },
+            "GermplasmMCPDSingleResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "GermplasmMCPDSingleResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "$ref" : "#/components/schemas/GermplasmMCPD"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "StudyObservationLevelsListResponse" : {
+                "description" : "OK",
+                "content" : {
+                    "application/json" : {
+                        "schema" : {
+                            "title" : "StudyObservationLevelsListResponse",
+                            "required" : [
+                                "metadata",
+                                "result"
+                            ],
+                            "type" : "object",
+                            "properties" : {
+                                "@context" : {
+                                    "$ref" : "#/components/schemas/Context"
+                                },
+                                "metadata" : {
+                                    "$ref" : "#/components/schemas/metadata"
+                                },
+                                "result" : {
+                                    "required" : [
+                                        "data"
+                                    ],
+                                    "type" : "object",
+                                    "properties" : {
+                                        "data" : {
+                                            "type" : "array",
+                                            "items" : {
+                                                "type" : "array",
+                                                "items" : {
+                                                    "$ref" : "#/components/schemas/ObservationUnitHierarchyLevel"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "GermplasmSingleResponse" : {
                 "description" : "OK",
                 "content" : {
@@ -1346,43 +1423,6 @@
                                             "example" : "."
                                         }
                                     }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "403Forbidden" : {
-                "description" : "Forbidden",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "type" : "string"
-                        },
-                        "example" : "ERROR - 2018-10-08T18:15:11Z - User does not have permission to perform this action"
-                    }
-                }
-            },
-            "GermplasmMCPDSingleResponse" : {
-                "description" : "OK",
-                "content" : {
-                    "application/json" : {
-                        "schema" : {
-                            "title" : "GermplasmMCPDSingleResponse",
-                            "required" : [
-                                "metadata",
-                                "result"
-                            ],
-                            "type" : "object",
-                            "properties" : {
-                                "@context" : {
-                                    "$ref" : "#/components/schemas/Context"
-                                },
-                                "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
-                                },
-                                "result" : {
-                                    "$ref" : "#/components/schemas/GermplasmMCPD"
                                 }
                             }
                         }

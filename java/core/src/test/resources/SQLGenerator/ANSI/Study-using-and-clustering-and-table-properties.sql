@@ -121,6 +121,24 @@ COMMENT 'Link table for Study to ObservationVariable on property observationVari
 
 
 /* 
+Controlled Vocabulary for observationLevelses of Study
+ */
+CREATE TABLE brapi_ObservationLevelses (
+  observationLevels
+    ARRAY<
+      STRUCT<
+        -- Primary properties
+        levelName STRING COMMENT 'A name for this level   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. ',
+        levelOrder INT COMMENT '`levelOrder` defines where that level exists in the hierarchy of levels. `levelOrder`''s lower numbers  are at the top of the hierarchy (ie field -> 1) and higher numbers are at the bottom of the hierarchy (ie plant -> 9).   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+      >
+    > COMMENT 'Observation levels indicate the granularity level at which the measurements are taken. `levelName`  defines the level, `levelOrder` defines where that level exists in the hierarchy of levels.  `levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are  at the bottom of the hierarchy (ie plant > 6).   **Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample**   For more information on Observation Levels, please review the <a target="_blank" href="https://wiki.brapi.org/index.php/Observation_Levels">Observation Levels documentation</a>. '
+) 
+USING delta
+TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
+COMMENT 'Controlled Vocabulary table for property observationLevels on Study';
+
+
+/* 
 Controlled Vocabulary for studyTypes of Study
  */
 CREATE TABLE brapi_StudyTypes (

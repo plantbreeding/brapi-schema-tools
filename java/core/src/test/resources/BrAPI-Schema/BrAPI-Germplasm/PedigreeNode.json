@@ -178,7 +178,7 @@
                 }
             },
             "required": [
-                "childGermplasm",
+                "germplasm",
                 "parentType"
             ],
             "title": "GermplasmChild",

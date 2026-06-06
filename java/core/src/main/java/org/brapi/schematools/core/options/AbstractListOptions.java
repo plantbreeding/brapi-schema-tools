@@ -25,6 +25,9 @@ public class AbstractListOptions extends AbstractSubOptions {
     private Map<String, Boolean> paged = new HashMap<>();
     private Boolean propertiesFromRequest;
     private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> useSubQueryPropertiesFor = new HashMap<>();
     private Boolean pagedTokenDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> pagedToken = new HashMap<>();
@@ -87,6 +90,13 @@ public class AbstractListOptions extends AbstractSubOptions {
                 else pagedToken.put(key, value);
             });
         }
+
+        if (overrideOptions.useSubQueryPropertiesFor != null) {
+            overrideOptions.useSubQueryPropertiesFor.forEach((key, value) -> {
+                if (value == null) useSubQueryPropertiesFor.remove(key);
+                else useSubQueryPropertiesFor.put(key, value);
+            });
+        }
     }
 
     @Override
@@ -112,6 +122,14 @@ public class AbstractListOptions extends AbstractSubOptions {
         pagedToken.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'pagedToken' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        useSubQueryPropertiesFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'useSubQueryPropertiesFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -263,5 +281,31 @@ public class AbstractListOptions extends AbstractSubOptions {
     @JsonIgnore
     public final AbstractListOptions setHasPageTokenFor(@NonNull BrAPIType type, boolean hasPageToken) {
         return setHasPageTokenFor(type.getName(), hasPageToken);
+    }
+
+    /**
+     * Determines if the top-level list GET should expose only the request class's
+     * {@code subQueryProperties} as query parameters (instead of all request properties)
+     * for the named primary model.
+     *
+     * @param name the name of the primary model
+     * @return {@code true} if only {@code subQueryProperties} should be exposed, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isUsingSubQueryPropertiesFor(@NonNull String name) {
+        Boolean value = useSubQueryPropertiesFor.get(name);
+        return value != null ? value : false;
+    }
+
+    /**
+     * Determines if the top-level list GET should expose only the request class's
+     * {@code subQueryProperties} as query parameters for the given primary model.
+     *
+     * @param type the primary model
+     * @return {@code true} if only {@code subQueryProperties} should be exposed, {@code false} otherwise
+     */
+    @JsonIgnore
+    public final boolean isUsingSubQueryPropertiesFor(@NonNull BrAPIType type) {
+        return isUsingSubQueryPropertiesFor(type.getName());
     }
 }

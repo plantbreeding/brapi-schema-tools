@@ -16,16 +16,17 @@ generateNewRequestFor:
     Reference: false
     PedigreeNode: false
     Season: false
-    #ServerInfo: false
     Variant: false
     VariantSet: false
 newRequestNameFormat: "%sNewRequest"
 singleResponseNameFormat: "%sSingleResponse"
 listResponseNameFormat: "%sListResponse"
 searchRequestNameFormat: "%sSearchRequest"
+tableNameFormat: "%sTable"
+tableResponseNameFormat: "%sTableResponse"
+searchTableResponseNameFormat: "%sTableResponse"
 pluralFor:
     AlleleMatrix: AlleleMatrix
-    #ServerInfo: ServerInfo
 pathItemNameFor:
     AlleleMatrix: /allelematrix
     GenomeMap: /maps
@@ -34,22 +35,30 @@ pathItemNameFor:
     ObservationUnitHierarchyLevel: /observationlevels
     ObservationVariable: /variables
     PedigreeNode: /pedigree
-    #ServerInfo: /serverInfo
+    SeedLotTransaction: /seedlots/transactions
 pathItemNameForProperty:
     GermplasmAttribute:
         attributeCategory:
             /attributes/categories
+    Program:
+        commonCropName:
+            /commoncropnames
+
     Study:
         studyType:
             /studytypes
+        observationLevels:
+            /observationlevels
 tagFor:
     BreedingMethod: Germplasm
     MarkerPosition: Genome Maps
     PlannedCross: Crosses
+    SeedLotTransaction: Seed Lots
 getWithId:
     generate: true
     summaryFormat: Get the details of a specific %s
     descriptionFormat: Get details for a %s
+    addNotFoundResponse: true
     generateFor:
         AlleleMatrix: false
         Call: false
@@ -59,13 +68,14 @@ getWithId:
         ObservationUnitHierarchyLevel: false
         PedigreeNode: false
         PlannedCross: false
-        #ServerInfo: false
+        SeedLotTransaction: false
 get:
     generate: true
     summaryFormat: Get a filtered list of %s
     descriptionFormat: Get a list of %s
-    #generateFor:
-        #ServerInfo: false
+    addNotFoundResponse: false
+    addNotFoundResponseForSingleFor:
+        PedigreeNode: true
     list: true
     listFor:
         AlleleMatrix: false
@@ -193,6 +203,10 @@ get:
             trialNames: false
         ObservationUnitLevelRelationship:
             observationUnit: false
+        ObservationUnitHierarchyLevel:
+            programNames: false
+            studyNames: false
+            trialNames: false
         ObservationVariable:
             dataTypes: false
             programNames: false
@@ -247,6 +261,9 @@ get:
             programNames: false
         SeedLot:
             programNames: false
+        SeedLotTransaction:
+            transactionDirection: false
+            programNames: false
         Study:
             germplasmNames: false
             locationNames: false
@@ -282,8 +299,10 @@ get:
             referenceDbIds: false
 search:
     generate: true
+    pathFormat: /search%s
     summaryFormat: Submit a search request for `%s`
     descriptionFormat: Submit a search request for `%s`t
+    addNotFoundResponse: true
     searchIdFieldName: searchResultsDbId
     submitDescriptionFormat:  |-
         Submit a search request for `%s`<br/>
@@ -321,7 +340,7 @@ search:
         Scale: false
         Season: false
         SeedLot: false
-        #ServerInfo: false
+        SeedLotTransaction: false
         Trait: false
     propertiesFromRequest: true
     propertyFromRequestFor:
@@ -351,18 +370,68 @@ search:
             sortOrder: false
 table:
     generate: false
+    pathFormat: '%s/table'
     summaryFormat: Get a table of `%s` records as a CSV file.
     descriptionFormat: Get a table of `%s` records returned directly as CSV text.
+    addNotFoundResponse: false
     generateFor:
+        Observation: true
         ObservationUnit: true
+    pagedDefault: false
+    pagedTokenDefault: false
+    propertiesFromRequest: true
+    propertyFromRequestFor:
+        Observation:
+            commonCropNames: false
+            germplasmNames: false
+            locationNames: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+            observationDbIds: false
+            observationLevelRelationships: false
+        ObservationUnit:
+            commonCropNames: false
+            germplasmNames: false
+            locationNames: false
+            observationVariableNames: false
+            observationVariablePUIs: false
+            programNames: false
+            studyNames: false
+            trialNames: false
+            observationDbIds: false
+            observationUnitNames: false
+            observationLevelRelationships: false
+            includeObservations: false
+    propertyTypeOverrideFor:
+        Observation:
+            observationLevels: string
+        ObservationUnit:
+            observationLevels: string
 searchTable:
     generate: false
+    pathFormat: '/search%s/table'
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
     descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
+actions:
+    generate: true
+    pathFormat: '%s/%s'
+    summaryFormat: 'Perform action on `%s`'
+    descriptionFormat: 'Perform an action on `%s`.'
+    actionSummaryFormat: 'Perform `%s` on `%s`'
+    actionDescriptionFormat: 'Perform the `%s` action on `%s`.'
+    actionRequestNameFormat: '%s%sRequest'
+    addNotFoundResponse: true
 post:
     generate: true
     summaryFormat: Create new %s
     descriptionFormat: Add new %s to database
+    addNotFoundResponse: false
+    addNotFoundResponseForSingleFor:
+        Observation: true
+        PedigreeNode: true
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
@@ -374,7 +443,6 @@ post:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        #ServerInfo: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -384,10 +452,17 @@ put:
     generate: true
     summaryFormat: Update the details for an existing %s
     descriptionFormat: Update the details for an existing %s
+    addNotFoundResponse: true
+    addNotFoundResponseForSingleFor:
+        Call: false
+        Cross: false
+        ObservationUnit: true
+        PlannedCross: false
+    addNotFoundResponseForMultipleFor:
+        ObservationUnit: false
     generateFor:
         AlleleMatrix: false
         BreedingMethod: false
-        Call: false
         CallSet: false
         Event: false
         GenomeMap: false
@@ -395,9 +470,7 @@ put:
         ObservationUnitHierarchyLevel: false
         Reference: false
         ReferenceSet: false
-        PedigreeNode: false
-        Plate: false
-        #ServerInfo: false
+        SeedLotTransaction: false
         Variant: false
         VariantSet: false
     multiple: false
@@ -410,6 +483,9 @@ put:
         PedigreeNode: true
         Plate: true
         Sample: true
+    singleAlsoFor:
+        Observation: true
+        ObservationUnit: true
     useAdditionalProperties:
         Cross: true
         Observation: true
@@ -422,6 +498,16 @@ delete:
     generate: false
     summaryFormat: Delete an existing %s
     descriptionFormat: Delete existing %s
+    bulkPathFormat: "/delete%s"
+    bulkSummaryFormat: "Submit a delete request for `%s`"
+    bulkDescriptionFormat: "Submit a delete request for `%s`"
+    bulkResponseNameFormat: "%sDeleteResponse"
+    bulkResultFieldNameFormat: "%ss"
+    bulkResultFieldDescriptionFormat: "The unique ids of the %s records which have been successfully deleted"
+    bulkGenerateFor:
+        Image: true
+        Observation: true
+    addNotFoundResponse: true
     generateFor:
         AlleleMatrix: false
         Call: false
@@ -431,7 +517,7 @@ delete:
         MarkerPosition: false
         ObservationUnitHierarchyLevel: false
         Reference: false
-        ServerInfo: false
+        SeedLotTransaction: false
         Variant: false
         VariantSet: false
 properties:
@@ -444,6 +530,7 @@ properties:
             GermplasmAttributeValue: attributeValueDbId
             GenomeMap: mapDbId
             ObservationUnitHierarchyLevel: levelName
+            SeedLotTransaction: transactionDbId
         requiredPropertyFor:
             GermplasmAttributeValue:
                 attribute: false
@@ -681,7 +768,7 @@ properties:
         GrowthFacility:
             study: none
         Image:
-            imagecontent: sub-query
+            imageContent: none
         LastUpdate:
             study: none
         LinkageGroup:
