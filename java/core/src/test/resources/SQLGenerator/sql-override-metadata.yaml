@@ -1,1 +1,2 @@
 tablePrefix: brapi.test.
+foreignKeyConstraintPrefix: prefix
