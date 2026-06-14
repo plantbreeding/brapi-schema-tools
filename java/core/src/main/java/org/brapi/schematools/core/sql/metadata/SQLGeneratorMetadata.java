@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.brapi.schematools.core.metadata.Metadata;
 import org.brapi.schematools.core.utils.ConfigurationUtils;
+import org.brapi.schematools.core.validiation.Validation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 @Setter
 public class SQLGeneratorMetadata implements Metadata {
     private String tablePrefix ;
+    private String foreignKeyConstraintPrefix ;
 
     /**
      * Load the default metadata
@@ -51,6 +53,11 @@ public class SQLGeneratorMetadata implements Metadata {
         return load().override(ConfigurationUtils.load(inputStream, SQLGeneratorMetadata.class)) ;
     }
 
+    public Validation validate() {
+        return Validation.valid()
+            .assertNotNull(tablePrefix, "'tablePrefix' options on %s is null", this.getClass().getSimpleName()) ;
+    }
+
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null
      * @param overrideMetadata the options which will be used to override this Options Object
@@ -59,6 +66,10 @@ public class SQLGeneratorMetadata implements Metadata {
     public SQLGeneratorMetadata override(SQLGeneratorMetadata overrideMetadata) {
         if (overrideMetadata.tablePrefix != null) {
             setTablePrefix(overrideMetadata.tablePrefix);
+        }
+
+        if (overrideMetadata.foreignKeyConstraintPrefix != null) {
+            setForeignKeyConstraintPrefix(overrideMetadata.foreignKeyConstraintPrefix);
         }
 
         return this ;

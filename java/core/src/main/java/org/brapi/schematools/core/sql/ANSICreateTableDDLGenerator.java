@@ -215,6 +215,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             builder2.append(createTableName(tableName));
                             builder2.append("_");
                             builder2.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
+                            if (metadata.getForeignKeyConstraintPrefix() != null) {
+                                builder2.append(metadata.getForeignKeyConstraintPrefix());
+                            }
                             builder2.append("_fk FOREIGN KEY(");
                             String fkColumns = sourceLinkProps.stream()
                                 .map(BrAPIObjectProperty::getName)
