@@ -63,6 +63,7 @@ class SQLGeneratorMetadataTest {
         checkMetadata(metadata);
 
         assertEquals("brapi.test.", metadata.getTablePrefix());
+        assertEquals("prefix", metadata.getForeignKeyConstraintPrefix());
     }
     
     @Test
