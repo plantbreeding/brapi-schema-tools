@@ -5,6 +5,7 @@ import lombok.Singular;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A BrAPI wrapper around AdditionalProperties
@@ -16,7 +17,7 @@ public class BrAPIAdditionalProperties {
     String description;
     @Singular
     List<Object> examples ;
-    String type;
+    Set<String> type;
     boolean deprecated;
     boolean required;
     Boolean nullable;

@@ -1884,14 +1884,15 @@ public class OpenAPIGenerator {
 
         private void updateAdditionalProperties(Schema objectSchema, BrAPIAdditionalProperties additionalProperties) {
             if (additionalProperties != null) {
-                objectSchema.type(additionalProperties.getType()) ;
+                Schema additionalPropsSchema = new Schema<>();
+                additionalPropsSchema.description(additionalProperties.getDescription());
+                additionalPropsSchema.types(additionalProperties.getType());
 
                 if (additionalProperties.isNullable()) {
-                    makeNullable(objectSchema, null, null) ;
+                    makeNullable(additionalPropsSchema, null, null) ;
                 }
 
-                objectSchema.additionalProperties(new Schema<>()
-                    .description(additionalProperties.getDescription()));
+                objectSchema.additionalProperties(additionalPropsSchema);
             }
         }
 

@@ -685,7 +685,7 @@ public class BrAPISchemaReader {
             findStringFieldList(path, jsonNode, "type", false)
                 .mapResult(list -> list.stream()
                     .filter(item -> !"null".equals(item))
-                    .findFirst().orElse("string"))
+                    .collect(Collectors.toSet()))
                 .onSuccessDoWithResult(builder::type) ;
 
             return success(builder.build());
