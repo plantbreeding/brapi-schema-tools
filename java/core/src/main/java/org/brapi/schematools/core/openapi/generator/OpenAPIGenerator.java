@@ -240,24 +240,26 @@ public class OpenAPIGenerator {
                     .collect(Response.toList());
             } else {
                 return generateSpecifications(metadata.getTitle(),
-                    options.getSupplementalSpecification(), classes)
+                    options.getAllSupplementalSpecifications(), classes)
                     .mapResult(Collections::singletonList);
             }
         }
 
-        private Response<OpenAPI> generateSpecifications(String title, String supplementalSpecPath, Collection<BrAPIClass> classes) {
+        private Response<OpenAPI> generateSpecifications(String title, List<String> supplementalSpecPaths, Collection<BrAPIClass> classes) {
 
             final MergableOpenAPI openAPI = new MergableOpenAPI();
-            final OpenAPI supplementalOpenAPI;
-            if (supplementalSpecPath != null && !supplementalSpecPath.isEmpty()) {
-                try {
-                    String supplementalSpecPathAbs = Path.of(supplementalSpecPath).toRealPath().toString();
-                    supplementalOpenAPI = new OpenAPIParser().readLocation(supplementalSpecPathAbs, null, null).getOpenAPI();
-                } catch (IOException e) {
-                    return fail(Response.ErrorType.VALIDATION, String.format("Can not find supplemental specification file : %s", e.getMessage()));
+            final MergableOpenAPI supplementalOpenAPI = new MergableOpenAPI();
+            if (supplementalSpecPaths != null) {
+                for (String specPath : supplementalSpecPaths) {
+                    if (specPath != null && !specPath.isEmpty()) {
+                        try {
+                            String specPathAbs = Path.of(specPath).toRealPath().toString();
+                            supplementalOpenAPI.merge(new OpenAPIParser().readLocation(specPathAbs, null, null).getOpenAPI());
+                        } catch (IOException e) {
+                            return fail(Response.ErrorType.VALIDATION, String.format("Can not find supplemental specification file : %s", e.getMessage()));
+                        }
+                    }
                 }
-            }else{
-                supplementalOpenAPI = new MergableOpenAPI();
             }
 
             Info info = new Info();
