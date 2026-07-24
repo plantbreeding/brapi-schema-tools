@@ -9,7 +9,12 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 ## [Unreleased] — v0.79.0
 
 ### Added
-- Multi-supplemental OpenAPI spec support: multiple supplemental files can now be merged in a single generation run
+- **Multi-supplemental OpenAPI spec support**: `supplementalSpecifications` (list) option on `OpenAPIGeneratorOptions` allows multiple supplemental files to be merged into a single generation run; existing `supplementalSpecification` (single string) is still supported
+- **Search-table endpoints**: new `POST /search/<entity>/table` endpoint type controlled by `SearchTableOptions` (`searchTable.generateFor`); supports configurable `searchTableResponseNameFormat` and `searchTableRequestNameFormat` options
+
+### Changed
+- OpenAPI spec version is now always set to **3.1** regardless of the BrAPI version string; the previous regex-based version detection logic has been removed
+- `additionalProperties` JSON Schema keyword is now correctly handled: schemas may carry multiple types, and `BrAPIAdditionalProperties` is read properly by `BrAPISchemaReader`
 
 ---
 

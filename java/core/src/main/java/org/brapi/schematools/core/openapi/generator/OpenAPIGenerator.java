@@ -1621,6 +1621,8 @@ public class OpenAPIGenerator {
                     () -> createSchemaForType(type, creatingNewRequest).onSuccessDoWithResult(result -> schemas.put(type.getName(), result)))
                 .mergeOnCondition(options.getSearch().isGeneratingFor(type),
                     () -> createSearchRequestSchemaForType(type).onSuccessDoWithResult(result -> schemas.put(options.getSearchRequestNameFor(type), result)))
+                .mergeOnCondition(options.getSearchTable().isGeneratingFor(type),
+                    () -> createSearchTableRequestSchemaForType(type).onSuccessDoWithResult(result -> schemas.put(options.getSearchTableRequestNameFor(type), result)))
                 .map(() -> success(schemas));
         }
 
@@ -1676,6 +1678,42 @@ public class OpenAPIGenerator {
 
             return createObjectSchema(type,
                 type.getProperties().stream().filter(brAPIObjectProperty -> !brAPIObjectProperty.getName().equals(idParameter)).toList()) ;
+        }
+
+        private Response<Schema> createSearchTableRequestSchemaForType(BrAPIObjectType type) {
+            BrAPIClass requestSchema = brAPIClassCache.getBrAPIRequestClass(type);
+
+            String name = options.getSearchTableRequestNameFor(type);
+
+            if (requestSchema == null) {
+                return fail(Response.ErrorType.VALIDATION, String.format("Can not find '%sRequest' when creating '%s'", type.getName(), name));
+            }
+
+            if (requestSchema instanceof BrAPIObjectType brAPIObjectType) {
+                Schema objectSchema = new ObjectSchema()
+                    .name(type.getName())
+                    .description(type.getDescription());
+
+                updateExamples(objectSchema, brAPIObjectType);
+                updateAdditionalProperties(objectSchema, brAPIObjectType.getAdditionalProperties()) ;
+
+                List<BrAPIObjectProperty> properties = brAPIObjectType.getProperties();
+
+                Map<String, Schema> schemaProperties = new TreeMap<>();
+
+                if (type.getProperties().stream().anyMatch(property -> property.getName().equals("externalReferences"))) {
+                    this.brAPIClassCache.findBrAPIClass("ExternalReferencesParameters")
+                        .mapResultToResponse(this::createProperties)
+                        .onSuccessDoWithResult(schemaProperties::putAll) ;
+                }
+
+                return createProperties(objectSchema, type, properties.stream().toList())
+                    .mapResult(p -> p.entrySet().stream().filter(entry -> options.getSearchTable().isUsingPropertyFromRequestFor(type.getName(), entry.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                    .onSuccessDoWithResult(schemaProperties::putAll)
+                    .mapResult(p -> objectSchema.properties(schemaProperties)) ;
+            } else {
+                return fail(Response.ErrorType.VALIDATION, String.format("'%sRequest' must be BrAPIObjectType but was '%s'", type.getName(), type.getClass().getSimpleName()));
+            }
         }
 
         private Response<Schema> createSearchRequestSchemaForType(BrAPIObjectType type) {

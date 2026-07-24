@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.brapi.schematools.core.model.BrAPIObjectProperty;
-import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
 import org.brapi.schematools.core.validiation.Validation;
@@ -19,12 +17,10 @@ import java.util.Map;
  */
 @Getter(AccessLevel.PRIVATE)
 @Setter
-public class AbstractListOptions extends AbstractSubOptions {
+public class AbstractListOptions extends AbstractRequestFilterOptions {
     private Boolean pagedDefault;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> paged = new HashMap<>();
-    private Boolean propertiesFromRequest;
-    private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> useSubQueryPropertiesFor = new HashMap<>();
@@ -37,8 +33,6 @@ public class AbstractListOptions extends AbstractSubOptions {
         return super.validate()
             .assertNotNull(pagedDefault, "'pagedDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(paged, "'paged' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertiesFromRequest, "'propertiesFromRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(propertyFromRequestFor, "'propertyFromRequestFor' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedTokenDefault, "'pagedTokenDefault' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(pagedToken, "'pagedToken' option on %s is null", this.getClass().getSimpleName()) ;
     }
@@ -59,26 +53,6 @@ public class AbstractListOptions extends AbstractSubOptions {
             if (value == null) paged.remove(key);
             else paged.put(key, value);
         });
-
-        if (overrideOptions.propertiesFromRequest != null) {
-            setPropertiesFromRequest(overrideOptions.propertiesFromRequest);
-        }
-
-        if (overrideOptions.propertyFromRequestFor != null) {
-            overrideOptions.propertyFromRequestFor.forEach((key, value) -> {
-                if (value == null) {
-                    propertyFromRequestFor.remove(key);
-                } else if (propertyFromRequestFor.containsKey(key)) {
-                    value.forEach((innerKey, innerValue) -> {
-                        if (innerValue == null) propertyFromRequestFor.get(key).remove(innerKey);
-                        else propertyFromRequestFor.get(key).put(innerKey, innerValue);
-                    });
-                    if (propertyFromRequestFor.get(key).isEmpty()) propertyFromRequestFor.remove(key);
-                } else {
-                    propertyFromRequestFor.put(key, new HashMap<>(value));
-                }
-            });
-        }
 
         if (overrideOptions.pagedTokenDefault != null) {
             setPagedTokenDefault(overrideOptions.pagedTokenDefault);
@@ -106,14 +80,6 @@ public class AbstractListOptions extends AbstractSubOptions {
         paged.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'paged' on %s",
-                    name,
-                    this.getClass().getSimpleName()
-                )) ;
-        }) ;
-
-        propertyFromRequestFor.keySet().forEach(name -> {
-            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
-                String.format("Invalid BrAPI Class name '%s' set for 'propertyFromRequestFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -184,59 +150,6 @@ public class AbstractListOptions extends AbstractSubOptions {
     @JsonIgnore
     public AbstractListOptions setPagingFor(@NonNull BrAPIType type, boolean paging) {
         return setPagingFor(type.getName(), paging);
-    }
-
-    /**
-     * Gets whether a property from the Request is used in the List query
-     * @param typeName The BrAPI Object type name
-     * @param propertyName The BrAPI property name
-     * @return <code>true</code> if the property from the Request is used in the List query
-     */
-    public final boolean isUsingPropertyFromRequestFor(String typeName, String propertyName) {
-
-        Map<String, Boolean> map = propertyFromRequestFor.get(typeName) ;
-
-        if (map != null) {
-            Boolean value = map.get(propertyName);
-            return value != null ? value : propertiesFromRequest ;
-        }
-
-        return propertiesFromRequest ;
-    }
-
-    /**
-     * Determines if a specific request property should be included in the query parameters for a given model.
-     *
-     * @param type     the primary model
-     * @param property the request property
-     * @return {@code true} if the property should be exposed as a query parameter
-     */
-    @JsonIgnore
-    public boolean isUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
-        Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
-        if (map != null) {
-            Boolean value = map.get(property.getName());
-            return value != null ? value : propertiesFromRequest;
-        }
-        return propertiesFromRequest;
-    }
-
-    /**
-     * Sets whether a specific request property should be included in the query parameters.
-     *
-     * @param type                  the primary model
-     * @param property              the request property
-     * @param usePropertyFromRequest {@code true} if the property should be exposed as a query parameter
-     * @return the options for chaining
-     */
-    @JsonIgnore
-    public AbstractListOptions setUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type,
-                                                         @NonNull BrAPIObjectProperty property,
-                                                         boolean usePropertyFromRequest) {
-        propertyFromRequestFor
-            .computeIfAbsent(type.getName(), k -> new HashMap<>())
-            .put(property.getName(), usePropertyFromRequest);
-        return this;
     }
 
     /**

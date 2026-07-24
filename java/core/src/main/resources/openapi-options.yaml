@@ -416,6 +416,7 @@ searchTable:
     pathFormat: '/search%s/table'
     summaryFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
     descriptionFormat: Generate a table of `%s` in a CSV file, publish the file and return a URI to the file.
+    propertiesFromRequest: true
 actions:
     generate: true
     pathFormat: '%s/%s'
