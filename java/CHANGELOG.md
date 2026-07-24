@@ -10,7 +10,8 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ### Added
 - **Multi-supplemental OpenAPI spec support**: `supplementalSpecifications` (list) option on `OpenAPIGeneratorOptions` allows multiple supplemental files to be merged into a single generation run; existing `supplementalSpecification` (single string) is still supported
-- **Search-table endpoints**: new `POST /search/<entity>/table` endpoint type controlled by `SearchTableOptions` (`searchTable.generateFor`); supports configurable `searchTableResponseNameFormat` and `searchTableRequestNameFormat` options
+- **Search-table endpoints**: new `POST /search/<entity>/table` endpoint type controlled by `SearchTableOptions` (`searchTable.generateFor`); supports configurable `searchTableResponseNameFormat` and `searchTableRequestNameFormat` options; request body schema is generated from the entity's Request class with per-property filtering via `propertiesFromRequest` / `propertyFromRequestFor` options
+- **`AbstractRequestFilterOptions`**: new abstract base class (extracted from `AbstractListOptions`) providing `propertiesFromRequest` and `propertyFromRequestFor` options to control which request properties appear in a generated request body schema; `SearchTableOptions` extends this class
 
 ### Changed
 - OpenAPI spec version is now always set to **3.1** regardless of the BrAPI version string; the previous regex-based version detection logic has been removed
