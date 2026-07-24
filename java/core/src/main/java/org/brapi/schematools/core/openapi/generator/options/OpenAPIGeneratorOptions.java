@@ -69,6 +69,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     private String tableResponseNameFormat;
     @Getter(AccessLevel.PRIVATE)
     private String searchTableResponseNameFormat;
+    @Getter(AccessLevel.PRIVATE)
+    private String searchTableRequestNameFormat;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
@@ -184,6 +186,10 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             searchTableResponseNameFormat = overrideOptions.searchTableResponseNameFormat ;
         }
 
+        if (overrideOptions.searchTableRequestNameFormat != null) {
+            searchTableRequestNameFormat = overrideOptions.searchTableRequestNameFormat ;
+        }
+
         if (overrideOptions.tagFor != null) {
             overrideOptions.tagFor.forEach((key, value) -> {
                 if (value == null) tagFor.remove(key);
@@ -236,6 +242,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(tableNameFormat, "'tableNameFormat' option is null")
             .assertNotNull(tableResponseNameFormat, "'tableResponseNameFormat' option is null")
             .assertNotNull(searchTableResponseNameFormat,  "'searchTableResponseNameFormat' option is null")
+            .assertNotNull(searchTableRequestNameFormat,  "'searchTableRequestNameFormat' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null")
             .assertNotNull(defaultMediaType,  "'defaultMediaType' option is null")
             .assertNotNull(mediaTypeForType,  "'mediaTypeForType' option is null")
@@ -571,6 +578,26 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @JsonIgnore
     public final String getSearchTableResponseNameFor(@NonNull BrAPIType type) {
         return getSearchTableResponseNameFor(type.getName()) ;
+    }
+
+    /**
+     * Gets the name for the Search Table Request schema for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the Search Table Request schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableRequestNameFor(@NonNull String name) {
+        return String.format(searchTableRequestNameFormat, name) ;
+    }
+
+    /**
+     * Gets the name for the Search Table Request schema for a specific Primary Model
+     * @param type the Primary Model
+     * @return the Search Table Request schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableRequestNameFor(@NonNull BrAPIType type) {
+        return getSearchTableRequestNameFor(type.getName()) ;
     }
 
     /**

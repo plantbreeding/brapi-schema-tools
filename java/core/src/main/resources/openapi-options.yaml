@@ -25,6 +25,7 @@ searchRequestNameFormat: "%sSearchRequest"
 tableNameFormat: "%sTable"
 tableResponseNameFormat: "%sTableResponse"
 searchTableResponseNameFormat: "%sTableResponse"
+searchTableRequestNameFormat: "%sSearchRequest"
 pluralFor:
     AlleleMatrix: AlleleMatrix
 pathItemNameFor:

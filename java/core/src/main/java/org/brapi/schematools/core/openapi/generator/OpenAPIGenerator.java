@@ -334,6 +334,12 @@ public class OpenAPIGenerator {
                         .map(type -> createSearchPathItem(type)
                             .onSuccessDoWithResult(pathItem -> openAPI.path(createSearchPathItemName(type), pathItem)))
                         .collect(Response.toList()))
+                .merge( // this is a POST endpoint with the pattern /search/<entity-plural>/table e.g. /search/germplasm/table
+                    () -> primaryClasses.stream()
+                        .filter(type -> options.getSearchTable().isGeneratingFor(type))
+                        .map(type -> createSearchTablePathItem(type)
+                            .onSuccessDoWithResult(pathItem -> openAPI.path(options.getSearchTablePathItemNameFor(type), pathItem)))
+                        .collect(Response.toList()))
                 .merge( // this is a GET endpoint with the pattern /search/<entity-plural>/{searchResultsDbId} e.g. /search/locations/{searchResultsDbId}
                     () -> primaryClasses.stream()
                         .filter(type -> options.getSearch().isGeneratingFor(type))
@@ -1449,6 +1455,31 @@ public class OpenAPIGenerator {
 
         private String createSearchPathItemWithIdName(BrAPIObjectType type) {
             return String.format("/search%s/{%s}", options.getPathItemNameFor(type), options.getSearch().getSearchIdFieldName());
+        }
+
+        public Response<PathItem> createSearchTablePathItem(BrAPIObjectType type) {
+            PathItem pathItem = new PathItem();
+
+            Operation operation = new Operation();
+
+            operation.setSummary(options.getSearchTable().getSummaryFor(type));
+            operation.setDescription(options.getSearchTable().getDescriptionFor(type));
+
+            operation.addParametersItem(new Parameter().$ref("#/components/parameters/authorizationHeader"));
+
+            operation.requestBody(createRequestBody(
+                new Schema().$ref(String.format("#/components/schemas/%s", options.getSearchTableRequestNameFor(type))),
+                findMediaTypeForObject(type)));
+
+            ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                .addApiResponse("200", new ApiResponse().$ref("#/components/responses/" + options.getSearchTableResponseNameFor(type))));
+
+            operation.responses(apiResponses);
+            operation.addTagsItem(options.getTagFor(type));
+
+            pathItem.setPost(operation);
+
+            return success(pathItem);
         }
 
         public Response<PathItem> createSearchPathItem(BrAPIObjectType type) {
