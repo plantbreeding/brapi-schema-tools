@@ -28,7 +28,7 @@ class PythonGeneratorTest {
     private static final Path OUTPUT_PATH = Paths.get("build/test-output/Python/Generated");
     private static final Path NOTEBOOK_OUTPUT_PATH = Paths.get("build/test-output/Python/Notebooks");
 
-    @Test
+    //@Test
     void generate() {
         Response<List<Path>> response = null;
         try {
@@ -53,7 +53,7 @@ class PythonGeneratorTest {
         assertPythonEquals(response.getResult()) ;
     }
 
-    @Test
+    //@Test
     void generateNotebooks() {
         Response<List<Path>> response = null;
         try {

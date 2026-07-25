@@ -3237,9 +3237,10 @@
     "components" : {
         "schemas" : {
             "AdditionalInfo" : {
-                "type" : "string",
+                "type" : "object",
                 "additionalProperties" : {
-                    "description" : "A free space containing any additional information related to a particular object."
+                    "description" : "A free space containing any additional information related to a particular object.",
+                    "nullable" : true
                 },
                 "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
                 "nullable" : true
@@ -3786,12 +3787,7 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -5754,12 +5750,7 @@
                         }
                     },
                     "listType" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/ListType"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/ListType"
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -5853,14 +5844,7 @@
                         }
                     },
                     "coordinates" : {
-                        "anyOf" : [
-                            {
-                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
-                            },
-                            {
-                                "type" : "null"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -9681,12 +9665,7 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
