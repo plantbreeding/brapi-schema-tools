@@ -23,7 +23,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build (compile + test)
+      - name: Build & test
         working-directory: ./java
         run: ./gradlew build
 
