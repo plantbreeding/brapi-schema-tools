@@ -11437,9 +11437,10 @@
                 ]
             },
             "AdditionalInfo" : {
-                "type" : "string",
+                "type" : "object",
                 "additionalProperties" : {
-                    "description" : "A free space containing any additional information related to a particular object."
+                    "description" : "A free space containing any additional information related to a particular object.",
+                    "nullable" : true
                 },
                 "description" : "A free space containing any additional information related to a particular object. A data source may provide any JSON object, unrestricted by the BrAPI specification.",
                 "nullable" : true
@@ -11986,12 +11987,7 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -14195,12 +14191,7 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -16661,12 +16652,7 @@
                         }
                     },
                     "listType" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/ListType"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/ListType"
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -16781,12 +16767,7 @@
                         }
                     },
                     "listType" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/ListType"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/ListType"
                     },
                     "page" : {
                         "type" : "integer",
@@ -17035,14 +17016,7 @@
                         }
                     },
                     "coordinates" : {
-                        "anyOf" : [
-                            {
-                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
-                            },
-                            {
-                                "type" : "null"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -17161,14 +17135,7 @@
                         }
                     },
                     "coordinates" : {
-                        "anyOf" : [
-                            {
-                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
-                            },
-                            {
-                                "type" : "null"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -17653,12 +17620,7 @@
                         "nullable" : true
                     },
                     "season" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/Season"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/Season"
                     },
                     "studyDbId" : {
                         "type" : "string",
@@ -18416,12 +18378,7 @@
                         "nullable" : true
                     },
                     "positionCoordinateXType" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/PositionCoordinateType"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/PositionCoordinateType"
                     },
                     "positionCoordinateY" : {
                         "type" : "string",
@@ -18429,12 +18386,7 @@
                         "nullable" : true
                     },
                     "positionCoordinateYType" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/PositionCoordinateType"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/PositionCoordinateType"
                     }
                 },
                 "description" : "All positional and layout information related to this Observation Unit",
@@ -18978,12 +18930,7 @@
                         "nullable" : true
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -22553,12 +22500,7 @@
                         "nullable" : true
                     },
                     "validValues" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/ValidValues"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/ValidValues"
                     }
                 },
                 "description" : "A Scale describes the units and acceptable values for an ObservationVariable. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Scale \"inches\" or \"pixels\"."
@@ -24379,12 +24321,7 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "nullable" : true,
-                        "allOf" : [
-                            {
-                                "$ref" : "#/components/schemas/OntologyReference"
-                            }
-                        ]
+                        "$ref" : "#/components/schemas/OntologyReference"
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"

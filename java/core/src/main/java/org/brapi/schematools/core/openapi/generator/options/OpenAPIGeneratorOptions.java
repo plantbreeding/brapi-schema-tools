@@ -1,6 +1,7 @@
 package org.brapi.schematools.core.openapi.generator.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.brapi.schematools.core.model.BrAPIObjectProperty;
@@ -18,8 +19,10 @@ import org.brapi.schematools.core.validiation.Validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
@@ -36,6 +39,12 @@ import static org.brapi.schematools.core.utils.StringUtils.toSentenceCase;
 public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @Getter(AccessLevel.PUBLIC)
     private String supplementalSpecification;
+    @Getter(AccessLevel.PUBLIC)
+    private List<String> supplementalSpecifications = new ArrayList<>();
+    @JsonSetter("supplementalSpecifications")
+    public void setSupplementalSpecificationsFromJson(List<String> specs) {
+        this.supplementalSpecifications = specs;
+    }
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> supplementalSpecificationFor = new HashMap<>();
@@ -60,6 +69,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     private String tableResponseNameFormat;
     @Getter(AccessLevel.PRIVATE)
     private String searchTableResponseNameFormat;
+    @Getter(AccessLevel.PRIVATE)
+    private String searchTableRequestNameFormat;
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, String> tagFor = new HashMap<>();
@@ -129,6 +140,10 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             supplementalSpecification = overrideOptions.supplementalSpecification ;
         }
 
+        if (overrideOptions.supplementalSpecifications != null && !overrideOptions.supplementalSpecifications.isEmpty()) {
+            supplementalSpecifications.addAll(overrideOptions.supplementalSpecifications) ;
+        }
+
         if (overrideOptions.supplementalSpecificationFor != null) {
             overrideOptions.supplementalSpecificationFor.forEach((key, value) -> {
                 if (value == null) supplementalSpecificationFor.remove(key);
@@ -169,6 +184,10 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
 
         if (overrideOptions.searchTableResponseNameFormat != null) {
             searchTableResponseNameFormat = overrideOptions.searchTableResponseNameFormat ;
+        }
+
+        if (overrideOptions.searchTableRequestNameFormat != null) {
+            searchTableRequestNameFormat = overrideOptions.searchTableRequestNameFormat ;
         }
 
         if (overrideOptions.tagFor != null) {
@@ -213,8 +232,8 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
         return super.validate()
             .assertNotNull(separateByModule, "'separateByModule' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(generateNewRequest, "'generateNewRequest' option on %s is null", this.getClass().getSimpleName())
-            .assertNotNull(supplementalSpecification, "'supplementalSpecification' option is null")
             .assertNotNull(supplementalSpecificationFor, "'supplementalSpecificationFor' option is null")
+            .assertNotNull(supplementalSpecifications, "'supplementalSpecifications' option is null")
             .assertNotNull(generateNewRequestFor, "'generateNewRequestFor' option is null")
             .assertNotNull(newRequestNameFormat,  "'newRequestNameFormat' option is null")
             .assertNotNull(singleResponseNameFormat, "'singleResponseNameFormat' option is null")
@@ -223,6 +242,7 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
             .assertNotNull(tableNameFormat, "'tableNameFormat' option is null")
             .assertNotNull(tableResponseNameFormat, "'tableResponseNameFormat' option is null")
             .assertNotNull(searchTableResponseNameFormat,  "'searchTableResponseNameFormat' option is null")
+            .assertNotNull(searchTableRequestNameFormat,  "'searchTableRequestNameFormat' option is null")
             .assertNotNull(tagFor,  "'tagFor' option is null")
             .assertNotNull(defaultMediaType,  "'defaultMediaType' option is null")
             .assertNotNull(mediaTypeForType,  "'mediaTypeForType' option is null")
@@ -356,9 +376,33 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     }
 
 
+    /**
+     * Gets all supplemental specification paths applicable for a given module name.
+     * Combines the global {@link #supplementalSpecifications} list with any single-value
+     * {@link #supplementalSpecification} or per-module override from {@link #supplementalSpecificationFor}.
+     * @param name the module name
+     * @return list of supplemental specification paths (may be empty)
+     */
     @JsonIgnore
-    public final String getSupplementalSpecificationFor(@NonNull String name) {
-        return supplementalSpecificationFor.getOrDefault(name, supplementalSpecification) ;
+    public final List<String> getSupplementalSpecificationFor(@NonNull String name) {
+        List<String> result = new ArrayList<>(supplementalSpecifications) ;
+        String single = supplementalSpecificationFor.containsKey(name)
+            ? supplementalSpecificationFor.get(name)
+            : supplementalSpecification ;
+        if (single != null && !single.isEmpty()) result.add(single) ;
+        return result ;
+    }
+
+    /**
+     * Gets all supplemental specification paths (global, not per-module).
+     * Combines {@link #supplementalSpecifications} with the legacy single {@link #supplementalSpecification}.
+     * @return list of supplemental specification paths (may be empty)
+     */
+    @JsonIgnore
+    public final List<String> getAllSupplementalSpecifications() {
+        List<String> result = new ArrayList<>(supplementalSpecifications) ;
+        if (supplementalSpecification != null && !supplementalSpecification.isEmpty()) result.add(supplementalSpecification) ;
+        return result ;
     }
 
     /**
@@ -534,6 +578,26 @@ public class OpenAPIGeneratorOptions extends AbstractRESTGeneratorOptions {
     @JsonIgnore
     public final String getSearchTableResponseNameFor(@NonNull BrAPIType type) {
         return getSearchTableResponseNameFor(type.getName()) ;
+    }
+
+    /**
+     * Gets the name for the Search Table Request schema for a specific Primary Model
+     * @param name the name of the Primary Model
+     * @return the Search Table Request schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableRequestNameFor(@NonNull String name) {
+        return String.format(searchTableRequestNameFormat, name) ;
+    }
+
+    /**
+     * Gets the name for the Search Table Request schema for a specific Primary Model
+     * @param type the Primary Model
+     * @return the Search Table Request schema name for a specific Primary Model
+     */
+    @JsonIgnore
+    public final String getSearchTableRequestNameFor(@NonNull BrAPIType type) {
+        return getSearchTableRequestNameFor(type.getName()) ;
     }
 
     /**

@@ -1,0 +1,395 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+Changes are grouped by version, reconstructed from git history.
+Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*`.
+
+---
+
+## [Unreleased] — v0.79.0
+
+### Added
+- **Multi-supplemental OpenAPI spec support**: `supplementalSpecifications` (list) option on `OpenAPIGeneratorOptions` allows multiple supplemental files to be merged into a single generation run; existing `supplementalSpecification` (single string) is still supported
+- **Search-table endpoints**: new `POST /search/<entity>/table` endpoint type controlled by `SearchTableOptions` (`searchTable.generateFor`); supports configurable `searchTableResponseNameFormat` and `searchTableRequestNameFormat` options; request body schema is generated from the entity's Request class with per-property filtering via `propertiesFromRequest` / `propertyFromRequestFor` options
+- **`AbstractRequestFilterOptions`**: new abstract base class (extracted from `AbstractListOptions`) providing `propertiesFromRequest` and `propertyFromRequestFor` options to control which request properties appear in a generated request body schema; `SearchTableOptions` extends this class
+
+### Changed
+- OpenAPI spec version is now always set to **3.1** regardless of the BrAPI version string; the previous regex-based version detection logic has been removed
+- `additionalProperties` JSON Schema keyword is now correctly handled: schemas may carry multiple types, and `BrAPIAdditionalProperties` is read properly by `BrAPISchemaReader`
+
+---
+
+## [0.78.0] — 2026-06-27
+
+### Fixed
+- Added prefix for constraints in generated SQL output
+
+---
+
+## [0.77.0] — 2026-06-06
+
+### Added
+- **Action endpoints**: new `actions` mechanism for generating `POST /<entity>/<actionName>` endpoints (e.g. `POST /variantsets/extract`); controlled via `ActionsOptions` with `pathFormat`, `actionSummaryFormat`, `actionDescriptionFormat`, `actionRequestNameFormat`
+- **Table endpoints**: new `table` options block to generate `GET /<entity>/table` returning `text/csv`; opt-in via `table.generateFor`
+- **Bulk delete endpoints**: new `delete.bulkGenerateFor` option generates `POST /<entity>` bulk-delete paths with configurable path/summary/description/response name formats
+- `singleAlsoFor` option on update sub-options to generate a single-entity PUT alongside multi-entity PUT (e.g. `PUT /observations/{observationDbId}`)
+- `noSingularizeProperties` flag in BrAPI metadata
+- `pattern` and `discriminatorPropertyName` fields added to schema models
+- 404 Not Found responses across a large number of OpenAPI endpoints; per-verb and per-type `addNotFoundResponse` and `addNotFoundResponseFor` options
+- Supplemental OpenAPI file handling improved: supplemental changes can now override generated objects
+
+### Changed
+- Schema definitions refactored: `anyOf` replaced with `allOf` + `nullable` for `season` and `validValues` properties
+
+---
+
+## [0.76.0] — 2026-06-02
+
+### Changed
+- SQL generator: removed embedded object links to parent tables
+
+---
+
+## [0.75.0] — 2026-05-29
+
+### Added
+- Composite description builder for array link properties in SQL DDL generation
+
+### Changed
+- DDL generation refactored to better handle link properties and prevent name clashes
+- Enhanced link property generation for name equality edge cases
+
+---
+
+## [0.74.0] — 2026-05-24
+
+### Changed
+- SQL generation improvements (general updates to column generation)
+
+---
+
+## [0.73.0] — 2026-05-23
+
+### Fixed
+- Nullable and `required` field handling improved
+- Nullable override applied when a property's type class is itself nullable
+
+---
+
+## [0.72.0] — 2026-05-21
+
+### Changed
+- Updated `isLinkForTypeOrProperty` logic for more accurate link detection
+
+---
+
+## [0.71.0] — 2026-05-21
+
+### Added
+- `ignoreDeprecatedSchemas: true` and `ignoreDeprecatedProperties: true` options in schema reader
+
+---
+
+## [0.70.0] — 2026-05-20
+
+### Fixed
+- Override handling for valid schema classes
+
+---
+
+## [0.69.0] — 2026-05-20
+
+### Added
+- `ServerInfo` added to the list of valid schema classes
+
+---
+
+## [0.68.0] — 2026-05-19
+
+### Added
+- BRAVA-Tools integration: new getters on model objects needed by BRAVA-Tools; options updated
+- `NoAuthorizationProvider` use case now handled gracefully
+- Conditional list handling added to `SearchOptions` and `Response` classes
+- Conditional merging methods added to `Response`; `OpenAPIGenerator` updated accordingly
+- Default `analyse-options.yaml` resource updated to fix breaking schema checks
+- Dependencies updated to align with BRAVA-Tools
+
+### Changed
+- `SingleGet` renamed to `GetWithId` throughout
+- `ListGetOptions` renamed to `GetOptions` throughout
+
+### Fixed
+- Nullable and external `$ref` handling fixed
+
+---
+
+## [0.67.0] — 2026-05-02
+
+*Note: 0.66.0 was an intermediate development version and was not released as a standalone tag.*
+
+### Fixed
+- Map retrieval methods now handle null values and fall back to defaults
+- Override methods no longer retain null entries in maps
+- Maven Central publishing fixed (Sonatype S01 host configuration, vanniktech plugin classpath)
+- Gradle setup action updated to v4
+
+---
+
+## [0.65.0] — 2026-05-01
+
+### Changed
+- GraphQL output types refactored to use named types; improved schema generation overall
+
+---
+
+## [0.64.0] — 2026-04-28
+
+### Added
+- `additionalInfo` and `KeyValuePair` support in BrAPI schema (temporary fix; improvement planned)
+
+---
+
+## [0.63.0] — 2026-04-28
+
+### Added
+- `BrAPIAdditionalProperties` class; integrated into OpenAPI schema generation
+- `additionalProperties` support in OpenAPI generation options and Markdown rendering
+- Option to ignore description fields during OpenAPI comparison
+
+### Changed
+- `BrAPISchemaReader` enhanced with additional validation and support for `anyOf` types
+- Query options validation now includes superclass validation
+
+---
+
+## [0.62.0] — 2026-04-05
+
+### Added
+- SQL table properties organised into primary, link, and clustering categories
+- SQL column definition generation groups properties for improved clarity and query performance
+- `IF EXISTS` clause on SQL `ALTER TABLE` constraint statements for safer execution
+- Conditional constraint support in `ALTER TABLE` statements
+- Configurable constraint suppression for `ARRAY<STRUCT>` column types
+
+### Changed
+- SQL table comments improved for clarity and consistency
+- JSON schemas updated with deprecation flags and improved property descriptions
+
+---
+
+## [0.61.0] — 2026-04-01
+
+### Added
+- SQL table generation: option to suppress constraints within `ARRAY<STRUCT>` types
+
+---
+
+## [0.60.0] — 2026-03-31
+
+### Added
+- SQL clustering columns include `studyType` and `studyCode`
+- Primary key, foreign key, and NOT NULL constraint generation for SQL tables
+
+---
+
+## [0.59.0] — 2026-03-24
+
+### Changed
+- Link property handling enhanced in BrAPI object generation
+
+---
+
+## [0.58.0] — 2026-03-19
+
+### Added
+- Jupyter notebook generation for primary entities (`generateNotebooks` option)
+- Notebook example arguments converted to single-quoted strings for consistency
+- Updated Python package structure with new sub-directories
+
+### Changed
+- `toSnakeCase` method refined for better acronym boundary detection
+- Python client generation and type handling improved
+- BrAPI class caching and dependency management refactored
+- REST generator options and endpoint validation enhanced
+- `searchTable` options added; Python generator updated for new endpoint handling
+
+---
+
+## [0.57.0] — 2026-02-24
+
+### Fixed
+- SQL DDL now emits `DROP TABLE IF EXISTS` before `CREATE TABLE` for cleaner re-runs
+
+---
+
+## [0.56.0] — 2026-02-07
+
+### Added
+- `snakeCaseTableNames` option for SQL generation
+- `pluralTableNames` option for SQL generation
+
+---
+
+## [0.55.0] — 2026-02-03
+
+### Added
+- New tests and options for SQL generation
+
+---
+
+## [0.54.0] — 2026-02-02
+
+### Fixed
+- Use absolute paths when writing SQL output files
+
+---
+
+## [0.53.0] — 2026-02-02
+
+### Fixed
+- Duplicate property issue in generated SQL output
+
+---
+
+## [0.52.0] — 2026-02-02
+
+### Fixed
+- BrAPI options parsing issue resolved
+
+---
+
+## [0.51.0] — 2026-02-01
+
+*Maintenance release — test improvements.*
+
+---
+
+## [0.50.0] — 2026-02-01
+
+*Maintenance/version bump release.*
+
+---
+
+## [0.49.0] — 2026-01-29
+
+### Added
+- R package generation: added `@family` and `@keywords` roxygen annotations
+- R generation: improved `toSnakeCase` conversion
+
+### Fixed
+- `GraphQLGenerator` no longer creates `GraphQLUnion` types for parameter and request types
+
+---
+
+## [0.48.0] — 2026-01-29
+
+### Added
+- OpenAPI / GraphQL comparison: compare across directories
+- Better output organisation — results written to separate files per comparison
+- Improved generator and comparator internals
+
+---
+
+## [0.47.0] — 2026-01-29
+
+*Version maintenance release.*
+
+---
+
+## [0.46.0] — 2026-01-28
+
+### Fixed
+- CLI version string fixed
+- Minor bug fixes
+
+---
+
+## [0.45.0] — 2026-01-22
+
+### Added
+- Examples generator (generate example payloads)
+- GraphQL comparison test
+
+### Fixed
+- Generator options parsing fix
+
+---
+
+## [0.44.0] — 2026-01-03
+
+### Added
+- Output directory deleted recursively before generation when overwrite is enabled
+
+---
+
+## [0.43.0] — 2026-01-03
+
+### Added
+- `version` sub-command added to CLI
+- logback logging configuration scoped to CLI module only
+
+---
+
+## [0.42.0] — 2026-01-03
+
+*Version/maintenance release.*
+
+---
+
+## [0.41.0] — 2026-01-03
+
+### Fixed
+- Generation options corrections
+
+---
+
+## [0.40.0] — 2026-01-02
+
+### Added
+- Initial SQL generation from JSON Schema (`generate -l SQL`)
+- Improved property description generation
+- Markdown generator options (`--overwrite` fix)
+- Example data from BrAPI test fixtures
+
+---
+
+## [0.39.0] — 2025-10-20
+
+### Added
+- `version` command in CLI
+- Improved documentation generation output
+- Password and client-ID support for secured endpoint queries
+
+---
+
+## [0.38.0] — 2025-10-15
+
+### Added
+- Bearer authentication support for Markdown generation from GraphQL schema; auth handling refactored
+
+---
+
+## [0.37.0] — 2025-09-14
+
+### Added
+- Comparison endpoint filters
+- Initial (untested) Controlled Vocabulary support
+- Supplemental OpenAPI spec support: include hand-crafted paths/schemas that cannot be auto-generated
+
+### Changed
+- Generator output made more consistent
+
+---
+
+## [0.36.0] — 2025-08-05
+
+Initial public release. Established Maven Central publishing workflow.
+
+### Capabilities at initial release
+- OpenAPI 3.0 JSON generation from BrAPI JSON Schema
+- GraphQL schema generation
+- OWL / OntModel generation
+- Markdown documentation generation
+- Compare generated OpenAPI against a reference spec
+- Analyse sub-command for schema analysis
+- CLI with `generate`, `compare`, `analyse`, `validate`, `markdown`, `examples` sub-commands

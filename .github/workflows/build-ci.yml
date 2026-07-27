@@ -1,0 +1,47 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    name: Build & Javadoc
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build & test
+        working-directory: ./java
+        run: ./gradlew build
+
+      - name: Generate Javadoc
+        working-directory: ./java
+        run: ./gradlew javadoc
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            java/**/build/reports/tests/
+            java/**/build/test-results/
+
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc
+          path: java/**/build/docs/javadoc/

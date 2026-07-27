@@ -564,39 +564,55 @@
                 "type" : "object",
                 "properties" : {
                     "active" : {
-                        "description" : "A flag to indicate if a Study is currently active and ongoing"
+                        "type" : "boolean",
+                        "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "nullable" : true
                     },
                     "additionalInfo" : {
                         "$ref" : "#/components/schemas/AdditionalInfo"
                     },
                     "commonCropName" : {
-                        "description" : "Common name for the crop associated with this study"
+                        "type" : "string",
+                        "description" : "Common name for the crop associated with this study",
+                        "nullable" : true
                     },
                     "contacts" : {
+                        "type" : "array",
                         "description" : "List of contact entities associated with this study",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/Contact"
                         }
                     },
                     "culturalPractices" : {
-                        "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study."
+                        "type" : "string",
+                        "description" : "MIAPPE V1.1 (DM-28) Cultural practices - General description of the cultural practices of the study.",
+                        "nullable" : true
                     },
                     "dataLinks" : {
+                        "type" : "array",
                         "description" : "List of links to extra data files associated with this study. Extra data could include notes, images, and reference data.",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/DataLink"
                         }
                     },
                     "documentationURL" : {
+                        "type" : "string",
                         "description" : "A URL to the human readable documentation of an object",
-                        "format" : "uri"
+                        "format" : "uri",
+                        "nullable" : true
                     },
                     "endDate" : {
+                        "type" : "string",
                         "description" : "The date the study ends\n\nMIAPPE V1.1 (DM-15) End date of study - Date and, if relevant, time when the experiment ended",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "environmentParameters" : {
+                        "type" : "array",
                         "description" : "Environmental parameters that were kept constant throughout the study and did not change between observation units.\n\nMIAPPE V1.1 (DM-57) Environment - Environmental parameters that were kept constant throughout the study and did not change between observation units or assays. Environment characteristics that vary over time, i.e. environmental variables, should be recorded as Observed Variables (see below).",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/EnvironmentParameter"
                         }
@@ -605,7 +621,9 @@
                         "$ref" : "#/components/schemas/ExperimentalDesign"
                     },
                     "externalReferences" : {
+                        "type" : "array",
                         "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ExternalReference"
                         }
@@ -617,18 +635,30 @@
                         "$ref" : "#/components/schemas/LastUpdate"
                     },
                     "license" : {
-                        "description" : "The usage license associated with the study data"
+                        "type" : "string",
+                        "description" : "The usage license associated with the study data",
+                        "nullable" : true
                     },
-                    "locationDbId" : { },
-                    "locationName" : { },
+                    "locationDbId" : {
+                        "type" : "string",
+                        "nullable" : true
+                    },
+                    "locationName" : {
+                        "type" : "string",
+                        "nullable" : true
+                    },
                     "observationLevels" : {
+                        "type" : "array",
                         "description" : "Observation levels indicate the granularity level at which the measurements are taken. `levelName` \ndefines the level, `levelOrder` defines where that level exists in the hierarchy of levels. \n`levelOrder`s lower numbers are at the top of the hierarchy (ie field > 0) and higher numbers are \nat the bottom of the hierarchy (ie plant > 6). \n\n**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n\nFor more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
+                        "nullable" : true,
                         "items" : {
                             "$ref" : "#/components/schemas/ObservationUnitHierarchyLevel"
                         }
                     },
                     "observationUnitsDescription" : {
-                        "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study."
+                        "type" : "string",
+                        "description" : "MIAPPE V1.1 (DM-25) Observation unit description - General description of the observation units in the study.",
+                        "nullable" : true
                     },
                     "observationVariableDbIds" : {
                         "type" : "array",
@@ -638,30 +668,42 @@
                         }
                     },
                     "seasons" : {
+                        "type" : "array",
                         "description" : "List of seasons over which this study was performed.",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "startDate" : {
+                        "type" : "string",
                         "description" : "The date this study started\n\nMIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started",
-                        "format" : "date-time"
+                        "format" : "date-time",
+                        "nullable" : true
                     },
                     "studyCode" : {
-                        "description" : "A short human readable code for a study"
+                        "type" : "string",
+                        "description" : "A short human readable code for a study",
+                        "nullable" : true
                     },
                     "studyDescription" : {
                         "type" : "string",
                         "description" : "The description of this study\n\nMIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study"
                     },
                     "studyName" : {
-                        "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study"
+                        "type" : "string",
+                        "description" : "The human readable name for a study\n\nMIAPPE V1.1 (DM-12) Study title - Human-readable text summarising the study",
+                        "nullable" : true
                     },
                     "studyPUI" : {
-                        "description" : "A permanent unique identifier associated with this study data. For example, a URI or DOI"
+                        "type" : "string",
+                        "description" : "A permanent unique identifier associated with this study data. For example, a URI or DOI",
+                        "nullable" : true
                     },
                     "studyType" : {
-                        "description" : "The type of study being performed. ex. \"Yield Trial\", etc"
+                        "type" : "string",
+                        "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "nullable" : true
                     },
                     "trialDbId" : {
                         "type" : "string"
@@ -676,7 +718,9 @@
                 "type" : "object",
                 "properties" : {
                     "active" : {
+                        "type" : "boolean",
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
+                        "nullable" : true,
                         "example" : true
                     },
                     "commonCropNames" : {
@@ -709,13 +753,17 @@
                         }
                     },
                     "germplasmDbIds" : {
+                        "type" : "array",
                         "description" : "List of IDs which uniquely identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "germplasmNames" : {
+                        "type" : "array",
                         "description" : "List of human readable names to identify germplasm to search for",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -782,13 +830,17 @@
                         }
                     },
                     "seasonDbIds" : {
+                        "type" : "array",
                         "description" : "The ID which uniquely identifies a season",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "sortBy" : {
+                        "type" : "string",
                         "description" : "Name of the field to sort by.",
+                        "nullable" : true,
                         "enum" : [
                             "studyDbId",
                             "trialDbId",
@@ -804,7 +856,9 @@
                         ]
                     },
                     "sortOrder" : {
+                        "type" : "string",
                         "description" : "Sort order direction. Ascending/Descending.",
+                        "nullable" : true,
                         "enum" : [
                             "ASC",
                             "DESC",
@@ -813,7 +867,9 @@
                         ]
                     },
                     "studyCodes" : {
+                        "type" : "array",
                         "description" : "A short human readable code for a study",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
@@ -833,13 +889,17 @@
                         }
                     },
                     "studyPUIs" : {
+                        "type" : "array",
                         "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }
                     },
                     "studyTypes" : {
+                        "type" : "array",
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
+                        "nullable" : true,
                         "items" : {
                             "type" : "string"
                         }

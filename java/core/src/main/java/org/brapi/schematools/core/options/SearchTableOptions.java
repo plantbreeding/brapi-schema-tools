@@ -2,14 +2,16 @@ package org.brapi.schematools.core.options;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.brapi.schematools.core.validiation.Validation;
 
 /**
  * Provides options for the generation of Search Table query methods
  * (POST search/&lt;entity&gt;/table endpoints that return a URL to a CSV/ZIP file).
  */
-public class SearchTableOptions extends AbstractSubOptions {
+public class SearchTableOptions extends AbstractRequestFilterOptions {
     @Getter(AccessLevel.PUBLIC)
+    @Setter(AccessLevel.PRIVATE)
     private String pathFormat;
 
     @Override
@@ -27,7 +29,7 @@ public class SearchTableOptions extends AbstractSubOptions {
         super.override(overrideOptions);
 
         if (overrideOptions.pathFormat != null) {
-            setSummaryFormat(overrideOptions.pathFormat);
+            setPathFormat(overrideOptions.pathFormat);
         }
     }
 }

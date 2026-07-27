@@ -26,7 +26,7 @@ public class OpenAPIComponentsReader {
 
         Components components = new Components();
         try {
-            return find(schemaDirectory, 3, this::schemaPathMatcher).map(this::readComponentFile).collect(Response.toList())
+            return find(schemaDirectory, 3, this::schemaPathMatcher).sorted().map(this::readComponentFile).collect(Response.toList())
                 .onSuccessDoWithResult(result -> result.forEach(c -> merge(components, c)))
                 .merge(Response.success(components));
         } catch (IOException | RuntimeException e) {
