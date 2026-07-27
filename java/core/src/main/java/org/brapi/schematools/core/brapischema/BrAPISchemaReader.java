@@ -123,7 +123,7 @@ public class BrAPISchemaReader {
         private Response<List<BrAPIClass>> readDirectories(Path schemaDirectory) {
 
             try (Stream<Path> schemas = find(schemaDirectory, 3, this::schemaPathMatcher)) {
-                return postProcessAndValidate(schemas.map(this::createBrAPISchemas).collect(Response.mergeLists()));
+                return postProcessAndValidate(schemas.sorted().map(this::createBrAPISchemas).collect(Response.mergeLists()));
             } catch (NoSuchFileException noSuchFileException) {
                 return fail(Response.ErrorType.VALIDATION, String.format("The schema directory '%s' does not exist", schemaDirectory));
             } catch (RuntimeException | IOException e) {
