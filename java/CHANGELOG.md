@@ -6,7 +6,14 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [Unreleased] — v0.79.0
+## [Unreleased] — v0.80.0
+
+### Fixed
+- **`PropertyOptions.override` now adds new parent-type keys** for the nested `linkPropertyFor`, `requiredPropertyFor` and `nullablePropertyFor` maps. Previously an override entry whose top-level key (the parent BrAPI type) did not already exist in the default options was silently discarded, so per-relationship link/required/nullable suppressions could only be declared for parent types already present in the defaults. Renamed or newly added parent types (e.g. a `SeedLot` → `InventoryLot` rename) can now register these overrides via the options file.
+
+---
+
+## [0.79.0]
 
 ### Added
 - **Multi-supplemental OpenAPI spec support**: `supplementalSpecifications` (list) option on `OpenAPIGeneratorOptions` allows multiple supplemental files to be merged into a single generation run; existing `supplementalSpecification` (single string) is still supported
