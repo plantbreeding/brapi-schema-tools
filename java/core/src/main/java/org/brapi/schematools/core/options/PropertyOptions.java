@@ -95,6 +95,12 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
                         else linkPropertyFor.get(key).put(innerKey, innerValue);
                     });
                     if (linkPropertyFor.get(key).isEmpty()) linkPropertyFor.put(key, new HashMap<>(value));
+                } else {
+                    Map<String, Boolean> merged = new HashMap<>();
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue != null) merged.put(innerKey, innerValue);
+                    });
+                    linkPropertyFor.put(key, merged);
                 }
             });
         }
@@ -109,6 +115,12 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
                         else requiredPropertyFor.get(key).put(innerKey, innerValue);
                     });
                     if (requiredPropertyFor.get(key).isEmpty()) requiredPropertyFor.put(key, new HashMap<>(value));
+                } else {
+                    Map<String, Boolean> merged = new HashMap<>();
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue != null) merged.put(innerKey, innerValue);
+                    });
+                    requiredPropertyFor.put(key, merged);
                 }
             });
         }
@@ -123,6 +135,12 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
                         else nullablePropertyFor.get(key).put(innerKey, innerValue);
                     });
                     if (nullablePropertyFor.get(key).isEmpty()) nullablePropertyFor.put(key, new HashMap<>(value));
+                } else {
+                    Map<String, Boolean> merged = new HashMap<>();
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue != null) merged.put(innerKey, innerValue);
+                    });
+                    nullablePropertyFor.put(key, merged);
                 }
             });
         }

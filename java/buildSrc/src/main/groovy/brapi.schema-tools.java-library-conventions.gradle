@@ -6,7 +6,11 @@ plugins {
 
 mavenPublishing {
     publishToMavenCentral(true)
-    signAllPublications()
+    // Signing is on by default (release pipeline). Pass -PskipSigning to allow
+    // `publishToMavenLocal` for local development without a PGP key.
+    if (!project.hasProperty("skipSigning")) {
+        signAllPublications()
+    }
 
     pom {
         name = "${project.group}:${project.name}"
