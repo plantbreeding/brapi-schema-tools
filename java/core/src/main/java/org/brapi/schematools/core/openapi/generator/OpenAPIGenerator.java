@@ -1120,7 +1120,7 @@ public class OpenAPIGenerator {
                             .collect(Response.toList())
                             .onSuccessDoWithResult(params -> params.forEach(operation::addParametersItem));
                     }
-                    return success();
+                    return success(Collections.emptyList());
                 })
                 .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
