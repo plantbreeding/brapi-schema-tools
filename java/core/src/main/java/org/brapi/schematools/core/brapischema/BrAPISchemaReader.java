@@ -330,9 +330,17 @@ public class BrAPISchemaReader {
                 }
 
                 if (referencedType instanceof BrAPIObjectType referencedObjectType) {
-                    if (referencedObjectType.getProperties().stream().noneMatch(childProperty -> property.getReferencedAttribute().equals(childProperty.getName()))) {
+                    Optional<BrAPIObjectProperty> referencedProperty = referencedObjectType.getProperties().stream()
+                        .filter(childProperty -> property.getReferencedAttribute().equals(childProperty.getName()))
+                        .findFirst();
+                    if (referencedProperty.isEmpty()) {
                         return fail(Response.ErrorType.VALIDATION, String.format("Property '%s' in type '%s' has a Referenced Attribute '%s', but the property does not exist in the referenced type '%s'",
                             property.getName(), brAPIObjectType.getName(), property.getReferencedAttribute(), referencedType.getName()));
+                    }
+                    BrAPIType backReferenceType = unwrapType(referencedProperty.get().getType());
+                    if (!brAPIObjectType.getName().equals(backReferenceType.getName())) {
+                        log.warn("Property '{}' in type '{}' has a Referenced Attribute '{}' in type '{}', but that attribute refers to type '{}' instead of '{}'",
+                            property.getName(), brAPIObjectType.getName(), property.getReferencedAttribute(), referencedType.getName(), backReferenceType.getName(), brAPIObjectType.getName());
                     }
                 } else {
                     return fail(Response.ErrorType.VALIDATION,
