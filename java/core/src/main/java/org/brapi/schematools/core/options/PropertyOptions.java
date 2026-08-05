@@ -456,7 +456,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * @param parentTypeName The BrAPI parent object type name
      * @param propertyName The BrAPI property name
      * @param defaultValue The default value
-     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * @return {@code true} if the property is nullable, {@code false} if the property is not nullable,
      * {@code null} if the nullable status will not be set
      */
     @JsonIgnore
@@ -475,7 +475,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      *
      * @param parentType The BrAPI parent object type
      * @param property The BrAPI property
-     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * @return {@code true} if the property is nullable, {@code false} if the property is not nullable,
      * {@code null} if the nullable status will not be set
      */
     @JsonIgnore
@@ -507,7 +507,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      * @param parentTypeName The BrAPI parent object type name
      * @param propertyName The BrAPI property name
      * @param defaultValue The default value
-     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * @return {@code true} if the property is nullable, {@code false} if the property is not nullable,
      * {@code null} if the nullable status will not be set
      */
     @JsonIgnore
@@ -526,7 +526,7 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
      *
      * @param parentType The BrAPI parent object type
      * @param property The BrAPI property
-     * @return {@code true} if thr property is nullable, {@code false} if thr property is not nullable,
+     * @return {@code true} if the property is nullable, {@code false} if the property is not nullable,
      * {@code null} if the nullable status will not be set
      */
     @JsonIgnore

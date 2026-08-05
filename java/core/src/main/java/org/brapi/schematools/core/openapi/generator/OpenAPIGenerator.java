@@ -1111,6 +1111,17 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
+                .merge(() -> {
+                    BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
+                    if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                        return brAPIObjectType.getProperties().stream()
+                            .filter(property -> options.getGetWithId().isUsingPropertyFromRequestFor(type, property))
+                            .map(this::createListGetParameter)
+                            .collect(Response.toList())
+                            .onSuccessDoWithResult(params -> params.forEach(operation::addParametersItem));
+                    }
+                    return success(Collections.emptyList());
+                })
                 .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
@@ -1874,7 +1885,7 @@ public class OpenAPIGenerator {
                         fail(Response.ErrorType.VALIDATION, String.format("Property '%s' has relationshipType '%s', referenced type '%s' is an array",
                             property.getName(), relationshipType, brAPIArrayType.getName()));
                     case ONE_TO_MANY, MANY_TO_MANY -> LinkType.ID.equals(linkType) ?
-                        createArrayOfIdsProperty(objectSchema, property, brAPIArrayType, itemType) :
+                        createArrayOfIdsProperty(objectSchema, parentType, property, brAPIArrayType, itemType) :
                         createArrayProperty(objectSchema, property, brAPIArrayType);
                 };
             }
@@ -1994,12 +2005,12 @@ public class OpenAPIGenerator {
             }
         }
 
-        private Response<Map<String, Schema>> createArrayOfIdsProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType, BrAPIType itemType) {
+        private Response<Map<String, Schema>> createArrayOfIdsProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType, BrAPIType itemType) {
             return options.getProperties().getIdPropertyFor(itemType)
                 .mapResult(BrAPIObjectProperty::getType)
                 .mapResultToResponse(this::createArraySchemaForType)
                 .onSuccessDoWithResult(schema -> updateDescription(schema, property, itemType))
-                .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema), schema -> schema)
+                .mapResultOnConditionOr(Boolean.TRUE.equals(options.getProperties().getId().getNullableForProperty(parentType, property)), schema -> makeNullable(schema), schema -> schema)
                 .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(arraySchema -> Collections.singletonMap(options.getProperties().getIdsPropertyNameFor(property), arraySchema))
                 .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(options.getProperties().getIdsPropertyNameFor(property)))
