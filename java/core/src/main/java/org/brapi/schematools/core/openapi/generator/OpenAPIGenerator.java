@@ -1111,6 +1111,17 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
+                .merge(() -> {
+                    BrAPIClass requestClass = brAPIClassCache.getBrAPIRequestClass(type);
+                    if (requestClass instanceof BrAPIObjectType brAPIObjectType) {
+                        return brAPIObjectType.getProperties().stream()
+                            .filter(property -> options.getGetWithId().isUsingPropertyFromRequestFor(type, property))
+                            .map(this::createListGetParameter)
+                            .collect(Response.toList())
+                            .onSuccessDoWithResult(params -> params.forEach(operation::addParametersItem));
+                    }
+                    return success();
+                })
                 .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
