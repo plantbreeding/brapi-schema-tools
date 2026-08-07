@@ -2931,7 +2931,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "attributeCategory" : {
                         "type" : "string",
@@ -3008,7 +3013,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -3519,7 +3529,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "crossAttributes" : {
                         "type" : "array",
@@ -3535,7 +3550,12 @@
                         "nullable" : true
                     },
                     "crossType" : {
-                        "$ref" : "#/components/schemas/CrossType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossType"
+                            }
+                        ]
                     },
                     "crossingProjectDbId" : {
                         "type" : "string",
@@ -3553,10 +3573,20 @@
                         }
                     },
                     "parent1" : {
-                        "$ref" : "#/components/schemas/CrossParent"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossParent"
+                            }
+                        ]
                     },
                     "parent2" : {
-                        "$ref" : "#/components/schemas/CrossParent"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossParent"
+                            }
+                        ]
                     },
                     "plannedCrossDbId" : {
                         "type" : "string",
@@ -3713,7 +3743,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -4208,7 +4243,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "attributeCategory" : {
                         "type" : "string",
@@ -4281,7 +4321,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -4819,7 +4864,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "attributeDbId" : {
                         "type" : "string",
@@ -5481,7 +5531,12 @@
                         "nullable" : true
                     },
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "biologicalStatusOfAccessionCode" : {
                         "type" : "string",
@@ -5672,7 +5727,12 @@
                         "nullable" : true
                     },
                     "coordinates" : {
-                        "$ref" : "#/components/schemas/GeoJSON"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GeoJSON"
+                            }
+                        ]
                     }
                 },
                 "description" : "Information for material (orchard, natural sites, ...). Geographic identification of the plants from which seeds or cutting have been taken to produce that germplasm."
@@ -6291,7 +6351,12 @@
                         }
                     },
                     "listType" : {
-                        "$ref" : "#/components/schemas/ListType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ListType"
+                            }
+                        ]
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -6359,7 +6424,12 @@
                         }
                     },
                     "coordinates" : {
-                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                            }
+                        ]
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -7321,7 +7391,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "breedingMethodDbId" : {
                         "type" : "string",
@@ -7904,10 +7979,20 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "crossType" : {
-                        "$ref" : "#/components/schemas/CrossType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossType"
+                            }
+                        ]
                     },
                     "crossingProjectDbId" : {
                         "type" : "string",
@@ -7926,10 +8011,20 @@
                         }
                     },
                     "parent1" : {
-                        "$ref" : "#/components/schemas/CrossParent"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossParent"
+                            }
+                        ]
                     },
                     "parent2" : {
-                        "$ref" : "#/components/schemas/CrossParent"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/CrossParent"
+                            }
+                        ]
                     },
                     "plannedCrossName" : {
                         "type" : "string",
@@ -8737,7 +8832,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "amount" : {
                         "type" : "number",
@@ -8902,7 +9002,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "amount" : {
                         "type" : "number",
@@ -9556,7 +9661,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -9609,7 +9719,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"

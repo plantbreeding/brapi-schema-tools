@@ -246,6 +246,9 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         builder.nullable(options.getNullableForProperty(parentType, property)) ;
         builder.required(options.getRequiredForProperty(parentType, property)) ;
         builder.description(compositeDescription(property.getDescription(), childProperty.getDescription())) ;
+        if (property.isDeprecated()) {
+            builder.deprecated(true) ;
+        }
 
         return builder.build();
     }

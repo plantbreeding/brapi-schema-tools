@@ -500,7 +500,12 @@
                         "nullable" : true
                     },
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "biologicalStatusOfAccessionCode" : {
                         "type" : "string",

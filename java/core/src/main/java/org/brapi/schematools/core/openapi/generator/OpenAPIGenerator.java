@@ -1962,6 +1962,11 @@ public class OpenAPIGenerator {
         }
 
         private Schema makeNullable(Schema schema) {
+            if (schema.get$ref() != null) {
+                // In OpenAPI 3.0, $ref schemas cannot have sibling properties.
+                // Wrap in allOf so nullable: true is preserved alongside the ref.
+                return new Schema<>().nullable(true).addAllOfItem(schema);
+            }
             Set<String> types = new LinkedHashSet<>();
             types.add("null");
             if (schema.getType() != null) {
@@ -1999,7 +2004,9 @@ public class OpenAPIGenerator {
             }
 
             if (linkProperties.isEmpty()) {
-                return createSchemaForProperty(property, brAPIObjectType).mapResult(schema -> Collections.singletonMap(property.getName(), schema));
+                return createSchemaForProperty(property, brAPIObjectType)
+                        .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema), schema -> schema)
+                        .mapResult(schema -> Collections.singletonMap(property.getName(), schema));
             } else {
                 return createLinkingProperties(linkProperties, property.isNullable());
             }
@@ -2033,6 +2040,7 @@ public class OpenAPIGenerator {
 
             return linkProperties.stream().map(linkProperty -> createSchemaForType(linkProperty.getType())
                     .mapResultOnConditionOr(linkProperty.isNullable(), schema -> makeNullable(schema), schema -> schema)
+                    .mapResultOnConditionOr(linkProperty.isDeprecated(), schema -> makeDeprecated(schema), schema -> schema)
                     .onSuccessDoWithResult(schema -> schemas.put(linkProperty.getName(), schema)))
                 .collect(Response.toList())
                 .merge(() -> success(schemas));
