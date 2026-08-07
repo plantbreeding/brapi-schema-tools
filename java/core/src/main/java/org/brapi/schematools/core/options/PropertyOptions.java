@@ -464,7 +464,9 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         Map<String, Boolean> map = requiredPropertyFor.get(parentTypeName);
         if (map != null) {
             Boolean value = map.get(propertyName);
-            return value != null && value ;
+            if (value != null) {
+                return value ;
+            }
         }
 
         return defaultValue ;
@@ -515,7 +517,9 @@ public class PropertyOptions implements Options, ValidatableAgainstCache {
         Map<String, Boolean> map = nullablePropertyFor.get(parentTypeName);
         if (map != null) {
             Boolean value = map.get(propertyName);
-            return value != null && value ;
+            if (value != null) {
+                return value ;
+            }
         }
 
         return defaultValue ;
