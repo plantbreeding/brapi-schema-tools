@@ -3710,7 +3710,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "attributeCategory" : {
                         "type" : "string",
@@ -3787,7 +3792,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -3881,12 +3891,18 @@
                 "required" : [
                     "callSetDbId",
                     "variantDbId",
+                    "variantName",
                     "variantSetDbId"
                 ],
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "callSetDbId" : {
                         "type" : "string"
@@ -4077,7 +4093,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "callSetDbId" : {
                         "type" : "string",
@@ -4694,7 +4715,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "comments" : {
                         "type" : "string",
@@ -5650,7 +5676,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "linkageGroupName" : {
                         "type" : "string",
@@ -5750,7 +5781,12 @@
                         }
                     },
                     "listType" : {
-                        "$ref" : "#/components/schemas/ListType"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ListType"
+                            }
+                        ]
                     },
                     "programDbIds" : {
                         "type" : "array",
@@ -5844,7 +5880,12 @@
                         }
                     },
                     "coordinates" : {
-                        "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GeoJSONSearchArea"
+                            }
+                        ]
                     },
                     "countryCodes" : {
                         "type" : "array",
@@ -5936,7 +5977,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "linkageGroupName" : {
                         "type" : "string",
@@ -7298,7 +7344,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -7745,7 +7796,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -8169,7 +8225,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "assemblyPUI" : {
                         "type" : "string",
@@ -8521,7 +8582,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "column" : {
                         "type" : "integer",
@@ -9612,7 +9678,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -9665,7 +9736,12 @@
                         "$ref" : "#/components/schemas/Method"
                     },
                     "ontologyReference" : {
-                        "$ref" : "#/components/schemas/OntologyReference"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        ]
                     },
                     "scale" : {
                         "$ref" : "#/components/schemas/Scale"
@@ -9881,7 +9957,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "alternateBases" : {
                         "type" : "array",
@@ -10303,7 +10384,12 @@
                 "type" : "object",
                 "properties" : {
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "analysis" : {
                         "type" : "array",

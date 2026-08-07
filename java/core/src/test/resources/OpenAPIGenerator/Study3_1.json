@@ -569,7 +569,12 @@
                         "nullable" : true
                     },
                     "additionalInfo" : {
-                        "$ref" : "#/components/schemas/AdditionalInfo"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/AdditionalInfo"
+                            }
+                        ]
                     },
                     "commonCropName" : {
                         "type" : "string",
@@ -618,7 +623,12 @@
                         }
                     },
                     "experimentalDesign" : {
-                        "$ref" : "#/components/schemas/ExperimentalDesign"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/ExperimentalDesign"
+                            }
+                        ]
                     },
                     "externalReferences" : {
                         "type" : "array",
@@ -629,10 +639,20 @@
                         }
                     },
                     "growthFacility" : {
-                        "$ref" : "#/components/schemas/GrowthFacility"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/GrowthFacility"
+                            }
+                        ]
                     },
                     "lastUpdate" : {
-                        "$ref" : "#/components/schemas/LastUpdate"
+                        "nullable" : true,
+                        "allOf" : [
+                            {
+                                "$ref" : "#/components/schemas/LastUpdate"
+                            }
+                        ]
                     },
                     "license" : {
                         "type" : "string",
