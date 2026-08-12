@@ -6,9 +6,16 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## v0.83.0
+## [Unreleased] — v0.84.0
 
-### Added — 2026-08-07
+### Added
+- **Selective property exclusion from generated POST/PUT request schemas**: new `propertyFromSchemaFor` option on the update sub-options (e.g. `post.propertyFromSchemaFor` / `put.propertyFromSchemaFor`) lets you omit specific properties — keyed by type and property name, with dot-notation for nested properties (e.g. `audit.personName`) — from the generated NewRequest/request-body schema, including their `required` entries. All properties are included by default unless a property is explicitly set to `false`.
+
+---
+
+## [0.83.0] — 2026-08-07
+
+### Added
 - **Deprecated property propagation**: properties marked `deprecated` in the source schema now emit `deprecated: true` in the generated OpenAPI, for both link properties and composite/embedded properties
 
 ### Fixed

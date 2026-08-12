@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.brapi.schematools.core.model.BrAPIObjectProperty;
 import org.brapi.schematools.core.model.BrAPIObjectType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.utils.BrAPIClassCacheBuilder;
@@ -32,6 +33,9 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> addNotFoundResponseForMultipleFor = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> propertyFromSchemaFor = new HashMap<>();
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
      *
@@ -71,6 +75,22 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
                 else addNotFoundResponseForMultipleFor.put(key, value);
             });
         }
+
+        if (overrideOptions.propertyFromSchemaFor != null) {
+            overrideOptions.propertyFromSchemaFor.forEach((key, value) -> {
+                if (value == null) {
+                    propertyFromSchemaFor.remove(key);
+                } else if (propertyFromSchemaFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) propertyFromSchemaFor.get(key).remove(innerKey);
+                        else propertyFromSchemaFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (propertyFromSchemaFor.get(key).isEmpty()) propertyFromSchemaFor.remove(key);
+                } else {
+                    propertyFromSchemaFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
     }
 
     @Override
@@ -104,6 +124,14 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
         addNotFoundResponseForMultipleFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'addNotFoundResponseForMultipleFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        propertyFromSchemaFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'propertyFromSchemaFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -278,6 +306,52 @@ public class AbstractUpdateSubOptions extends AbstractSubOptions {
     @JsonIgnore
     public final boolean isGeneratingEndpointNameWithIdFor(@NonNull BrAPIObjectType type) {
         return isGeneratingEndpointNameWithIdFor(type.getName());
+    }
+
+    /**
+     * Determines if a property should be included in the generated NewRequest schema for a given type.
+     * By default, all properties are included unless explicitly set to {@code false}.
+     *
+     * @param typeName     the name of the primary model
+     * @param propertyName the name of the property (supports dot-notation for nested properties, e.g. "audit.personName")
+     * @return {@code true} if the property should be included
+     */
+    @JsonIgnore
+    public final boolean isUsingPropertyFromSchemaFor(@NonNull String typeName, @NonNull String propertyName) {
+        Map<String, Boolean> map = propertyFromSchemaFor.get(typeName);
+        if (map != null) {
+            Boolean value = map.get(propertyName);
+            if (value != null) return value;
+        }
+        return true;
+    }
+
+    /**
+     * Determines if a property should be included in the generated NewRequest schema for a given type.
+     *
+     * @param type     the primary model
+     * @param property the property
+     * @return {@code true} if the property should be included
+     */
+    @JsonIgnore
+    public final boolean isUsingPropertyFromSchemaFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
+        return isUsingPropertyFromSchemaFor(type.getName(), property.getName());
+    }
+
+    /**
+     * Sets whether a property should be included in the generated NewRequest schema for a given type.
+     *
+     * @param typeName              the name of the primary model
+     * @param propertyName          the name of the property
+     * @param usePropertyFromSchema {@code true} if the property should be included
+     * @return this
+     */
+    @JsonIgnore
+    public final AbstractUpdateSubOptions setUsingPropertyFromSchemaFor(@NonNull String typeName, @NonNull String propertyName, boolean usePropertyFromSchema) {
+        propertyFromSchemaFor
+            .computeIfAbsent(typeName, k -> new HashMap<>())
+            .put(propertyName, usePropertyFromSchema);
+        return this;
     }
 
     /**
