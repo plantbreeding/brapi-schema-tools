@@ -1688,7 +1688,25 @@ public class OpenAPIGenerator {
             }
 
             return createObjectSchema(type,
-                type.getProperties().stream().filter(brAPIObjectProperty -> !brAPIObjectProperty.getName().equals(idParameter)).toList()) ;
+                type.getProperties().stream()
+                    .filter(brAPIObjectProperty -> !brAPIObjectProperty.getName().equals(idParameter))
+                    .filter(brAPIObjectProperty -> options.getPost().isUsingPropertyFromSchemaFor(type, brAPIObjectProperty))
+                    .toList())
+                .mapResult(schema -> {
+                    if (schema.getProperties() != null) {
+                        @SuppressWarnings("unchecked")
+                        java.util.Map<String, ?> schemaProps = (java.util.Map<String, ?>) schema.getProperties();
+                        schemaProps.keySet().removeIf(key ->
+                            !options.getPost().isUsingPropertyFromSchemaFor(type.getName(), key));
+                        if (schema.getRequired() != null) {
+                            @SuppressWarnings("unchecked")
+                            java.util.List<String> required = (java.util.List<String>) schema.getRequired();
+                            required.removeIf(req ->
+                                !options.getPost().isUsingPropertyFromSchemaFor(type.getName(), req));
+                        }
+                    }
+                    return schema;
+                }) ;
         }
 
         private Response<Schema> createSearchTableRequestSchemaForType(BrAPIObjectType type) {
