@@ -9,7 +9,12 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 ## [0.85.0] — 2026-08-18
 
 ### Added
-- **Selective property exclusion from generated POST/PUT request schemas**: new `propertyFromSchemaFor` option on the update sub-options (e.g. `post.propertyFromSchemaFor` / `put.propertyFromSchemaFor`) lets you omit specific properties — keyed by type and property name, with dot-notation for nested properties (e.g. `audit.personName`) — from the generated NewRequest/request-body schema, including their `required` entries. All properties are included by default unless a property is explicitly set to `false`.
+- New Markdown options for interface and response class generation
+
+### Fixed
+- Markdown Generator now only gererates files for primary classes. Response, Request, Parameter and Interface classes are only generated 
+if explicitly included in the Markdown options. 
+
 
 ---
 
