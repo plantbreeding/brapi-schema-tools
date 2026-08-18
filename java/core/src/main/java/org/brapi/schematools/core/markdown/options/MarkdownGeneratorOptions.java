@@ -30,6 +30,8 @@ public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
     private Boolean generateDuplicateProperties;
     private Boolean generateParameterClasses;
     private Boolean generateRequestClasses;
+    private Boolean generateInterfaceClasses;
+    private Boolean generateResponseClasses;
 
     /**
      * Load the default options
@@ -167,6 +169,26 @@ public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
     }
 
     /**
+     * Determines if the Generator Markdown for interfaces
+     *
+     * @return {@code true} if the Generator Markdown for interfaces
+     * {@code false} otherwise
+     */
+    public final boolean isGeneratingForInterfaces() {
+        return generateInterfaceClasses != null && generateInterfaceClasses;
+    }
+
+    /**
+     * Determines if the Generator Markdown for response object classes
+     *
+     * @return {@code true} if the Generator Markdown for response object classes
+     * {@code false} otherwise
+     */
+    public final boolean isGeneratingForResponses() {
+        return generateResponseClasses != null && generateResponseClasses;
+    }
+
+    /**
      * Determines if the Generator Markdown for properties of an object class if the
      * property is reused across classes or alternatively if there is a duplicate property,
      * then only one markdown file is created in the
@@ -189,8 +211,8 @@ public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public final boolean isGeneratingFor(@NonNull BrAPIType type) {
         if (type instanceof BrAPIClass brAPIClass) {
-       Boolean value = getGenerateFor().get(brAPIClass.getName());
-           return value != null ? value : isGeneratingForClass(brAPIClass) ;
+            Boolean value = getGenerateFor().get(brAPIClass.getName());
+            return value != null ? value : isGeneratingForClass(brAPIClass);
         } else {
             return isGeneratingFor(type.getName());
         }
@@ -204,6 +226,14 @@ public class MarkdownGeneratorOptions extends AbstractMainGeneratorOptions {
 
             if (brAPIClass.getMetadata().isRequest()) {
                 return isGeneratingForRequests() ;
+            }
+
+            if (brAPIClass.getMetadata().isResponse()) {
+                return isGeneratingForResponses() ;
+            }
+
+            if (brAPIClass.getMetadata().isInterfaceClass()) {
+                return isGeneratingForInterfaces() ;
             }
         }
 
