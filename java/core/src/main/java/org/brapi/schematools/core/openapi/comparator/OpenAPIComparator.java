@@ -3,7 +3,10 @@ package org.brapi.schematools.core.openapi.comparator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -86,9 +89,9 @@ public class OpenAPIComparator {
     public Response<ChangedOpenApi> openApiCompare(Path firstPath, Path secondPath) {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             try {
-                if (options.isIgnoringDescriptions()) {
-                    String firstContent = stripDescriptionsFromPath(firstPath);
-                    String secondContent = stripDescriptionsFromPath(secondPath);
+                if (needsPreprocess()) {
+                    String firstContent = preprocessFromPath(firstPath);
+                    String secondContent = preprocessFromPath(secondPath);
                     return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions())));
                 }
                 return Response.success(filterDiff(OpenApiCompare.fromFiles(firstPath.toFile(), secondPath.toFile())));
@@ -124,11 +127,11 @@ public class OpenAPIComparator {
         if (Files.isRegularFile(firstPath) && Files.isRegularFile(secondPath)) {
             try {
                 boolean isYaml = firstPath.getFileName().toString().endsWith(".yaml") || secondPath.getFileName().toString().endsWith(".yaml");
-                if (options.isIgnoringDescriptions()) {
-                    Path strippedFirst = writeStripped(firstPath);
-                    Path strippedSecond = writeStripped(secondPath);
+                if (needsPreprocess()) {
+                    Path strippedFirst = writePreprocessed(firstPath);
+                    Path strippedSecond = writePreprocessed(secondPath);
                     try {
-                        // stripped files are always written as JSON
+                        // preprocessed files are always written as JSON
                         return Response.success(filterDiff(JsonDiffCompare.fromFilesJSON(strippedFirst, strippedSecond)));
                     } finally {
                         Files.deleteIfExists(strippedFirst);
@@ -201,12 +204,12 @@ public class OpenAPIComparator {
     public Response<ChangedOpenApi> compare(String firstContent, String secondContent) {
         if (StringUtils.isNotBlank(firstContent) && StringUtils.isNotBlank(secondContent)) {
             try {
-                if (options.isIgnoringDescriptions()) {
-                    firstContent = stripDescriptionsFromString(firstContent);
-                    secondContent = stripDescriptionsFromString(secondContent);
+                if (needsPreprocess()) {
+                    firstContent = preprocessFromString(firstContent);
+                    secondContent = preprocessFromString(secondContent);
                 }
             } catch (IOException e) {
-                return Response.fail(Response.ErrorType.VALIDATION, "Failed to strip descriptions: " + e.getMessage());
+                return Response.fail(Response.ErrorType.VALIDATION, "Failed to preprocess OpenAPI content: " + e.getMessage());
             }
             return Response.success(filterDiff(OpenApiCompare.fromContents(firstContent, secondContent, null, createOptions()))) ;
         } else {
@@ -242,6 +245,23 @@ public class OpenAPIComparator {
         return OpenApiDiffOptions.builder().build();
     }
 
+    private boolean needsPreprocess() {
+        return options.isIgnoringDescriptions() || options.isNormalizingNullableSchemas();
+    }
+
+    /**
+     * Applies configured in-place pre-processing (description stripping and/or nullable schema
+     * normalisation) to a loaded OpenAPI document tree.
+     */
+    private void preprocess(JsonNode node) {
+        if (options.isNormalizingNullableSchemas()) {
+            normalizeNullableSchemas(node);
+        }
+        if (options.isIgnoringDescriptions()) {
+            stripDescriptions(node);
+        }
+    }
+
     /**
      * Recursively removes all description and summary fields from a JSON node (in-place).
      */
@@ -259,22 +279,169 @@ public class OpenAPIComparator {
     }
 
     /**
-     * Loads a JSON or YAML file, strips description/summary fields, and returns the JSON string.
+     * Recursively rewrites equivalent nullable schema encodings to a canonical form so that
+     * openapi-diff does not report false type changes such as {@code object -> null}.
+     * <p>
+     * Canonical form for a simple nullable reference/schema:
+     * {@code { "allOf": [ &lt;non-null schema&gt; ], "nullable": true }}
+     * <p>
+     * Recognised source encodings:
+     * <ul>
+     *   <li>{@code anyOf}/{@code oneOf}: exactly one non-null member plus a pure {@code {type: null}} member</li>
+     *   <li>{@code type: ["object","null"]} (or other single non-null type + null)</li>
+     *   <li>bare {@code $ref} with sibling {@code nullable: true} (invalid OpenAPI 3.0, still seen in the wild)</li>
+     * </ul>
+     * Multi-member unions and genuine non-nullable schemas are left unchanged.
+     */
+    private void normalizeNullableSchemas(JsonNode node) {
+        if (node == null || node.isNull()) {
+            return;
+        }
+
+        if (node.isObject()) {
+            ObjectNode obj = (ObjectNode) node;
+
+            // Recurse into children first so nested schemas are canonical before parent rewrite.
+            Iterator<Map.Entry<String, JsonNode>> fields = obj.fields();
+            List<JsonNode> children = new ArrayList<>();
+            while (fields.hasNext()) {
+                children.add(fields.next().getValue());
+            }
+            children.forEach(this::normalizeNullableSchemas);
+
+            rewriteNullableComposedSchema(obj, "anyOf");
+            rewriteNullableComposedSchema(obj, "oneOf");
+            rewriteNullableTypeArray(obj);
+            rewriteBareNullableRef(obj);
+        } else if (node.isArray()) {
+            node.forEach(this::normalizeNullableSchemas);
+        }
+    }
+
+    private void rewriteNullableComposedSchema(ObjectNode obj, String composedKeyword) {
+        JsonNode composed = obj.get(composedKeyword);
+        if (!(composed instanceof ArrayNode arrayNode) || arrayNode.size() < 2) {
+            return;
+        }
+
+        JsonNode nonNullMember = null;
+        int nullMemberCount = 0;
+        int nonNullMemberCount = 0;
+
+        for (JsonNode member : arrayNode) {
+            if (isPureNullSchema(member)) {
+                nullMemberCount++;
+            } else {
+                nonNullMemberCount++;
+                nonNullMember = member;
+            }
+        }
+
+        if (nullMemberCount != 1 || nonNullMemberCount != 1 || nonNullMember == null) {
+            return;
+        }
+
+        // Preserve sibling keywords (description, example, etc.) and replace the composed union.
+        obj.remove(composedKeyword);
+        ArrayNode allOf = obj.putArray("allOf");
+        allOf.add(nonNullMember.deepCopy());
+        obj.set("nullable", BooleanNode.TRUE);
+
+        // Drop an explicit type:null leftover if present on the parent from partial merges.
+        if (obj.has("type") && obj.get("type").isTextual() && "null".equals(obj.get("type").asText())) {
+            obj.remove("type");
+        }
+    }
+
+    private void rewriteNullableTypeArray(ObjectNode obj) {
+        JsonNode typeNode = obj.get("type");
+        if (!(typeNode instanceof ArrayNode typeArray) || typeArray.size() < 2) {
+            return;
+        }
+
+        String nonNullType = null;
+        boolean hasNull = false;
+        int nonNullCount = 0;
+
+        for (JsonNode entry : typeArray) {
+            if (!entry.isTextual()) {
+                return;
+            }
+            String value = entry.asText();
+            if ("null".equals(value)) {
+                hasNull = true;
+            } else {
+                nonNullCount++;
+                nonNullType = value;
+            }
+        }
+
+        if (!hasNull || nonNullCount != 1 || nonNullType == null) {
+            return;
+        }
+
+        obj.set("type", TextNode.valueOf(nonNullType));
+        obj.set("nullable", BooleanNode.TRUE);
+    }
+
+    private void rewriteBareNullableRef(ObjectNode obj) {
+        if (!obj.has("$ref") || !obj.path("nullable").asBoolean(false)) {
+            return;
+        }
+        // OpenAPI 3.0 disallows siblings of $ref; wrap so nullable is preserved consistently.
+        if (obj.has("allOf") || obj.has("anyOf") || obj.has("oneOf")) {
+            return;
+        }
+
+        String ref = obj.get("$ref").asText();
+        obj.remove("$ref");
+        ArrayNode allOf = obj.putArray("allOf");
+        ObjectNode refNode = mapper.createObjectNode();
+        refNode.put("$ref", ref);
+        allOf.add(refNode);
+        obj.set("nullable", BooleanNode.TRUE);
+    }
+
+    private boolean isPureNullSchema(JsonNode node) {
+        if (node == null || !node.isObject()) {
+            return false;
+        }
+        ObjectNode obj = (ObjectNode) node;
+
+        JsonNode typeNode = obj.get("type");
+        boolean typeIsNull = typeNode != null && typeNode.isTextual() && "null".equals(typeNode.asText());
+        if (!typeIsNull) {
+            return false;
+        }
+
+        // Allow only null-type marker fields; anything else is a richer schema.
+        Iterator<String> fieldNames = obj.fieldNames();
+        while (fieldNames.hasNext()) {
+            String name = fieldNames.next();
+            if (!"type".equals(name) && !"nullable".equals(name) && !"description".equals(name) && !"title".equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Loads a JSON or YAML file, applies pre-processing, and returns the JSON string.
      * Used for OpenApiCompare (fromContents) where format conversion is safe.
      */
-    private String stripDescriptionsFromPath(Path sourcePath) throws IOException {
+    private String preprocessFromPath(Path sourcePath) throws IOException {
         JsonNode node = readAsJsonNode(sourcePath);
-        stripDescriptions(node);
+        preprocess(node);
         return mapper.writeValueAsString(node);
     }
 
     /**
-     * Loads a JSON or YAML file, strips description/summary fields, writes to a temp JSON file, and returns its path.
+     * Loads a JSON or YAML file, applies pre-processing, writes to a temp JSON file, and returns its path.
      * Used for JsonDiff (fromFilesJSON) where temp files are needed.
      */
-    private Path writeStripped(Path sourcePath) throws IOException {
+    private Path writePreprocessed(Path sourcePath) throws IOException {
         JsonNode node = readAsJsonNode(sourcePath);
-        stripDescriptions(node);
+        preprocess(node);
         Path tmp = Files.createTempFile("brapi-compare-", ".json");
         mapper.writeValue(tmp.toFile(), node);
         return tmp;
@@ -289,12 +456,12 @@ public class OpenAPIComparator {
     }
 
     /**
-     * Parses a JSON or YAML string, strips description/summary fields, and returns the modified JSON string.
+     * Parses a JSON or YAML string, applies pre-processing, and returns the modified JSON string.
      */
-    private String stripDescriptionsFromString(String content) throws IOException {
+    private String preprocessFromString(String content) throws IOException {
         // YAMLMapper can parse both YAML and JSON
         JsonNode node = new com.fasterxml.jackson.dataformat.yaml.YAMLMapper().readTree(content);
-        stripDescriptions(node);
+        preprocess(node);
         return mapper.writeValueAsString(node);
     }
 

@@ -1,0 +1,54 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Nullable Ref Fixture",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/locations": {
+      "get": {
+        "operationId": "getLocations",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "coordinates": {
+                      "description": "Search area",
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/geoJSONSearchArea"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "geoJSONSearchArea": {
+        "type": "object",
+        "properties": {
+          "geometry": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

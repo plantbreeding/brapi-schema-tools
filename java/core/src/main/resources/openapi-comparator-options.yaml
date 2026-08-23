@@ -11,3 +11,6 @@ ignoreMissingEndpoints:
     - /vendor/\S+
 ignoreDepreciatedEndpoints: true
 ignoreDescriptions: true
+# Canonicalise equivalent nullable $ref encodings (anyOf/oneOf + null vs allOf + nullable)
+# so openapi-diff does not report false type changes (object -> null).
+normalizeNullableSchemas: true
