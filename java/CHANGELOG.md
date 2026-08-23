@@ -6,10 +6,14 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.86.0] — 2026-08-23
+## [0.87.0] — 2026-08-23
 
 ### Fixed
 - **OpenAPI comparator `allOf` inheritance**: before comparison, local component-schema `$ref`/`allOf` compositions are flattened by merging inherited `properties` and `required` fields. Equivalent flattened and composed schemas no longer produce false endpoint-wide deletions, such as `metadata.datafiles`, `metadata.pagination`, and `metadata.status`.
+- **OpenAPI table responses**: generated table endpoints now reference their configured `*Table` schema in the response `result`, rather than the primary entity schema.
+
+### Added
+- **Response token pagination metadata**: response classes can declare `brapi-metadata.tokenPagination: true`; generated OpenAPI wrappers then reference `metadataTokenPagination` instead of ordinary `metadata`.
 
 ---
 

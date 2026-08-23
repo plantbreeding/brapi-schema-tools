@@ -819,6 +819,8 @@ public class BrAPISchemaReader {
                 .onSuccessDoWithResult(value -> builder.interfaceClass(Boolean.TRUE.equals(value)))
                 .merge(findBooleanChildValue(path, metadata, "response", false, false))
                 .onSuccessDoWithResult(value -> builder.response(Boolean.TRUE.equals(value)))
+                .merge(findBooleanChildValue(path, metadata, "tokenPagination", false, false))
+                .onSuccessDoWithResult(value -> builder.tokenPagination(Boolean.TRUE.equals(value)))
                 .merge(findStringFieldList(path, metadata, "controlledVocabularyProperties", false))
                 .onSuccessDoWithResult(builder::controlledVocabularyProperties)
                 .merge(findStringFieldList(path, metadata, "subQueryProperties", false))

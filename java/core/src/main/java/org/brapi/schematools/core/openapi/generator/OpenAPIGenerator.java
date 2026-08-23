@@ -725,7 +725,7 @@ public class OpenAPIGenerator {
                             new ObjectSchema().title(responseName)
                                 .addProperty("@context", new ObjectSchema().$ref(createSchemaRef("Context")))
                                 .addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata")))
-                                .addProperty("result", new Schema().$ref(createSchemaRef(type.getName())))
+                                .addProperty("result", new Schema().$ref(createSchemaRef(tableName)))
                                 .addRequiredItem("metadata")
                                 .addRequiredItem("result")
                         ))
@@ -742,22 +742,32 @@ public class OpenAPIGenerator {
 
         private Response<ApiResponse> createApiResponse(BrAPIClass brAPIClass) {
             return createSchemaForType(brAPIClass)
-                .mapResult(schema -> createApiResponse(brAPIClass.getName(), schema));
+                .mapResult(schema -> createApiResponse(brAPIClass.getName(), schema, getMetadataSchemaNameFor(brAPIClass)));
         }
 
         private ApiResponse createApiResponse(String title, Schema schema) {
+            return createApiResponse(title, schema, "metadata");
+        }
+
+        private ApiResponse createApiResponse(String title, Schema schema, String metadataSchemaName) {
             return new ApiResponse().description("OK").content(
                 new Content().addMediaType("application/json",
                     new MediaType().schema(
                         new ObjectSchema().title(title)
                             .addProperty("@context", new ObjectSchema().$ref(createSchemaRef("Context")))
-                            .addProperty("metadata", new ObjectSchema().$ref(createSchemaRef("metadata")))
+                            .addProperty("metadata", new ObjectSchema().$ref(createSchemaRef(metadataSchemaName)))
                             .addProperty("result", schema)
                             .addRequiredItem("metadata")
                             .addRequiredItem("result")
                     )
                 )
             );
+        }
+
+        private String getMetadataSchemaNameFor(BrAPIClass brAPIClass) {
+            return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isTokenPagination()
+                ? "metadataTokenPagination"
+                : "metadata";
         }
 
         private Response<ApiResponse> generateListResponse(BrAPIObjectTypeWithProperty typeWithProperty) {

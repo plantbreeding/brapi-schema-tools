@@ -16,6 +16,7 @@ public class BrAPIMetadata {
     boolean request ;
     boolean parameters ;
     boolean response ;
+    boolean tokenPagination ;
     @JsonProperty("interface")
     boolean interfaceClass ;
     List<String> controlledVocabularyProperties ;

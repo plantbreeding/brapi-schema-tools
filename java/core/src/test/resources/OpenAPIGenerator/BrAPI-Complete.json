@@ -28148,7 +28148,7 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/Observation"
+                                    "$ref" : "#/components/schemas/ObservationTable"
                                 }
                             }
                         }
@@ -28284,7 +28284,7 @@
                                     "$ref" : "#/components/schemas/metadata"
                                 },
                                 "result" : {
-                                    "$ref" : "#/components/schemas/ObservationUnit"
+                                    "$ref" : "#/components/schemas/ObservationUnitTable"
                                 }
                             }
                         }
