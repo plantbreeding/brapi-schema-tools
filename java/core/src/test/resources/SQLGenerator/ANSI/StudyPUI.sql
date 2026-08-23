@@ -93,7 +93,7 @@ CREATE TABLE brapi_Studies (
   -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
-  studyDescription STRING NOT NULL COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
+  studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
 ) 
 COMMENT 'A Study represents an experiment that has taken place at a single location. The Study contains metadata about the parameters and design of the experiment. It can also be used to group results and data sets generated from the experiment. A Trial can represent a collection of one or more Studies.';
 

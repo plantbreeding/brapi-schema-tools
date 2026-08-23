@@ -34563,6 +34563,17 @@
         },
         "isDeprecated" : false,
         "deprecationReason" : null
+      }, {
+        "name" : "extractDbIds",
+        "description" : "Will perform a search for `Calls` which match the search criteria in `variantSetsExtractRequest`. The results of the search will be used to create a new `VariantSet` on the server. The new `VariantSet` will be returned.",
+        "args" : [ ],
+        "type" : {
+          "kind" : "SCALAR",
+          "name" : "ID",
+          "ofType" : null
+        },
+        "isDeprecated" : false,
+        "deprecationReason" : null
       } ],
       "inputFields" : null,
       "interfaces" : [ ],
@@ -34767,6 +34778,17 @@
             "name" : "VariantInput",
             "ofType" : null
           }
+        },
+        "defaultValue" : null,
+        "isDeprecated" : false,
+        "deprecationReason" : null
+      }, {
+        "name" : "extract",
+        "description" : "Will perform a search for `Calls` which match the search criteria in `variantSetsExtractRequest`. The results of the search will be used to create a new `VariantSet` on the server. The new `VariantSet` will be returned.",
+        "type" : {
+          "kind" : "INPUT_OBJECT",
+          "name" : "VariantSetInput",
+          "ofType" : null
         },
         "defaultValue" : null,
         "isDeprecated" : false,

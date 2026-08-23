@@ -96,7 +96,7 @@ CREATE TABLE brapi_Studies (
   -- For property 'observationVariables' Link table 'ObservationVariableByStudy' will be created separately,
   seasons ARRAY<STRING> COMMENT 'List of seasons over which this study was performed.',
   startDate STRING COMMENT 'The date this study started  MIAPPE V1.1 (DM-14) Start date of study - Date and, if relevant, time when the experiment started',
-  studyDescription STRING NOT NULL COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
+  studyDescription STRING COMMENT 'The description of this study  MIAPPE V1.1 (DM-13) Study description - Human-readable text describing the study'
 ) 
 USING delta
 TBLPROPERTIES ('delta.enableChangeDataFeed' = true)
