@@ -10,10 +10,12 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ### Added
 - New Markdown options for interface and response class generation
+- `BrAPINullType` model for explicit JSON Schema `null` union members
 
 ### Fixed
-- Markdown Generator now only gererates files for primary classes. Response, Request, Parameter and Interface classes are only generated 
+- Markdown Generator now only generates files for primary classes. Response, Request, Parameter and Interface classes are only generated 
 if explicitly included in the Markdown options. 
+- **Nullable many-to-one primary-model references keep ID-link projection**: when a property is a nullable union of exactly one primary-model reference plus `null` and the relationship link type is `id`, OpenAPI generation emits the existing `*DbId` / `*Name` link fields (still nullable) instead of an embedded object/`allOf` `$ref`. Other nullable embeds, primitives, arrays, response wrappers, and multi-member `oneOf`/`anyOf` schemas are unchanged.
 
 
 ---
