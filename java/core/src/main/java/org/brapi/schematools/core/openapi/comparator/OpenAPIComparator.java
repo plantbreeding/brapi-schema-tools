@@ -30,9 +30,12 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -256,6 +259,7 @@ public class OpenAPIComparator {
     private void preprocess(JsonNode node) {
         if (options.isNormalizingNullableSchemas()) {
             normalizeNullableSchemas(node);
+            normalizeLocalAllOfSchemas(node);
         }
         if (options.isIgnoringDescriptions()) {
             stripDescriptions(node);
@@ -423,6 +427,101 @@ public class OpenAPIComparator {
             }
         }
         return true;
+    }
+
+    /**
+     * Flattens local component-schema {@code allOf} compositions so openapi-diff compares
+     * inherited properties instead of reporting them as deleted. External and cyclic
+     * references are deliberately left unchanged.
+     */
+    private void normalizeLocalAllOfSchemas(JsonNode root) {
+        if (!(root instanceof ObjectNode rootObject)) {
+            return;
+        }
+        JsonNode schemasNode = rootObject.path("components").path("schemas");
+        if (!(schemasNode instanceof ObjectNode schemas)) {
+            return;
+        }
+        normalizeAllOfNode(rootObject, schemas, new HashSet<>());
+    }
+
+    private void normalizeAllOfNode(JsonNode node, ObjectNode schemas, Set<String> resolving) {
+        if (node instanceof ObjectNode objectNode) {
+            List<JsonNode> children = new ArrayList<>();
+            objectNode.fields().forEachRemaining(field -> children.add(field.getValue()));
+            children.forEach(child -> normalizeAllOfNode(child, schemas, resolving));
+            flattenAllOf(objectNode, schemas, resolving);
+        } else if (node instanceof ArrayNode arrayNode) {
+            arrayNode.forEach(child -> normalizeAllOfNode(child, schemas, resolving));
+        }
+    }
+
+    private void flattenAllOf(ObjectNode schema, ObjectNode components, Set<String> resolving) {
+        if (!(schema.get("allOf") instanceof ArrayNode allOf) || allOf.isEmpty()) {
+            return;
+        }
+
+        ObjectNode inherited = mapper.createObjectNode();
+        for (JsonNode member : allOf) {
+            ObjectNode resolved = resolveLocalSchema(member, components, resolving);
+            if (resolved == null) {
+                return;
+            }
+            mergeSchema(inherited, resolved);
+        }
+
+        schema.remove("allOf");
+        mergeSchema(schema, inherited);
+    }
+
+    private ObjectNode resolveLocalSchema(JsonNode schema, ObjectNode components, Set<String> resolving) {
+        if (!(schema instanceof ObjectNode schemaObject)) {
+            return null;
+        }
+        if (!schemaObject.has("$ref")) {
+            return schemaObject.deepCopy();
+        }
+
+        String reference = schemaObject.path("$ref").asText();
+        String prefix = "#/components/schemas/";
+        if (!reference.startsWith(prefix)) {
+            return null;
+        }
+        String componentName = reference.substring(prefix.length());
+        JsonNode component = components.get(componentName);
+        if (!(component instanceof ObjectNode componentObject) || !resolving.add(componentName)) {
+            return null;
+        }
+
+        ObjectNode resolved = componentObject.deepCopy();
+        normalizeAllOfNode(resolved, components, resolving);
+        resolving.remove(componentName);
+
+        ObjectNode siblings = schemaObject.deepCopy();
+        siblings.remove("$ref");
+        mergeSchema(resolved, siblings);
+        return resolved;
+    }
+
+    private void mergeSchema(ObjectNode target, ObjectNode source) {
+        source.fields().forEachRemaining(field -> {
+            String name = field.getKey();
+            JsonNode sourceValue = field.getValue();
+            if ("properties".equals(name) && sourceValue instanceof ObjectNode sourceProperties) {
+                ObjectNode targetProperties = target.withObject("properties");
+                sourceProperties.fields().forEachRemaining(property -> targetProperties.set(property.getKey(), property.getValue().deepCopy()));
+            } else if ("required".equals(name) && sourceValue instanceof ArrayNode sourceRequired) {
+                LinkedHashSet<String> required = new LinkedHashSet<>();
+                if (target.get("required") instanceof ArrayNode targetRequired) {
+                    targetRequired.forEach(value -> required.add(value.asText()));
+                }
+                sourceRequired.forEach(value -> required.add(value.asText()));
+                ArrayNode mergedRequired = target.putArray("required");
+                required.forEach(mergedRequired::add);
+            } else if (!target.has(name)) {
+                target.set(name, sourceValue.deepCopy());
+            }
+        });
     }
 
     /**

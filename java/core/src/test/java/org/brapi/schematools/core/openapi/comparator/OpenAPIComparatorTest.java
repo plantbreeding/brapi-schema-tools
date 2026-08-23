@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.brapi.schematools.core.response.Response;
 import org.brapi.schematools.core.utils.StringUtils;
+import org.openapitools.openapidiff.core.model.ChangedOpenApi;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import static org.brapi.schematools.core.utils.StringUtils.readStringFromPath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
@@ -24,6 +26,24 @@ class OpenAPIComparatorTest {
     @BeforeAll
     static void setup() {
         mapper = new ObjectMapper();
+    }
+
+    @Test
+    void compareTreatsLocalAllOfComponentPropertiesAsInherited() {
+        String flattenedSpecification = """
+            {"openapi":"3.1.0","info":{"title":"Test","version":"1"},"paths":{"/items":{"get":{"responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"type":"object","properties":{"metadata":{"$ref":"#/components/schemas/metadata"}}}}}}}}}},"components":{"schemas":{"metadata":{"type":"object","properties":{"datafiles":{"type":"array"},"pagination":{"type":"object"},"status":{"type":"array"}}}}}}
+            """;
+        String composedSpecification = """
+            {"openapi":"3.1.0","info":{"title":"Test","version":"1"},"paths":{"/items":{"get":{"responses":{"200":{"description":"OK","content":{"application/json":{"schema":{"type":"object","properties":{"metadata":{"$ref":"#/components/schemas/metadata"}}}}}}}}}},"components":{"schemas":{"metadata":{"allOf":[{"$ref":"#/components/schemas/metadataBase"},{"type":"object","properties":{"pagination":{"type":"object"}}}]},"metadataBase":{"type":"object","properties":{"datafiles":{"type":"array"},"status":{"type":"array"}}}}}}
+            """;
+
+        Response<ChangedOpenApi> response = new OpenAPIComparator().compare(flattenedSpecification, composedSpecification);
+
+        if (response.hasErrors()) {
+            handleFailedResponse(response);
+        }
+        assertTrue(response.getResult().getChangedOperations().isEmpty());
+        assertTrue(response.getResult().getChangedSchemas().isEmpty());
     }
 
     @Test
