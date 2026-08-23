@@ -20,7 +20,7 @@ import static org.brapi.schematools.core.utils.BrAPITypeUtils.isRequest;
  * Creates a cache of {@link BrAPIClass}es.
  * Takes a list of classes and caches those in the list of primary classes if they pass the provided cachePredicate.
  * Classes that do not pass the cachePredicate are not added to the list of primary classes, but are still included
- * in the list of all classes, can can be found in {@link BrAPIClassCache#getAllBrAPIClasses()}
+ * in the list of all classes, can can be found in {@link BrAPIClassCache#getBrAPIClasses()} ()}
  * Additional classes are added to the cache as dependent classes as follows
  * For {@link BrAPIObjectType} utility checks the properties and
  * tries to cache any that are the return type of these properties {@link BrAPIClass}es.
@@ -256,8 +256,8 @@ public class BrAPIClassCacheBuilder {
         }
 
         /**
-         * Gets the set of BrAPIClass Names in the cache. Includes primary classes
-         * that passed the {@link #cachePredicate} and any dependent classes.
+         * Gets the set of BrAPIClass Names in the cache. Includes all classes that were originally passed to the
+         * cache regardless of if they passed the {@link #cachePredicate}, any and dependent classes
          *
          * @return the set of BrAPIClass Names in the cache
          */
@@ -448,6 +448,10 @@ public class BrAPIClassCacheBuilder {
             }
 
             return null;
+        }
+
+        public Map<String, BrAPIClass> getPrimaryClassesAsMap() {
+            return getPrimaryClasses().stream().collect(Collectors.toMap(BrAPIClass::getName, Function.identity(), (v1, v2) -> v1, TreeMap::new));
         }
     }
 }

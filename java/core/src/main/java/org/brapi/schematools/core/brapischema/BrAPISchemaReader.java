@@ -555,6 +555,10 @@ public class BrAPISchemaReader {
                                 }
                             }
 
+                            if (types.contains("null") && types.stream().allMatch(type -> Objects.equals(type, "null"))) {
+                                return success(BrAPINullType.instance());
+                            }
+
                             return fail(Response.ErrorType.VALIDATION, path, String.format("Unknown type(s) '%s' in node '%s'", types, jsonNode));
 
                         }));
@@ -898,6 +902,13 @@ public class BrAPISchemaReader {
                 .mapResult(node -> childNodes(path, node))
                 .mapResultToResponse(childNodes -> childNodes.mapResultToResponse(nodes -> createPossibleTypes(path, nodes, name, module)))
                 .onSuccessDoWithResult(builder::possibleTypes)
+                .onSuccessDoWithResult(possibleTypes -> {
+                    boolean hasNullMember = possibleTypes.stream().anyMatch(type ->
+                        type instanceof BrAPINullType || BrAPINullType.NAME.equals(type.getName()));
+                    if (hasNullMember) {
+                        builder.nullable(true);
+                    }
+                })
                 .mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(path, jsonNode, "brapi-metadata", true)
                     .mapResultToResponse(metadata -> parseMetadata(path, metadata))
                     .onSuccessDoWithResult(builder::metadata))
@@ -908,29 +919,59 @@ public class BrAPISchemaReader {
             JsonNode childNodes = jsonNode.get("anyOf");
 
             if (childNodes instanceof ArrayNode arrayNode) {
-                Iterator<JsonNode> iterator = arrayNode.elements();
+                // Simple nullable union: exactly one non-null schema + null. Keep the historical
+                // behaviour of returning only the non-null type; property-level nullable is set by
+                // findNullable(...). More complex anyOf shapes become BrAPIOneOfType so generators
+                // can inspect members (including null) when needed.
+                List<JsonNode> members = StreamSupport.stream(arrayNode.spliterator(), false).toList();
+                List<JsonNode> nonNullMembers = members.stream()
+                    .filter(childNode -> !findChildValue(path, childNode, "type", false)
+                        .mapResult(result -> Objects.equals(result, "null"))
+                        .orElseGetResult(() -> false))
+                    .toList();
+                boolean hasNullMember = members.stream()
+                    .anyMatch(childNode -> findChildValue(path, childNode, "type", false)
+                        .mapResult(result -> Objects.equals(result, "null"))
+                        .orElseGetResult(() -> false));
 
-                JsonNode childNode ;
-                JsonNode childNodeType = null;
+                if (hasNullMember && nonNullMembers.size() == 1) {
+                    return createType(path, nonNullMembers.getFirst(), name, module);
+                }
 
-                while (iterator.hasNext() && childNodeType == null) {
-                    childNode = iterator.next();
+                if (nonNullMembers.size() == 1 && !hasNullMember) {
+                    return createType(path, nonNullMembers.getFirst(), name, module);
+                }
 
-                    if (!findChildValue(path, childNode, "type", false).mapResult(result -> Objects.equals(result, "null")).orElseGetResult(() -> false)) {
-                        childNodeType = childNode ;
+                if (!members.isEmpty()) {
+                    BrAPIOneOfType.BrAPIOneOfTypeBuilder builder = BrAPIOneOfType.builder()
+                        .name(name)
+                        .module(module);
+
+                    findBooleanChildValue(path, jsonNode, "deprecated", false, false)
+                        .onSuccessDoWithResult(value -> builder.deprecated(Boolean.TRUE.equals(value)));
+
+                    findBooleanChildValue(path, jsonNode, "nullable", false, null)
+                        .onSuccessDoWithResult(builder::nullable);
+
+                    if (hasNullMember) {
+                        builder.nullable(true);
                     }
+
+                    findStringChildValue(path, jsonNode, "description", false)
+                        .onSuccessDoWithResult(builder::description);
+
+                    return createPossibleTypes(path, members, name, module)
+                        .onSuccessDoWithResult(builder::possibleTypes)
+                        .mapOnCondition(jsonNode.has("brapi-metadata"), () -> findChildNode(path, jsonNode, "brapi-metadata", true)
+                            .mapResultToResponse(metadata -> parseMetadata(path, metadata))
+                            .onSuccessDoWithResult(builder::metadata))
+                        .map(() -> success(builder.build()));
                 }
 
-                if (childNodeType != null) {
-                    return createType(path, childNodeType, name, module) ;
-                } else {
-                    fail(Response.ErrorType.VALIDATION, String.format("Can not find type in anyOf json node '%s'", jsonNode));
-                }
-
+                return fail(Response.ErrorType.VALIDATION, String.format("Can not find type in anyOf json node '%s'", jsonNode));
             } else {
                 return fail(Response.ErrorType.VALIDATION, String.format("Invalid anyOf json node type, must an ArrayNode but was '%s'", jsonNode.getClass().getSimpleName()));
             }
-            return success(null) ;
         }
 
         private Response<List<BrAPIType>> createPossibleTypes(Path path, List<JsonNode> jsonNodes, String fallbackNamePrefix, String module) {

@@ -87,8 +87,8 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
 
     private Response<LinkType> getDefaultLinkTypeFor(BrAPIObjectProperty property, BrAPIType dereferencedType) {
 
-        BrAPIType unwrappedType = unwrapType(dereferencedType);
-
+        BrAPIType unwrappedType = unwrapType(dereferencedType);        // Nullable unions of a single referenced type + null should use the non-null member for link decisions.
+        unwrappedType = BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(unwrappedType).orElse(unwrappedType);
         if (unwrappedType instanceof BrAPIReferenceType) {
             return fail(Response.ErrorType.VALIDATION, String.format("The type '%s' needs to be dereferenced first", unwrappedType.getName())) ;
         }

@@ -2,6 +2,8 @@ generate: true
 overwrite: false
 generateParameterClasses: false
 generateRequestClasses: false
+generateInterfaceClasses: false
+generateResponseClasses: false
 generateProperties: true
 descriptionFormat: TODO Description for %s
 addGeneratorComments: true

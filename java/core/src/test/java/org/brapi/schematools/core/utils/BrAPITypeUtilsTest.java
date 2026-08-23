@@ -2,7 +2,10 @@ package org.brapi.schematools.core.utils;
 
 import org.brapi.schematools.core.model.BrAPIArrayType;
 import org.brapi.schematools.core.model.BrAPIMetadata;
+import org.brapi.schematools.core.model.BrAPINullType;
 import org.brapi.schematools.core.model.BrAPIObjectType;
+import org.brapi.schematools.core.model.BrAPIOneOfType;
+import org.brapi.schematools.core.model.BrAPIReferenceType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.response.Response;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,6 +57,34 @@ class BrAPITypeUtilsTest {
 
         BrAPIType innerArrayType = BrAPIArrayType.builder().items(arrayType).build();
         assertSame(objectType, BrAPITypeUtils.unwrapType(innerArrayType));
+    }
+
+    @Test
+    void extractSingleNonNullTypeFromNullableUnion() {
+        BrAPIReferenceType referenceType = BrAPIReferenceType.builder().name("ObservationVariable").build();
+
+        BrAPIOneOfType nullableUnion = BrAPIOneOfType.builder()
+            .name("ObservationVariableOrNull")
+            .possibleTypes(List.of(referenceType, BrAPINullType.instance()))
+            .build();
+
+        Optional<BrAPIType> extracted = BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(nullableUnion);
+        assertTrue(extracted.isPresent());
+        assertSame(referenceType, extracted.get());
+
+        BrAPIOneOfType multiMember = BrAPIOneOfType.builder()
+            .name("Multi")
+            .possibleTypes(List.of(referenceType, BrAPIObjectType.builder().name("Other").build(), BrAPINullType.instance()))
+            .build();
+        assertTrue(BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(multiMember).isEmpty());
+
+        BrAPIOneOfType nonNullableOneOf = BrAPIOneOfType.builder()
+            .name("NonNull")
+            .possibleTypes(List.of(referenceType, BrAPIObjectType.builder().name("Other").build()))
+            .build();
+        assertTrue(BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(nonNullableOneOf).isEmpty());
+
+        assertTrue(BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(referenceType).isEmpty());
     }
 
     @Test

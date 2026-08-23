@@ -40,6 +40,14 @@ public class OpenAPIComparatorOptions implements Options {
     private Boolean ignoreDepreciatedEndpoints ;
     @Getter(AccessLevel.NONE)
     private Boolean ignoreDescriptions ;
+    /**
+     * When true, equivalent nullable reference encodings are rewritten to a canonical form
+     * before comparison (e.g. {@code anyOf: [{$ref}, {type: null}]} and
+     * {@code nullable: true} + {@code allOf: [{$ref}]}). Genuine nullability differences
+     * are still reported.
+     */
+    @Getter(AccessLevel.NONE)
+    private Boolean normalizeNullableSchemas ;
     private String comparisonAPI ;
 
     /**
@@ -118,6 +126,10 @@ public class OpenAPIComparatorOptions implements Options {
             this.ignoreDescriptions = overrideOptions.ignoreDescriptions ;
         }
 
+        if (overrideOptions.normalizeNullableSchemas != null) {
+            this.normalizeNullableSchemas = overrideOptions.normalizeNullableSchemas ;
+        }
+
         if (overrideOptions.comparisonAPI != null) {
             this.comparisonAPI = overrideOptions.comparisonAPI ;
         }
@@ -139,6 +151,14 @@ public class OpenAPIComparatorOptions implements Options {
         return ignoreDepreciatedEndpoints != null ? ignoreDepreciatedEndpoints : false ;
     }
 
+
+    /**
+     * @return {@code true} if equivalent nullable schema encodings should be normalised before diffing
+     */
+    @JsonIgnore
+    public boolean isNormalizingNullableSchemas() {
+        return normalizeNullableSchemas != null ? normalizeNullableSchemas : false ;
+    }
     @JsonIgnore
     public boolean isIgnoringDescriptions() {
         return ignoreDescriptions != null ? ignoreDescriptions : false ;

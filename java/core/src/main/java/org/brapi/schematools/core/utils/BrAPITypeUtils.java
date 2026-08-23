@@ -3,6 +3,8 @@ package org.brapi.schematools.core.utils;
 import org.brapi.schematools.core.model.BrAPIArrayType;
 import org.brapi.schematools.core.model.BrAPIClass;
 import org.brapi.schematools.core.model.BrAPIMetadata;
+import org.brapi.schematools.core.model.BrAPINullType;
+import org.brapi.schematools.core.model.BrAPIOneOfType;
 import org.brapi.schematools.core.model.BrAPIType;
 import org.brapi.schematools.core.response.Response;
 
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.brapi.schematools.core.response.Response.fail;
@@ -95,6 +98,39 @@ public class BrAPITypeUtils {
         }
 
         return type;
+    }
+
+    /**
+     * If {@code type} is a nullable union consisting of exactly one non-null type and {@code null},
+     * returns the non-null type. Otherwise returns empty.
+     * <p>
+     * This is intentionally narrow: multi-member {@code oneOf}/{@code anyOf} schemas and non-null-only
+     * unions are left unchanged so response wrappers and other composite schemas keep existing behaviour.
+     *
+     * @param type the type to inspect
+     * @return the single non-null member when the type is a simple nullable union
+     */
+    public static Optional<BrAPIType> extractSingleNonNullTypeFromNullableUnion(BrAPIType type) {
+        if (!(type instanceof BrAPIOneOfType oneOfType) || oneOfType.getPossibleTypes() == null) {
+            return Optional.empty();
+        }
+
+        List<BrAPIType> nonNullTypes = new ArrayList<>();
+        boolean hasNull = false;
+
+        for (BrAPIType possibleType : oneOfType.getPossibleTypes()) {
+            if (possibleType instanceof BrAPINullType || BrAPINullType.NAME.equals(possibleType.getName())) {
+                hasNull = true;
+            } else if (possibleType != null) {
+                nonNullTypes.add(possibleType);
+            }
+        }
+
+        if (hasNull && nonNullTypes.size() == 1) {
+            return Optional.of(nonNullTypes.getFirst());
+        }
+
+        return Optional.empty();
     }
 
     /**

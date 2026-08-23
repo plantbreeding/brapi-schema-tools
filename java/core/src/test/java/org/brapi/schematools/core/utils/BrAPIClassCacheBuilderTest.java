@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class BrAPIClassCacheBuilderTest {
 
-    private static final short EXPECTED_SIZE = 171 ;
-    private static final short EXPECTED_CLASSES_SIZE = 145 ;
+    private static final short EXPECTED_SIZE = 172 ;
+    private static final short EXPECTED_CLASSES_SIZE = 146 ;
     List<BrAPIClass> brAPIClasses ;
 
     @BeforeEach
@@ -191,7 +191,7 @@ class BrAPIClassCacheBuilderTest {
     void createMapWithPredicate() {
         Map<String, BrAPIClass> map = BrAPIClassCacheBuilder.builder(brAPIClasses).cachePredicate(this::isCaching).build().getBrAPIClassesAsMap();
 
-        assertEquals(171, map.size());
+        assertEquals(EXPECTED_SIZE, map.size());
 
         assertTrue(map.containsKey("Trial")) ;
         assertTrue(map.containsKey("GermplasmAttribute")) ;

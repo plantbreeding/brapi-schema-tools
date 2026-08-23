@@ -1866,7 +1866,12 @@ public class OpenAPIGenerator {
 
         private Response<Map<String, Schema>> createProperty(Schema objectSchema, BrAPIObjectType parentType, BrAPIObjectProperty property) {
             BrAPIType unwrappedType = unwrapType(property.getType());
-            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(unwrappedType);
+            // For link-type selection only: peel a simple nullable union (single type + null) so a
+            // many-to-one primary-model reference resolves to LinkType.ID. The original property type
+            // is still passed downstream so other nullable/oneOf shapes keep their existing handling.
+            BrAPIType typeForLinkSelection = BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(unwrappedType)
+                .orElse(unwrappedType);
+            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(typeForLinkSelection);
 
             return options.getProperties().getLinkTypeFor(parentType, property, dereferencedType)
                 .mapResultToResponse(linkType -> createProperty(objectSchema, parentType, property, property.getType(), linkType)) ;
@@ -1877,6 +1882,26 @@ public class OpenAPIGenerator {
 
             if (LinkType.SUB_QUERY.equals(linkType) || LinkType.NONE.equals(linkType)) {
                 return success(Collections.emptyMap());
+            }
+
+            // Targeted path: nullable union of exactly one primary-model reference + null with ID link
+            // type must project dbId/name fields, not an embedded object/oneOf schema.
+            if (LinkType.ID.equals(linkType)) {
+                Optional<BrAPIObjectType> nullablePrimaryModel = extractNullablePrimaryModelForIdLink(type);
+                if (nullablePrimaryModel.isPresent()) {
+                    BrAPIRelationshipType relationshipType = property.getRelationshipType() != null
+                        ? property.getRelationshipType()
+                        : BrAPIRelationshipType.ONE_TO_ONE;
+
+                    return switch (relationshipType) {
+                        case ONE_TO_ONE, MANY_TO_ONE ->
+                            createLinkedProperty(objectSchema, parentType, property, nullablePrimaryModel.get());
+                        case ONE_TO_MANY, MANY_TO_MANY ->
+                            fail(Response.ErrorType.VALIDATION, String.format(
+                                "Property '%s' has relationshipType '%s', referenced type '%s' is an object",
+                                property.getName(), relationshipType, nullablePrimaryModel.get().getName()));
+                    };
+                }
             }
 
             if (dereferencedType instanceof BrAPIPrimitiveType || dereferencedType instanceof BrAPIEnumType || dereferencedType instanceof BrAPIOneOfType) {
@@ -1910,6 +1935,18 @@ public class OpenAPIGenerator {
             return fail(Response.ErrorType.VALIDATION, String.format("Unsupported type '%s' for property '%s'", dereferencedType.getClass(), property.getName()));
         }
 
+        /**
+         * Recognises a nullable union of exactly one primary-model reference (or primary model) plus
+         * {@code null}, and returns that primary model when present. Used only for the ID-link path so
+         * other oneOf/anyOf shapes keep their existing embedded handling.
+         */
+        private Optional<BrAPIObjectType> extractNullablePrimaryModelForIdLink(BrAPIType type) {
+            return BrAPITypeUtils.extractSingleNonNullTypeFromNullableUnion(type)
+                .map(brAPIClassCache::dereferenceType)
+                .filter(BrAPIObjectType.class::isInstance)
+                .map(BrAPIObjectType.class::cast)
+                .filter(BrAPITypeUtils::isPrimaryModel);
+        }
 
         private Response<Map<String, Schema>> createEmbeddedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type) {
 
