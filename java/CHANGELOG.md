@@ -6,6 +6,13 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.86.0] — 2026-08-23
+
+### Fixed
+- **OpenAPI comparator `allOf` inheritance**: before comparison, local component-schema `$ref`/`allOf` compositions are flattened by merging inherited `properties` and `required` fields. Equivalent flattened and composed schemas no longer produce false endpoint-wide deletions, such as `metadata.datafiles`, `metadata.pagination`, and `metadata.status`.
+
+---
+
 ## [0.85.0] — 2026-08-18
 
 ### Added
