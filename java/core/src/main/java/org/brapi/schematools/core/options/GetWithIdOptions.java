@@ -20,6 +20,8 @@ public class GetWithIdOptions extends AbstractSubOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, Boolean>> propertyFromRequestFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> embeddedResponsePropertiesFor = new HashMap<>();
 
     /**
      * Overrides the values in this Options Object from the provided Options Object if they are non-null.
@@ -44,6 +46,22 @@ public class GetWithIdOptions extends AbstractSubOptions {
                 }
             });
         }
+
+        if (overrideOptions.embeddedResponsePropertiesFor != null) {
+            overrideOptions.embeddedResponsePropertiesFor.forEach((key, value) -> {
+                if (value == null) {
+                    embeddedResponsePropertiesFor.remove(key);
+                } else if (embeddedResponsePropertiesFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) embeddedResponsePropertiesFor.get(key).remove(innerKey);
+                        else embeddedResponsePropertiesFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (embeddedResponsePropertiesFor.get(key).isEmpty()) embeddedResponsePropertiesFor.remove(key);
+                } else {
+                    embeddedResponsePropertiesFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
     }
 
     /**
@@ -57,6 +75,24 @@ public class GetWithIdOptions extends AbstractSubOptions {
     @JsonIgnore
     public boolean isUsingPropertyFromRequestFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
         Map<String, Boolean> map = propertyFromRequestFor.get(type.getName());
+        if (map != null) {
+            Boolean value = map.get(property.getName());
+            return value != null && value;
+        }
+        return false;
+    }
+
+    /**
+     * Determines if a property should be embedded only in the GET /{id} response
+     * for the supplied primary model.
+     *
+     * @param type the primary model
+     * @param property the property to consider
+     * @return {@code true} if the property is embedded in the GET response
+     */
+    @JsonIgnore
+    public boolean isEmbeddingResponsePropertyFor(@NonNull BrAPIObjectType type, @NonNull BrAPIObjectProperty property) {
+        Map<String, Boolean> map = embeddedResponsePropertiesFor.get(type.getName());
         if (map != null) {
             Boolean value = map.get(property.getName());
             return value != null && value;

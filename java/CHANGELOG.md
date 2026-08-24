@@ -6,6 +6,16 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.91.0] — 2026-08-24
+
+### Added
+- **GET-by-ID response-only embedded properties**: `getWithId.embeddedResponsePropertiesFor` can add selected embedded properties to a GET response without changing shared request schemas or PUT request bodies.
+
+### Changed
+- **BrAPI OpenAPI defaults**: default options now preserve Call/Variant page tokens on nested collection paths, use compact embedded/omitted ReferenceSet relationship projections, and relax embedded Method/Trait primary-ID requirements for Attribute and ObservationVariable shapes.
+
+---
+
 ## [0.90.0] — 2026-08-24
 
 ### Added
