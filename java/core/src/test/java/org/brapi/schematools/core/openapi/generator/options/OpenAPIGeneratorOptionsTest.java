@@ -259,6 +259,9 @@ class OpenAPIGeneratorOptionsTest extends OptionsTestBase {
         assertFalse(options.getGet().hasPageTokenFor("Call"),
             "get.pagedToken.Call removed: should fall back to pagedTokenDefault=false");
 
+        assertTrue(options.getGet().hasSubPathPageTokenFor("Call"),
+            "get.subPathPagedToken.Call should override the top-level page token setting");
+
         // get.propertyFromRequestFor.CallSet was removed (outer null).
         // Every property lookup for CallSet now falls back to propertiesFromRequest: true.
         assertTrue(options.getGet().isUsingPropertyFromRequestFor("CallSet", "commonCropNames"),

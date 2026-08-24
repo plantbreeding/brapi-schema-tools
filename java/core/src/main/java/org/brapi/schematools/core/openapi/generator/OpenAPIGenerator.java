@@ -979,7 +979,7 @@ public class OpenAPIGenerator {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageSize"));
             }
 
-            if (options.getGet().hasPageTokenFor(type)) {
+            if (options.getGet().hasSubPathPageTokenFor(type)) {
                 parameters.add(new Parameter().$ref("#/components/parameters/pageToken"));
             }
 
@@ -1942,7 +1942,8 @@ public class OpenAPIGenerator {
                 return switch (relationshipType) {
                     case ONE_TO_ONE, MANY_TO_ONE -> LinkType.ID.equals(linkType) ?
                         createLinkedProperty(objectSchema, parentType, property, brAPIObjectType) :
-                        createEmbeddedProperty(objectSchema, property, brAPIObjectType);
+                        createEmbeddedProperty(objectSchema, property, brAPIObjectType,
+                            options.getProperties().isEmbeddingPrimaryIdOptionalFor(parentType, property));
                     case ONE_TO_MANY, MANY_TO_MANY ->
                         fail(Response.ErrorType.VALIDATION, String.format("Property '%s' has relationshipType '%s', referenced type '%s' is an object",
                             property.getName(), relationshipType, brAPIObjectType.getName()));
@@ -1980,6 +1981,24 @@ public class OpenAPIGenerator {
 
         private Response<Map<String, Schema>> createEmbeddedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type) {
 
+            return createEmbeddedProperty(objectSchema, property, type, false);
+        }
+
+        private Response<Map<String, Schema>> createEmbeddedProperty(Schema objectSchema, BrAPIObjectProperty property, BrAPIType type, boolean primaryIdOptional) {
+
+            if (primaryIdOptional && type instanceof BrAPIObjectType brAPIObjectType) {
+                return createObjectSchema(brAPIObjectType)
+                    .onSuccessDoWithResult(schema -> removePrimaryIdRequirement(schema, brAPIObjectType))
+                    .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
+                    .onSuccessDoWithResult(schema -> updateExamples(schema, property, type))
+                    .onSuccessDoWithResultOnCondition(property.getDefaultValue() != null, schema -> schema.setDefault(property.getDefaultValue()))
+                    .onSuccessDoWithResultOnCondition(property.getPattern() != null, schema -> schema.setPattern(property.getPattern()))
+                    .mapResultOnConditionOr(property.isNullable(), schema -> makeNullable(schema), schema -> schema)
+                    .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
+                    .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
+                    .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(property.getName()));
+            }
+
             if (brAPIClassCache.containsBrAPIClass(property.getName())) {
                 return createReferenceSchema(property.getName())
                     .onSuccessDoWithResult(schema -> updateDescription(schema, property, type))
@@ -1999,6 +2018,13 @@ public class OpenAPIGenerator {
                 .mapResultOnConditionOr(property.isDeprecated(), this::makeDeprecated, schema -> schema)
                 .mapResult(schema -> Collections.singletonMap(property.getName(), schema))
                 .onSuccessDoOnCondition(property.isRequired(), () -> objectSchema.addRequiredItem(property.getName()));
+        }
+
+        private void removePrimaryIdRequirement(Schema schema, BrAPIObjectType type) {
+            String idPropertyName = options.getProperties().getIdPropertyNameFor(type);
+            if (schema.getRequired() != null) {
+                schema.getRequired().remove(idPropertyName);
+            }
         }
 
         private Schema updateDescription(Schema schema, BrAPIObjectProperty property, BrAPIType type) {

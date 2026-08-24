@@ -6,6 +6,14 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.90.0] — 2026-08-24
+
+### Added
+- **Nested collection page-token overrides**: new `get.subPathPagedToken` map lets nested/sub-path collection endpoints (e.g. `/callsets/{callSetDbId}/calls`) include a `pageToken` query parameter independently of the top-level list endpoint. When unset, nested paths fall back to the existing `get.pagedToken` / `pagedTokenDefault` setting via `GetOptions.hasSubPathPageTokenFor(...)`.
+- **Embedded primary-model ID projections**: new `properties.embeddedPrimaryIdOptionalFor` map lets OpenAPI generation inline selected embedded primary models with their identifier removed from `required`. This supports compact embedded request/response shapes while leaving the canonical JSON Schema and standalone primary-model OpenAPI components unchanged.
+
+---
+
 ## [0.89.0] — 2026-08-24
 
 ### Fixed

@@ -1,0 +1,8 @@
+properties:
+  embeddedPrimaryIdOptionalFor:
+    GermplasmAttribute:
+      method: true
+      trait: true
+    ObservationVariable:
+      method: true
+      trait: true
