@@ -38,6 +38,9 @@ get:
     # Default was true; after removal hasPageTokenFor falls back to pagedTokenDefault: false.
     pagedToken:
         Call: ~
+    # Keep pageToken for nested Call collection paths after disabling it on the top-level list.
+    subPathPagedToken:
+        Call: true
     propertyFromRequestFor:
         # Remove the entire CallSet type entry (outer null).
         # Previously the CallSet map held several false entries; after removal each property

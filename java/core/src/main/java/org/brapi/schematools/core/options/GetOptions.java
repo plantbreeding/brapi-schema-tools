@@ -21,6 +21,8 @@ public class GetOptions extends AbstractListOptions {
 
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> inputFor = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Boolean> subPathPagedToken = new HashMap<>();
     private Boolean list;
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Boolean> listFor = new HashMap<>();
@@ -29,6 +31,7 @@ public class GetOptions extends AbstractListOptions {
     public Validation validate() {
         return super.validate()
             .assertNotNull(inputFor, "'inputFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(subPathPagedToken, "'subPathPagedToken' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(list, "'list' option on %s is null", this.getClass().getSimpleName())
             .assertNotNull(listFor, "'listFor' option on %s is null", this.getClass().getSimpleName());
     }
@@ -45,6 +48,13 @@ public class GetOptions extends AbstractListOptions {
             overrideOptions.inputFor.forEach((key, value) -> {
                 if (value == null) inputFor.remove(key);
                 else inputFor.put(key, value);
+            });
+        }
+
+        if (overrideOptions.subPathPagedToken != null) {
+            overrideOptions.subPathPagedToken.forEach((key, value) -> {
+                if (value == null) subPathPagedToken.remove(key);
+                else subPathPagedToken.put(key, value);
             });
         }
 
@@ -67,6 +77,14 @@ public class GetOptions extends AbstractListOptions {
         inputFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'inputFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        subPathPagedToken.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'subPathPagedToken' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -129,6 +147,30 @@ public class GetOptions extends AbstractListOptions {
     @JsonIgnore
     public GetOptions setInputFor(@NonNull BrAPIType type, boolean hasInput) {
         return setInputFor(type.getName(), hasInput);
+    }
+
+    /**
+     * Determines if a nested collection endpoint has a page token for a primary model.
+     * When no nested override exists, the top-level list setting is used.
+     *
+     * @param name the primary model name
+     * @return {@code true} if the nested collection endpoint has a page token
+     */
+    @JsonIgnore
+    public boolean hasSubPathPageTokenFor(@NonNull String name) {
+        Boolean value = subPathPagedToken.get(name);
+        return value != null ? value : hasPageTokenFor(name);
+    }
+
+    /**
+     * Determines if a nested collection endpoint has a page token for a primary model.
+     *
+     * @param type the primary model
+     * @return {@code true} if the nested collection endpoint has a page token
+     */
+    @JsonIgnore
+    public boolean hasSubPathPageTokenFor(@NonNull BrAPIType type) {
+        return hasSubPathPageTokenFor(type.getName());
     }
 
     /**

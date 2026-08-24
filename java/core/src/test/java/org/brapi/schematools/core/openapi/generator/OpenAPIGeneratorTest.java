@@ -204,6 +204,45 @@ class OpenAPIGeneratorTest {
     }
 
     @Test
+    void generatesEmbeddedPrimaryModelsWithOptionalIds() {
+        Response<List<OpenAPI>> specifications;
+        try {
+            OpenAPIGeneratorOptions options = OpenAPIGeneratorOptions.load(
+                Path.of(ClassLoader.getSystemResource("OpenAPIGenerator/openapi-embedded-primary-id-optional-options.yaml").toURI()))
+                .setSeparateByModule(false);
+            specifications = new OpenAPIGenerator(options)
+                .generate(
+                    Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
+                    Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
+                    List.of("GermplasmAttribute", "ObservationVariable"));
+        } catch (IOException | URISyntaxException e) {
+            log.debug(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
+        assertNotNull(specifications);
+        specifications.getAllErrors().forEach(this::printError);
+        assertFalse(specifications.hasErrors());
+
+        OpenAPI specification = specifications.getResult().getFirst();
+        assertEmbeddedRequiredProperties(specification, "GermplasmAttributeNewRequest", "method", "methodName", "methodDbId");
+        assertEmbeddedRequiredProperties(specification, "GermplasmAttributeNewRequest", "trait", "traitName", "traitDbId");
+        assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "method", "methodName", "methodDbId");
+        assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "trait", "traitName", "traitDbId");
+    }
+
+    private void assertEmbeddedRequiredProperties(OpenAPI specification, String parentSchemaName, String propertyName, String requiredPropertyName, String optionalIdPropertyName) {
+        io.swagger.v3.oas.models.media.Schema parentSchema = specification.getComponents().getSchemas().get(parentSchemaName);
+        assertNotNull(parentSchema);
+
+        io.swagger.v3.oas.models.media.Schema embeddedSchema = (io.swagger.v3.oas.models.media.Schema) parentSchema.getProperties().get(propertyName);
+        assertNotNull(embeddedSchema);
+        assertNotNull(embeddedSchema.getRequired());
+        assertTrue(embeddedSchema.getRequired().contains(requiredPropertyName));
+        assertFalse(embeddedSchema.getRequired().contains(optionalIdPropertyName));
+    }
+
+    @Test
     void generateGermplasmAndStudySeparateByModule() {
         Response<List<OpenAPI>> specifications;
         try {

@@ -21,11 +21,15 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private Map<String, Map<String, String>> linkTypeFor = new HashMap<>();
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private Map<String, Map<String, Boolean>> embeddedPrimaryIdOptionalFor = new HashMap<>();
 
     public Validation validate() {
         // Only validates linkTypeFor by default; subclasses should extend
         return Validation.valid()
-            .assertNotNull(linkTypeFor, "'linkTypeFor' option on %s is null", this.getClass().getSimpleName()) ;
+            .assertNotNull(linkTypeFor, "'linkTypeFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(embeddedPrimaryIdOptionalFor, "'embeddedPrimaryIdOptionalFor' option on %s is null", this.getClass().getSimpleName()) ;
     }
 
     public void override(AbstractPropertiesOptions overrideOptions) {
@@ -44,6 +48,22 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
                 }
             });
         }
+
+        if (overrideOptions.embeddedPrimaryIdOptionalFor != null) {
+            overrideOptions.embeddedPrimaryIdOptionalFor.forEach((key, value) -> {
+                if (value == null) {
+                    embeddedPrimaryIdOptionalFor.remove(key);
+                } else if (embeddedPrimaryIdOptionalFor.containsKey(key)) {
+                    value.forEach((innerKey, innerValue) -> {
+                        if (innerValue == null) embeddedPrimaryIdOptionalFor.get(key).remove(innerKey);
+                        else embeddedPrimaryIdOptionalFor.get(key).put(innerKey, innerValue);
+                    });
+                    if (embeddedPrimaryIdOptionalFor.get(key).isEmpty()) embeddedPrimaryIdOptionalFor.remove(key);
+                } else {
+                    embeddedPrimaryIdOptionalFor.put(key, new HashMap<>(value));
+                }
+            });
+        }
     }
 
     public Validation validateAgainstCache(BrAPIClassCacheBuilder.BrAPIClassCache brAPIClassCache) {
@@ -52,6 +72,14 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
         linkTypeFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'linkTypeFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        embeddedPrimaryIdOptionalFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'embeddedPrimaryIdOptionalFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -83,6 +111,15 @@ public abstract class AbstractPropertiesOptions implements Options, ValidatableA
         }
 
         return getDefaultLinkTypeFor(property, dereferencedType) ;
+    }
+
+    public boolean isEmbeddingPrimaryIdOptionalFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+        Map<String, Boolean> map = embeddedPrimaryIdOptionalFor.get(parentType.getName());
+        if (map != null) {
+            Boolean value = map.get(property.getName());
+            if (value != null) return value;
+        }
+        return false;
     }
 
     private Response<LinkType> getDefaultLinkTypeFor(BrAPIObjectProperty property, BrAPIType dereferencedType) {
