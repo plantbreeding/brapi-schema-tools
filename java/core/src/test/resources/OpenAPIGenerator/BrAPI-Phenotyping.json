@@ -19,7 +19,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -28,7 +29,8 @@
                         "description" : "The ID which uniquely identifies an observation unit.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -37,7 +39,8 @@
                         "description" : "Filter based on an Event DbId.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -46,7 +49,8 @@
                         "description" : "Filter based on an Event Type",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -56,7 +60,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -66,7 +71,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -109,7 +115,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -118,7 +125,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -127,7 +135,8 @@
                         "description" : "A list of terms to formally describe the image to search for. Each item could be a simple Tag, an Ontology reference Id, or a full ontology URL.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -136,7 +145,8 @@
                         "description" : "Human readable names to search for.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -145,7 +155,8 @@
                         "description" : "A list of observation Ids this image is associated with to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -154,7 +165,8 @@
                         "description" : "A list of image Ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -163,7 +175,8 @@
                         "description" : "A set of observation unit identifiers to search for.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -253,7 +266,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -262,7 +276,8 @@
                         "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -271,7 +286,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -280,7 +296,8 @@
                         "description" : "The unique identifier for a method.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -289,7 +306,8 @@
                         "description" : "The unique identifier for an observation variable.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -379,7 +397,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -388,7 +407,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -397,7 +417,8 @@
                         "description" : "The location ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -406,7 +427,8 @@
                         "description" : "The DbIds of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -415,7 +437,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -424,7 +447,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -433,7 +457,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -442,7 +467,8 @@
                         "description" : "The unique id of an Observation",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -451,7 +477,8 @@
                         "description" : "The unique id of an Observation Unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -460,7 +487,8 @@
                         "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -469,7 +497,8 @@
                         "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -478,7 +507,8 @@
                         "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -487,7 +517,8 @@
                         "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -496,7 +527,8 @@
                         "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -505,7 +537,8 @@
                         "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -514,7 +547,8 @@
                         "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -524,7 +558,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -534,7 +569,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -543,7 +579,8 @@
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -678,7 +715,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -687,7 +725,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -696,7 +735,8 @@
                         "description" : "The location ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -705,7 +745,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -714,7 +755,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -723,7 +765,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -732,7 +775,8 @@
                         "description" : "The unique id of an observation unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -741,7 +785,8 @@
                         "description" : "The human readable identifier for an Observation Unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -750,7 +795,8 @@
                         "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -759,7 +805,8 @@
                         "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -768,7 +815,8 @@
                         "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -777,7 +825,8 @@
                         "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -786,7 +835,8 @@
                         "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -795,7 +845,8 @@
                         "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -804,7 +855,8 @@
                         "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -813,7 +865,8 @@
                         "description" : "Use this parameter to include a list of observations embedded in each ObservationUnit object. \n\nCAUTION - Use this parameter at your own risk. It may return large, unpaginated lists of observation data. Only set this value to True if you are sure you need to.",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -822,7 +875,8 @@
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -951,7 +1005,8 @@
                         "description" : "The DbIds of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -960,7 +1015,8 @@
                         "description" : "The names of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -969,7 +1025,8 @@
                         "description" : "The Permanent Unique Identifier of an Observation Variable, usually in the form of a URI",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -978,7 +1035,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -987,7 +1045,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -996,7 +1055,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1005,7 +1065,8 @@
                         "description" : "**Deprecated in v2.1** Please use `studyDbIds`. Github issue number #483 \n<br>The unique ID of a studies to filter on",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1014,7 +1075,8 @@
                         "description" : "List of ontology IDs to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1023,7 +1085,8 @@
                         "description" : "List of methods to filter search results",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1032,7 +1095,8 @@
                         "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1041,7 +1105,8 @@
                         "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1050,7 +1115,8 @@
                         "description" : "The unique identifier for a Scale",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1059,7 +1125,8 @@
                         "description" : "Name of the scale\n<br/>MIAPPE V1.1 (DM-92) Scale Name of the scale associated with the variable",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1068,7 +1135,8 @@
                         "description" : "The Permanent Unique Identifier of a Scale, usually in the form of a URI",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1077,7 +1145,8 @@
                         "description" : "List of trait classes to filter search results",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1086,7 +1155,8 @@
                         "description" : "The unique identifier for a Trait",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1095,7 +1165,8 @@
                         "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1104,7 +1175,8 @@
                         "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1194,7 +1266,8 @@
                         "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1203,7 +1276,8 @@
                         "description" : "The human readable identifier for an ontology definition.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1284,7 +1358,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1293,7 +1368,8 @@
                         "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1302,7 +1378,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1311,7 +1388,8 @@
                         "description" : "The unique identifier for a scale.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1320,7 +1398,8 @@
                         "description" : "The unique identifier for an observation variable.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1410,7 +1489,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1419,7 +1499,8 @@
                         "description" : "The unique identifier for an ontology definition. Use this parameter to filter results based on a specific ontology \n\n  Use `GET /ontologies` to find the list of available ontologies on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1428,7 +1509,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1437,7 +1519,8 @@
                         "description" : "The unique identifier for a trait.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1446,7 +1529,8 @@
                         "description" : "The unique identifier for an observation variable.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2356,7 +2440,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2365,7 +2450,8 @@
                         "description" : "The location ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2374,7 +2460,8 @@
                         "description" : "The DbIds of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2383,7 +2470,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2392,7 +2480,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2401,7 +2490,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2410,7 +2500,8 @@
                         "description" : "The unique id of an Observation Unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2428,7 +2519,8 @@
                         "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2437,7 +2529,8 @@
                         "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2446,7 +2539,8 @@
                         "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2455,7 +2549,8 @@
                         "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2464,7 +2559,8 @@
                         "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2473,7 +2569,8 @@
                         "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2482,7 +2579,8 @@
                         "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2492,7 +2590,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2502,7 +2601,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "string",
-                            "format" : "date-time"
+                            "format" : "date-time",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2511,7 +2611,8 @@
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2551,7 +2652,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2560,7 +2662,8 @@
                         "description" : "The location ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2569,7 +2672,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2578,7 +2682,8 @@
                         "description" : "The DbIds of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2587,7 +2692,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2596,7 +2702,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2605,7 +2712,8 @@
                         "description" : "The unique id of an observation unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2623,7 +2731,8 @@
                         "description" : "The Observation Unit Level. Returns only the observation unit of the specified Level. \n<br/>References ObservationUnit->observationUnitPosition->observationLevel->levelName \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2632,7 +2741,8 @@
                         "description" : "The Observation Unit Level Order Number. Returns only the observation unit of the specified Level. \nReferences ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2641,7 +2751,8 @@
                         "description" : "The Observation Unit Level Code. This parameter should be used together with `observationUnitLevelName` \nor `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2650,7 +2761,8 @@
                         "description" : "The Observation Unit Level Relationship is a connection that this observation unit has to another level of the hierarchy. \n<br/>For example, if you have several observation units at a 'plot' level, they might all share a relationship to the same 'field' level.  \n<br/>Use this parameter to identify groups of observation units that share a relationship level. \n<br/>**Standard Level Names: study, field, entry, rep, block, sub-block, plot, sub-plot, plant, pot, sample** \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2659,7 +2771,8 @@
                         "description" : "The Observation Unit Level Order Number. \n<br/>Returns only the observation unit of the specified Level. References ObservationUnit->observationUnitPosition->observationLevel->levelOrder \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2668,7 +2781,8 @@
                         "description" : "The Observation Unit Level Code. \n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->levelCode \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2677,7 +2791,8 @@
                         "description" : "The observationUnitDbId associated with a particular level and code.\n<br/>This parameter should be used together with `observationUnitLevelName` or `observationUnitLevelOrder`. References ObservationUnit->observationUnitPosition->observationLevel->observationUnitDbId \n<br/>For more information on Observation Levels, please review the <a target=\"_blank\" href=\"https://wiki.brapi.org/index.php/Observation_Levels\">Observation Levels documentation</a>. ",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2686,7 +2801,8 @@
                         "description" : "The year or Phenotyping campaign of a multi-annual study (trees, grape, ...)",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {

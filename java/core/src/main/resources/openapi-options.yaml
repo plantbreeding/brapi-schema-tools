@@ -84,9 +84,6 @@ get:
     paged:
         AlleleMatrix: false
     pagedTokenDefault: false
-    pagedToken:
-        Call: true
-        Variant: true
     inputFor:
         BreedingMethod: false
     propertiesFromRequest: true

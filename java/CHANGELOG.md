@@ -6,7 +6,14 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.87.0] — 2026-08-23
+## [0.89.0] — 2026-08-24
+
+### Fixed
+- **OpenAPI list GET query parameters are non-nullable**: generated query-parameter schemas now clear `nullable` / `type: null` so list filters match the hand-authored OpenAPI style (parameters remain optional via omission, not explicit null).
+
+---
+
+## [0.88.0] — 2026-08-24
 
 ### Fixed
 - **OpenAPI comparator `allOf` inheritance**: before comparison, local component-schema `$ref`/`allOf` compositions are flattened by merging inherited `properties` and `required` fields. Equivalent flattened and composed schemas no longer produce false endpoint-wide deletions, such as `metadata.datafiles`, `metadata.pagination`, and `metadata.status`.
