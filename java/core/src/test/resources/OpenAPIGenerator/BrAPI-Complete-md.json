@@ -6492,6 +6492,9 @@
                         "$ref" : "#/components/parameters/pageSize"
                     },
                     {
+                        "$ref" : "#/components/parameters/pageToken"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
@@ -8887,6 +8890,9 @@
                         "$ref" : "#/components/parameters/pageSize"
                     },
                     {
+                        "$ref" : "#/components/parameters/pageToken"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
@@ -9013,6 +9019,9 @@
                         "$ref" : "#/components/parameters/pageSize"
                     },
                     {
+                        "$ref" : "#/components/parameters/pageToken"
+                    },
+                    {
                         "$ref" : "#/components/parameters/authorizationHeader"
                     }
                 ],
@@ -9133,6 +9142,9 @@
                     },
                     {
                         "$ref" : "#/components/parameters/pageSize"
+                    },
+                    {
+                        "$ref" : "#/components/parameters/pageToken"
                     },
                     {
                         "$ref" : "#/components/parameters/authorizationHeader"
@@ -14655,7 +14667,66 @@
                         "nullable" : true
                     },
                     "method" : {
-                        "$ref" : "#/components/schemas/Method"
+                        "required" : [
+                            "methodName"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "additionalInfo" : {
+                                "nullable" : true,
+                                "allOf" : [
+                                    {
+                                        "$ref" : "#/components/schemas/AdditionalInfo"
+                                    }
+                                ]
+                            },
+                            "bibliographicalReference" : {
+                                "type" : "string",
+                                "description" : "Bibliographical reference describing the method.\n<br/>MIAPPE V1.1 (DM-91) Reference associated to the method - URI/DOI of reference describing the method.",
+                                "nullable" : true
+                            },
+                            "description" : {
+                                "type" : "string",
+                                "description" : "Method description\n<br/>MIAPPE V1.1 (DM-90) Method description - Textual description of the method, which may extend a method defined in an external reference with specific parameters, e.g. growth stage, inoculation precise organ (leaf number)",
+                                "nullable" : true
+                            },
+                            "externalReferences" : {
+                                "type" : "array",
+                                "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                                "nullable" : true,
+                                "items" : {
+                                    "$ref" : "#/components/schemas/ExternalReference"
+                                }
+                            },
+                            "formula" : {
+                                "type" : "string",
+                                "description" : "For computational methods i.e., when the method consists in assessing the trait by computing measurements, write the generic formula used for the calculation",
+                                "nullable" : true
+                            },
+                            "methodClass" : {
+                                "type" : "string",
+                                "description" : "Method class (examples: \"Measurement\", \"Counting\", \"Estimation\", \"Computation\", etc.)",
+                                "nullable" : true
+                            },
+                            "methodDbId" : {
+                                "type" : "string",
+                                "description" : "Method unique identifier",
+                                "nullable" : true
+                            },
+                            "methodName" : {
+                                "type" : "string",
+                                "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation"
+                            },
+                            "methodPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
+                                "nullable" : true
+                            },
+                            "ontologyReference" : {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        },
+                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
                     },
                     "ontologyReference" : {
                         "nullable" : true,
@@ -14693,7 +14764,102 @@
                         }
                     },
                     "trait" : {
-                        "$ref" : "#/components/schemas/Trait"
+                        "required" : [
+                            "traitName"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "additionalInfo" : {
+                                "nullable" : true,
+                                "allOf" : [
+                                    {
+                                        "$ref" : "#/components/schemas/AdditionalInfo"
+                                    }
+                                ]
+                            },
+                            "alternativeAbbreviations" : {
+                                "type" : "array",
+                                "description" : "A list of shortened, human readable, names for a Trait. These abbreviations are acceptable alternatives to the mainAbbreviation and do not need to follow any formatting convention.",
+                                "nullable" : true,
+                                "items" : {
+                                    "type" : "string"
+                                }
+                            },
+                            "attribute" : {
+                                "type" : "string",
+                                "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                                "nullable" : true
+                            },
+                            "attributePUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                                "nullable" : true
+                            },
+                            "entity" : {
+                                "type" : "string",
+                                "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
+                                "nullable" : true
+                            },
+                            "entityPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A Trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the Entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
+                                "nullable" : true
+                            },
+                            "externalReferences" : {
+                                "type" : "array",
+                                "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                                "nullable" : true,
+                                "items" : {
+                                    "$ref" : "#/components/schemas/ExternalReference"
+                                }
+                            },
+                            "mainAbbreviation" : {
+                                "type" : "string",
+                                "description" : "A shortened version of the human readable name for a Trait",
+                                "nullable" : true
+                            },
+                            "ontologyReference" : {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            },
+                            "status" : {
+                                "type" : "string",
+                                "description" : "Trait status (examples: \"recommended\", \"obsolete\", \"legacy\", etc.)",
+                                "nullable" : true
+                            },
+                            "synonyms" : {
+                                "type" : "array",
+                                "description" : "Other trait names",
+                                "nullable" : true,
+                                "items" : {
+                                    "type" : "string"
+                                }
+                            },
+                            "traitClass" : {
+                                "type" : "string",
+                                "description" : "A classification to describe the type of trait and the context it should be considered in.\n<br/> examples- \"morphological\", \"phenological\", \"agronomical\", \"physiological\", \"abiotic stress\", \"biotic stress\", \"biochemical\", \"quality traits\", \"fertility\", etc.",
+                                "nullable" : true
+                            },
+                            "traitDbId" : {
+                                "type" : "string",
+                                "description" : "The ID which uniquely identifies a trait",
+                                "nullable" : true
+                            },
+                            "traitDescription" : {
+                                "type" : "string",
+                                "description" : "The description of a trait",
+                                "nullable" : true
+                            },
+                            "traitName" : {
+                                "type" : "string",
+                                "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation"
+                            },
+                            "traitPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
+                                "nullable" : true
+                            }
+                        },
+                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
                     }
                 },
                 "description" : "The Trait-Method-Scale definition for a variable, specifically variables related to Germplasm. Similar to an ObservationVariable, but related to a Germplasm instead of an ObservationUnit"
@@ -19510,7 +19676,66 @@
                         "nullable" : true
                     },
                     "method" : {
-                        "$ref" : "#/components/schemas/Method"
+                        "required" : [
+                            "methodName"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "additionalInfo" : {
+                                "nullable" : true,
+                                "allOf" : [
+                                    {
+                                        "$ref" : "#/components/schemas/AdditionalInfo"
+                                    }
+                                ]
+                            },
+                            "bibliographicalReference" : {
+                                "type" : "string",
+                                "description" : "Bibliographical reference describing the method.\n<br/>MIAPPE V1.1 (DM-91) Reference associated to the method - URI/DOI of reference describing the method.",
+                                "nullable" : true
+                            },
+                            "description" : {
+                                "type" : "string",
+                                "description" : "Method description\n<br/>MIAPPE V1.1 (DM-90) Method description - Textual description of the method, which may extend a method defined in an external reference with specific parameters, e.g. growth stage, inoculation precise organ (leaf number)",
+                                "nullable" : true
+                            },
+                            "externalReferences" : {
+                                "type" : "array",
+                                "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                                "nullable" : true,
+                                "items" : {
+                                    "$ref" : "#/components/schemas/ExternalReference"
+                                }
+                            },
+                            "formula" : {
+                                "type" : "string",
+                                "description" : "For computational methods i.e., when the method consists in assessing the trait by computing measurements, write the generic formula used for the calculation",
+                                "nullable" : true
+                            },
+                            "methodClass" : {
+                                "type" : "string",
+                                "description" : "Method class (examples: \"Measurement\", \"Counting\", \"Estimation\", \"Computation\", etc.)",
+                                "nullable" : true
+                            },
+                            "methodDbId" : {
+                                "type" : "string",
+                                "description" : "Method unique identifier",
+                                "nullable" : true
+                            },
+                            "methodName" : {
+                                "type" : "string",
+                                "description" : "Human readable name for the method\n<br/>MIAPPE V1.1 (DM-88) Method  Name of the method of observation"
+                            },
+                            "methodPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Method, usually in the form of a URI",
+                                "nullable" : true
+                            },
+                            "ontologyReference" : {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            }
+                        },
+                        "description" : "A description of the way an Observation should be collected. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Method \"estimation\" or \"drone image processing\". "
                     },
                     "observationVariableName" : {
                         "type" : "string",
@@ -19557,7 +19782,102 @@
                         }
                     },
                     "trait" : {
-                        "$ref" : "#/components/schemas/Trait"
+                        "required" : [
+                            "traitName"
+                        ],
+                        "type" : "object",
+                        "properties" : {
+                            "additionalInfo" : {
+                                "nullable" : true,
+                                "allOf" : [
+                                    {
+                                        "$ref" : "#/components/schemas/AdditionalInfo"
+                                    }
+                                ]
+                            },
+                            "alternativeAbbreviations" : {
+                                "type" : "array",
+                                "description" : "A list of shortened, human readable, names for a Trait. These abbreviations are acceptable alternatives to the mainAbbreviation and do not need to follow any formatting convention.",
+                                "nullable" : true,
+                                "items" : {
+                                    "type" : "string"
+                                }
+                            },
+                            "attribute" : {
+                                "type" : "string",
+                                "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                                "nullable" : true
+                            },
+                            "attributePUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait Attribute, usually in the form of a URI\n<br/>A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the attribute is the observed feature (or characteristic) of the entity e.g., for \"grain colour\", attribute = \"colour\"",
+                                "nullable" : true
+                            },
+                            "entity" : {
+                                "type" : "string",
+                                "description" : "A trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\"",
+                                "nullable" : true
+                            },
+                            "entityPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait Entity, usually in the form of a URI\n<br/>A Trait can be decomposed as \"Trait\" = \"Entity\" + \"Attribute\", the Entity is the part of the plant that the trait refers to e.g., for \"grain colour\", entity = \"grain\" ",
+                                "nullable" : true
+                            },
+                            "externalReferences" : {
+                                "type" : "array",
+                                "description" : "An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.",
+                                "nullable" : true,
+                                "items" : {
+                                    "$ref" : "#/components/schemas/ExternalReference"
+                                }
+                            },
+                            "mainAbbreviation" : {
+                                "type" : "string",
+                                "description" : "A shortened version of the human readable name for a Trait",
+                                "nullable" : true
+                            },
+                            "ontologyReference" : {
+                                "$ref" : "#/components/schemas/OntologyReference"
+                            },
+                            "status" : {
+                                "type" : "string",
+                                "description" : "Trait status (examples: \"recommended\", \"obsolete\", \"legacy\", etc.)",
+                                "nullable" : true
+                            },
+                            "synonyms" : {
+                                "type" : "array",
+                                "description" : "Other trait names",
+                                "nullable" : true,
+                                "items" : {
+                                    "type" : "string"
+                                }
+                            },
+                            "traitClass" : {
+                                "type" : "string",
+                                "description" : "A classification to describe the type of trait and the context it should be considered in.\n<br/> examples- \"morphological\", \"phenological\", \"agronomical\", \"physiological\", \"abiotic stress\", \"biotic stress\", \"biochemical\", \"quality traits\", \"fertility\", etc.",
+                                "nullable" : true
+                            },
+                            "traitDbId" : {
+                                "type" : "string",
+                                "description" : "The ID which uniquely identifies a trait",
+                                "nullable" : true
+                            },
+                            "traitDescription" : {
+                                "type" : "string",
+                                "description" : "The description of a trait",
+                                "nullable" : true
+                            },
+                            "traitName" : {
+                                "type" : "string",
+                                "description" : "The human readable name of a trait\n<br/>MIAPPE V1.1 (DM-86) Trait - Name of the (plant or environmental) trait under observation"
+                            },
+                            "traitPUI" : {
+                                "type" : "string",
+                                "description" : "The Permanent Unique Identifier of a Trait, usually in the form of a URI",
+                                "nullable" : true
+                            }
+                        },
+                        "description" : "A Trait describes what property is being observed. \n<br>For example, an ObservationVariable might be defined with a Trait of \"plant height\", a Scale of \"meters\", and a Method of \"tape measure\". This variable would be distinct from a variable with the Trait \"Leaf length\" or \"Flower height\". "
                     }
                 }
             },
@@ -22383,12 +22703,6 @@
                         "type" : "string",
                         "description" : "The human readable name of a ReferenceSet"
                     },
-                    "referencesDbId" : {
-                        "type" : "string"
-                    },
-                    "referencesName" : {
-                        "type" : "string"
-                    },
                     "sourceAccessions" : {
                         "type" : "array",
                         "description" : "All known corresponding accession IDs in INSDC (GenBank/ENA/DDBJ) ideally with a version number, e.g. `NC_000001.11`.",
@@ -22397,12 +22711,12 @@
                             "type" : "string"
                         }
                     },
-                    "sourceGermplasmDbIds" : {
+                    "sourceGermplasm" : {
                         "type" : "array",
                         "description" : "All known corresponding Germplasm",
                         "nullable" : true,
                         "items" : {
-                            "type" : "string"
+                            "$ref" : "#/components/schemas/Germplasm"
                         }
                     },
                     "sourceURI" : {
@@ -22412,22 +22726,6 @@
                     },
                     "species" : {
                         "$ref" : "#/components/schemas/OntologyTerm"
-                    },
-                    "variantDbIds" : {
-                        "type" : "array",
-                        "description" : "variants",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
-                    },
-                    "variantSetDbIds" : {
-                        "type" : "array",
-                        "description" : "variantSets",
-                        "nullable" : true,
-                        "items" : {
-                            "type" : "string"
-                        }
                     }
                 },
                 "description" : "A `ReferenceSet` is a set of `Reference` s which typically comprise a reference assembly, such as `GRCH_38`. A `ReferenceSet` defines a common coordinate space for comparing reference-aligned experimental data."

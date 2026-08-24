@@ -84,6 +84,9 @@ get:
     paged:
         AlleleMatrix: false
     pagedTokenDefault: false
+    subPathPagedToken:
+        Call: true
+        Variant: true
     inputFor:
         BreedingMethod: false
     propertiesFromRequest: true
@@ -825,6 +828,11 @@ properties:
         Reference:
             bases: sub-query
             variants: none
+        ReferenceSet:
+            sourceGermplasm: embedded
+            references: none
+            variants: none
+            variantSets: none
         Publication:
             trial: none
         Sample:
@@ -872,6 +880,13 @@ properties:
             variants: sub-query
         ValidValuesCategory:
             validValues: none
+    embeddedPrimaryIdOptionalFor:
+        GermplasmAttribute:
+            method: true
+            trait: true
+        ObservationVariable:
+            method: true
+            trait: true
 controlledVocabulary:
     generate: true
     summaryFormat: Get the ${property} of ${type}

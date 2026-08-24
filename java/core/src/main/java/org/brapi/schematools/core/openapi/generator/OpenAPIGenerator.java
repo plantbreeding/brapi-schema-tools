@@ -1152,9 +1152,46 @@ public class OpenAPIGenerator {
                     }
                     return success(Collections.emptyList());
                 })
-                .map(() -> createSingleApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
+                .map(() -> createGetWithIdApiResponses(type, options.getGetWithId().isAddingNotFoundResponseForSingleFor(type)))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
+        }
+
+        private Response<ApiResponses> createGetWithIdApiResponses(BrAPIObjectType type, boolean addNotFound) {
+            List<BrAPIObjectProperty> responseProperties = type.getProperties().stream()
+                .filter(property -> options.getGetWithId().isEmbeddingResponsePropertyFor(type, property))
+                .toList();
+
+            if (responseProperties.isEmpty()) {
+                return createSingleApiResponses(type, addNotFound);
+            }
+
+            Schema responseExtension = new ObjectSchema();
+            Map<String, Schema> properties = new TreeMap<>();
+
+            return responseProperties.stream()
+                .map(property -> createEmbeddedResponseProperty(responseExtension, property).onSuccessDoWithResult(properties::putAll))
+                .collect(Response.toList())
+                .map(() -> {
+                    responseExtension.properties(properties);
+                    Schema resultSchema = new Schema()
+                        .addAllOfItem(new Schema().$ref(createSchemaRef(type.getName())))
+                        .addAllOfItem(responseExtension);
+                    ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
+                        .addApiResponse("200", createApiResponse(options.getSingleResponseNameFor(type) + "Get", resultSchema, getMetadataSchemaNameFor(type))));
+                    if (addNotFound) {
+                        apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
+                    }
+                    return success(apiResponses);
+                });
+        }
+
+        private Response<Map<String, Schema>> createEmbeddedResponseProperty(Schema responseExtension, BrAPIObjectProperty property) {
+            BrAPIType dereferencedType = brAPIClassCache.dereferenceType(property.getType());
+            if (dereferencedType instanceof BrAPIArrayType brAPIArrayType) {
+                return createArrayProperty(responseExtension, property, brAPIArrayType);
+            }
+            return createEmbeddedProperty(responseExtension, property, dereferencedType);
         }
 
         private Response<Operation> generateSinglePutOperation(BrAPIObjectType type) {

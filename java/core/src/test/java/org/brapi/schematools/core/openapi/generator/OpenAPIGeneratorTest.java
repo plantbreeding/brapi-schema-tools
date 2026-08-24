@@ -214,7 +214,7 @@ class OpenAPIGeneratorTest {
                 .generate(
                     Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()),
                     Path.of(ClassLoader.getSystemResource("OpenAPI-Components").toURI()),
-                    List.of("GermplasmAttribute", "ObservationVariable"));
+                    List.of("GermplasmAttribute", "ObservationUnit", "ObservationVariable"));
         } catch (IOException | URISyntaxException e) {
             log.debug(e.getMessage(), e);
             throw new RuntimeException(e);
@@ -229,6 +229,18 @@ class OpenAPIGeneratorTest {
         assertEmbeddedRequiredProperties(specification, "GermplasmAttributeNewRequest", "trait", "traitName", "traitDbId");
         assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "method", "methodName", "methodDbId");
         assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "trait", "traitName", "traitDbId");
+        assertGetWithIdResponseEmbedsProperty(specification, "/observationunits/{observationUnitDbId}", "observations");
+        assertTrue(specification.getPaths().get("/observationunits/{observationUnitDbId}").getPut()
+            .getRequestBody().getContent().get("application/json").getSchema().get$ref().contains("ObservationUnitNewRequest"));
+    }
+
+    private void assertGetWithIdResponseEmbedsProperty(OpenAPI specification, String path, String propertyName) {
+        io.swagger.v3.oas.models.media.Schema responseSchema = specification.getPaths().get(path).getGet()
+            .getResponses().get("200").getContent().get("application/json").getSchema();
+        io.swagger.v3.oas.models.media.Schema resultSchema = (io.swagger.v3.oas.models.media.Schema) responseSchema.getProperties().get("result");
+        assertNotNull(resultSchema);
+        io.swagger.v3.oas.models.media.Schema responseExtension = (io.swagger.v3.oas.models.media.Schema) resultSchema.getAllOf().get(1);
+        assertNotNull(responseExtension.getProperties().get(propertyName));
     }
 
     private void assertEmbeddedRequiredProperties(OpenAPI specification, String parentSchemaName, String propertyName, String requiredPropertyName, String optionalIdPropertyName) {

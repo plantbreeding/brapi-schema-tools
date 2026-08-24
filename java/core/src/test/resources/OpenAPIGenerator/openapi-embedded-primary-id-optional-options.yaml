@@ -6,3 +6,7 @@ properties:
     ObservationVariable:
       method: true
       trait: true
+getWithId:
+  embeddedResponsePropertiesFor:
+    ObservationUnit:
+      observations: true
