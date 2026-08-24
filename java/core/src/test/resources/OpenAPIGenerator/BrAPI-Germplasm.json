@@ -11990,7 +11990,7 @@
                                     "$ref" : "#/components/schemas/Context"
                                 },
                                 "metadata" : {
-                                    "$ref" : "#/components/schemas/metadata"
+                                    "$ref" : "#/components/schemas/metadataTokenPagination"
                                 },
                                 "result" : {
                                     "required" : [

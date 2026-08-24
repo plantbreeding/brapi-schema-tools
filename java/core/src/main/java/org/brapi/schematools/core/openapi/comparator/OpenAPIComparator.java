@@ -260,6 +260,7 @@ public class OpenAPIComparator {
         if (options.isNormalizingNullableSchemas()) {
             normalizeNullableSchemas(node);
             normalizeLocalAllOfSchemas(node);
+            normalizeLocalComponentAliases(node);
         }
         if (options.isIgnoringDescriptions()) {
             stripDescriptions(node);
@@ -443,6 +444,38 @@ public class OpenAPIComparator {
             return;
         }
         normalizeAllOfNode(rootObject, schemas, new HashSet<>());
+    }
+
+    /**
+     * Expands component schemas that are pure local aliases, such as
+     * {@code MethodNewRequest: {$ref: '#/components/schemas/MethodBaseClass'}}.
+     * This intentionally leaves ordinary property references untouched.
+     */
+    private void normalizeLocalComponentAliases(JsonNode root) {
+        if (!(root instanceof ObjectNode rootObject)) {
+            return;
+        }
+        JsonNode schemasNode = rootObject.path("components").path("schemas");
+        if (!(schemasNode instanceof ObjectNode schemas)) {
+            return;
+        }
+
+        List<String> componentNames = new ArrayList<>();
+        schemas.fieldNames().forEachRemaining(componentNames::add);
+        for (String componentName : componentNames) {
+            JsonNode component = schemas.get(componentName);
+            if (!(component instanceof ObjectNode componentObject)
+                || componentObject.size() != 1
+                || !componentObject.has("$ref")) {
+                continue;
+            }
+
+            ObjectNode resolved = resolveLocalSchema(componentObject, schemas, new HashSet<>());
+            if (resolved != null) {
+                componentObject.removeAll();
+                componentObject.setAll(resolved);
+            }
+        }
     }
 
     private void normalizeAllOfNode(JsonNode node, ObjectNode schemas, Set<String> resolving) {

@@ -47,6 +47,24 @@ class OpenAPIComparatorTest {
     }
 
     @Test
+    void compareTreatsPureLocalRequestAliasAsEquivalentToInlineSchema() {
+        String inlineSpecification = """
+            {"openapi":"3.1.0","info":{"title":"Test","version":"1"},"paths":{"/methods":{"put":{"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/MethodNewRequest"}}}},"responses":{"200":{"description":"OK"}}}}},"components":{"schemas":{"MethodNewRequest":{"type":"object","properties":{"description":{"type":"string"},"methodName":{"type":"string"}},"required":["methodName"]}}}}
+            """;
+        String aliasSpecification = """
+            {"openapi":"3.1.0","info":{"title":"Test","version":"1"},"paths":{"/methods":{"put":{"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/MethodNewRequest"}}}},"responses":{"200":{"description":"OK"}}}}},"components":{"schemas":{"MethodNewRequest":{"$ref":"#/components/schemas/MethodBaseClass"},"MethodBaseClass":{"type":"object","properties":{"description":{"type":"string"},"methodName":{"type":"string"}},"required":["methodName"]}}}}
+            """;
+
+        Response<ChangedOpenApi> response = new OpenAPIComparator().compare(inlineSpecification, aliasSpecification);
+
+        if (response.hasErrors()) {
+            handleFailedResponse(response);
+        }
+        assertTrue(response.getResult().getChangedOperations().isEmpty());
+        assertTrue(response.getResult().getChangedSchemas().isEmpty());
+    }
+
+    @Test
     void openApiComparePetstoreHTML0() {
         OpenAPIComparator comparator = new OpenAPIComparator() ;
 

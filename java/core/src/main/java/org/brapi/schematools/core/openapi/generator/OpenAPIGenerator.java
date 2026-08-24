@@ -681,10 +681,13 @@ public class OpenAPIGenerator {
                     return success(responses.get(name));
                 }
 
-                ApiResponse apiResponse = createApiResponse(name, new ObjectSchema()
-                    .addProperty("data", new ArraySchema().items(new Schema().$ref(createSchemaRef(type.getName()))))
-                    .addRequiredItem("data")
-                )  ;
+                ApiResponse apiResponse = createApiResponse(
+                    name,
+                    new ObjectSchema()
+                        .addProperty("data", new ArraySchema().items(new Schema().$ref(createSchemaRef(type.getName()))))
+                        .addRequiredItem("data"),
+                    getMetadataSchemaNameFor((BrAPIObjectType) type)
+                );
 
                 apiResponse.description("OK") ;
 
@@ -766,6 +769,12 @@ public class OpenAPIGenerator {
 
         private String getMetadataSchemaNameFor(BrAPIClass brAPIClass) {
             return brAPIClass.getMetadata() != null && brAPIClass.getMetadata().isTokenPagination()
+                ? "metadataTokenPagination"
+                : "metadata";
+        }
+
+        private String getMetadataSchemaNameFor(BrAPIObjectType type) {
+            return options.getGet().hasPageTokenFor(type) || options.getSearch().hasPageTokenFor(type)
                 ? "metadataTokenPagination"
                 : "metadata";
         }
