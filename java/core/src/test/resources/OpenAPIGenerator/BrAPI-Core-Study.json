@@ -19,7 +19,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -28,7 +29,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -37,7 +39,8 @@
                         "description" : "The location ids to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -46,7 +49,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -55,7 +59,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -64,7 +69,8 @@
                         "description" : "List of study names to filter search results",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -73,7 +79,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -82,7 +89,8 @@
                         "description" : "The DbIds of Variables to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -91,7 +99,8 @@
                         "description" : "A flag to indicate if a Study is currently active and ongoing",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -100,7 +109,8 @@
                         "description" : "The ID which uniquely identifies a season",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -109,7 +119,8 @@
                         "description" : "The type of study being performed. ex. \"Yield Trial\", etc",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -118,7 +129,8 @@
                         "description" : "A short human readable code for a study",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -127,7 +139,8 @@
                         "description" : "Permanent unique identifier associated with study data. For example, a URI or DOI",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -138,6 +151,7 @@
                         "schema" : {
                             "type" : "string",
                             "description" : "Name of the field to sort by.",
+                            "nullable" : false,
                             "enum" : [
                                 "studyDbId",
                                 "trialDbId",
@@ -161,6 +175,7 @@
                         "schema" : {
                             "type" : "string",
                             "description" : "Sort order direction. Ascending/Descending.",
+                            "nullable" : false,
                             "enum" : [
                                 "ASC",
                                 "DESC",
@@ -256,7 +271,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -265,7 +281,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -274,7 +291,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {

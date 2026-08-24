@@ -1009,12 +1009,16 @@ public class OpenAPIGenerator {
 
         private Response<Parameter> createListGetParameter(BrAPIObjectProperty property, List<String> noSingularizeProperties) {
             return createSchemaForType(property.getType()).mapResult(
-                schema -> new Parameter()
+                schema -> {
+                    Schema parameterSchema = property.getType() instanceof BrAPIArrayType ? upwrapSchema(schema) : schema;
+                    removeNullability(parameterSchema);
+                    return new Parameter()
                     .name(isConvertingToSingularProperty(property) && !noSingularizeProperties.contains(property.getName()) ?  options.getSingularForProperty(property.getName()) : property.getName())
                     .in("query")
                     .description(property.getDescription())
                     .required(property.isRequired())
-                    .schema(property.getType() instanceof BrAPIArrayType ? upwrapSchema(schema) : schema));
+                    .schema(parameterSchema);
+                });
         }
 
         private boolean isConvertingToSingularProperty(BrAPIObjectProperty property) {
@@ -1026,6 +1030,13 @@ public class OpenAPIGenerator {
                 return schema.getItems();
             } else {
                 return schema;
+            }
+        }
+
+        private void removeNullability(Schema schema) {
+            schema.setNullable(false);
+            if (schema.getTypes() != null) {
+                schema.getTypes().remove("null");
             }
         }
 

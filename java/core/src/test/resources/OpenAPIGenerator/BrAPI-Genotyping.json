@@ -19,7 +19,8 @@
                         "description" : "Default Value = false\n<br/>\nIf 'preview' is set to true, then the server should only return the lists of 'callSetDbIds', \n'variantDbIds', and 'variantSetDbIds'. The server should not return any matrix data. This\nis intended to be a preview and give the client a sense of how large the matrix returned will be\n<br/>\nIf 'preview' is set to false or not set (default), then the server should return all the matrix\ndata as requested.",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -29,7 +30,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -39,7 +41,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -49,7 +52,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -59,7 +63,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -68,7 +73,8 @@
                         "description" : "`dataMatrixNames` is a list of names (ie 'Genotype', 'Read Depth' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -77,7 +83,8 @@
                         "description" : "`dataMatrixAbbreviations` is a list of abbreviations (ie 'GT', 'RD' etc). This list controls which data matrices are returned in the response.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -86,7 +93,8 @@
                         "description" : "The postion range to search\n<br/>\nUses the format \"<chrom>:<start>-<end>\" where <chrom> is the chromosome name, <start> is \nthe starting position of the range, and <end> is the ending position of the range",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -95,7 +103,8 @@
                         "description" : "A list of human readable `Germplasm` names",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -104,7 +113,8 @@
                         "description" : "A list of permanent unique identifiers associated with `Germplasm`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -113,7 +123,8 @@
                         "description" : "A list of IDs which uniquely identify `Germplasm` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -122,7 +133,8 @@
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -131,7 +143,8 @@
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -140,7 +153,8 @@
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -149,7 +163,8 @@
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -158,7 +173,8 @@
                         "description" : "The string used as a separator for phased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -167,7 +183,8 @@
                         "description" : "The string used as a separator for unphased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -176,7 +193,8 @@
                         "description" : "The string used as a representation for missing data.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -213,7 +231,8 @@
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -222,7 +241,8 @@
                         "description" : "A list of IDs which uniquely identify `Variant` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -231,7 +251,8 @@
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -240,7 +261,8 @@
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -249,7 +271,8 @@
                         "description" : "The string used as a separator for phased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -258,7 +281,8 @@
                         "description" : "The string used as a separator for unphased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -267,7 +291,8 @@
                         "description" : "The string used as a representation for missing data.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -276,7 +301,8 @@
                         "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -360,7 +386,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -369,7 +396,8 @@
                         "description" : "A list of IDs which uniquely identify `Samples` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -378,7 +406,8 @@
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -387,7 +416,8 @@
                         "description" : "A list of human readable names associated with `CallSets`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -396,7 +426,8 @@
                         "description" : "A list of IDs which uniquely identify `VariantSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -448,7 +479,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -457,7 +489,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -466,7 +499,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -475,7 +509,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -484,7 +519,8 @@
                         "description" : "The ID which uniquely identifies a `GenomeMap`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -493,7 +529,8 @@
                         "description" : "The DOI or other permanent identifier for a `GenomeMap`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -502,7 +539,8 @@
                         "description" : "Full scientific binomial format name. This includes Genus, Species, and Sub-species",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -511,7 +549,8 @@
                         "description" : "The type of map, usually \"Genetic\" or \"Physical\"",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -554,7 +593,8 @@
                         "description" : "A list of IDs which uniquely identify `GenomeMaps` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -563,7 +603,8 @@
                         "description" : "A list of Uniquely Identifiable linkage group names",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -572,7 +613,8 @@
                         "description" : "A list of IDs which uniquely identify `Variants` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -582,7 +624,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -592,7 +635,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -635,7 +679,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -644,7 +689,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -653,7 +699,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -662,7 +709,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -671,7 +719,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -680,7 +729,8 @@
                         "description" : "The ID which uniquely identifies an observation unit",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -689,7 +739,8 @@
                         "description" : "The ID which uniquely identifies a plate of samples",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -698,7 +749,8 @@
                         "description" : "The human readable name of a plate of samples",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -707,7 +759,8 @@
                         "description" : "The ID which uniquely identifies a sample",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -716,7 +769,8 @@
                         "description" : "The human readable name of the sample",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -725,7 +779,8 @@
                         "description" : "The unique identifier for a group of related Samples",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -857,7 +912,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -866,7 +922,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -875,7 +932,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -884,7 +942,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -893,7 +952,8 @@
                         "description" : "If specified, return the references for which the `accession` matches this string (case-sensitive, exact match).",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -902,7 +962,8 @@
                         "description" : "If specified, return the references for which the `md5checksum` matches this string (case-sensitive, exact match).",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -911,7 +972,8 @@
                         "description" : "A list of IDs which uniquely identify `References` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -920,7 +982,8 @@
                         "description" : "A list of IDs which uniquely identify `ReferenceSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -930,7 +993,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "boolean",
-                            "format" : "boolean"
+                            "format" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -940,7 +1004,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -950,7 +1015,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1002,7 +1068,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1011,7 +1078,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1020,7 +1088,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1029,7 +1098,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1038,7 +1108,8 @@
                         "description" : "If set, return the reference sets for which the `accession` matches this string (case-sensitive, exact match).",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1047,7 +1118,8 @@
                         "description" : "If set, return the reference sets for which the `assemblyId` matches this string (case-sensitive, exact match).",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1056,7 +1128,8 @@
                         "description" : "If set, return the reference sets for which the `md5checksum` matches this string (case-sensitive, exact match).",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1065,7 +1138,8 @@
                         "description" : "The `ReferenceSets` to search.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1117,7 +1191,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1126,7 +1201,8 @@
                         "description" : "List of IDs which uniquely identify germplasm to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1135,7 +1211,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1144,7 +1221,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1153,7 +1231,8 @@
                         "description" : "The ID which uniquely identifies a trial to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1162,7 +1241,8 @@
                         "description" : "The ID which uniquely identifies an `ObservationUnit`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1171,7 +1251,8 @@
                         "description" : "The ID which uniquely identifies a `Plate` of `Samples`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1180,7 +1261,8 @@
                         "description" : "The human readable name of a `Plate` of `Samples`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1189,7 +1271,8 @@
                         "description" : "The ID which uniquely identifies a `Sample`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1198,7 +1281,8 @@
                         "description" : "The human readable name of the `Sample`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1207,7 +1291,8 @@
                         "description" : "The unique identifier for a group of related `Samples`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1339,7 +1424,8 @@
                         "description" : "**Deprecated in v2.1** Please use `referenceDbIds`. Github issue number #472\n<br/>Only return variants on this reference.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1348,7 +1434,8 @@
                         "description" : "The unique identifier representing a genotype `ReferenceSet`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1357,7 +1444,8 @@
                         "description" : "A list of IDs which uniquely identify `Variants`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1366,7 +1454,8 @@
                         "description" : "A list of IDs which uniquely identify `VariantSets`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1375,7 +1464,8 @@
                         "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1430,7 +1520,8 @@
                         "description" : "The BrAPI Common Crop Name is the simple, generalized, widely accepted name of the organism being researched. It is most often used in multi-crop systems where digital resources need to be divided at a high level. Things like 'Maize', 'Wheat', and 'Rice' are examples of common crop names.\n\nUse this parameter to only return results associated with the given crops. \n\nUse `GET /commoncropnames` to find the list of available crops on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1439,7 +1530,8 @@
                         "description" : "A BrAPI Program represents the high level organization or group who is responsible for conducting trials and studies. Things like Breeding Programs and Funded Projects are considered BrAPI Programs. \n\nUse this parameter to only return results associated with the given programs. \n\nUse `GET /programs` to find the list of available programs on a server.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1448,7 +1540,8 @@
                         "description" : "List of study identifiers to search for",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1457,7 +1550,8 @@
                         "description" : "List of study names to filter search results",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1466,7 +1560,8 @@
                         "description" : "The unique identifier representing a CallSet",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1475,7 +1570,8 @@
                         "description" : "The unique identifier representing a Variant",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1484,7 +1580,8 @@
                         "description" : "The unique identifier representing a VariantSet",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1493,7 +1590,8 @@
                         "description" : "The unique identifier representing a genotype ReferenceSet",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1594,7 +1692,8 @@
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1603,7 +1702,8 @@
                         "description" : "The string used as a separator for phased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1612,7 +1712,8 @@
                         "description" : "The string used as a separator for unphased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1621,7 +1722,8 @@
                         "description" : "The string used as a representation for missing data.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1837,7 +1939,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1847,7 +1950,8 @@
                         "required" : false,
                         "schema" : {
                             "type" : "integer",
-                            "format" : "int32"
+                            "format" : "int32",
+                            "nullable" : false
                         }
                     },
                     {
@@ -1856,7 +1960,8 @@
                         "description" : "The continuation token, which is used to page through large result sets.\nTo get the next page of results, set this parameter to the value of\n`next_page_token` from the previous response.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2034,7 +2139,8 @@
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2043,7 +2149,8 @@
                         "description" : "The string used as a separator for phased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2052,7 +2159,8 @@
                         "description" : "The string used as a separator for unphased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2061,7 +2169,8 @@
                         "description" : "The string used as a representation for missing data.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2159,7 +2268,8 @@
                         "description" : "Should homozygotes be expanded (true) or collapsed into a single occurrence (false)",
                         "required" : false,
                         "schema" : {
-                            "type" : "boolean"
+                            "type" : "boolean",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2168,7 +2278,8 @@
                         "description" : "The string used as a separator for phased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2177,7 +2288,8 @@
                         "description" : "The string used as a separator for unphased allele calls.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2186,7 +2298,8 @@
                         "description" : "The string used as a representation for missing data.",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2244,7 +2357,8 @@
                         "description" : "A list of IDs which uniquely identify `CallSets` within the given database server",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2253,7 +2367,8 @@
                         "description" : "A list of human readable names associated with `CallSets`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
@@ -2308,7 +2423,8 @@
                         "description" : "A list of IDs which uniquely identify `Variants`",
                         "required" : false,
                         "schema" : {
-                            "type" : "string"
+                            "type" : "string",
+                            "nullable" : false
                         }
                     },
                     {
