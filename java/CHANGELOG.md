@@ -10,10 +10,12 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ### Fixed
 - **OpenAPI comparator `allOf` inheritance**: before comparison, local component-schema `$ref`/`allOf` compositions are flattened by merging inherited `properties` and `required` fields. Equivalent flattened and composed schemas no longer produce false endpoint-wide deletions, such as `metadata.datafiles`, `metadata.pagination`, and `metadata.status`.
+- **OpenAPI comparator request aliases**: pure local component aliases, such as `MethodNewRequest` referring only to `MethodBaseClass`, are dereferenced before comparison. Equivalent inline generated request schemas no longer report their inherited fields as additions.
 - **OpenAPI table responses**: generated table endpoints now reference their configured `*Table` schema in the response `result`, rather than the primary entity schema.
 
 ### Added
 - **Response token pagination metadata**: response classes can declare `brapi-metadata.tokenPagination: true`; generated OpenAPI wrappers then reference `metadataTokenPagination` instead of ordinary `metadata`.
+- **Generic token-paginated list responses**: primary models configured with `pagedToken` now generate list-response wrappers referencing `metadataTokenPagination`, including `VariantListResponse`.
 
 ---
 
