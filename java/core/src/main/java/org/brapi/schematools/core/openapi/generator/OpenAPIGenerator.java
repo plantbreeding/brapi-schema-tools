@@ -1162,6 +1162,11 @@ public class OpenAPIGenerator {
                 .filter(property -> options.getGetWithId().isEmbeddingResponsePropertyFor(type, property))
                 .toList();
 
+            return createEmbeddedResponseApiResponses(type, responseProperties, addNotFound, "Get");
+        }
+
+        private Response<ApiResponses> createEmbeddedResponseApiResponses(BrAPIObjectType type, List<BrAPIObjectProperty> responseProperties, boolean addNotFound, String responseSuffix) {
+
             if (responseProperties.isEmpty()) {
                 return createSingleApiResponses(type, addNotFound);
             }
@@ -1178,7 +1183,7 @@ public class OpenAPIGenerator {
                         .addAllOfItem(new Schema().$ref(createSchemaRef(type.getName())))
                         .addAllOfItem(responseExtension);
                     ApiResponses apiResponses = addStandardApiResponses(new ApiResponses()
-                        .addApiResponse("200", createApiResponse(options.getSingleResponseNameFor(type) + "Get", resultSchema, getMetadataSchemaNameFor(type))));
+                        .addApiResponse("200", createApiResponse(options.getSingleResponseNameFor(type) + responseSuffix, resultSchema, getMetadataSchemaNameFor(type))));
                     if (addNotFound) {
                         apiResponses.addApiResponse("404", new ApiResponse().$ref("#/components/responses/404NotFound"));
                     }
@@ -1210,7 +1215,12 @@ public class OpenAPIGenerator {
 
             return createIdGetParameterFor(type)
                 .onSuccessDoWithResult(operation::addParametersItem)
-                .map(() -> createSingleApiResponses(type, options.getPut().isAddingNotFoundResponseForSingleFor(type)))
+                .map(() -> createEmbeddedResponseApiResponses(type,
+                    type.getProperties().stream()
+                        .filter(property -> options.getPut().isEmbeddingResponsePropertyFor(type, property))
+                        .toList(),
+                    options.getPut().isAddingNotFoundResponseForSingleFor(type),
+                    "Put"))
                 .onSuccessDoWithResult(operation::responses)
                 .map(() -> success(operation));
         }

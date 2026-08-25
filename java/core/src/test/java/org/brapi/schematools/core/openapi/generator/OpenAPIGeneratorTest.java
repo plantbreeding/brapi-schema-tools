@@ -230,12 +230,22 @@ class OpenAPIGeneratorTest {
         assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "method", "methodName", "methodDbId");
         assertEmbeddedRequiredProperties(specification, "ObservationVariableNewRequest", "trait", "traitName", "traitDbId");
         assertGetWithIdResponseEmbedsProperty(specification, "/observationunits/{observationUnitDbId}", "observations");
+        assertPutResponseEmbedsProperty(specification, "/observationunits/{observationUnitDbId}", "observations");
         assertTrue(specification.getPaths().get("/observationunits/{observationUnitDbId}").getPut()
             .getRequestBody().getContent().get("application/json").getSchema().get$ref().contains("ObservationUnitNewRequest"));
     }
 
     private void assertGetWithIdResponseEmbedsProperty(OpenAPI specification, String path, String propertyName) {
         io.swagger.v3.oas.models.media.Schema responseSchema = specification.getPaths().get(path).getGet()
+            .getResponses().get("200").getContent().get("application/json").getSchema();
+        io.swagger.v3.oas.models.media.Schema resultSchema = (io.swagger.v3.oas.models.media.Schema) responseSchema.getProperties().get("result");
+        assertNotNull(resultSchema);
+        io.swagger.v3.oas.models.media.Schema responseExtension = (io.swagger.v3.oas.models.media.Schema) resultSchema.getAllOf().get(1);
+        assertNotNull(responseExtension.getProperties().get(propertyName));
+    }
+
+    private void assertPutResponseEmbedsProperty(OpenAPI specification, String path, String propertyName) {
+        io.swagger.v3.oas.models.media.Schema responseSchema = specification.getPaths().get(path).getPut()
             .getResponses().get("200").getContent().get("application/json").getSchema();
         io.swagger.v3.oas.models.media.Schema resultSchema = (io.swagger.v3.oas.models.media.Schema) responseSchema.getProperties().get("result");
         assertNotNull(resultSchema);
