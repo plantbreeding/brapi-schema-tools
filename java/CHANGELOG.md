@@ -6,6 +6,13 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.92.0] — 2026-08-25
+
+### Added
+- **PUT response-only embedded properties**: `put.embeddedResponsePropertiesFor` can add selected embedded properties to a PUT response without changing the PUT request body or shared response schemas.
+
+---
+
 ## [0.91.0] — 2026-08-24
 
 ### Added
