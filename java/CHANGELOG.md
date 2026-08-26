@@ -6,6 +6,13 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.94.0] — 2026-08-26
+
+### Fixed
+- **SQL primary table names honour `pluralFor`**: `ANSICreateTableDDLGenerator` now uses `options.getPluralFor(name)` when `pluralTableNames` is enabled, so workspace overrides such as `pluralFor.SelectionHistory: SelectionHistory` produce singular table names (`selection_history`) instead of always calling `toPlural(...)` (`selection_histories`).
+
+---
+
 ## [0.93.0] — 2026-08-26
 
 ### Fixed
