@@ -1206,8 +1206,8 @@
                 "tags" : [
                     "Studies"
                 ],
-                "summary" : "Get the observationLevelses of Study",
-                "description" : "List all available Study observationLevelses",
+                "summary" : "Get the observationLevels of Study",
+                "description" : "List all available Study observationLevels",
                 "parameters" : [
                     {
                         "name" : "studyDbId",

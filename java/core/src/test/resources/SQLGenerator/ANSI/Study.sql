@@ -116,9 +116,9 @@ COMMENT 'Link table for Study to ObservationVariable on property observationVari
 
 
 /* 
-Controlled Vocabulary for observationLevelses of Study
+Controlled Vocabulary for observationLevels of Study
  */
-CREATE TABLE brapi_ObservationLevelses (
+CREATE TABLE brapi_ObservationLevels (
   observationLevels
     ARRAY<
       STRUCT<
