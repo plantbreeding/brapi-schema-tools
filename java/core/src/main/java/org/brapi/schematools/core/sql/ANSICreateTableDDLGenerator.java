@@ -318,7 +318,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             String name = brAPIObjectType.getName() ;
 
             if (options.isUsingPluralTableNames()) {
-                name = toPlural(name) ;
+                // Honour pluralFor overrides (e.g. SelectionHistory -> SelectionHistory)
+                // instead of always calling toPlural(...).
+                name = options.getPluralFor(name) ;
             }
 
             if (options.isUsingSnakeCaseTableNames()) {
