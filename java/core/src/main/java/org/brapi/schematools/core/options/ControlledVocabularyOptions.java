@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.brapi.schematools.core.utils.StringUtils.toPlural;
+import static org.brapi.schematools.core.utils.StringUtils.toSingular;
 
 /**
  * Provides options for the generation of Controlled Vocabulary
@@ -322,7 +323,7 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
      */
     @JsonIgnore
     public final String getDescriptionFor(@NonNull String typeName, @NonNull String propertyName) {
-        return StringUtils.format(descriptionFormat, Map.of("type", typeName, "property", toPlural(propertyName))) ;
+        return StringUtils.format(descriptionFormat, Map.of("type", typeName, "property", toPlural(toSingular(propertyName)))) ;
     }
 
     /**
@@ -344,7 +345,7 @@ public class ControlledVocabularyOptions implements Options, ValidatableAgainstC
      */
     @JsonIgnore
     public final String getSummaryFor(@NonNull String typeName, @NonNull String propertyName) {
-        return StringUtils.format(summaryFormat, Map.of("type", typeName, "property", toPlural(propertyName))) ;
+        return StringUtils.format(summaryFormat, Map.of("type", typeName, "property", toPlural(toSingular(propertyName)))) ;
     }
 
     /**

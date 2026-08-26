@@ -185,7 +185,11 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
         }
 
         if (overrideOptions.controlledVocabulary != null) {
-            controlledVocabulary = overrideOptions.controlledVocabulary ;
+            if (controlledVocabulary == null) {
+                controlledVocabulary = overrideOptions.controlledVocabulary;
+            } else {
+                controlledVocabulary.override(overrideOptions.controlledVocabulary);
+            }
         }
 
         if (overrideOptions.generateLinkTables != null) {
