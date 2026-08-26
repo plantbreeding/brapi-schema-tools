@@ -6,14 +6,23 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.92.0] — 2026-08-25
+## [0.93.0] — 2026-08-26
+
+### Fixed
+- **SQL controlled-vocabulary table names no longer double-pluralise**: property names that are already plural (e.g. observationLevels) are singularised before plural table naming, so generated tables are observation_levels / ObservationLevels instead of observation_levelses / ObservationLevelses. Controlled-vocabulary descriptions/summaries use the same singularise-then-pluralise path.
+- **SQL controlled-vocabulary options merge on override**: workspace controlledVocabulary blocks now merge into defaults instead of replacing them, so omitting generate no longer nulls the default generate: true.
+- **SQL controlled-vocabulary generateFor is honoured**: per-type/per-property controlledVocabulary.generateFor.<Type>.<property>: false now suppresses the matching controlled-vocabulary table instead of only checking the global controlledVocabulary.generate flag.
+
+---
+
+## [0.92.0] â€” 2026-08-25
 
 ### Added
 - **PUT response-only embedded properties**: `put.embeddedResponsePropertiesFor` can add selected embedded properties to a PUT response without changing the PUT request body or shared response schemas.
 
 ---
 
-## [0.91.0] — 2026-08-24
+## [0.91.0] â€” 2026-08-24
 
 ### Added
 - **GET-by-ID response-only embedded properties**: `getWithId.embeddedResponsePropertiesFor` can add selected embedded properties to a GET response without changing shared request schemas or PUT request bodies.
@@ -23,7 +32,7 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.90.0] — 2026-08-24
+## [0.90.0] â€” 2026-08-24
 
 ### Added
 - **Nested collection page-token overrides**: new `get.subPathPagedToken` map lets nested/sub-path collection endpoints (e.g. `/callsets/{callSetDbId}/calls`) include a `pageToken` query parameter independently of the top-level list endpoint. When unset, nested paths fall back to the existing `get.pagedToken` / `pagedTokenDefault` setting via `GetOptions.hasSubPathPageTokenFor(...)`.
@@ -31,14 +40,14 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.89.0] — 2026-08-24
+## [0.89.0] â€” 2026-08-24
 
 ### Fixed
 - **OpenAPI list GET query parameters are non-nullable**: generated query-parameter schemas now clear `nullable` / `type: null` so list filters match the hand-authored OpenAPI style (parameters remain optional via omission, not explicit null).
 
 ---
 
-## [0.88.0] — 2026-08-24
+## [0.88.0] â€” 2026-08-24
 
 ### Fixed
 - **OpenAPI comparator `allOf` inheritance**: before comparison, local component-schema `$ref`/`allOf` compositions are flattened by merging inherited `properties` and `required` fields. Equivalent flattened and composed schemas no longer produce false endpoint-wide deletions, such as `metadata.datafiles`, `metadata.pagination`, and `metadata.status`.
@@ -51,7 +60,7 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
-## [0.85.0] — 2026-08-18
+## [0.85.0] â€” 2026-08-18
 
 ### Added
 - New Markdown options for interface and response class generation
@@ -67,14 +76,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.84.0] — 2026-08-12
+## [0.84.0] â€” 2026-08-12
 
 ### Added
-- **Selective property exclusion from generated POST/PUT request schemas**: new `propertyFromSchemaFor` option on the update sub-options (e.g. `post.propertyFromSchemaFor` / `put.propertyFromSchemaFor`) lets you omit specific properties — keyed by type and property name, with dot-notation for nested properties (e.g. `audit.personName`) — from the generated NewRequest/request-body schema, including their `required` entries. All properties are included by default unless a property is explicitly set to `false`.
+- **Selective property exclusion from generated POST/PUT request schemas**: new `propertyFromSchemaFor` option on the update sub-options (e.g. `post.propertyFromSchemaFor` / `put.propertyFromSchemaFor`) lets you omit specific properties â€” keyed by type and property name, with dot-notation for nested properties (e.g. `audit.personName`) â€” from the generated NewRequest/request-body schema, including their `required` entries. All properties are included by default unless a property is explicitly set to `false`.
 
 ---
 
-## [0.83.0] — 2026-08-07
+## [0.83.0] â€” 2026-08-07
 
 ### Added
 - **Deprecated property propagation**: properties marked `deprecated` in the source schema now emit `deprecated: true` in the generated OpenAPI, for both link properties and composite/embedded properties
@@ -86,7 +95,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.82.0] — 2026-08-05
+## [0.82.0] â€” 2026-08-05
 
 ### Added
 - **Request property inclusion in GET endpoints**: GET endpoint generation now honours the `propertiesFromRequest` / `propertyFromRequestFor` options to select which request properties are included (previously available only for search/table endpoints)
@@ -101,17 +110,17 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.81.0] — 2026-08-04
+## [0.81.0] â€” 2026-08-04
 
 ### Fixed
 - Schema directory search depth increased to `Integer.MAX_VALUE` so schemas in deeply nested directories are retrieved during generation
 
 ---
 
-## [0.80.0] — 2026-07-30
+## [0.80.0] â€” 2026-07-30
 
 ### Fixed
-- **`PropertyOptions.override` now adds new parent-type keys** for the nested `linkPropertyFor`, `requiredPropertyFor` and `nullablePropertyFor` maps. Previously an override entry whose top-level key (the parent BrAPI type) did not already exist in the default options was silently discarded, so per-relationship link/required/nullable suppressions could only be declared for parent types already present in the defaults. Renamed or newly added parent types (e.g. a `SeedLot` → `InventoryLot` rename) can now register these overrides via the options file.
+- **`PropertyOptions.override` now adds new parent-type keys** for the nested `linkPropertyFor`, `requiredPropertyFor` and `nullablePropertyFor` maps. Previously an override entry whose top-level key (the parent BrAPI type) did not already exist in the default options was silently discarded, so per-relationship link/required/nullable suppressions could only be declared for parent types already present in the defaults. Renamed or newly added parent types (e.g. a `SeedLot` â†’ `InventoryLot` rename) can now register these overrides via the options file.
 
 ---
 
@@ -128,14 +137,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.78.0] — 2026-06-27
+## [0.78.0] â€” 2026-06-27
 
 ### Fixed
 - Added prefix for constraints in generated SQL output
 
 ---
 
-## [0.77.0] — 2026-06-06
+## [0.77.0] â€” 2026-06-06
 
 ### Added
 - **Action endpoints**: new `actions` mechanism for generating `POST /<entity>/<actionName>` endpoints (e.g. `POST /variantsets/extract`); controlled via `ActionsOptions` with `pathFormat`, `actionSummaryFormat`, `actionDescriptionFormat`, `actionRequestNameFormat`
@@ -152,14 +161,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.76.0] — 2026-06-02
+## [0.76.0] â€” 2026-06-02
 
 ### Changed
 - SQL generator: removed embedded object links to parent tables
 
 ---
 
-## [0.75.0] — 2026-05-29
+## [0.75.0] â€” 2026-05-29
 
 ### Added
 - Composite description builder for array link properties in SQL DDL generation
@@ -170,14 +179,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.74.0] — 2026-05-24
+## [0.74.0] â€” 2026-05-24
 
 ### Changed
 - SQL generation improvements (general updates to column generation)
 
 ---
 
-## [0.73.0] — 2026-05-23
+## [0.73.0] â€” 2026-05-23
 
 ### Fixed
 - Nullable and `required` field handling improved
@@ -185,35 +194,35 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.72.0] — 2026-05-21
+## [0.72.0] â€” 2026-05-21
 
 ### Changed
 - Updated `isLinkForTypeOrProperty` logic for more accurate link detection
 
 ---
 
-## [0.71.0] — 2026-05-21
+## [0.71.0] â€” 2026-05-21
 
 ### Added
 - `ignoreDeprecatedSchemas: true` and `ignoreDeprecatedProperties: true` options in schema reader
 
 ---
 
-## [0.70.0] — 2026-05-20
+## [0.70.0] â€” 2026-05-20
 
 ### Fixed
 - Override handling for valid schema classes
 
 ---
 
-## [0.69.0] — 2026-05-20
+## [0.69.0] â€” 2026-05-20
 
 ### Added
 - `ServerInfo` added to the list of valid schema classes
 
 ---
 
-## [0.68.0] — 2026-05-19
+## [0.68.0] â€” 2026-05-19
 
 ### Added
 - BRAVA-Tools integration: new getters on model objects needed by BRAVA-Tools; options updated
@@ -232,7 +241,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.67.0] — 2026-05-02
+## [0.67.0] â€” 2026-05-02
 
 *Note: 0.66.0 was an intermediate development version and was not released as a standalone tag.*
 
@@ -244,21 +253,21 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.65.0] — 2026-05-01
+## [0.65.0] â€” 2026-05-01
 
 ### Changed
 - GraphQL output types refactored to use named types; improved schema generation overall
 
 ---
 
-## [0.64.0] — 2026-04-28
+## [0.64.0] â€” 2026-04-28
 
 ### Added
 - `additionalInfo` and `KeyValuePair` support in BrAPI schema (temporary fix; improvement planned)
 
 ---
 
-## [0.63.0] — 2026-04-28
+## [0.63.0] â€” 2026-04-28
 
 ### Added
 - `BrAPIAdditionalProperties` class; integrated into OpenAPI schema generation
@@ -271,7 +280,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.62.0] — 2026-04-05
+## [0.62.0] â€” 2026-04-05
 
 ### Added
 - SQL table properties organised into primary, link, and clustering categories
@@ -286,14 +295,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.61.0] — 2026-04-01
+## [0.61.0] â€” 2026-04-01
 
 ### Added
 - SQL table generation: option to suppress constraints within `ARRAY<STRUCT>` types
 
 ---
 
-## [0.60.0] — 2026-03-31
+## [0.60.0] â€” 2026-03-31
 
 ### Added
 - SQL clustering columns include `studyType` and `studyCode`
@@ -301,14 +310,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.59.0] — 2026-03-24
+## [0.59.0] â€” 2026-03-24
 
 ### Changed
 - Link property handling enhanced in BrAPI object generation
 
 ---
 
-## [0.58.0] — 2026-03-19
+## [0.58.0] â€” 2026-03-19
 
 ### Added
 - Jupyter notebook generation for primary entities (`generateNotebooks` option)
@@ -324,14 +333,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.57.0] — 2026-02-24
+## [0.57.0] â€” 2026-02-24
 
 ### Fixed
 - SQL DDL now emits `DROP TABLE IF EXISTS` before `CREATE TABLE` for cleaner re-runs
 
 ---
 
-## [0.56.0] — 2026-02-07
+## [0.56.0] â€” 2026-02-07
 
 ### Added
 - `snakeCaseTableNames` option for SQL generation
@@ -339,47 +348,47 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.55.0] — 2026-02-03
+## [0.55.0] â€” 2026-02-03
 
 ### Added
 - New tests and options for SQL generation
 
 ---
 
-## [0.54.0] — 2026-02-02
+## [0.54.0] â€” 2026-02-02
 
 ### Fixed
 - Use absolute paths when writing SQL output files
 
 ---
 
-## [0.53.0] — 2026-02-02
+## [0.53.0] â€” 2026-02-02
 
 ### Fixed
 - Duplicate property issue in generated SQL output
 
 ---
 
-## [0.52.0] — 2026-02-02
+## [0.52.0] â€” 2026-02-02
 
 ### Fixed
 - BrAPI options parsing issue resolved
 
 ---
 
-## [0.51.0] — 2026-02-01
+## [0.51.0] â€” 2026-02-01
 
-*Maintenance release — test improvements.*
+*Maintenance release â€” test improvements.*
 
 ---
 
-## [0.50.0] — 2026-02-01
+## [0.50.0] â€” 2026-02-01
 
 *Maintenance/version bump release.*
 
 ---
 
-## [0.49.0] — 2026-01-29
+## [0.49.0] â€” 2026-01-29
 
 ### Added
 - R package generation: added `@family` and `@keywords` roxygen annotations
@@ -390,22 +399,22 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.48.0] — 2026-01-29
+## [0.48.0] â€” 2026-01-29
 
 ### Added
 - OpenAPI / GraphQL comparison: compare across directories
-- Better output organisation — results written to separate files per comparison
+- Better output organisation â€” results written to separate files per comparison
 - Improved generator and comparator internals
 
 ---
 
-## [0.47.0] — 2026-01-29
+## [0.47.0] â€” 2026-01-29
 
 *Version maintenance release.*
 
 ---
 
-## [0.46.0] — 2026-01-28
+## [0.46.0] â€” 2026-01-28
 
 ### Fixed
 - CLI version string fixed
@@ -413,7 +422,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.45.0] — 2026-01-22
+## [0.45.0] â€” 2026-01-22
 
 ### Added
 - Examples generator (generate example payloads)
@@ -424,14 +433,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.44.0] — 2026-01-03
+## [0.44.0] â€” 2026-01-03
 
 ### Added
 - Output directory deleted recursively before generation when overwrite is enabled
 
 ---
 
-## [0.43.0] — 2026-01-03
+## [0.43.0] â€” 2026-01-03
 
 ### Added
 - `version` sub-command added to CLI
@@ -439,20 +448,20 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.42.0] — 2026-01-03
+## [0.42.0] â€” 2026-01-03
 
 *Version/maintenance release.*
 
 ---
 
-## [0.41.0] — 2026-01-03
+## [0.41.0] â€” 2026-01-03
 
 ### Fixed
 - Generation options corrections
 
 ---
 
-## [0.40.0] — 2026-01-02
+## [0.40.0] â€” 2026-01-02
 
 ### Added
 - Initial SQL generation from JSON Schema (`generate -l SQL`)
@@ -462,7 +471,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.39.0] — 2025-10-20
+## [0.39.0] â€” 2025-10-20
 
 ### Added
 - `version` command in CLI
@@ -471,14 +480,14 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.38.0] — 2025-10-15
+## [0.38.0] â€” 2025-10-15
 
 ### Added
 - Bearer authentication support for Markdown generation from GraphQL schema; auth handling refactored
 
 ---
 
-## [0.37.0] — 2025-09-14
+## [0.37.0] â€” 2025-09-14
 
 ### Added
 - Comparison endpoint filters
@@ -490,7 +499,7 @@ if explicitly included in the Markdown options.
 
 ---
 
-## [0.36.0] — 2025-08-05
+## [0.36.0] â€” 2025-08-05
 
 Initial public release. Established Maven Central publishing workflow.
 
@@ -502,3 +511,4 @@ Initial public release. Established Maven Central publishing workflow.
 - Compare generated OpenAPI against a reference spec
 - Analyse sub-command for schema analysis
 - CLI with `generate`, `compare`, `analyse`, `validate`, `markdown`, `examples` sub-commands
+

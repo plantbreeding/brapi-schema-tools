@@ -93,6 +93,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                     .stream()
                     .filter(this::isAddingDepreciatedProperty)
                     .filter(property -> brAPIObjectType.getMetadata().getControlledVocabularyProperties().contains(property.getName()))
+                    .filter(property -> options.getControlledVocabulary().isGeneratingFor(brAPIObjectType, property))
                     .map(property -> new ControlledVocabularyTable(brAPIObjectType, property))
                     .forEach(controlledVocabularyTables::add) ;
             }
@@ -664,7 +665,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private String createControlledVocabularyTableName(ControlledVocabularyTable controlledVocabularyTable) {
-            String name = toSentenceCase(controlledVocabularyTable.getProperty().getName()) ;
+            // Property names are often already plural (e.g. observationLevels). Singularise first
+            // so plural table naming does not produce double plurals like ObservationLevelses.
+            String name = toSentenceCase(toSingular(controlledVocabularyTable.getProperty().getName())) ;
 
             if (options.isUsingPluralTableNames()) {
                 name = toPlural(name) ;

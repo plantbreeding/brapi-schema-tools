@@ -37,6 +37,8 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toSingular("germplasm")) ;
         assertEquals("study", StringUtils.toSingular("studies")) ;
         assertEquals("trial", StringUtils.toSingular("trials")) ;
+        assertEquals("ObservationLevel", StringUtils.toSingular("ObservationLevels")) ;
+        assertEquals("observationLevel", StringUtils.toSingular("observationLevels")) ;
         assertEquals("genus", StringUtils.toSingular("genus")) ;
         assertEquals("species", StringUtils.toSingular("species")) ;
     }
@@ -52,6 +54,9 @@ class StringUtilsTest {
         assertEquals("germplasm", StringUtils.toPlural("germplasm")) ;
         assertEquals("studies", StringUtils.toPlural("study")) ;
         assertEquals("trials", StringUtils.toPlural("trial")) ;
+        assertEquals("ObservationLevels", StringUtils.toPlural("ObservationLevel")) ;
+        assertEquals("observationLevels", StringUtils.toPlural("observationLevel")) ;
+        assertEquals("ObservationLevels", StringUtils.toPlural(StringUtils.toSingular("ObservationLevels"))) ;
     }
 
     @Test
