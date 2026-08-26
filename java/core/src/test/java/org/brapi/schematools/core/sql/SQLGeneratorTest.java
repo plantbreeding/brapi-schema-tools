@@ -33,6 +33,35 @@ class SQLGeneratorTest {
         generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults") ;
     }
 
+    @Test
+    void foreignKeyConstraintNamesAreUniquePerRelationshipProperty() throws Exception {
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults");
+
+        Path constraintsPath = Path.of("build/test-output/SQLGenerator/defaults/add_constraints.sql");
+        assertTrue(Files.exists(constraintsPath), "add_constraints.sql should be generated");
+
+        String constraintsSql = Files.readString(constraintsPath);
+        assertTrue(constraintsSql.contains("SeedLotTransactions_fromSeedLot_SeedLots_fk"),
+            "fromSeedLot FK must include relationship property in constraint name");
+        assertTrue(constraintsSql.contains("SeedLotTransactions_toSeedLot_SeedLots_fk"),
+            "toSeedLot FK must include relationship property in constraint name");
+        assertFalse(constraintsSql.contains("SeedLotTransactions_SeedLots_fk"),
+            "ambiguous shared SeedLotTransactions_SeedLots_fk name must not be emitted");
+
+        java.util.regex.Pattern constraintNamePattern = java.util.regex.Pattern.compile(
+            "ADD CONSTRAINT\\s+(\\S+)\\s+FOREIGN KEY", java.util.regex.Pattern.CASE_INSENSITIVE);
+        java.util.Map<String, Long> nameCounts = constraintNamePattern.matcher(constraintsSql).results()
+            .map(match -> match.group(1))
+            .collect(java.util.stream.Collectors.groupingBy(name -> name, java.util.stream.Collectors.counting()));
+        java.util.List<String> duplicatedNames = nameCounts.entrySet().stream()
+            .filter(entry -> entry.getValue() > 1)
+            .map(java.util.Map.Entry::getKey)
+            .sorted()
+            .toList();
+        assertTrue(duplicatedNames.isEmpty(),
+            "FK constraint names must be unique; duplicates=" + duplicatedNames);
+    }
+
     void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, int expectedSize, String classpath) {
         Response<List<Path>> response = null;
         try {

@@ -185,10 +185,11 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             builder.append(",");
                             appendNewLine(builder);
                             builder.append("CONSTRAINT ");
-                            builder.append(createTableName(tableName));
-                            builder.append("_");
-                            builder.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
-                            builder.append("_fk FOREIGN KEY(");
+                            builder.append(createForeignKeyConstraintName(
+                                tableName,
+                                brAPIPropertyWithType.getProperty(),
+                                (BrAPIObjectType) brAPIPropertyWithType.getType()));
+                            builder.append(" FOREIGN KEY(");
                             String inlineFkColumns = sourceLinkProps.stream()
                                 .map(BrAPIObjectProperty::getName)
                                 .collect(Collectors.joining(", "));
@@ -213,13 +214,11 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                             }
                             builder2.append(tableName);
                             builder2.append(" ADD CONSTRAINT ");
-                            builder2.append(createTableName(tableName));
-                            builder2.append("_");
-                            builder2.append(createTableName((BrAPIObjectType) brAPIPropertyWithType.getType()));
-                            if (metadata.getForeignKeyConstraintPrefix() != null) {
-                                builder2.append(metadata.getForeignKeyConstraintPrefix());
-                            }
-                            builder2.append("_fk FOREIGN KEY(");
+                            builder2.append(createForeignKeyConstraintName(
+                                tableName,
+                                brAPIPropertyWithType.getProperty(),
+                                (BrAPIObjectType) brAPIPropertyWithType.getType()));
+                            builder2.append(" FOREIGN KEY(");
                             String fkColumns = sourceLinkProps.stream()
                                 .map(BrAPIObjectProperty::getName)
                                 .collect(Collectors.joining(", "));
@@ -328,6 +327,30 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             }
 
             return name ;
+        }
+
+        /**
+         * Builds a unique FK constraint name for a relationship property.
+         * Includes the source relationship property so two FKs from the same table
+         * to the same target (e.g. fromSeedLot / toSeedLot) do not collide.
+         * Shape: {@code <sourceTable>_<property>_<targetTable>[_prefix]_fk}
+         */
+        private String createForeignKeyConstraintName(String tableName, BrAPIObjectProperty property, BrAPIObjectType targetType) {
+            StringBuilder constraintName = new StringBuilder();
+            constraintName.append(createTableName(tableName));
+            constraintName.append('_');
+            constraintName.append(createConstraintPropertySegment(property.getName()));
+            constraintName.append('_');
+            constraintName.append(createTableName(targetType));
+            if (metadata.getForeignKeyConstraintPrefix() != null) {
+                constraintName.append(metadata.getForeignKeyConstraintPrefix());
+            }
+            constraintName.append("_fk");
+            return constraintName.toString();
+        }
+
+        private String createConstraintPropertySegment(String propertyName) {
+            return options.isUsingSnakeCaseTableNames() ? toSnakeCase(propertyName) : propertyName;
         }
 
         private String getTableDescription(BrAPIObjectType brAPIObjectType) {

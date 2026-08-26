@@ -6,6 +6,13 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.95.0] — 2026-08-26
+
+### Fixed
+- **SQL foreign-key constraint names include the relationship property**: FK names are now `<source>_<property>_<target>[_prefix]_fk` (e.g. `SeedLotTransactions_fromSeedLot_SeedLots_fk` / `..._toSeedLot_...`). Multiple ID-link relationships from one table to the same target no longer collide on a single `*_fk` name.
+
+---
+
 ## [0.94.0] — 2026-08-26
 
 ### Fixed
