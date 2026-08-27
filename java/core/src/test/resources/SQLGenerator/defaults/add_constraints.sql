@@ -49,6 +49,8 @@ ALTER TABLE IF EXISTS brapi_Samples ADD CONSTRAINT Samples_study_Studies_fk FORE
 ALTER TABLE IF EXISTS brapi_Samples ADD CONSTRAINT Samples_trial_Trials_fk FOREIGN KEY(trialDbId, trialPUI, trialName) REFERENCES brapi_Trials ;
 ALTER TABLE IF EXISTS brapi_SeedLotTransactions ADD CONSTRAINT SeedLotTransactions_fromSeedLot_SeedLots_fk FOREIGN KEY(fromSeedLotDbId, fromSeedLotPUI, fromSeedLotName) REFERENCES brapi_SeedLots ;
 ALTER TABLE IF EXISTS brapi_SeedLotTransactions ADD CONSTRAINT SeedLotTransactions_toSeedLot_SeedLots_fk FOREIGN KEY(toSeedLotDbId, toSeedLotPUI, toSeedLotName) REFERENCES brapi_SeedLots ;
+ALTER TABLE IF EXISTS brapi_SeedLots ADD CONSTRAINT SeedLots_location_Locations_fk FOREIGN KEY(locationDbId, locationPUI, locationName) REFERENCES brapi_Locations ;
+ALTER TABLE IF EXISTS brapi_SeedLots ADD CONSTRAINT SeedLots_program_Programs_fk FOREIGN KEY(programDbId, programPUI, programName) REFERENCES brapi_Programs ;
 ALTER TABLE IF EXISTS brapi_Studies ADD CONSTRAINT Studies_location_Locations_fk FOREIGN KEY(locationDbId, locationPUI, locationName) REFERENCES brapi_Locations ;
 ALTER TABLE IF EXISTS brapi_Studies ADD CONSTRAINT Studies_trial_Trials_fk FOREIGN KEY(trialDbId, trialPUI, trialName) REFERENCES brapi_Trials ;
 ALTER TABLE IF EXISTS brapi_Trials ADD CONSTRAINT Trials_program_Programs_fk FOREIGN KEY(programDbId, programPUI, programName) REFERENCES brapi_Programs ;

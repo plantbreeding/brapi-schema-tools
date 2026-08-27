@@ -1,0 +1,34 @@
+{
+  "$defs": {
+    "InventoryLot": {
+      "type": "object",
+      "description": "Inventory lot primary model",
+      "brapi-metadata": {
+        "primaryModel": true
+      },
+      "required": [
+        "inventoryLotDbId"
+      ],
+      "properties": {
+        "inventoryLotDbId": {
+          "type": "string",
+          "description": "Lot id"
+        },
+        "inventoryLotPUI": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Lot PUI"
+        },
+        "inventoryLotName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Lot name"
+        }
+      }
+    }
+  }
+}

@@ -6,6 +6,18 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.96.0] — 2026-08-26
+
+### Fixed
+- **SQL foreign keys only reference emitted CREATE TABLE columns**: `add_constraints.sql` now tracks top-level columns actually written for each primary table and skips FK constraints whose local columns were omitted (including deprecated relationships such as `Locale.program` → `programPUI`). Partial matches keep only the emitted columns.
+- **SQL FK generation ignores deprecated relationships** when the schema reader is configured with `ignoreDepreciatedProperties: true`, matching CREATE TABLE behaviour.
+- **SQL controlled-vocabulary tables are row-shaped**: array/object CV properties such as `Study.observationLevels` now generate flat tables (`levelName`, `levelOrder`, ...) instead of a single `ARRAY<STRUCT<...>>` column.
+
+### Added
+- **Separate SQL files for link and controlled-vocabulary tables**: new options `separateLinkTables` and `separateControlledVocabularyTables` (default `false`) write each link/CV table to its own `.sql` file instead of appending them to the parent entity DDL.
+
+---
+
 ## [0.95.0] — 2026-08-26
 
 ### Fixed

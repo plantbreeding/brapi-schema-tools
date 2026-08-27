@@ -1,0 +1,17 @@
+tableUsing: delta
+clustering: true
+ifNotExists: true
+addConstraintIfExists: false
+snakeCaseTableNames: true
+generateLinkTables: false
+generateDropScript: true
+generateForeignKeyConstraintScript: true
+addForeignKeyConstraints: false
+addPrimaryKeyConstraints: true
+properties:
+  id:
+    link: false
+  name:
+    link: false
+  pui:
+    link: true

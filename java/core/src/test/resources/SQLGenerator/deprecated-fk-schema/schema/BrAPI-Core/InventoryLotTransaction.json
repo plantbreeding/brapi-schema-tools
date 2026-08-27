@@ -1,0 +1,30 @@
+{
+  "$defs": {
+    "InventoryLotTransaction": {
+      "type": "object",
+      "description": "Transaction with two FKs to the same inventory lot table",
+      "brapi-metadata": {
+        "primaryModel": true
+      },
+      "required": [
+        "transactionDbId"
+      ],
+      "properties": {
+        "transactionDbId": {
+          "type": "string",
+          "description": "Transaction id"
+        },
+        "fromInventoryLot": {
+          "description": "Source inventory lot",
+          "$ref": "InventoryLot.json#/$defs/InventoryLot",
+          "relationshipType": "many-to-one"
+        },
+        "toInventoryLot": {
+          "description": "Destination inventory lot",
+          "$ref": "InventoryLot.json#/$defs/InventoryLot",
+          "relationshipType": "many-to-one"
+        }
+      }
+    }
+  }
+}
