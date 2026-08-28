@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "Locale": {
+      "type": "object",
+      "description": "Test locale with a deprecated program relationship.",
+      "brapi-metadata": {
+        "primaryModel": true
+      },
+      "required": [
+        "localeDbId"
+      ],
+      "properties": {
+        "localeDbId": {
+          "description": "Locale id",
+          "type": "string"
+        },
+        "localePUI": {
+          "description": "Locale PUI",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "localeName": {
+          "description": "Locale name",
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "program": {
+          "$ref": "Program.json#/$defs/Program",
+          "description": "A program identifier to search for",
+          "relationshipType": "many-to-one",
+          "deprecated": true
+        },
+        "season": {
+          "description": "The season for this Locale",
+          "$ref": "Season.json#/$defs/Season",
+          "relationshipType": "many-to-one",
+          "nullable": true
+        }
+      }
+    }
+  }
+}

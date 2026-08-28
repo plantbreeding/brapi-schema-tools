@@ -1,0 +1,34 @@
+{
+  "$defs": {
+    "Program": {
+      "type": "object",
+      "description": "Program primary model",
+      "brapi-metadata": {
+        "primaryModel": true
+      },
+      "required": [
+        "programDbId"
+      ],
+      "properties": {
+        "programDbId": {
+          "type": "string",
+          "description": "Program id"
+        },
+        "programPUI": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Program PUI"
+        },
+        "programName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Program name"
+        }
+      }
+    }
+  }
+}

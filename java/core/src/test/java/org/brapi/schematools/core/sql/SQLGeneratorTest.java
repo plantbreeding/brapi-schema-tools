@@ -30,12 +30,12 @@ class SQLGeneratorTest {
 
     @Test
     void generateWithOverwrite() {
-        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults") ;
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 37, "build/test-output/SQLGenerator/defaults") ;
     }
 
     @Test
     void foreignKeyConstraintNamesAreUniquePerRelationshipProperty() throws Exception {
-        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 36, "build/test-output/SQLGenerator/defaults");
+        generate(SQLGeneratorOptions.load().setOverwrite(true), SQLGeneratorMetadata.load(), 37, "build/test-output/SQLGenerator/defaults");
 
         Path constraintsPath = Path.of("build/test-output/SQLGenerator/defaults/add_constraints.sql");
         assertTrue(Files.exists(constraintsPath), "add_constraints.sql should be generated");
@@ -60,6 +60,70 @@ class SQLGeneratorTest {
             .toList();
         assertTrue(duplicatedNames.isEmpty(),
             "FK constraint names must be unique; duplicates=" + duplicatedNames);
+    }
+
+    @Test
+    void controlledVocabularyTablesAreFlattenedToRowShape() throws Exception {
+        Path outputDir = Path.of("build/test-output/SQLGenerator/cv-flatten");
+        Files.createDirectories(outputDir);
+
+        SQLGeneratorOptions options = SQLGeneratorOptions.load().setOverwrite(true);
+        SQLGeneratorMetadata metadata = SQLGeneratorMetadata.load();
+
+        Response<List<Path>> response = new SQLGenerator(options, outputDir)
+            .generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), metadata);
+        assertFalse(response.hasErrors(), () -> response.getMessagesCombined(","));
+
+        Path studySql = outputDir.resolve("Study.sql");
+        assertTrue(Files.exists(studySql));
+        String studyDdl = Files.readString(studySql);
+
+        assertTrue(studyDdl.contains("CREATE TABLE brapi_ObservationLevels"),
+            "ObservationLevels CV table should still be generated");
+        assertTrue(studyDdl.contains("levelName STRING"),
+            "ObservationLevels should expose flattened levelName column");
+        assertTrue(studyDdl.contains("levelOrder INT") || studyDdl.contains("levelOrder INTEGER"),
+            "ObservationLevels should expose flattened levelOrder column");
+        assertFalse(studyDdl.contains("CREATE TABLE brapi_ObservationLevels (\n  observationLevels\n    ARRAY<"),
+            "ObservationLevels must not keep a single ARRAY<STRUCT> column");
+        assertFalse(studyDdl.matches("(?s).*CREATE TABLE brapi_ObservationLevels \\(\\s*observationLevels\\s+ARRAY<.*"),
+            "ObservationLevels must not wrap vocabulary fields in ARRAY");
+    }
+
+    @Test
+    void separateLinkAndControlledVocabularyTablesWriteOwnFiles() throws Exception {
+        Path outputDir = Path.of("build/test-output/SQLGenerator/separate-tables");
+        Files.createDirectories(outputDir);
+
+        SQLGeneratorOptions options = SQLGeneratorOptions.load()
+            .setOverwrite(true)
+            .setSeparateLinkTables(true)
+            .setSeparateControlledVocabularyTables(true);
+        SQLGeneratorMetadata metadata = SQLGeneratorMetadata.load();
+
+        Response<List<Path>> response = new SQLGenerator(options, outputDir)
+            .generate(Path.of(ClassLoader.getSystemResource("BrAPI-Schema").toURI()), metadata);
+        assertFalse(response.hasErrors(), () -> response.getMessagesCombined(","));
+
+        Path studySql = outputDir.resolve("Study.sql");
+        assertTrue(Files.exists(studySql));
+        String studyDdl = Files.readString(studySql);
+        assertFalse(studyDdl.contains("CREATE TABLE brapi_ObservationLevels"),
+            "Study.sql must not embed ObservationLevels when separateControlledVocabularyTables=true");
+        assertFalse(studyDdl.contains("CREATE TABLE brapi_ObservationVariableByStudy")
+                && studyDdl.contains("Link table for Study to ObservationVariable"),
+            "Study.sql must not embed link tables when separateLinkTables=true");
+
+        Path observationLevelsSql = outputDir.resolve("ObservationLevels.sql");
+        assertTrue(Files.exists(observationLevelsSql), "ObservationLevels.sql should be written separately");
+        String observationLevelsDdl = Files.readString(observationLevelsSql);
+        assertTrue(observationLevelsDdl.contains("CREATE TABLE brapi_ObservationLevels"));
+        assertTrue(observationLevelsDdl.contains("levelName STRING"));
+        assertFalse(observationLevelsDdl.contains("ARRAY<"));
+
+        assertTrue(response.getResult().stream().anyMatch(path -> path.getFileName().toString().equals("ObservationLevels.sql")));
+        assertTrue(response.getResult().size() > 37,
+            "separate table files should increase generated path count above primary-only defaults");
     }
 
     void generate(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, int expectedSize, String classpath) {

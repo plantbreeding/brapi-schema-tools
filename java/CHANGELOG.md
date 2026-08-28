@@ -6,6 +6,26 @@ Versions correspond to Maven Central releases of `org.brapi:brapi-schema-tools-*
 
 ---
 
+## [0.96.0] — 2026-08-28
+
+### Fixed
+- **SQL foreign keys only reference emitted CREATE TABLE columns**: `add_constraints.sql` now tracks top-level columns actually written for each primary table and skips FK constraints whose local columns were omitted (including deprecated relationships such as `Locale.program` → `programPUI`). Partial matches keep only the emitted columns.
+- **SQL FK generation ignores deprecated relationships** when the schema reader is configured with `ignoreDepreciatedProperties: true`, matching CREATE TABLE behaviour.
+- **SQL controlled-vocabulary tables are row-shaped**: array/object CV properties such as `Study.observationLevels` now generate flat tables (`levelName`, `levelOrder`, ...) instead of a single `ARRAY<STRUCT<...>>` column.
+
+### Added
+- **Separate SQL files for link and controlled-vocabulary tables**: new options `separateLinkTables` and `separateControlledVocabularyTables` (default `false`) write each link/CV table to its own `.sql` file instead of appending them to the parent entity DDL.
+- **SQL opaque column types for oneOf, AdditionalInfo, and selected schema types**:
+  - `properties.oneOfColumnType` (default `STRING`) collapses `oneOf` unions to a single column instead of `name1`/`name2` STRUCT expansion (fixes GeoJSONGeometry `geometry1`/`geometry2`).
+  - `properties.oneOfColumnTypeFor.<Parent>.<property>` overrides the oneOf type per property.
+  - `properties.additionalInfoColumnType` (default `MAP` → `MAP<STRING,STRING>`) with alternatives `STRING` and `VARIANT`.
+  - `properties.additionalInfoColumnTypeFor.<Parent>.<property>` overrides AdditionalInfo storage per parent property.
+  - `properties.columnTypeFor.<TypeName>` forces a schema type (e.g. `GeoJSON`) to a single SQL type.
+  - `properties.columnTypePropertyFor.<Parent>.<property>` is the highest-precedence per-property override.
+- Databricks workspaces can set `VARIANT` only in their options file; portable defaults remain `STRING` / `MAP`.
+
+---
+
 ## [0.95.0] — 2026-08-26
 
 ### Fixed

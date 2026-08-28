@@ -4,6 +4,8 @@
 The record of an event where material was moved in or out of a particular SeedLot
  */
 CREATE TABLE brapi_SeedLotTransactions (
+  -- Primary properties
+  transactionDbId STRING NOT NULL PRIMARY KEY COMMENT 'Unique DbId for the Seed Lot Transaction',
   -- Link properties
   fromSeedLotDbId STRING COMMENT 'The identifier for the Seed Lot being transferred out of. Unique DbId for the Seed Lot',
   fromSeedLotPUI STRING COMMENT 'The identifier for the Seed Lot being transferred out of',
@@ -21,7 +23,6 @@ CREATE TABLE brapi_SeedLotTransactions (
         referenceSource STRING COMMENT 'An identifier for the source system or database of this reference'
       >
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
-  transactionDbId STRING NOT NULL COMMENT 'Unique DbId for the Seed Lot Transaction',
   transactionDescription STRING COMMENT 'A general description of this Seed Lot Transaction',
   transactionTimestamp STRING COMMENT 'The time stamp for when the transaction occurred',
   units STRING COMMENT 'A description of the things being transferred between SeedLots in a transaction (seeds, bulbs, kg, etc)'

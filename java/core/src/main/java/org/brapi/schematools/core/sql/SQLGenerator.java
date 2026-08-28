@@ -123,16 +123,47 @@ public class SQLGenerator {
         private Response<List<Path>> generateSQLFiles(List<BrAPIObjectType> brAPIClasses) {
             return brAPIClasses.stream()
                 .map(this::generateSQL)
+                .collect(Response.toList())
+                .mapResult(pathLists -> pathLists.stream().flatMap(List::stream).toList());
+        }
+
+        private Response<List<Path>> generateSQL(BrAPIObjectType brAPIObjectType) {
+            return createTableDDLGenerator.generateDDLForObjectType(brAPIObjectType)
+                .mapResultToResponse(sql -> writeToFile(
+                    outputPath.resolve(String.format("%s.sql", brAPIObjectType.getName())),
+                    brAPIObjectType,
+                    sql))
+                .mapResultToResponse(primaryPath -> createTableDDLGenerator.drainSeparateTableScripts()
+                    .mapResultToResponse(this::writeSeparateTableScripts)
+                    .mapResult(separatePaths -> {
+                        List<Path> paths = new ArrayList<>();
+                        if (primaryPath != null) {
+                            paths.add(primaryPath);
+                        }
+                        paths.addAll(separatePaths);
+                        return paths;
+                    }));
+        }
+
+        private Response<List<Path>> writeSeparateTableScripts(List<CreateTableDDLGenerator.SeparateTableScript> scripts) {
+            return scripts.stream()
+                .map(script -> writeToFile(
+                    outputPath.resolve(script.fileName()),
+                    script.title(),
+                    script.sql()))
                 .filter(Response::isPresent)
                 .collect(Response.toList());
         }
 
-        private Response<Path> generateSQL(BrAPIObjectType brAPIObjectType) {
-            return createTableDDLGenerator.generateDDLForObjectType(brAPIObjectType)
-                    .mapResultToResponse(sql -> writeToFile(outputPath.resolve(String.format("%s.sql", brAPIObjectType.getName())), brAPIObjectType, sql));
+        private Response<Path> writeToFile(Path path, BrAPIObjectType brAPIObjectType, String text) {
+            return writeToFile(path, brAPIObjectType.getName(), text, brAPIObjectType);
         }
 
-        private Response<Path> writeToFile(Path path, BrAPIObjectType brAPIObjectType, String text) {
+        private Response<Path> writeToFile(Path path, String title, String text) {
+            return writeToFile(path, title, text, null);
+        }
+
+        private Response<Path> writeToFile(Path path, String title, String text, BrAPIObjectType brAPIObjectType) {
             try {
                 if (!options.isOverwritingExistingFiles() && Files.exists(path)) {
                     log.warn("Output file '{}' already exists and was not overwritten", path);
@@ -142,10 +173,12 @@ public class SQLGenerator {
 
                     PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(path, Charset.defaultCharset()));
 
-                    printWriter.print(COMMENT_PREFIX) ;
-                    printWriter.println(brAPIObjectType.getName());
+                    if (title != null && !title.isBlank()) {
+                        printWriter.print(COMMENT_PREFIX) ;
+                        printWriter.println(title);
+                    }
 
-                    if (options.isAddingDropTable()) {
+                    if (options.isAddingDropTable() && brAPIObjectType != null) {
                         printWriter.println(COMMENT_START);
 
                         if (brAPIObjectType.getDescription() != null) {

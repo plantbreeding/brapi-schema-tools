@@ -238,6 +238,17 @@ class SQLGeneratorOptionsTest extends OptionsTestBase {
         );
 
         assertEquals(2, options.getIndentSize());
+        // separate* default to false whether unset (partial YAML) or explicitly false in defaults
+        assertFalse(options.isSeparatingLinkTables());
+        assertFalse(options.isSeparatingControlledVocabularyTables());
+    }
+
+    @Test
+    void defaultOptionsSeparateTableFlags() {
+        SQLGeneratorOptions options = SQLGeneratorOptions.load();
+        assertTrue(options.isGeneratingLinkTables());
+        assertFalse(options.isSeparatingLinkTables());
+        assertFalse(options.isSeparatingControlledVocabularyTables());
     }
 
     private void validateTrue(Validation validate) {

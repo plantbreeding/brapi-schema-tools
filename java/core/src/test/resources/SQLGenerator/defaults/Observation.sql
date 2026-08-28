@@ -36,16 +36,7 @@ CREATE TABLE brapi_Observations (
     > COMMENT 'An array of external reference ids. These are references to this piece of data in an external system. Could be a simple string or a URI.',
   geoCoordinates 
     STRUCT<
-      geometry1
-        STRUCT<
-          coordinates ARRAY<DOUBLE> COMMENT 'A single position',
-          type STRING COMMENT 'The literal string "Point"'
-        >,
-      geometry2
-        STRUCT<
-          coordinates ARRAY<DOUBLE> COMMENT 'An array of linear rings',
-          type STRING COMMENT 'The literal string "Polygon"'
-        > COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
+      geometry STRING COMMENT 'A geometry as defined by GeoJSON (RFC 7946). In this context, only Point or Polygon geometry are allowed.',
       type STRING COMMENT 'The literal string "Feature"'
     > COMMENT 'One geometry as defined by GeoJSON (RFC 7946). All coordinates are decimal values on the WGS84 geographic coordinate reference system.  Copied from RFC 7946 Section 3.1.1  A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.',
   uploadedBy STRING COMMENT 'The name or id of the user who uploaded the observation to the database system',

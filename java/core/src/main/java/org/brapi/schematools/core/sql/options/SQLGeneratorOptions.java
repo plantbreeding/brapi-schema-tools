@@ -50,6 +50,8 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @Setter(AccessLevel.PRIVATE)
     private ControlledVocabularyOptions controlledVocabulary;
     private Boolean generateLinkTables;
+    private Boolean separateLinkTables;
+    private Boolean separateControlledVocabularyTables;
     private Boolean snakeCaseTableNames;
     private Boolean pluralTableNames;
     private Boolean generateDropScript;
@@ -194,6 +196,14 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
 
         if (overrideOptions.generateLinkTables != null) {
             generateLinkTables = overrideOptions.generateLinkTables;
+        }
+
+        if (overrideOptions.separateLinkTables != null) {
+            separateLinkTables = overrideOptions.separateLinkTables;
+        }
+
+        if (overrideOptions.separateControlledVocabularyTables != null) {
+            separateControlledVocabularyTables = overrideOptions.separateControlledVocabularyTables;
         }
 
         if (overrideOptions.snakeCaseTableNames != null) {
@@ -356,6 +366,28 @@ public class SQLGeneratorOptions extends AbstractMainGeneratorOptions {
     @JsonIgnore
     public boolean isGeneratingLinkTables() {
         return generateLinkTables != null && generateLinkTables ;
+    }
+
+    /**
+     * Determines if link tables should be written as separate {@code .sql} files instead of being
+     * appended to the parent entity DDL.
+     *
+     * @return {@code true} when each link table is emitted to its own file
+     */
+    @JsonIgnore
+    public boolean isSeparatingLinkTables() {
+        return separateLinkTables != null && separateLinkTables;
+    }
+
+    /**
+     * Determines if controlled-vocabulary tables should be written as separate {@code .sql} files
+     * instead of being appended to the parent entity DDL.
+     *
+     * @return {@code true} when each controlled-vocabulary table is emitted to its own file
+     */
+    @JsonIgnore
+    public boolean isSeparatingControlledVocabularyTables() {
+        return separateControlledVocabularyTables != null && separateControlledVocabularyTables;
     }
 
     /**

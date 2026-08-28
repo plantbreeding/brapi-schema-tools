@@ -30,6 +30,12 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
     private final Map<String, Object> tableProperties;
     private final Set<String> constraints;
     private final Set<String> tables;
+    /**
+     * Top-level column names actually emitted in each primary table's {@code CREATE TABLE}.
+     * Used so FK constraints never reference columns that were omitted (e.g. deprecated relationships).
+     */
+    private final Map<String, Set<String>> emittedColumnsByTable;
+    private final List<SeparateTableScript> separateTableScripts;
 
     public ANSICreateTableDDLGenerator(SQLGeneratorOptions options, SQLGeneratorMetadata metadata, List<BrAPIClass> brAPIClasses) {
         this.options = options;
@@ -40,6 +46,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         this.tableProperties = options.getTableProperties();
         this.tables = new TreeSet<>() ;
         this.constraints = new TreeSet<>() ;
+        this.emittedColumnsByTable = new HashMap<>();
+        this.separateTableScripts = new ArrayList<>();
     }
 
     @Override
@@ -74,12 +82,21 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         return success(builder.toString());
     }
 
+    @Override
+    public Response<List<SeparateTableScript>> drainSeparateTableScripts() {
+        List<SeparateTableScript> scripts = new ArrayList<>(separateTableScripts);
+        separateTableScripts.clear();
+        return success(scripts);
+    }
+
     private class Generator {
         private final BrAPIObjectType brAPIObjectType;
         private final List<LinkTable> linkTables = new ArrayList<>();
         private final List<ControlledVocabularyTable> controlledVocabularyTables = new ArrayList<>();
         private int indent = 0 ;
         private int arrayStructDepth = 0;
+        /** Set while generating a primary table definition so top-level columns can be recorded. */
+        private String currentPrimaryTableName;
 
         public Generator(BrAPIObjectType brAPIObjectType) {
             this.brAPIObjectType = brAPIObjectType;
@@ -105,8 +122,8 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 getTableDescription(brAPIObjectType),
                 findClusterColumns(brAPIObjectType),
                 true)
-                .conditionalMapResultToResponse(options.isGeneratingLinkTables() && !linkTables.isEmpty(), this::appendLinkTableDefinitions)
-                .conditionalMapResultToResponse(options.getControlledVocabulary().isGenerating() && !controlledVocabularyTables.isEmpty(), this::appendControlledVocabularyDefinitions);
+                .mapResultToResponse(this::attachOrSeparateLinkTables)
+                .mapResultToResponse(this::attachOrSeparateControlledVocabularyTables);
         }
 
         private Response<String> createTableDefinition(String tableName,
@@ -119,16 +136,77 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             StringBuilder builder = new StringBuilder();
             tables.add(tableName);
 
-            return Response.empty()
-                .mapOnCondition(options.isAddingTableHeaderComments(), descriptionSupplier)
-                .onSuccessDoWithResult(builder::append)
-                .map(() -> createTableDefinitionStart(tableName))
-                .onSuccessDoWithResult(builder::append)
-                .map(columnSupplier)
-                .onSuccessDoWithResult(builder::append)
-                .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns, primaryTable))
-                .onSuccessDoWithResult(builder::append)
-                .map(() -> success(builder.toString())) ;
+            String previousPrimaryTableName = currentPrimaryTableName;
+            if (primaryTable) {
+                currentPrimaryTableName = tableName;
+                emittedColumnsByTable.computeIfAbsent(tableName, ignored -> new LinkedHashSet<>());
+            }
+
+            try {
+                return Response.empty()
+                    .mapOnCondition(options.isAddingTableHeaderComments(), descriptionSupplier)
+                    .onSuccessDoWithResult(builder::append)
+                    .map(() -> createTableDefinitionStart(tableName))
+                    .onSuccessDoWithResult(builder::append)
+                    .map(columnSupplier)
+                    .onSuccessDoWithResult(builder::append)
+                    .map(() -> createTableDefinitionEnd(tableName, description, clusterColumns, primaryTable))
+                    .onSuccessDoWithResult(builder::append)
+                    .map(() -> success(builder.toString())) ;
+            } finally {
+                currentPrimaryTableName = previousPrimaryTableName;
+            }
+        }
+
+        private void registerEmittedColumn(String columnName) {
+            if (currentPrimaryTableName == null || arrayStructDepth > 0 || columnName == null || columnName.isBlank()) {
+                return;
+            }
+            emittedColumnsByTable
+                .computeIfAbsent(currentPrimaryTableName, ignored -> new LinkedHashSet<>())
+                .add(columnName);
+        }
+
+        private Set<String> emittedColumnsFor(String tableName) {
+            return emittedColumnsByTable.getOrDefault(tableName, Set.of());
+        }
+
+        /**
+         * Keeps only FK source columns that were actually emitted on the table.
+         * Drops constraints entirely when none remain (e.g. deprecated Locale.program -> programPUI omitted).
+         */
+        private List<BrAPIObjectProperty> filterEmittedForeignKeyColumns(
+                String tableName,
+                BrAPIPropertyWithType relationship,
+                List<BrAPIObjectProperty> sourceLinkProps,
+                Set<String> emittedColumns) {
+
+            if (sourceLinkProps == null || sourceLinkProps.isEmpty()) {
+                log.warn("Skipping FK constraint on table '{}': no source columns found for property '{}'",
+                    tableName, relationship.getProperty().getName());
+                return List.of();
+            }
+
+            List<BrAPIObjectProperty> emittedSourceColumns = sourceLinkProps.stream()
+                .filter(property -> emittedColumns.contains(property.getName()))
+                .toList();
+
+            if (emittedSourceColumns.isEmpty()) {
+                log.warn(
+                    "Skipping FK constraint on table '{}' for property '{}': none of the link columns {} were emitted in CREATE TABLE (emitted={})",
+                    tableName,
+                    relationship.getProperty().getName(),
+                    sourceLinkProps.stream().map(BrAPIObjectProperty::getName).toList(),
+                    emittedColumns);
+            } else if (emittedSourceColumns.size() != sourceLinkProps.size()) {
+                log.warn(
+                    "Partial FK columns on table '{}' for property '{}': using {} (omitted non-emitted link columns)",
+                    tableName,
+                    relationship.getProperty().getName(),
+                    emittedSourceColumns.stream().map(BrAPIObjectProperty::getName).toList());
+            }
+
+            return emittedSourceColumns;
         }
 
         private Response<String> createTableDefinitionStart(String tableName) {
@@ -167,19 +245,27 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 if (primaryTable && (options.isAddingForeignKeyConstraints() || options.isGeneratingForeignKeyConstraintScript())) {
                     List<BrAPIPropertyWithType> foreignKeyProperties = brAPIObjectType.getProperties()
                         .stream()
+                        // Match CREATE TABLE: omit deprecated relationships when the reader ignores them
+                        .filter(this::isAddingDepreciatedProperty)
                         .filter(property -> brAPIClassCache.dereferenceType(property.getType()) instanceof BrAPIObjectType)
                         .filter(property -> getLinkTypeFor(brAPIObjectType, property).getResultIfPresentOrElseResult(LinkType.NONE) == ID)
                         .map(property -> BrAPIPropertyWithType.builder().parentType(brAPIObjectType).property(property).type(unwrapAndDereferenceType(property.getType())).build())
                         .filter(propertyWithType -> propertyWithType.getType() instanceof BrAPIObjectType)
                         .toList();
 
+                    Set<String> emittedColumns = emittedColumnsFor(tableName);
+
                     if (options.isAddingForeignKeyConstraints()) {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
-                            List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
-                                brAPIPropertyWithType.getParentType(), brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                            List<BrAPIObjectProperty> sourceLinkProps = filterEmittedForeignKeyColumns(
+                                tableName,
+                                brAPIPropertyWithType,
+                                options.getProperties().getLinkPropertiesFor(
+                                    brAPIPropertyWithType.getParentType(),
+                                    brAPIPropertyWithType.getProperty(),
+                                    (BrAPIObjectType) brAPIPropertyWithType.getType()),
+                                emittedColumns);
                             if (sourceLinkProps.isEmpty()) {
-                                log.warn("Skipping inline FK constraint on table '{}': no source columns found for property '{}'",
-                                    tableName, brAPIPropertyWithType.getProperty().getName());
                                 continue;
                             }
                             builder.append(",");
@@ -199,11 +285,15 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                         }
                     } else {
                         for (BrAPIPropertyWithType brAPIPropertyWithType : foreignKeyProperties) {
-                            List<BrAPIObjectProperty> sourceLinkProps = options.getProperties().getLinkPropertiesFor(
-                                brAPIPropertyWithType.getParentType(), brAPIPropertyWithType.getProperty(), (BrAPIObjectType) brAPIPropertyWithType.getType());
+                            List<BrAPIObjectProperty> sourceLinkProps = filterEmittedForeignKeyColumns(
+                                tableName,
+                                brAPIPropertyWithType,
+                                options.getProperties().getLinkPropertiesFor(
+                                    brAPIPropertyWithType.getParentType(),
+                                    brAPIPropertyWithType.getProperty(),
+                                    (BrAPIObjectType) brAPIPropertyWithType.getType()),
+                                emittedColumns);
                             if (sourceLinkProps.isEmpty()) {
-                                log.warn("Skipping FK constraint script on table '{}': no source columns found for property '{}'",
-                                    tableName, brAPIPropertyWithType.getProperty().getName());
                                 continue;
                             }
                             StringBuilder builder2 = new StringBuilder();
@@ -581,6 +671,32 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return options.getProperties().getLinkTypeFor(brAPIObjectType, property, unwrapAndDereferenceType(property.getType()));
         }
 
+        private Response<String> attachOrSeparateLinkTables(String ddl) {
+            if (!options.isGeneratingLinkTables() || linkTables.isEmpty()) {
+                return success(ddl);
+            }
+
+            if (options.isSeparatingLinkTables()) {
+                return linkTables.stream()
+                    .map(this::stageSeparateLinkTable)
+                    .collect(Response.toList())
+                    .map(() -> success(ddl));
+            }
+
+            return appendLinkTableDefinitions(ddl);
+        }
+
+        private Response<String> stageSeparateLinkTable(LinkTable linkTable) {
+            return appendLinkTableDefinition(linkTable)
+                .mapResult(sql -> {
+                    separateTableScripts.add(new SeparateTableScript(
+                        createLinkTableName(linkTable) + ".sql",
+                        createLinkTableName(linkTable),
+                        sql));
+                    return sql;
+                });
+        }
+
         private Response<String> appendLinkTableDefinitions(String ddl) {
             StringBuilder builder = new StringBuilder(ddl);
 
@@ -661,6 +777,32 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
             return Collections.emptyList() ;
         }
 
+        private Response<String> attachOrSeparateControlledVocabularyTables(String ddl) {
+            if (!options.getControlledVocabulary().isGenerating() || controlledVocabularyTables.isEmpty()) {
+                return success(ddl);
+            }
+
+            if (options.isSeparatingControlledVocabularyTables()) {
+                return controlledVocabularyTables.stream()
+                    .map(this::stageSeparateControlledVocabularyTable)
+                    .collect(Response.toList())
+                    .map(() -> success(ddl));
+            }
+
+            return appendControlledVocabularyDefinitions(ddl);
+        }
+
+        private Response<String> stageSeparateControlledVocabularyTable(ControlledVocabularyTable controlledVocabularyTable) {
+            return appendControlledVocabularyDefinition(controlledVocabularyTable)
+                .mapResult(sql -> {
+                    separateTableScripts.add(new SeparateTableScript(
+                        createControlledVocabularyTableName(controlledVocabularyTable) + ".sql",
+                        createControlledVocabularyTableName(controlledVocabularyTable),
+                        sql));
+                    return sql;
+                });
+        }
+
         private Response<String> appendControlledVocabularyDefinitions(String ddl) {
             StringBuilder builder = new StringBuilder(ddl);
 
@@ -706,8 +848,34 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createColumnDefinitions(ControlledVocabularyTable controlledVocabularyTable) {
+            BrAPIObjectProperty property = controlledVocabularyTable.getProperty();
+            BrAPIType dereferencedType = unwrapAndDereferenceType(property.getType());
 
-            return createColumnDefinition(controlledVocabularyTable.getParentType(), controlledVocabularyTable.getProperty()) ;
+            // Controlled vocabulary tables store one vocabulary row each, not an ARRAY/STRUCT blob.
+            if (dereferencedType instanceof BrAPIArrayType arrayType) {
+                BrAPIType itemType = unwrapAndDereferenceType(arrayType.getItems());
+                if (itemType instanceof BrAPIObjectType itemObjectType) {
+                    return createColumnDefinitions(itemObjectType);
+                }
+                if (itemType instanceof BrAPIPrimitiveType || itemType instanceof BrAPIEnumType) {
+                    String simpleTypeName = itemType instanceof BrAPIEnumType enumType
+                        ? enumType.getType()
+                        : itemType.getName();
+                    return createSimpleColumnDefinition(
+                        controlledVocabularyTable.getParentType(),
+                        property.toBuilder().type(itemType).nullable(false).build(),
+                        simpleTypeName);
+                }
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("Unsupported controlled-vocabulary array item type '%s' for property '%s'",
+                        itemType != null ? itemType.getName() : "null", property.getName()));
+            }
+
+            if (dereferencedType instanceof BrAPIObjectType objectType) {
+                return createColumnDefinitions(objectType);
+            }
+
+            return createColumnDefinition(controlledVocabularyTable.getParentType(), property);
         }
 
         private Response<String> createTableDescription(ControlledVocabularyTable controlledVocabularyTable) {
@@ -764,13 +932,28 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private Response<String> createColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(property.getType());
 
-            if (property.getType().getName().equals("AdditionalInfo")) {
+            // Highest precedence: explicit property or type columnType overrides (STRING/VARIANT/MAP/...).
+            java.util.Optional<String> forcedColumnType = options.getProperties().findForcedColumnTypeFor(parentType, property);
+            if (forcedColumnType.isPresent()) {
+                return createOpaqueColumnDefinition(parentType, property, forcedColumnType.get());
+            }
+
+            if (property.getType() != null && "AdditionalInfo".equals(property.getType().getName())) {
                 return createAdditionalInfoColumnDefinition(parentType, property);
             } else if (dereferencedType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
                 return createSimpleColumnDefinition(parentType, property, brAPIPrimitiveType.getName());
             } else if (dereferencedType instanceof BrAPIEnumType brAPIEnumType) {
                 return createSimpleColumnDefinition(parentType, property, brAPIEnumType.getType());
             } else if (dereferencedType instanceof BrAPIObjectType brAPIObjectDereferencedType) {
+                // Type-level columnTypeFor may key off the dereferenced object name (e.g. GeoJSON).
+                java.util.Optional<String> objectForcedType = options.getProperties().getColumnTypeFor() != null
+                    ? java.util.Optional.ofNullable(options.getProperties().getColumnTypeFor().get(brAPIObjectDereferencedType.getName()))
+                        .filter(value -> value != null && !value.isBlank())
+                        .map(String::trim)
+                    : java.util.Optional.empty();
+                if (objectForcedType.isPresent()) {
+                    return createOpaqueColumnDefinition(parentType, property, objectForcedType.get());
+                }
                 return createObjectColumnDefinition(parentType, property, brAPIObjectDereferencedType);
             } else if (dereferencedType instanceof BrAPIOneOfType brAPIOneOfType) {
                 return createOneOfTypeColumnDefinition(parentType, property, brAPIOneOfType);
@@ -784,14 +967,50 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+            String configuredType = options.getProperties().getAdditionalInfoColumnTypeFor(parentType, property);
+            return createOpaqueColumnDefinition(parentType, property, configuredType);
+        }
 
-            String builder = property.getName() +
-                " MAP<STRING,STRING>";
+        /**
+         * Emits a single non-expanded column. {@code MAP} is sugar for {@code MAP<STRING,STRING>};
+         * other values (e.g. {@code STRING}, {@code VARIANT}) are written as-is.
+         */
+        private Response<String> createOpaqueColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String configuredType) {
+            registerEmittedColumn(property.getName());
 
-            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
+            String sqlType = resolveOpaqueSqlType(configuredType);
+            if (sqlType == null) {
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("Unsupported opaque SQL column type '%s' for property '%s' on '%s'",
+                        configuredType, property.getName(), parentType.getName()));
+            }
+
+            String builder = property.getName() + " " + sqlType;
+            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(),
+                result -> addColumnEnd(parentType, property, result));
+        }
+
+        private String resolveOpaqueSqlType(String configuredType) {
+            if (configuredType == null || configuredType.isBlank()) {
+                return null;
+            }
+            String normalized = configuredType.trim();
+            if (normalized.equalsIgnoreCase("MAP") || normalized.equalsIgnoreCase("MAP<STRING,STRING>")) {
+                return "MAP<STRING,STRING>";
+            }
+            if (normalized.equalsIgnoreCase("STRING")) {
+                return "STRING";
+            }
+            if (normalized.equalsIgnoreCase("VARIANT")) {
+                return "VARIANT";
+            }
+            // Allow passthrough of other explicit SQL types if configured deliberately.
+            return normalized;
         }
 
         private Response<String> createSimpleColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String type) {
+
+            registerEmittedColumn(property.getName());
 
             StringBuilder builder = new StringBuilder();
             builder.append(property.getName());
@@ -819,7 +1038,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 linkType -> switch (linkType) {
                     case EMBEDDED ->
                         createObjectColumnType(brAPIObjectType)
-                            .mapResult(columnType -> property.getName() + " " + columnType)
+                            .mapResult(columnType -> {
+                                registerEmittedColumn(property.getName());
+                                return property.getName() + " " + columnType;
+                            })
                             .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
                     case ID -> createLinkObjectDefinition(parentType, property, brAPIObjectType);
                     default ->
@@ -869,49 +1091,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createOneOfTypeColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIOneOfType brAPIOneOfType) {
-
-            int i = 1;
-
-            List<Response<String>> responses = new ArrayList<>(brAPIOneOfType.getPossibleTypes().size());
-
-            for (BrAPIType type : brAPIOneOfType.getPossibleTypes()) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(property.getName());
-                builder.append(i);
-                indent();
-                appendNewLine(builder);
-                builder.append("STRUCT<");
-                indent();
-                appendNewLine(builder) ;
-
-                if (type instanceof BrAPIObjectType childType) {
-                    responses.add(createColumnDefinitions(childType)
-                        .mapResult(builder::append)
-                        .onSuccessDo(this::dedent)
-                        .onSuccessDoWithResult(this::appendNewLine)
-                        .mapResult(b -> b.append(">"))
-                        .conditionalMapResult(i < brAPIOneOfType.getPossibleTypes().size(), b -> b.append(","))
-                        .mapResult(StringBuilder::toString));
-                } else if (type instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                    responses.add(findSimpleColumnType(brAPIPrimitiveType.getName())
-                        .mapResult(builder::append)
-                        .onSuccessDo(this::dedent)
-                        .mapResult(b -> b.append(">"))
-                        .conditionalMapResult(i < brAPIOneOfType.getPossibleTypes().size(), b -> b.append(","))
-                        .mapResult(StringBuilder::toString));
-                } else {
-                    responses.add(fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded one of type '%s'", type.getName())));
-                }
-
-                appendNewLine(builder) ;
-                dedent();
-
-                ++i;
-            }
-
-            return responses.stream().collect(Response.toList())
-                .mapResult(s -> String.join(newLine(), s))
-                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+            // Collapse oneOf to a single opaque column (default STRING; VARIANT via options).
+            // Avoids geometry1/geometry2-style branch expansion.
+            String configuredType = options.getProperties().getOneOfColumnTypeFor(parentType, property);
+            return createOpaqueColumnDefinition(parentType, property, configuredType);
         }
 
         private Response<String> createArrayColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType) {
@@ -931,6 +1114,7 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
 
             return switch (linkType) {
                 case EMBEDDED -> {
+                    registerEmittedColumn(property.getName());
                     builder.append(property.getName());
                     if (dereferencedItemType instanceof BrAPIObjectType) {
                         indent();
@@ -951,7 +1135,9 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
                 }
                 case ID -> {
                     if (dereferencedItemType instanceof BrAPIObjectType dereferencedItemTypeObjectType) {
-                        builder.append(options.getProperties().getIdsPropertyNameFor(property));
+                        String idsColumnName = options.getProperties().getIdsPropertyNameFor(property);
+                        registerEmittedColumn(idsColumnName);
+                        builder.append(idsColumnName);
                         builder.append(" ");
                         builder.append("ARRAY<");
 

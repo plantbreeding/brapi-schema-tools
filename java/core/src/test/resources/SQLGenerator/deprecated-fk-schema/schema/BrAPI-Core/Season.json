@@ -1,0 +1,34 @@
+{
+  "$defs": {
+    "Season": {
+      "type": "object",
+      "description": "Season primary model",
+      "brapi-metadata": {
+        "primaryModel": true
+      },
+      "required": [
+        "seasonDbId"
+      ],
+      "properties": {
+        "seasonDbId": {
+          "type": "string",
+          "description": "Season id"
+        },
+        "seasonPUI": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Season PUI"
+        },
+        "seasonName": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "description": "Season name"
+        }
+      }
+    }
+  }
+}
