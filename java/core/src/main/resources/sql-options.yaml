@@ -23,6 +23,19 @@ generateFor:
     MarkerPosition: false
 properties:
     descriptionFormat: Property %s for type %s
+    # Collapse oneOf unions to a single opaque SQL column (avoids name1/name2 expansion).
+    # Override globally or per property; Databricks workspaces typically set VARIANT.
+    oneOfColumnType: STRING
+    oneOfColumnTypeFor: {}
+    # AdditionalInfo storage: MAP (→ MAP<STRING,STRING>), STRING, or VARIANT.
+    additionalInfoColumnType: MAP
+    additionalInfoColumnTypeFor: {}
+    # Force any schema type (by type name) to a single SQL column type.
+    # Example: GeoJSON: STRING
+    columnTypeFor: {}
+    # Force a specific parent.property to a single SQL column type (highest precedence).
+    # Example: ObservationUnitPosition.geoCoordinates: STRING
+    columnTypePropertyFor: {}
     id:
         nameFormat: "%sDbId"
         pluralNameFormat: "%sDbIds"

@@ -932,13 +932,28 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         private Response<String> createColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
             BrAPIType dereferencedType = brAPIClassCache.dereferenceType(property.getType());
 
-            if (property.getType().getName().equals("AdditionalInfo")) {
+            // Highest precedence: explicit property or type columnType overrides (STRING/VARIANT/MAP/...).
+            java.util.Optional<String> forcedColumnType = options.getProperties().findForcedColumnTypeFor(parentType, property);
+            if (forcedColumnType.isPresent()) {
+                return createOpaqueColumnDefinition(parentType, property, forcedColumnType.get());
+            }
+
+            if (property.getType() != null && "AdditionalInfo".equals(property.getType().getName())) {
                 return createAdditionalInfoColumnDefinition(parentType, property);
             } else if (dereferencedType instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
                 return createSimpleColumnDefinition(parentType, property, brAPIPrimitiveType.getName());
             } else if (dereferencedType instanceof BrAPIEnumType brAPIEnumType) {
                 return createSimpleColumnDefinition(parentType, property, brAPIEnumType.getType());
             } else if (dereferencedType instanceof BrAPIObjectType brAPIObjectDereferencedType) {
+                // Type-level columnTypeFor may key off the dereferenced object name (e.g. GeoJSON).
+                java.util.Optional<String> objectForcedType = options.getProperties().getColumnTypeFor() != null
+                    ? java.util.Optional.ofNullable(options.getProperties().getColumnTypeFor().get(brAPIObjectDereferencedType.getName()))
+                        .filter(value -> value != null && !value.isBlank())
+                        .map(String::trim)
+                    : java.util.Optional.empty();
+                if (objectForcedType.isPresent()) {
+                    return createOpaqueColumnDefinition(parentType, property, objectForcedType.get());
+                }
                 return createObjectColumnDefinition(parentType, property, brAPIObjectDereferencedType);
             } else if (dereferencedType instanceof BrAPIOneOfType brAPIOneOfType) {
                 return createOneOfTypeColumnDefinition(parentType, property, brAPIOneOfType);
@@ -952,13 +967,45 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createAdditionalInfoColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+            String configuredType = options.getProperties().getAdditionalInfoColumnTypeFor(parentType, property);
+            return createOpaqueColumnDefinition(parentType, property, configuredType);
+        }
 
+        /**
+         * Emits a single non-expanded column. {@code MAP} is sugar for {@code MAP<STRING,STRING>};
+         * other values (e.g. {@code STRING}, {@code VARIANT}) are written as-is.
+         */
+        private Response<String> createOpaqueColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String configuredType) {
             registerEmittedColumn(property.getName());
 
-            String builder = property.getName() +
-                " MAP<STRING,STRING>";
+            String sqlType = resolveOpaqueSqlType(configuredType);
+            if (sqlType == null) {
+                return fail(Response.ErrorType.VALIDATION,
+                    String.format("Unsupported opaque SQL column type '%s' for property '%s' on '%s'",
+                        configuredType, property.getName(), parentType.getName()));
+            }
 
-            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(parentType, property, result));
+            String builder = property.getName() + " " + sqlType;
+            return success(builder).conditionalMapResultToResponse(options.isAddingTableColumnComments(),
+                result -> addColumnEnd(parentType, property, result));
+        }
+
+        private String resolveOpaqueSqlType(String configuredType) {
+            if (configuredType == null || configuredType.isBlank()) {
+                return null;
+            }
+            String normalized = configuredType.trim();
+            if (normalized.equalsIgnoreCase("MAP") || normalized.equalsIgnoreCase("MAP<STRING,STRING>")) {
+                return "MAP<STRING,STRING>";
+            }
+            if (normalized.equalsIgnoreCase("STRING")) {
+                return "STRING";
+            }
+            if (normalized.equalsIgnoreCase("VARIANT")) {
+                return "VARIANT";
+            }
+            // Allow passthrough of other explicit SQL types if configured deliberately.
+            return normalized;
         }
 
         private Response<String> createSimpleColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, String type) {
@@ -1044,50 +1091,10 @@ public class ANSICreateTableDDLGenerator implements CreateTableDDLGenerator {
         }
 
         private Response<String> createOneOfTypeColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIOneOfType brAPIOneOfType) {
-
-            int i = 1;
-
-            List<Response<String>> responses = new ArrayList<>(brAPIOneOfType.getPossibleTypes().size());
-
-            for (BrAPIType type : brAPIOneOfType.getPossibleTypes()) {
-                StringBuilder builder = new StringBuilder();
-                builder.append(property.getName());
-                builder.append(i);
-                registerEmittedColumn(property.getName() + i);
-                indent();
-                appendNewLine(builder);
-                builder.append("STRUCT<");
-                indent();
-                appendNewLine(builder) ;
-
-                if (type instanceof BrAPIObjectType childType) {
-                    responses.add(createColumnDefinitions(childType)
-                        .mapResult(builder::append)
-                        .onSuccessDo(this::dedent)
-                        .onSuccessDoWithResult(this::appendNewLine)
-                        .mapResult(b -> b.append(">"))
-                        .conditionalMapResult(i < brAPIOneOfType.getPossibleTypes().size(), b -> b.append(","))
-                        .mapResult(StringBuilder::toString));
-                } else if (type instanceof BrAPIPrimitiveType brAPIPrimitiveType) {
-                    responses.add(findSimpleColumnType(brAPIPrimitiveType.getName())
-                        .mapResult(builder::append)
-                        .onSuccessDo(this::dedent)
-                        .mapResult(b -> b.append(">"))
-                        .conditionalMapResult(i < brAPIOneOfType.getPossibleTypes().size(), b -> b.append(","))
-                        .mapResult(StringBuilder::toString));
-                } else {
-                    responses.add(fail(Response.ErrorType.VALIDATION, String.format("Unknown embedded one of type '%s'", type.getName())));
-                }
-
-                appendNewLine(builder) ;
-                dedent();
-
-                ++i;
-            }
-
-            return responses.stream().collect(Response.toList())
-                .mapResult(s -> String.join(newLine(), s))
-                .conditionalMapResultToResponse(options.isAddingTableColumnComments(), result -> addColumnEnd(brAPIObjectType, property, result));
+            // Collapse oneOf to a single opaque column (default STRING; VARIANT via options).
+            // Avoids geometry1/geometry2-style branch expansion.
+            String configuredType = options.getProperties().getOneOfColumnTypeFor(parentType, property);
+            return createOpaqueColumnDefinition(parentType, property, configuredType);
         }
 
         private Response<String> createArrayColumnDefinition(BrAPIObjectType parentType, BrAPIObjectProperty property, BrAPIArrayType brAPIArrayType) {

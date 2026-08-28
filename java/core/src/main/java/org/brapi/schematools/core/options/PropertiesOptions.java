@@ -35,6 +35,49 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
     private Map<String, Map<String, Boolean>> clusteringFor = new LinkedHashMap<>();
     private int maximumClusteringProperties;
 
+    /**
+     * Default SQL column type used when collapsing {@code oneOf} unions to a single opaque column.
+     * Typical values: {@code STRING} (default) or {@code VARIANT}.
+     * Field default keeps partial YAML loads (that skip sql-options merge) valid.
+     */
+    private String oneOfColumnType = "STRING";
+
+    /**
+     * Per-parent / per-property override for {@link #oneOfColumnType}.
+     * Keyed as {@code ParentType -> propertyName -> sqlType}.
+     */
+    @JsonDeserialize(as = LinkedHashMap.class)
+    private Map<String, Map<String, String>> oneOfColumnTypeFor = new LinkedHashMap<>();
+
+    /**
+     * Default SQL column type for {@code AdditionalInfo} properties.
+     * Supported values: {@code MAP} (emits {@code MAP<STRING,STRING>}), {@code STRING}, {@code VARIANT}.
+     * Field default keeps partial YAML loads valid when defaults are not merged.
+     */
+    private String additionalInfoColumnType = "MAP";
+
+    /**
+     * Per-parent / per-property override for {@link #additionalInfoColumnType}.
+     * Keyed as {@code ParentType -> propertyName -> sqlType}.
+     */
+    @JsonDeserialize(as = LinkedHashMap.class)
+    private Map<String, Map<String, String>> additionalInfoColumnTypeFor = new LinkedHashMap<>();
+
+    /**
+     * Force a schema type (by type name) to a single SQL column type instead of expanding it.
+     * Example: {@code GeoJSON: STRING} or {@code GeoJSON: VARIANT}.
+     */
+    @JsonDeserialize(as = LinkedHashMap.class)
+    private Map<String, String> columnTypeFor = new LinkedHashMap<>();
+
+    /**
+     * Force a specific parent property to a single SQL column type.
+     * Keyed as {@code ParentType -> propertyName -> sqlType}.
+     * Takes precedence over type-level {@link #columnTypeFor} and oneOf / AdditionalInfo defaults.
+     */
+    @JsonDeserialize(as = LinkedHashMap.class)
+    private Map<String, Map<String, String>> columnTypePropertyFor = new LinkedHashMap<>();
+
     @Override
     public Validation validate() {
         return super.validate()
@@ -45,6 +88,12 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
             .merge(name)
             .assertNotNull(id, "'pui' option on %s is null", this.getClass().getSimpleName())
             .assertGreaterThan(maximumClusteringProperties, 0.0, "'maximumClusteringProperties' option on %s must be greater than 0", this.getClass().getSimpleName())
+            .assertNotNull(oneOfColumnType, "'oneOfColumnType' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(additionalInfoColumnType, "'additionalInfoColumnType' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(oneOfColumnTypeFor, "'oneOfColumnTypeFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(additionalInfoColumnTypeFor, "'additionalInfoColumnTypeFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(columnTypeFor, "'columnTypeFor' option on %s is null", this.getClass().getSimpleName())
+            .assertNotNull(columnTypePropertyFor, "'columnTypePropertyFor' option on %s is null", this.getClass().getSimpleName())
             .merge(pui);
     }
 
@@ -92,7 +141,54 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
                     }
                 });
             }
+
+            if (coreOverride.oneOfColumnType != null) {
+                oneOfColumnType = coreOverride.oneOfColumnType;
+            }
+
+            if (coreOverride.additionalInfoColumnType != null) {
+                additionalInfoColumnType = coreOverride.additionalInfoColumnType;
+            }
+
+            mergeNestedStringMap(oneOfColumnTypeFor, coreOverride.oneOfColumnTypeFor);
+            mergeNestedStringMap(additionalInfoColumnTypeFor, coreOverride.additionalInfoColumnTypeFor);
+            mergeNestedStringMap(columnTypePropertyFor, coreOverride.columnTypePropertyFor);
+
+            if (coreOverride.columnTypeFor != null) {
+                coreOverride.columnTypeFor.forEach((key, value) -> {
+                    if (value == null) {
+                        columnTypeFor.remove(key);
+                    } else {
+                        columnTypeFor.put(key, value);
+                    }
+                });
+            }
         }
+    }
+
+    private static void mergeNestedStringMap(Map<String, Map<String, String>> target,
+                                             Map<String, Map<String, String>> override) {
+        if (override == null) {
+            return;
+        }
+        override.forEach((key, value) -> {
+            if (value == null) {
+                target.remove(key);
+            } else if (target.containsKey(key)) {
+                value.forEach((innerKey, innerValue) -> {
+                    if (innerValue == null) {
+                        target.get(key).remove(innerKey);
+                    } else {
+                        target.get(key).put(innerKey, innerValue);
+                    }
+                });
+                if (target.get(key).isEmpty()) {
+                    target.remove(key);
+                }
+            } else {
+                target.put(key, new LinkedHashMap<>(value));
+            }
+        });
     }
 
     @Override
@@ -102,6 +198,30 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         clusteringFor.keySet().forEach(name -> {
             validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
                 String.format("Invalid BrAPI Class name '%s' set for 'clusteringFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        oneOfColumnTypeFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'oneOfColumnTypeFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        additionalInfoColumnTypeFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'additionalInfoColumnTypeFor' on %s",
+                    name,
+                    this.getClass().getSimpleName()
+                )) ;
+        }) ;
+
+        columnTypePropertyFor.keySet().forEach(name -> {
+            validation.assertTrue(brAPIClassCache.isValidBrAPIClass(name),
+                String.format("Invalid BrAPI Class name '%s' set for 'columnTypePropertyFor' on %s",
                     name,
                     this.getClass().getSimpleName()
                 )) ;
@@ -437,5 +557,82 @@ public class PropertiesOptions extends AbstractPropertiesOptions {
         }
 
         return clustering.contains(property.getName());
+    }
+
+    /**
+     * Resolves the SQL column type for a property, honouring overrides in this order:
+     * <ol>
+     *   <li>{@code columnTypePropertyFor.<Parent>.<property>}</li>
+     *   <li>{@code columnTypeFor.<TypeName>} (using the property's schema type name)</li>
+     *   <li>empty if neither is set</li>
+     * </ol>
+     *
+     * @param parentType the parent object type that owns the property
+     * @param property   the property being generated
+     * @return optional SQL type string such as {@code STRING}, {@code VARIANT}, or {@code MAP}
+     */
+    @JsonIgnore
+    public java.util.Optional<String> findForcedColumnTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+        Map<String, String> propertyMap = columnTypePropertyFor.get(parentType.getName());
+        if (propertyMap != null) {
+            String propertyType = propertyMap.get(property.getName());
+            if (propertyType != null && !propertyType.isBlank()) {
+                return java.util.Optional.of(propertyType.trim());
+            }
+        }
+
+        String schemaTypeName = property.getType() != null ? property.getType().getName() : null;
+        if (schemaTypeName != null) {
+            String typeLevel = columnTypeFor.get(schemaTypeName);
+            if (typeLevel != null && !typeLevel.isBlank()) {
+                return java.util.Optional.of(typeLevel.trim());
+            }
+        }
+
+        return java.util.Optional.empty();
+    }
+
+    /**
+     * SQL type used when collapsing a {@code oneOf} property to a single opaque column.
+     * Resolution order: {@code oneOfColumnTypeFor.<Parent>.<property>}, then {@code oneOfColumnType}.
+     *
+     * @param parentType the parent object type that owns the property
+     * @param property   the oneOf property being generated
+     * @return SQL type string (default {@code STRING})
+     */
+    @JsonIgnore
+    public String getOneOfColumnTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+        Map<String, String> propertyMap = oneOfColumnTypeFor.get(parentType.getName());
+        if (propertyMap != null) {
+            String propertyType = propertyMap.get(property.getName());
+            if (propertyType != null && !propertyType.isBlank()) {
+                return propertyType.trim();
+            }
+        }
+        return oneOfColumnType != null && !oneOfColumnType.isBlank() ? oneOfColumnType.trim() : "STRING";
+    }
+
+    /**
+     * SQL type used for {@code AdditionalInfo} properties.
+     * Resolution order: {@code additionalInfoColumnTypeFor.<Parent>.<property>},
+     * then {@code additionalInfoColumnType}.
+     * Supported values: {@code MAP} (→ {@code MAP<STRING,STRING>}), {@code STRING}, {@code VARIANT}.
+     *
+     * @param parentType the parent object type that owns the property
+     * @param property   the AdditionalInfo property being generated
+     * @return configured type token (default {@code MAP})
+     */
+    @JsonIgnore
+    public String getAdditionalInfoColumnTypeFor(BrAPIObjectType parentType, BrAPIObjectProperty property) {
+        Map<String, String> propertyMap = additionalInfoColumnTypeFor.get(parentType.getName());
+        if (propertyMap != null) {
+            String propertyType = propertyMap.get(property.getName());
+            if (propertyType != null && !propertyType.isBlank()) {
+                return propertyType.trim();
+            }
+        }
+        return additionalInfoColumnType != null && !additionalInfoColumnType.isBlank()
+            ? additionalInfoColumnType.trim()
+            : "MAP";
     }
 }
